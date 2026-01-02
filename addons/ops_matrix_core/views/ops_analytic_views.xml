@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Analytic Setup Wizard Form -->
+    <record id="view_ops_analytic_setup_form" model="ir.ui.view">
+        <field name="name">ops.analytic.setup.form</field>
+        <field name="model">ops.analytic.setup</field>
+        <field name="arch" type="xml">
+            <form string="Setup Analytic Accounting Structure">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Analytic Structure Setup</h1>
+                    </div>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>Information:</strong> This wizard will:
+                        <ul>
+                            <li>Create 'Matrix Branch' analytic plan (if missing)</li>
+                            <li>Create 'Matrix Business Unit' analytic plan (if missing)</li>
+                            <li>Create analytic accounts for all active branches without one</li>
+                            <li>Create analytic accounts for all active business units without one</li>
+                            <li>Create analytic account groups for organization</li>
+                        </ul>
+                    </div>
+                    
+                    <footer>
+                        <button name="setup_analytic_structure" 
+                                string="Setup Analytic Structure" 
+                                type="object" 
+                                class="btn-primary"/>
+                        <button string="Cancel" 
+                                class="btn-secondary" 
+                                special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Action to open the wizard -->
+    <record id="action_ops_analytic_setup" model="ir.actions.act_window">
+        <field name="name">Setup Analytic Accounting</field>
+        <field name="res_model">ops.analytic.setup</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+    
+    
+</odoo>

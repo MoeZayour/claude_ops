@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sale Order Form View - Add Matrix Fields -->
+    <record id="view_order_form_matrix_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.matrix.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_approvals"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-check-circle"
+                        invisible="approval_request_count == 0">
+                    <field name="approval_request_count" widget="statinfo" string="Approvals"/>
+                </button>
+                <button name="action_request_approval"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-paper-plane"
+                        string="Request Approval"
+                        invisible="approval_locked or state not in ['draft', 'sent']"/>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning" role="alert" invisible="not approval_locked">
+                    <strong>Approval Required:</strong> This document is locked pending approval. No changes can be made until approved or rejected.
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <group name="matrix_info" string="Matrix Information">
+                    <field name="ops_branch_id" options="{'no_open': True}"/>
+                    <field name="ops_business_unit_id" options="{'no_open': True}"/>
+                    <field name="approval_locked" invisible="1"/>
+                </group>
+            </xpath>
+            
+        </field>
+    </record>
+
+    <!-- Sale Order Tree View - Add Matrix Columns -->
+    <record id="view_order_tree_matrix_inherit" model="ir.ui.view">
+        <field name="name">sale.order.tree.matrix.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="ops_branch_id" optional="show"/>
+                <field name="ops_business_unit_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- ISS-002: The Cost Shield - Protected Cost/Margin Fields on Sale Order Lines -->
+    <!-- Security: Only Administrators and OPS Managers can view cost and margin data -->
+    <record id="view_order_line_tree_cost_shield" model="ir.ui.view">
+        <field name="name">sale.order.line.tree.cost.shield</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="arch" type="xml">
+            <!-- Add protected cost/margin columns - visible only to Admin/OPS Manager -->
+            <xpath expr="//field[@name='price_subtotal']" position="after">
+                <field name="purchase_price"
+                       string="Cost"
+                       optional="hide"
+                       groups="base.group_system,ops_matrix_core.group_ops_manager"/>
+                <field name="margin"
+                       string="Margin"
+                       optional="hide"
+                       groups="base.group_system,ops_matrix_core.group_ops_manager"/>
+                <field name="margin_percent"
+                       string="Margin %"
+                       widget="percentage"
+                       optional="hide"
+                       groups="base.group_system,ops_matrix_core.group_ops_manager"/>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

@@ -1,0 +1,17 @@
+/* OPS Matrix Accounting module styles */
+:root {
+  --ops-accounting-accent: #2f6fad;
+}
+
+.ops-accounting-section h1,
+.ops-accounting-section h2,
+.ops-accounting-section h3 {
+  color: var(--ops-accounting-accent);
+}
+
+.ops-accounting-highlight {
+  background-color: rgba(47, 111, 173, 0.08);
+  border-left: 3px solid var(--ops-accounting-accent);
+  padding: 8px 12px;
+  border-radius: 4px;
+}

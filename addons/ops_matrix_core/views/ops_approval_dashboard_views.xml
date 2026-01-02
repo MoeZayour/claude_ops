@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ops_approval_dashboard_tree" model="ir.ui.view">
+        <field name="name">ops.approval.dashboard.tree</field>
+        <field name="model">ops.approval.dashboard</field>
+        <field name="arch" type="xml">
+            <list string="Approvals Dashboard" create="false" edit="false" delete="false">
+                <field name="sla_status" widget="badge" decoration-danger="sla_status == 'violated'" decoration-warning="sla_status == 'critical'" decoration-success="sla_status == 'running'"/>
+                <field name="name"/>
+                <field name="requester_id"/>
+                <field name="date_request"/>
+                <field name="time_to_breach" widget="float_time"/>
+                <field name="required_persona_id"/>
+                <button name="action_view_source" string="View Source" type="object" icon="fa-external-link"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_approval_dashboard_kanban" model="ir.ui.view">
+        <field name="name">ops.approval.dashboard.kanban</field>
+        <field name="model">ops.approval.dashboard</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="sla_status" create="false">
+                <field name="sla_status"/>
+                <field name="name"/>
+                <field name="requester_id"/>
+                <field name="time_to_breach"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <strong><field name="name"/></strong>
+                                <div>Requester: <field name="requester_id"/></div>
+                                <div>Time Left: <field name="time_to_breach" widget="float_time"/></div>
+                                <div class="mt8">
+                                    <button name="action_view_source" type="object" class="btn btn-primary btn-sm">Open</button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_ops_approval_dashboard_search" model="ir.ui.view">
+        <field name="name">ops.approval.dashboard.search</field>
+        <field name="model">ops.approval.dashboard</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="requester_id"/>
+                <field name="required_persona_id"/>
+                <filter string="My Approvals" name="my_approvals" domain="[('required_persona_id.user_ids', 'in', uid)]"/>
+                <separator/>
+                <filter string="Violated" name="violated" domain="[('sla_status', '=', 'violated')]"/>
+                <filter string="Critical" name="critical" domain="[('sla_status', '=', 'critical')]"/>
+                <separator/>
+                <filter string="Group By" name="groupby"/>
+                <filter string="SLA Status" name="group_by_sla" context="{'group_by': 'sla_status'}" domain="[]"/>
+                <filter string="Required Persona" name="group_by_persona" context="{'group_by': 'required_persona_id'}" domain="[]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ops_approval_dashboard" model="ir.actions.act_window">
+        <field name="name">Approvals Dashboard</field>
+        <field name="res_model">ops.approval.dashboard</field>
+        <field name="view_mode">list,kanban</field>
+        <field name="search_view_id" ref="view_ops_approval_dashboard_search"/>
+        <field name="context">{'search_default_my_approvals': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No pending approvals found.
+            </p>
+        </field>
+    </record>
+
+    
+</odoo>

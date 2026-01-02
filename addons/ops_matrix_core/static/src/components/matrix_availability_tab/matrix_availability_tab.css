@@ -1,0 +1,334 @@
+/* 
+ * Matrix Availability Tab Component Styles
+ * 
+ * Styling for the OWL-based availability report component
+ */
+
+.matrix-availability-container {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    margin-top: 1rem;
+}
+
+/* Header Styling */
+.matrix-availability-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.matrix-availability-title {
+    margin: 0;
+    color: #1f4788;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.matrix-availability-title i {
+    margin-right: 0.5rem;
+    color: #0d6efd;
+}
+
+.matrix-availability-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.matrix-availability-actions .btn {
+    white-space: nowrap;
+    font-size: 0.875rem;
+}
+
+.matrix-availability-actions .btn i {
+    margin-right: 0.25rem;
+}
+
+/* Context Information */
+.matrix-availability-context {
+    margin-bottom: 1rem;
+}
+
+.matrix-availability-context .alert {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    border-left: 4px solid #0d6efd;
+}
+
+/* Loading State */
+.matrix-availability-loading {
+    text-align: center;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 0.25rem;
+    border: 1px solid #dee2e6;
+}
+
+.matrix-availability-loading i {
+    color: #6c757d;
+}
+
+/* Error State */
+.matrix-availability-error {
+    margin-bottom: 1rem;
+}
+
+.matrix-availability-error .alert {
+    margin: 0;
+}
+
+/* Empty State */
+.matrix-availability-empty {
+    text-align: center;
+    padding: 1rem;
+}
+
+.matrix-availability-empty .alert {
+    margin: 0;
+}
+
+/* Table Styling */
+.matrix-availability-table {
+    background-color: white;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.matrix-availability-table .table {
+    margin-bottom: 0;
+}
+
+.matrix-availability-table th {
+    background-color: #1f4788;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    padding: 0.75rem;
+    border: none;
+}
+
+.matrix-availability-table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    border-color: #e9ecef;
+}
+
+.matrix-availability-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Column Sizing */
+.col-sku {
+    width: 12%;
+}
+
+.col-product {
+    width: 35%;
+}
+
+.col-numeric {
+    width: 13%;
+}
+
+.col-status {
+    width: 12%;
+}
+
+/* SKU Code Styling */
+.matrix-availability-table code {
+    background-color: #f1f3f5;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    color: #495057;
+    font-size: 0.85rem;
+}
+
+/* Numeric Column Alignment */
+.matrix-availability-table .col-numeric {
+    font-weight: 500;
+    color: #212529;
+}
+
+/* Status Badges */
+.matrix-availability-table .badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.matrix-availability-table .badge-success {
+    background-color: #198754;
+    color: white;
+}
+
+.matrix-availability-table .badge-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.matrix-availability-table .badge-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.matrix-availability-table .badge i {
+    margin-right: 0.25rem;
+    font-size: 1rem;
+}
+
+/* Lock Icon for Restricted Access */
+.matrix-availability-table .fa-lock {
+    font-size: 0.8rem;
+    cursor: help;
+}
+
+/* Text Styling for Restricted Values */
+.matrix-availability-table .text-danger {
+    font-weight: 600;
+}
+
+.matrix-availability-table .text-secondary {
+    color: #6c757d !important;
+    font-style: italic;
+}
+
+/* Footer Styling */
+.matrix-availability-footer {
+    padding: 0.75rem;
+    background-color: #f1f3f5;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+    border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.matrix-availability-footer small {
+    display: block;
+}
+
+.matrix-availability-footer strong {
+    color: #212529;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .matrix-availability-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .matrix-availability-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .matrix-availability-table {
+        font-size: 0.875rem;
+    }
+
+    .matrix-availability-table th,
+    .matrix-availability-table td {
+        padding: 0.5rem;
+    }
+
+    .col-product {
+        width: 40%;
+    }
+
+    .col-sku {
+        width: 10%;
+    }
+
+    .col-numeric {
+        width: 12%;
+    }
+
+    .col-status {
+        width: 15%;
+    }
+
+    .matrix-availability-table .badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .matrix-availability-container {
+        padding: 0.75rem;
+    }
+
+    .matrix-availability-header {
+        margin-bottom: 1rem;
+    }
+
+    .matrix-availability-title {
+        font-size: 1rem;
+    }
+
+    .matrix-availability-actions {
+        width: 100%;
+    }
+
+    .matrix-availability-actions .btn {
+        flex: 1;
+        min-width: 0;
+        padding: 0.35rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .matrix-availability-actions .btn i {
+        display: block;
+        margin-bottom: 0.1rem;
+    }
+
+    .matrix-availability-actions .btn span {
+        display: none;
+    }
+
+    .matrix-availability-table {
+        font-size: 0.75rem;
+        overflow-x: auto;
+    }
+
+    .matrix-availability-table th,
+    .matrix-availability-table td {
+        padding: 0.35rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .matrix-availability-header,
+    .matrix-availability-actions {
+        display: none;
+    }
+
+    .matrix-availability-container {
+        background-color: white;
+        padding: 0;
+    }
+
+    .matrix-availability-table {
+        box-shadow: none;
+        page-break-inside: avoid;
+    }
+
+    .matrix-availability-table th {
+        background-color: #e9ecef !important;
+        color: black !important;
+        print-color-adjust: exact;
+    }
+
+    .matrix-availability-table .badge {
+        border: 1px solid #212529;
+    }
+}

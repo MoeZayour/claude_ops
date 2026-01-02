@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================= -->
+    <!-- APPROVAL REQUEST VIEWS - ODOO 19 STANDARD -->
+    <!-- ========================================= -->
+
+    <!-- Approval Request Form View with Standard Card Layout -->
+    <record id="view_ops_approval_request_form" model="ir.ui.view">
+        <field name="name">ops.approval.request.form</field>
+        <field name="model">ops.approval.request</field>
+        <field name="arch" type="xml">
+            <form string="Approval Request">
+                <header>
+                    <button name="action_approve" 
+                            string="Approve" 
+                            type="object" 
+                            class="oe_highlight" 
+                            invisible="state != 'pending'"/>
+                    <button name="action_reject" 
+                            string="Reject" 
+                            type="object" 
+                            invisible="state != 'pending'"/>
+                    <button name="action_cancel" 
+                            string="Cancel" 
+                            type="object" 
+                            invisible="state != 'pending'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,approved,rejected"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_source_record" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-external-link"
+                                invisible="not record_ref">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">View Source</span>
+                            </div>
+                        </button>
+                        <button name="action_view_rule" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-gavel"
+                                invisible="not rule_id">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">View Rule</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <div class="text-muted">
+                            <field name="res_name" readonly="1"/>
+                        </div>
+                    </div>
+                    
+                    <group>
+                        <group string="Request Information">
+                            <field name="rule_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="requested_by" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="requested_date" readonly="1"/>
+                            <field name="priority"/>
+                        </group>
+                        <group string="Approval Information">
+                            <field name="approved_by" readonly="1" invisible="not approved_by" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="approved_date" readonly="1" invisible="not approved_date"/>
+                            <field name="violation_type" invisible="not is_governance_violation"/>
+                            <field name="violation_severity" invisible="not is_governance_violation"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Matrix Dimensions" invisible="not is_governance_violation">
+                            <field name="ops_company_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="ops_branch_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="ops_business_unit_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="matrix_summary" readonly="1"/>
+                        </group>
+                        <group string="Violation Details" invisible="not is_governance_violation">
+                            <field name="discount_percent" readonly="1" invisible="violation_type != 'discount'"/>
+                            <field name="margin_percent" readonly="1" invisible="violation_type != 'margin'"/>
+                            <field name="price_variance_percent" readonly="1" invisible="violation_type != 'price'"/>
+                            <field name="allowed_limit" readonly="1" invisible="not allowed_limit"/>
+                            <field name="actual_value" readonly="1" invisible="not actual_value"/>
+                            <field name="violation_summary" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <field name="approver_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Request Details" name="request_details">
+                            <group>
+                                <field name="notes" readonly="1" nolabel="1" placeholder="Request notes..."/>
+                            </group>
+                        </page>
+                        
+                        <page string="Response" name="response">
+                            <group>
+                                <field name="response_notes" placeholder="Provide approval/rejection reason..." nolabel="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Technical Details" name="technical_details">
+                            <group>
+                                <group string="Record Reference">
+                                    <field name="model_name" readonly="1"/>
+                                    <field name="res_id" readonly="1"/>
+                                    <field name="record_ref" readonly="1"/>
+                                </group>
+                                <group string="Workflow">
+                                    <field name="workflow_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="is_governance_violation" readonly="1"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Compatibility">
+                                <group>
+                                    <field name="branch_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                                </group>
+                                <group>
+                                    <field name="business_unit_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Approval Request List View -->
+    <record id="view_ops_approval_request_tree" model="ir.ui.view">
+        <field name="name">ops.approval.request.list</field>
+        <field name="model">ops.approval.request</field>
+        <field name="arch" type="xml">
+            <list string="Approval Requests" 
+                  decoration-info="state=='pending'" 
+                  decoration-success="state=='approved'" 
+                  decoration-danger="state=='rejected'">
+                <field name="name"/>
+                <field name="rule_id"/>
+                <field name="res_name"/>
+                <field name="requested_by"/>
+                <field name="requested_date"/>
+                <field name="priority" optional="show"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state=='pending'" 
+                       decoration-success="state=='approved'" 
+                       decoration-danger="state=='rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Approval Request Search View -->
+    <record id="view_ops_approval_request_search" model="ir.ui.view">
+        <field name="name">ops.approval.request.search</field>
+        <field name="model">ops.approval.request</field>
+        <field name="arch" type="xml">
+            <search string="Search Approval Requests">
+                <field name="name"/>
+                <field name="rule_id"/>
+                <field name="requested_by"/>
+                <field name="model_name"/>
+                <separator/>
+                <filter string="Pending" name="pending" domain="[('state', '=', 'pending')]"/>
+                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Rejected" name="rejected" domain="[('state', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="My Requests" name="my_requests" domain="[('requested_by', '=', uid)]"/>
+                <filter string="I Can Approve" name="i_can_approve" domain="[('approver_ids', 'in', uid)]"/>
+                <separator/>
+                <filter string="Governance Violations" name="governance" domain="[('is_governance_violation', '=', True)]"/>
+                <separator/>
+                <filter string="High Priority" name="high_priority" domain="[('priority', 'in', ['high', 'urgent'])]"/>
+                <group>
+                    <filter name="group_by_rule" string="Rule" context="{'group_by': 'rule_id'}"/>
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_requester" string="Requested By" context="{'group_by': 'requested_by'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Approval Request Action -->
+    <record id="action_ops_approval_request" model="ir.actions.act_window">
+        <field name="name">Approval Requests</field>
+        <field name="res_model">ops.approval.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_pending': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No approval requests yet
+            </p>
+            <p>
+                Approval requests are automatically created when governance rules are triggered.
+                You can approve or reject them here.
+            </p>
+        </field>
+    </record>
+
+    
+
+</odoo>

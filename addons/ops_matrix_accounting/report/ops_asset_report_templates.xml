@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+            id="action_report_asset_register"
+            model="ops.asset.register.report"
+            string="Asset Register"
+            report_type="qweb-pdf"
+            name="ops_matrix_accounting.report_asset_register_template"
+            file="ops_matrix_accounting.report_asset_register_template"
+            print_report_name="'Asset Register - %s' % (object.date_to)"
+        />
+
+        <template id="report_asset_register_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2>Asset Register Report</h2>
+                            <p>
+                                <strong>Date From:</strong> <span t-field="doc.date_from"/><br/>
+                                <strong>Date To:</strong> <span t-field="doc.date_to"/><br/>
+                            </p>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Asset</th>
+                                        <th>Category</th>
+                                        <th>Purchase Date</th>
+                                        <th>Purchase Value</th>
+                                        <th>Depreciation Start</th>
+                                        <th>Depreciation End</th>
+                                        <th>Status</th>
+                                        <th class="text-right">Book Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.get_report_data()['assets']" t-as="asset">
+                                        <tr>
+                                            <td><span t-esc="asset['name']"/></td>
+                                            <td><span t-esc="asset['category']"/></td>
+                                            <td><span t-esc="asset['purchase_date']"/></td>
+                                            <td><span t-esc="asset['purchase_value']" t-options='{"widget": "monetary", "display_currency": user.company_id.currency_id}'/></td>
+                                            <td><span t-esc="asset['depreciation_start_date']"/></td>
+                                            <td><span t-esc="asset['depreciation_end_date']"/></td>
+                                            <td><span t-esc="asset['status']"/></td>
+                                            <td class="text-right"><span t-esc="asset['book_value']" t-options='{"widget": "monetary", "display_currency": user.company_id.currency_id}'/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

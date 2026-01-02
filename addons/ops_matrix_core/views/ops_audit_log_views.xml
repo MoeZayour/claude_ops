@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- ============================================================ -->
+        <!-- AUDIT LOG TREE VIEW -->
+        <!-- ============================================================ -->
+        
+        <record id="view_ops_audit_log_tree" model="ir.ui.view">
+            <field name="name">ops.audit.log.tree</field>
+            <field name="model">ops.audit.log</field>
+            <field name="arch" type="xml">
+                <list string="API Audit Logs"
+                      create="false"
+                      edit="false"
+                      delete="false"
+                      decoration-success="success == True"
+                      decoration-danger="success == False"
+                      default_order="timestamp desc">
+                    <field name="timestamp"/>
+                    <field name="endpoint"/>
+                    <field name="http_method"/>
+                    <field name="api_key_id"/>
+                    <field name="persona_id"/>
+                    <field name="ip_address"/>
+                    <field name="status_code"/>
+                    <field name="response_time" widget="float_time"/>
+                    <field name="success" invisible="1"/>
+                    <field name="error_message"/>
+                </list>
+            </field>
+        </record>
+        
+        <!-- ============================================================ -->
+        <!-- AUDIT LOG FORM VIEW -->
+        <!-- ============================================================ -->
+        
+        <record id="view_ops_audit_log_form" model="ir.ui.view">
+            <field name="name">ops.audit.log.form</field>
+            <field name="model">ops.audit.log</field>
+            <field name="arch" type="xml">
+                <form string="API Audit Log" create="false" edit="false" delete="false">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_api_key" 
+                                    type="object" 
+                                    class="oe_stat_button" 
+                                    icon="fa-key"
+                                    invisible="not api_key_id">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_text">View API Key</span>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <widget name="web_ribbon" 
+                                title="Failed" 
+                                bg_color="bg-danger" 
+                                invisible="success"/>
+                        <widget name="web_ribbon" 
+                                title="Success" 
+                                bg_color="bg-success" 
+                                invisible="not success"/>
+                        
+                        <group>
+                            <group string="Request Information">
+                                <field name="timestamp" readonly="1"/>
+                                <field name="endpoint" readonly="1"/>
+                                <field name="http_method" readonly="1"/>
+                                <field name="date" readonly="1"/>
+                            </group>
+                            <group string="Authentication">
+                                <field name="api_key_id" readonly="1"/>
+                                <field name="persona_id" readonly="1"/>
+                                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <group string="Client Information">
+                                <field name="ip_address" readonly="1"/>
+                                <field name="user_agent" readonly="1" widget="text"/>
+                            </group>
+                            <group string="Response Information">
+                                <field name="status_code" readonly="1"/>
+                                <field name="success" readonly="1"/>
+                                <field name="response_time" readonly="1" widget="float_time"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Error Details" invisible="not error_message">
+                            <field name="error_message" readonly="1" nolabel="1" widget="text"/>
+                        </group>
+                        
+                        <group string="Request Parameters" invisible="not request_params">
+                            <field name="request_params" readonly="1" nolabel="1" widget="text"/>
+                        </group>
+                        
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <!-- ============================================================ -->
+        <!-- AUDIT LOG SEARCH VIEW -->
+        <!-- ============================================================ -->
+        
+        <record id="view_ops_audit_log_search" model="ir.ui.view">
+            <field name="name">ops.audit.log.search</field>
+            <field name="model">ops.audit.log</field>
+            <field name="arch" type="xml">
+                <search string="Search API Audit Logs">
+                    <field name="endpoint"/>
+                    <field name="api_key_id"/>
+                    <field name="persona_id"/>
+                    <field name="ip_address"/>
+                    <field name="http_method"/>
+                    
+                    <filter string="Success" 
+                            name="filter_success" 
+                            domain="[('success', '=', True)]"/>
+                    <filter string="Failed" 
+                            name="filter_failed" 
+                            domain="[('success', '=', False)]"/>
+                    
+                    <separator/>
+                    
+                    <filter string="Today" 
+                            name="filter_today" 
+                            domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="Last 7 Days" 
+                            name="filter_week" 
+                            domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Last 30 Days" 
+                            name="filter_month" 
+                            domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                    
+                    <separator/>
+                    
+                    <filter string="GET Requests" 
+                            name="filter_get" 
+                            domain="[('http_method', '=', 'GET')]"/>
+                    <filter string="POST Requests" 
+                            name="filter_post" 
+                            domain="[('http_method', '=', 'POST')]"/>
+                    
+                    <separator/>
+                    
+                    <filter string="Authentication Errors (401)" 
+                            name="filter_auth_error" 
+                            domain="[('status_code', '=', 401)]"/>
+                    <filter string="Server Errors (5xx)" 
+                            name="filter_server_error" 
+                            domain="[('status_code', '&gt;=', 500)]"/>
+                    
+                    <separator/>
+                    
+                    <filter string="Slow Requests (&gt;5s)" 
+                            name="filter_slow" 
+                            domain="[('response_time', '&gt;', 5.0)]"/>
+                    
+                    <group>
+                        <filter string="API Key" name="group_api_key" context="{'group_by': 'api_key_id'}"/>
+                        <filter string="Persona" name="group_persona" context="{'group_by': 'persona_id'}"/>
+                        <filter string="Endpoint" name="group_endpoint" context="{'group_by': 'endpoint'}"/>
+                        <filter string="HTTP Method" name="group_method" context="{'group_by': 'http_method'}"/>
+                        <filter string="Status Code" name="group_status" context="{'group_by': 'status_code'}"/>
+                        <filter string="Success/Failure" name="group_success" context="{'group_by': 'success'}"/>
+                        <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
+                        <filter string="IP Address" name="group_ip" context="{'group_by': 'ip_address'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- ============================================================ -->
+        <!-- AUDIT LOG PIVOT VIEW -->
+        <!-- ============================================================ -->
+        
+        <record id="view_ops_audit_log_pivot" model="ir.ui.view">
+            <field name="name">ops.audit.log.pivot</field>
+            <field name="model">ops.audit.log</field>
+            <field name="arch" type="xml">
+                <pivot string="API Usage Analytics">
+                    <field name="date" type="row"/>
+                    <field name="endpoint" type="row"/>
+                    <field name="status_code" type="col"/>
+                    <field name="response_time" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- ============================================================ -->
+        <!-- AUDIT LOG GRAPH VIEW -->
+        <!-- ============================================================ -->
+        
+        <record id="view_ops_audit_log_graph" model="ir.ui.view">
+            <field name="name">ops.audit.log.graph</field>
+            <field name="model">ops.audit.log</field>
+            <field name="arch" type="xml">
+                <graph string="API Usage Trends" type="line">
+                    <field name="date" interval="day"/>
+                    <field name="status_code" type="measure"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- ============================================================ -->
+        <!-- AUDIT LOG ACTION -->
+        <!-- ============================================================ -->
+        
+        <record id="action_ops_audit_log" model="ir.actions.act_window">
+            <field name="name">API Audit Logs</field>
+            <field name="res_model">ops.audit.log</field>
+            <field name="view_mode">tree,form,pivot,graph</field>
+            <field name="context">{'search_default_filter_week': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No API audit logs yet
+                </p>
+                <p>
+                    All API requests are automatically logged here for security auditing and debugging.
+                    Logs include endpoint, authentication details, response status, and performance metrics.
+                </p>
+            </field>
+        </record>
+        
+        <!-- ============================================================ -->
+        <!-- API USAGE ANALYTICS ACTION -->
+        <!-- ============================================================ -->
+        
+        <record id="action_ops_api_analytics" model="ir.actions.act_window">
+            <field name="name">API Usage Analytics</field>
+            <field name="res_model">ops.audit.log</field>
+            <field name="view_mode">pivot,graph,tree</field>
+            <field name="context">{'search_default_filter_month': 1, 'search_default_group_endpoint': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No API usage data yet
+                </p>
+                <p>
+                    Analyze API usage patterns, performance metrics, and error rates across different endpoints and time periods.
+                </p>
+            </field>
+        </record>
+        
+        
+        
+    </data>
+</odoo>

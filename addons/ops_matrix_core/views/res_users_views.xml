@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit User Form View to Add Matrix Access -->
+    <record id="view_users_form_ops_matrix" model="ir.ui.view">
+        <field name="name">res.users.form.ops.matrix</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- EMERGENCY FIX: Single Consolidated OPS Matrix Access Tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="OPS Matrix Access" name="ops_matrix_access" groups="base.group_user">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Matrix Access Control:</strong>
+                        Defines which branches and business units this user can access.
+                        <br/><strong>Required fields:</strong> Primary Branch, at least one Business Unit, and Persona must be set before saving.
+                    </div>
+                    
+                    <field name="matrix_access_summary" widget="text" readonly="1"/>
+                    
+                    <group>
+                        <group string="Required Fields">
+                            <field name="persona_id" string="OPS Persona"
+                                   groups="base.group_system"
+                                   options="{'no_create': True}"
+                                   help="User's organizational role (REQUIRED for non-admin users - Set this first, it will auto-populate Primary Branch)"/>
+                            <field name="primary_branch_id" string="Primary Branch"
+                                   groups="base.group_system"
+                                   options="{'no_create': True}"
+                                   help="Main branch this user belongs to (Auto-populated when Persona is selected, optional for administrators)"/>
+                        </group>
+                        <group string="Default Selections (Optional)">
+                            <field name="ops_default_branch_id" string="Default Branch for Transactions"
+                                   groups="base.group_system"
+                                   options="{'no_create': True}"
+                                   help="Default branch for new transactions (optional)"/>
+                            <field name="ops_default_business_unit_id" string="Default Business Unit for Transactions"
+                                   groups="base.group_system"
+                                   options="{'no_create': True}"
+                                   help="Default business unit for new transactions (optional)"/>
+                        </group>
+                        
+                        <group string="Status &amp; Permissions">
+                            <field name="is_cross_branch_bu_leader" readonly="1"/>
+                            <field name="is_matrix_administrator" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Allowed Access (REQUIRED)">
+                        <group string="Branches">
+                            <field name="ops_allowed_branch_ids"
+                                   string="Allowed Branches"
+                                   widget="many2many_tags"
+                                   groups="base.group_system"
+                                   options="{'no_create': True, 'color_field': 'color'}"
+                                   help="All branches this user can access"/>
+                            <field name="allowed_branch_count" readonly="1"/>
+                        </group>
+                        
+                        <group string="Business Units">
+                            <field name="ops_allowed_business_unit_ids"
+                                   string="Allowed Business Units"
+                                   widget="many2many_tags"
+                                   groups="base.group_system"
+                                   options="{'no_create': True}"
+                                   help="All business units this user can access (REQUIRED for non-admin users - must select at least one)"/>
+                            <field name="allowed_bu_count" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Persona Management" groups="base.group_system">
+                        <group>
+                            <field name="persona_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="delegated_persona_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Hide all legacy fields (marked with Legacy in field definition) -->
+                    <group string="Compatibility Fields" invisible="1">
+                        <field name="branch_id" invisible="1" string="Branch"/>
+                        <field name="allowed_branch_ids" invisible="1" string="Allowed Branches"/>
+                        <field name="business_unit_ids" invisible="1" string="Business Units"/>
+                        <field name="allowed_business_unit_ids" invisible="1" string="Allowed Business Units"/>
+                        <field name="default_branch_id" invisible="1" string="Default Branch (Alias)"/>
+                        <field name="default_business_unit_id" invisible="1" string="Default BU (Alias)"/>
+                    </group>
+                    
+                    <group groups="base.group_system">
+                        <button name="action_reset_matrix_access"
+                                string="Reset to Company Defaults"
+                                type="object"
+                                class="btn-secondary"
+                                icon="fa-refresh"
+                                confirm="Reset matrix access to all branches and BUs in user's companies?"/>
+                    </group>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+    
+    <!-- Inherit User Tree View to Show Matrix Access Summary -->
+    <record id="view_users_tree_ops_matrix" model="ir.ui.view">
+        <field name="name">res.users.tree.ops.matrix</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='login']" position="after">
+                <field name="matrix_access_summary" string="Matrix Access" optional="show"/>
+                <field name="allowed_branch_count" string="Branches" optional="hide"/>
+                <field name="allowed_bu_count" string="BUs" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Add Search Filters for Matrix Access -->
+    <record id="view_users_search_ops_matrix" model="ir.ui.view">
+        <field name="name">res.users.search.ops.matrix</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter string="Cross-Branch Leaders" name="cross_branch_leaders" 
+                        domain="[('is_cross_branch_bu_leader', '=', True)]"/>
+                <filter string="Matrix Administrators" name="matrix_administrators" 
+                        domain="[('is_matrix_administrator', '=', True)]"/>
+                <separator/>
+                <group>
+                    <filter string="Default Branch" name="group_by_default_branch" 
+                            context="{'group_by': 'ops_default_branch_id'}"/>
+                    <filter string="Default Business Unit" name="group_by_default_bu" 
+                            context="{'group_by': 'ops_default_business_unit_id'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

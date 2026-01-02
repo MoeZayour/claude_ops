@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ops_asset_register_report_view_form" model="ir.ui.view">
+            <field name="name">ops.asset.register.report.form</field>
+            <field name="model">ops.asset.register.report</field>
+            <field name="arch" type="xml">
+                <form string="Asset Register Report">
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="asset_category_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="branch_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </group>
+                    <footer>
+                        <button name="action_print_report" string="Print PDF" type="object" class="btn-primary" data-hotkey="q"/>
+                        <button name="action_export_xlsx" string="Export XLSX" type="object" class="btn-secondary" data-hotkey="e"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_ops_asset_register_report" model="ir.actions.act_window">
+            <field name="name">Asset Register Report</field>
+            <field name="res_model">ops.asset.register.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

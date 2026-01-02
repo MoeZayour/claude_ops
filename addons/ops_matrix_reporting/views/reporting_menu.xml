@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ================================================================
+         OPS MATRIX REPORTING - ANALYTICS MENUS
+         
+         This module adds analytics menus to NATIVE Odoo apps.
+         It does NOT depend on ops_matrix_accounting.
+         Uses ops_matrix_core for settings integration.
+         ================================================================ -->
+
+    <!-- ==================== SETTINGS: TOOLS ==================== -->
+    <!-- Extends the core settings menu -->
+    <menuitem id="menu_ops_reporting_tools"
+              name="Reporting Tools"
+                             parent="ops_matrix_core.menu_ops_configuration"
+              sequence="60"/>
+
+
+
+    <!-- ==================== ACCOUNTING ANALYTICS ==================== -->
+    <!-- Only appears if account module is installed (via depends) -->
+    <menuitem id="menu_ops_accounting_analytics"
+              name="OPS Analytics"
+              parent="account.menu_finance_reports"
+              sequence="100"/>
+
+    <menuitem id="menu_ops_financial_analytics"
+              name="Financial Analytics"
+              parent="menu_ops_accounting_analytics"
+              action="action_ops_financial_analysis"
+              sequence="10"/>
+
+    <!-- ==================== SALES ANALYTICS ==================== -->
+    <!-- Only appears if sale module is installed -->
+    <menuitem id="menu_ops_sales_analytics_root"
+              name="OPS Analytics"
+              parent="sale.sale_menu_root"
+              sequence="90"
+              groups="sales_team.group_sale_salesman"/>
+
+    <menuitem id="menu_ops_sales_analytics"
+              name="Sales Analytics"
+              parent="menu_ops_sales_analytics_root"
+              action="action_ops_sales_analysis"
+              sequence="10"/>
+
+    <!-- ==================== INVENTORY ANALYTICS ==================== -->
+    <menuitem id="menu_ops_inventory_analytics_root"
+              name="OPS Analytics"
+              parent="stock.menu_stock_root"
+              sequence="90"/>
+
+    <menuitem id="menu_ops_inventory_analytics"
+              name="Inventory Analytics"
+              parent="menu_ops_inventory_analytics_root"
+              action="action_ops_inventory_analysis"
+              sequence="10"/>
+
+</odoo>

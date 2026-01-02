@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- =========================================== -->
+        <!-- BU LEADER DASHBOARD VIEWS                   -->
+        <!-- =========================================== -->
+        
+        <!-- 3.1 BU Performance Across Branches Pivot -->
+        <record id="view_ops_bu_leader_pivot" model="ir.ui.view">
+            <field name="name">ops.bu.leader.dashboard.pivot</field>
+            <field name="model">account.move.line</field>
+            <field name="arch" type="xml">
+                <pivot string="Business Unit Performance Across Branches" sample="1" disable_linking="false">
+                    <field name="ops_branch_id" type="row" string="Branch"/>
+                    <field name="account_id" type="row" string="Account"/>
+                    <field name="date" type="col" interval="month" string="Month"/>
+                    <field name="balance" type="measure" string="Balance"/>
+                    <field name="debit" type="measure" string="Expense"/>
+                    <field name="credit" type="measure" string="Income"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- 3.2 BU Revenue by Branch Graph -->
+        <record id="view_ops_bu_revenue_by_branch_graph" model="ir.ui.view">
+            <field name="name">ops.bu.dashboard.revenue.by.branch.graph</field>
+            <field name="model">account.move.line</field>
+            <field name="arch" type="xml">
+                <graph string="BU Revenue by Branch" type="bar" sample="1">
+                    <field name="ops_branch_id" type="col"/>
+                    <field name="date" type="row" interval="month"/>
+                    <field name="credit" type="measure" operator="+" string="Revenue"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- 3.3 BU Profitability Trend -->
+        <record id="view_ops_bu_profitability_trend_graph" model="ir.ui.view">
+            <field name="name">ops.bu.dashboard.profitability.trend.graph</field>
+            <field name="model">account.move.line</field>
+            <field name="arch" type="xml">
+                <graph string="BU Profitability Trend" type="line" sample="1">
+                    <field name="date" type="col" interval="month"/>
+                    <field name="ops_branch_id" type="row"/>
+                    <field name="balance" type="measure" operator="+" string="Profit"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- 3.4 BU Sales Performance Pivot -->
+        <record id="view_ops_bu_sales_performance_pivot" model="ir.ui.view">
+            <field name="name">ops.bu.dashboard.sales.performance.pivot</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <pivot string="BU Sales Performance" sample="1" disable_linking="false">
+                    <field name="ops_branch_id" type="row" string="Branch"/>
+                    <field name="partner_id" type="row" string="Customer"/>
+                    <field name="date_order" type="col" interval="month" string="Month"/>
+                    <field name="amount_total" type="measure" string="Total Sales"/>
+                    <field name="amount_untaxed" type="measure" string="Net Sales"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- 3.5 BU Leader Dashboard Action -->
+        <record id="action_ops_bu_leader_dashboard" model="ir.actions.act_window">
+            <field name="name">My Business Unit Dashboard</field>
+            <field name="res_model">account.move.line</field>
+            <field name="view_mode">pivot,graph</field>
+            <field name="view_id" ref="view_ops_bu_leader_pivot"/>
+            <field name="search_view_id" ref="account.view_account_move_line_filter"/>
+            <field name="domain">[('move_id.state', '=', 'posted')]</field>
+            <field name="context">{
+                'search_default_group_by_branch': 1,
+                'search_default_group_by_account': 1,
+                'search_default_current_year': 1,
+                'pivot_measures': ['balance', 'debit', 'credit'],
+                'graph_measures': ['balance', 'credit'],
+                'graph_mode': 'bar',
+                'pivot_row_groupby': ['ops_branch_id', 'account_id'],
+                'pivot_column_groupby': ['date:month']
+            }</field>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- BU LEADER QUICK ACTIONS                     -->
+        <!-- =========================================== -->
+        
+        <!-- Quick Action: BU Sales Dashboard -->
+        <record id="action_ops_bu_sales_dashboard" model="ir.actions.act_window">
+            <field name="name">My BU Sales Dashboard</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">pivot,graph,list,form</field>
+            <field name="view_id" ref="view_ops_bu_sales_performance_pivot"/>
+            <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
+            <field name="context">{
+                'search_default_current_quarter': 1,
+                'search_default_filter_my_sales': 1,
+                'group_by': ['ops_branch_id', 'partner_id']
+            }</field>
+        </record>
+        
+        <!-- Quick Action: BU Inventory Across Branches -->
+        <record id="action_ops_bu_inventory_across_branches" model="ir.actions.act_window">
+            <field name="name">BU Inventory Across Branches</field>
+            <field name="res_model">stock.quant</field>
+            <field name="view_mode">pivot,list,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{
+                'search_default_internal_loc': 1,
+                'search_default_productgroup_filter': 1
+            }</field>
+        </record>
+        
+        <!-- Quick Action: BU Performance Comparison -->
+        <record id="action_ops_bu_comparison" model="ir.actions.act_window">
+            <field name="name">BU Performance Comparison</field>
+            <field name="res_model">account.move.line</field>
+            <field name="view_mode">graph,pivot</field>
+            <field name="view_id" ref="view_ops_bu_revenue_by_branch_graph"/>
+            <field name="domain">[('move_id.state', '=', 'posted')]</field>
+            <field name="context">{
+                'search_default_last_6_months': 1,
+                'graph_mode': 'line',
+                'graph_measure': 'balance',
+                'graph_groupbys': ['date:month']
+            }</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Product Template Tree View - Add Business Unit Column -->
+    <!-- Note: Form view is defined in product_views.xml to avoid duplication -->
+    <record id="view_product_template_tree_ops_silo" model="ir.ui.view">
+        <field name="name">product.template.tree.ops.silo</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="business_unit_id" string="Business Unit" optional="show" />
+            </field>
+        </field>
+    </record>
+</odoo>

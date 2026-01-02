@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Excel Export Wizard Form -->
+    <record id="view_ops_excel_export_wizard_form" model="ir.ui.view">
+        <field name="name">ops.excel.export.wizard.form</field>
+        <field name="model">ops.excel.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export to Excel">
+                <sheet>
+                    <div class="oe_title" invisible="state == 'done'">
+                        <h1>
+                            <field name="report_type" widget="radio" options="{'horizontal': true}"/>
+                        </h1>
+                    </div>
+                    
+                    <group col="4" invisible="state == 'done'">
+                        <group colspan="2">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group colspan="2">
+                            <field name="branch_ids" widget="many2many_tags"/>
+                            <field name="business_unit_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    
+                    <group invisible="state != 'done'">
+                        <div class="alert alert-success" role="alert">
+                            <strong>Excel file generated successfully!</strong>
+                            <p>Click the download button below to save the file.</p>
+                        </div>
+                        <field name="filename" invisible="1"/>
+                        <field name="excel_file" filename="filename" invisible="1"/>
+                    </group>
+                    
+                    <field name="state" invisible="1"/>
+                </sheet>
+                <footer>
+                    <button name="action_generate_excel"
+                            string="Generate Excel"
+                            type="object"
+                            icon="fa-cog"
+                            class="btn-primary"
+                            invisible="state == 'done'"/>
+                    <button name="action_download"
+                            string="Download"
+                            type="object"
+                            icon="fa-download"
+                            class="btn-primary"
+                            invisible="state != 'done'"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" icon="fa-times"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Excel Export -->
+    <record id="action_ops_excel_export" model="ir.actions.act_window">
+        <field name="name">Export to Excel</field>
+        <field name="res_model">ops.excel.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_ops_sales_analysis"/>
+        <field name="binding_view_types">list</field>
+    </record>
+    
+    <!-- Menu item for Excel Export -->
+    <menuitem id="menu_ops_excel_export"
+              name="Export to Excel"
+              parent="ops_matrix_core.menu_ops_governance_root"
+              action="action_ops_excel_export"
+              sequence="130"
+              groups="base.group_user"/>
+</odoo>

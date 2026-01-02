@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View for ops.asset.depreciation -->
+    <record id="view_ops_asset_depreciation_list" model="ir.ui.view">
+        <field name="name">ops.asset.depreciation.list</field>
+        <field name="model">ops.asset.depreciation</field>
+        <field name="arch" type="xml">
+            <list string="Depreciation Lines" create="false">
+                <field name="depreciation_date"/>
+                <field name="asset_id"/>
+                <field name="amount"/>
+                <field name="move_id"/>
+                <field name="state"/>
+                <button name="action_post" type="object" string="Post" icon="fa-arrow-right" help="Post this depreciation line"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View for ops.asset.depreciation -->
+    <record id="view_ops_asset_depreciation_form" model="ir.ui.view">
+        <field name="name">ops.asset.depreciation.form</field>
+        <field name="model">ops.asset.depreciation</field>
+        <field name="arch" type="xml">
+            <form string="Depreciation Line" create="false">
+                <header>
+                     <button name="action_post" type="object" string="Post Entry" class="oe_highlight"/>
+                     <button name="action_view_move" type="object" string="View Journal Entry"/>
+                     <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="asset_id" readonly="1"/>
+                            <field name="depreciation_date" readonly="1"/>
+                            <field name="amount" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="move_id" readonly="1"/>
+                            <field name="branch_id"/>
+                            <field name="business_unit_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View for ops.asset.depreciation -->
+    <record id="view_ops_asset_depreciation_search" model="ir.ui.view">
+        <field name="name">ops.asset.depreciation.search</field>
+        <field name="model">ops.asset.depreciation</field>
+        <field name="arch" type="xml">
+            <search string="Search Depreciation Lines">
+                <field name="asset_id"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <separator/>
+                <filter name="group_by_asset" string="Asset" context="{'group_by': 'asset_id'}"/>
+                <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                <filter name="group_by_date" string="Date" context="{'group_by': 'depreciation_date'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for ops.asset.depreciation -->
+    <record id="action_ops_asset_depreciation" model="ir.actions.act_window">
+        <field name="name">Depreciation Lines</field>
+        <field name="res_model">ops.asset.depreciation</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ops_asset_depreciation_search"/>
+        <field name="context">{'search_default_draft': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No depreciation lines found. They are generated from assets.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_run_asset_depreciation" model="ir.cron">
+        <field name="name">Asset Depreciation: Post Monthly Entries</field>
+        <field name="model_id" ref="model_ops_asset_depreciation"/>
+        <field name="state">code</field>
+        <field name="code">model.search([('depreciation_date', '&lt;=', context_today()), ('state', '=', 'draft')]).action_post()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!--
+        Matrix Availability Tab Component Template
+        
+        Displays product availability information with stock level masking
+        based on user's business unit access.
+        
+        Features:
+        - Real-time availability data from server
+        - Intelligent stock masking (*** for restricted access)
+        - CSV export functionality
+        - PDF generation for printing
+        - Responsive design for mobile/desktop
+        - Loading states and error handling
+    -->
+    <t t-name="ops_matrix_core.MatrixAvailabilityTab">
+        <div class="matrix-availability-container">
+            <!-- Header with Title and Actions -->
+            <div class="matrix-availability-header">
+                <h3 class="matrix-availability-title">
+                    <i class="fa fa-boxes"/> Product Availability Matrix
+                </h3>
+                
+                <!-- Action Buttons -->
+                <div class="matrix-availability-actions">
+                    <button 
+                        class="btn btn-secondary btn-sm"
+                        t-on-click="refreshData"
+                        title="Refresh availability data">
+                        <i class="fa fa-sync"/> Refresh
+                    </button>
+                    <button 
+                        class="btn btn-info btn-sm"
+                        t-on-click="downloadAsCSV"
+                        disabled="isLoading"
+                        title="Export as CSV">
+                        <i class="fa fa-download"/> CSV
+                    </button>
+                    <button 
+                        class="btn btn-primary btn-sm"
+                        t-on-click="generatePDF"
+                        disabled="isLoading"
+                        title="Generate PDF report">
+                        <i class="fa fa-file-pdf"/> PDF
+                    </button>
+                </div>
+            </div>
+            
+            <!-- User Context Information -->
+            <div class="matrix-availability-context" t-if="userBranch or userBusinessUnit">
+                <div class="alert alert-info alert-sm">
+                    <strong>Viewing as:</strong>
+                    <t t-if="userBranch">
+                        Branch: <strong t-esc="userBranch"/>
+                    </t>
+                    <t t-if="userBusinessUnit">
+                        | Business Unit: <strong t-esc="userBusinessUnit"/>
+                    </t>
+                </div>
+            </div>
+            
+            <!-- Loading State -->
+            <div class="matrix-availability-loading" t-if="isLoading">
+                <div class="text-center p-4">
+                    <i class="fa fa-spinner fa-spin fa-2x text-muted"/>
+                    <p class="text-muted mt-2">Loading availability data...</p>
+                </div>
+            </div>
+            
+            <!-- Error State -->
+            <div class="matrix-availability-error" t-if="error and not isLoading">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error:</strong> <t t-esc="error"/>
+                    <button 
+                        type="button" 
+                        class="btn-close" 
+                        t-on-click="() => state.error = null"
+                        aria-label="Close"/>
+                </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div class="matrix-availability-empty" t-if="not isLoading and availabilityData.length === 0 and not error">
+                <div class="alert alert-info">
+                    <i class="fa fa-info-circle"/> No products in this order.
+                </div>
+            </div>
+            
+            <!-- Availability Table -->
+            <div class="matrix-availability-table" t-if="not isLoading and availabilityData.length > 0">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="col-sku">SKU</th>
+                            <th class="col-product">Product Name</th>
+                            <th class="col-numeric text-end">Ordered</th>
+                            <th class="col-numeric text-end">Stock</th>
+                            <th class="col-numeric text-end">Available</th>
+                            <th class="col-status">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="availabilityData" t-as="item" t-key="item.sku">
+                            <!-- SKU Column -->
+                            <td class="col-sku">
+                                <code t-esc="item.sku or '-'"/>
+                            </td>
+                            
+                            <!-- Product Name Column -->
+                            <td class="col-product">
+                                <strong t-esc="item.product_name"/>
+                            </td>
+                            
+                            <!-- Ordered Quantity -->
+                            <td class="col-numeric text-end">
+                                <span t-esc="formatQuantity(item.ordered_qty)"/>
+                            </td>
+                            
+                            <!-- Stock On Hand (May be Masked) -->
+                            <td class="col-numeric text-end">
+                                <span 
+                                    t-esc="formatQuantity(item.stock_on_hand)"
+                                    t-att-class="{
+                                        'text-danger font-weight-bold': item.stock_on_hand === '***'
+                                    }">
+                                </span>
+                                <!-- Tooltip for masked stock -->
+                                <t t-if="item.stock_on_hand === '***'">
+                                    <i 
+                                        class="fa fa-lock text-warning ms-1" 
+                                        title="Stock level restricted - you do not have permission to view this business unit's inventory"/>
+                                </t>
+                            </td>
+                            
+                            <!-- Available Quantity (Effective Supply) -->
+                            <td class="col-numeric text-end">
+                                <span 
+                                    t-esc="formatQuantity(item.display_qty)"
+                                    t-att-class="{
+                                        'text-secondary': item.stock_on_hand === '***'
+                                    }">
+                                </span>
+                            </td>
+                            
+                            <!-- Availability Status Badge -->
+                            <td class="col-status">
+                                <span 
+                                    class="badge"
+                                    t-att-class="`badge-${getStatusClass(item)}`">
+                                    <i t-att-class="{
+                                        'fa fa-check-circle': not item.is_insufficient,
+                                        'fa fa-exclamation-circle': item.is_insufficient,
+                                        'fa fa-lock': item.stock_on_hand === '***'
+                                    }"/>
+                                    <span class="ms-1" t-esc="getStatusText(item)"/>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Summary Footer -->
+                <div class="matrix-availability-footer">
+                    <small class="text-muted">
+                        <em>
+                            Showing <strong t-esc="availabilityData.length"/> product(s).
+                            Stock levels marked with <i class="fa fa-lock"/> are restricted based on your permissions.
+                        </em>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

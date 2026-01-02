@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        OPS MATRIX DEMO DATA - REMOVED FOR PRODUCTION
+        =============================================
+        All demo data has been purged for clean production installs.
+        This file is kept for module structure compatibility.
+        
+        Demo data should NOT be created automatically.
+        Users create their own data via Setup Wizards.
+    -->
+    <data noupdate="1">
+        <!-- NO DEMO DATA - CLEAN INSTALL -->
+    </data>
+</odoo>

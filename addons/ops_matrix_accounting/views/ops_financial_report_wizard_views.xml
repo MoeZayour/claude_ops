@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Financial Report Wizard Form View -->
+    <record id="view_ops_financial_report_wizard_form" model="ir.ui.view">
+        <field name="name">ops.financial.report.wizard.form</field>
+        <field name="model">ops.financial.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Financial Report">
+                <sheet>
+                    <group col="4">
+                        <group colspan="2">
+                            <field name="report_type" widget="radio"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group colspan="2">
+                            <field name="branch_id"/>
+                            <field name="target_move" widget="radio"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="View On-Screen Analysis"
+                            name="action_view_data"
+                            type="object"
+                            icon="fa-bar-chart"
+                            class="btn-primary"/>
+                    <button string="Print PDF"
+                            name="action_print_pdf"
+                            type="object"
+                            icon="fa-file-pdf-o"
+                            class="btn-secondary"/>
+                    <button string="Export Excel"
+                            name="action_export_xlsx"
+                            type="object"
+                            icon="fa-file-excel-o"
+                            class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" icon="fa-times"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Financial Report Wizard Action -->
+    <record id="action_ops_financial_report_wizard" model="ir.actions.act_window">
+        <field name="name">Financial Reports</field>
+        <field name="res_model">ops.financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_ops_financial_report_wizard"
+              name="Financial Reports"
+              parent="menu_ops_accounting_reports"
+              action="action_ops_financial_report_wizard"
+              sequence="10"/>
+</odoo>

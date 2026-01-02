@@ -1,0 +1,40 @@
+<odoo>
+    <data>
+        <!-- Asset User can only see their own branch assets -->
+        <record id="ops_asset_user_rule" model="ir.rule">
+            <field name="name">Asset User Rule</field>
+            <field name="model_id" ref="model_ops_asset"/>
+            <field name="domain_force">[('company_id', '=', user.company_id.id)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+        <!-- Asset Manager can see all assets -->
+        <record id="ops_asset_manager_rule" model="ir.rule">
+            <field name="name">Asset Manager Rule</field>
+            <field name="model_id" ref="model_ops_asset"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        </record>
+
+        <!-- Multi-company rule for ops_asset -->
+        <record id="ops_asset_company_rule" model="ir.rule">
+            <field name="name">ops_asset multi-company</field>
+            <field name="model_id" ref="model_ops_asset"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <!-- Multi-company rule for ops_asset_category -->
+        <record id="ops_asset_category_company_rule" model="ir.rule">
+            <field name="name">ops_asset_category multi-company</field>
+            <field name="model_id" ref="model_ops_asset_category"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <!-- Multi-company rule for ops_asset_depreciation -->
+        <record id="ops_asset_depreciation_company_rule" model="ir.rule">
+            <field name="name">ops_asset_depreciation multi-company</field>
+            <field name="model_id" ref="model_ops_asset_depreciation"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

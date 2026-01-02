@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        OPS MATRIX FRAMEWORK - CLEAN DEMO DATA
+        =======================================
+        This file contains NO pre-configured demo data.
+        
+        Demo data should be created via:
+        1. Settings → OPS Matrix → Setup Wizard (for production-like data)
+        2. Settings → OPS Matrix → Load Demo Template (for testing)
+    -->
+    
+    <data>
+        <!-- No demo data - use Setup Wizard or Demo Template Loader -->
+    </data>
+</odoo>

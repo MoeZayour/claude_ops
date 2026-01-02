@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================= -->
+    <!-- GOVERNANCE RULE VIEWS - ODOO 19 STANDARD -->
+    <!-- ========================================= -->
+    
+    <!-- Governance Rule Form View with Standard Card Layout -->
+    <record id="view_ops_governance_rule_form" model="ir.ui.view">
+        <field name="name">ops.governance.rule.form</field>
+        <field name="model">ops.governance.rule</field>
+        <field name="arch" type="xml">
+            <form string="Governance Rule">
+                <header>
+                    <button name="action_check_compliance"
+                            string="Check Compliance"
+                            type="object"
+                            icon="fa-check-circle"
+                            class="btn-primary"/>
+                    <field name="active" widget="boolean_toggle" options='{"terminology": "archive"}'/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_ops_approval_request)d" 
+                                type="action" 
+                                class="oe_stat_button" 
+                                icon="fa-exclamation-triangle"
+                                context="{'search_default_rule_id': id}">
+                            <field name="violation_count" widget="statinfo" string="Violations"/>
+                        </button>
+                        <button name="%(action_ops_approval_request)d" 
+                                type="action"
+                                class="oe_stat_button" 
+                                icon="fa-hourglass-half"
+                                context="{'search_default_rule_id': id, 'search_default_pending': 1}">
+                            <field name="active_approval_count" widget="statinfo" string="Pending"/>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g., Sales Discount Policy"/>
+                        </h1>
+                        <div class="text-muted">
+                            <field name="code" readonly="1"/>
+                        </div>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="company_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="model_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="model_name" invisible="1"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="rule_type"/>
+                            <field name="trigger_event"/>
+                            <field name="action_type" widget="badge" decoration-warning="action_type == 'warning'" decoration-danger="action_type == 'block'" decoration-info="action_type == 'require_approval'"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <field name="error_message" string="User Message on Trigger" placeholder="Message shown to users when this rule is triggered"/>
+                    </group>
+                    
+                    <group>
+                        <field name="description" readonly="1"/>
+                    </group>
+                    
+                    <notebook>
+                        <!-- TAB 1: LOGIC & CONDITIONS -->
+                        <page string="Logic &amp; Conditions" name="logic">
+                            <group>
+                                <group string="Trigger Configuration">
+                                    <field name="trigger_event"/>
+                                    <field name="state_condition"
+                                           placeholder="state in ['draft', 'sent']"/>
+                                </group>
+                                <group string="Visual Domain Builder">
+                                    <field name="condition_logic"
+                                           widget="domain"
+                                           options="{'model': 'model_name', 'in_dialog': true}"/>
+                                </group>
+                            </group>
+                            <div class="alert alert-info" role="alert">
+                                <strong>Visual Domain Builder:</strong><br/>
+                                • Click "Add a filter" to build conditions visually<br/>
+                                • Select fields from the model (e.g., Amount Total, Partner, State)<br/>
+                                • Choose operators (=, !=, &gt;, &lt;, contains, etc.)<br/>
+                                • Enter values to compare against<br/>
+                                • Example result: [("amount_total", "&gt;", 10000)]<br/><br/>
+                                <strong>Examples:</strong><br/>
+                                • Purchase over $10,000: [("amount_total", "&gt;", 10000)]<br/>
+                                • Draft or Sent state: [("state", "in", ["draft", "sent"])]<br/>
+                                • US customers: [("partner_id.country_id.code", "=", "US")]
+                            </div>
+                        </page>
+                        
+                        <!-- TAB 2: MATRIX VALIDATION -->
+                        <page string="Matrix Validation" name="matrix_validation">
+                            <group>
+                                <group string="Matrix Requirements">
+                                    <field name="enforce_branch_bu"/>
+                                    <field name="branch_required"/>
+                                    <field name="bu_required"/>
+                                </group>
+                                <group string="Scope Restrictions">
+                                    <field name="allowed_branch_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                    <field name="allowed_business_unit_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                            <div class="alert alert-info" role="alert">
+                                <strong>Note:</strong> This rule will validate that transactions have valid Branch and Business Unit assignments.
+                                Use allowed branches/BUs to restrict to specific operational units. Leave empty to allow all.
+                            </div>
+                        </page>
+                        
+                        <!-- TAB 3: DISCOUNT CONTROL -->
+                        <page string="Discount Control" name="discount_limit" invisible="rule_type != 'discount_limit'">
+                            <group>
+                                <group string="Global Settings">
+                                    <field name="enforce_discount_limit"/>
+                                    <field name="global_discount_limit"/>
+                                    <field name="discount_validation_level"/>
+                                </group>
+                                <group string="Approval Configuration">
+                                    <field name="require_approval"/>
+                                    <field name="approval_workflow_id"
+                                           invisible="not require_approval"
+                                           options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="auto_create_approval"/>
+                                </group>
+                            </group>
+                            
+                            <separator string="Role-Based Discount Limits"/>
+                            <field name="discount_limit_ids" nolabel="1">
+                                <list string="Discount Limits" editable="bottom">
+                                    <field name="persona_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="user_group_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="max_discount_percent"/>
+                                    <field name="approval_required_above"/>
+                                    <field name="branch_ids" widget="many2many_tags" optional="show" options="{'no_create': True}"/>
+                                    <field name="business_unit_ids" widget="many2many_tags" optional="show" options="{'no_create': True}"/>
+                                    <field name="product_category_ids" widget="many2many_tags" optional="show" options="{'no_create': True}"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                        <!-- TAB 4: MARGIN PROTECTION -->
+                        <page string="Margin Protection" name="margin_protection" invisible="rule_type != 'margin_protection'">
+                            <group>
+                                <group string="Global Settings">
+                                    <field name="enforce_margin_protection"/>
+                                    <field name="global_minimum_margin"/>
+                                    <field name="warning_margin_threshold"/>
+                                </group>
+                                <group string="Approval Configuration">
+                                    <field name="require_approval"/>
+                                    <field name="approval_workflow_id"
+                                           invisible="not require_approval"
+                                           options="{'no_create': True, 'no_open': True}"/>
+                                </group>
+                            </group>
+                            
+                            <separator string="Category-Specific Margin Rules"/>
+                            <field name="margin_rule_ids" nolabel="1">
+                                <list string="Margin Rules" editable="bottom">
+                                    <field name="product_category_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="business_unit_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="branch_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="minimum_margin_percent"/>
+                                    <field name="warning_margin_percent" optional="show"/>
+                                    <field name="critical_margin_percent" optional="show"/>
+                                    <field name="allow_negative_margin" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                        <!-- TAB 5: PRICE OVERRIDE -->
+                        <page string="Price Override Control" name="price_override">
+                            <group>
+                                <group string="Global Settings">
+                                    <field name="enforce_price_override"/>
+                                    <field name="global_max_price_variance"/>
+                                </group>
+                                <group string="Approval Configuration">
+                                    <field name="require_approval"/>
+                                    <field name="approval_workflow_id"
+                                           invisible="not require_approval"
+                                           options="{'no_create': True, 'no_open': True}"/>
+                                </group>
+                            </group>
+                            
+                            <separator string="Role-Based Price Authority"/>
+                            <field name="price_authority_ids" nolabel="1">
+                                <list string="Price Authority" editable="bottom">
+                                    <field name="persona_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="user_group_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="max_price_variance_percent"/>
+                                    <field name="can_override_without_approval"/>
+                                    <field name="approval_required_above" optional="show"/>
+                                    <field name="branch_ids" widget="many2many_tags" optional="hide" options="{'no_create': True}"/>
+                                    <field name="business_unit_ids" widget="many2many_tags" optional="hide" options="{'no_create': True}"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                        <!-- TAB 6: NOTIFICATIONS -->
+                        <page string="Notifications" name="notification">
+                            <group>
+                                <group>
+                                    <field name="notify_users"/>
+                                    <field name="notify_template_id" options="{'no_create': True, 'no_open': True}"/>
+                                </group>
+                                <group>
+                                    <field name="notify_groups" widget="many2many_tags" options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Governance Rule List View -->
+    <record id="view_ops_governance_rule_tree" model="ir.ui.view">
+        <field name="name">ops.governance.rule.list</field>
+        <field name="model">ops.governance.rule</field>
+        <field name="arch" type="xml">
+            <list string="Governance Rules" default_order="sequence,name">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="model_id"/>
+                <field name="rule_type"/>
+                <field name="violation_count" optional="show"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Governance Rule Search View -->
+    <record id="view_ops_governance_rule_search" model="ir.ui.view">
+        <field name="name">ops.governance.rule.search</field>
+        <field name="model">ops.governance.rule</field>
+        <field name="arch" type="xml">
+            <search string="Search Governance Rules">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="model_id"/>
+                <field name="rule_type"/>
+                <field name="company_id"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Matrix Rules" name="matrix_rules" domain="[('rule_type', '=', 'matrix_validation')]"/>
+                <filter string="Discount Rules" name="discount_rules" domain="[('rule_type', '=', 'discount_limit')]"/>
+                <filter string="Margin Rules" name="margin_rules" domain="[('rule_type', '=', 'margin_protection')]"/>
+                <filter string="Price Rules" name="price_rules" domain="[('rule_type', '=', 'price_override')]"/>
+                <group>
+                    <filter name="group_by_company" string="Company" context="{'group_by': 'company_id'}"/>
+                    <filter name="group_by_model" string="Model" context="{'group_by': 'model_id'}"/>
+                    <filter name="group_by_type" string="Rule Type" context="{'group_by': 'rule_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Governance Rule Action -->
+    <record id="action_ops_governance_rule" model="ir.actions.act_window">
+        <field name="name">Governance Rules</field>
+        <field name="res_model">ops.governance.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_ops_governance_rule_tree"/>
+        <field name="search_view_id" ref="view_ops_governance_rule_search"/>
+        <field name="context">{'default_active': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No governance rules defined yet.
+            </p>
+            <p>
+                Governance rules enforce business policies across your organization.
+                Create rules to validate matrix dimensions, control discounts, protect margins, and manage pricing.
+            </p>
+        </field>
+    </record>
+    
+    
+</odoo>

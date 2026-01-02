@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_product_template_form_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add Business Unit field for Product Silo -->
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="business_unit_id" options="{'no_create': True}"/>
+            </xpath>
+            
+            <!-- The Cost Shield: Add computed fields for cost access control -->
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="can_user_access_cost_prices" invisible="1"/>
+                <field name="can_user_modify_product_master" invisible="1"/>
+            </xpath>
+            
+            <!-- The Cost Shield: Hide cost price from unauthorized users -->
+            <xpath expr="//field[@name='standard_price']" position="attributes">
+                <attribute name="invisible">not can_user_access_cost_prices</attribute>
+                <attribute name="readonly">not can_user_modify_product_master</attribute>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- The Cost Shield: Apply same security to Purchase views (if module is installed) -->
+    <record id="view_product_template_purchase_form_inherit" model="ir.ui.view">
+        <field name="name">product.template.purchase.form.inherit.cost.shield</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="purchase.view_product_supplier_inherit"/>
+        <field name="arch" type="xml">
+            <!-- Hide supplier information from unauthorized users -->
+            <xpath expr="//page[@name='purchase']" position="attributes">
+                <attribute name="invisible">not can_user_modify_product_master</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

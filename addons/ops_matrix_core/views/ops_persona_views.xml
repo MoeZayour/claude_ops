@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Persona Form View -->
+    <record id="view_ops_persona_form" model="ir.ui.view">
+        <field name="name">ops.persona.form</field>
+        <field name="model">ops.persona</field>
+        <field name="arch" type="xml">
+            <form string="Persona">
+                <header>
+                    <button name="action_force_sync"
+                            string="Sync to User"
+                            type="object"
+                            icon="fa-refresh"
+                            class="btn-primary"
+                            help="Force synchronization of persona access to user"/>
+                    <button name="action_check_access_compliance"
+                            string="Check Compliance"
+                            type="object"
+                            icon="fa-check-circle"
+                            class="btn-secondary"
+                            help="Validate persona configuration against security rules"/>
+                    <button name="action_delegate_persona"
+                            string="Create Delegation"
+                            type="object"
+                            icon="fa-exchange"
+                            class="btn-warning"
+                            help="Delegate this persona to another user"/>
+                    <button name="action_revoke_delegation"
+                            string="Revoke Delegation"
+                            type="object"
+                            icon="fa-times-circle"
+                            class="btn-danger"
+                            invisible="not is_delegated"
+                            help="Revoke active delegation"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-archive">
+                            <field name="active" widget="boolean_toggle" options='{"terminology": "archive"}'/>
+                        </button>
+                        <button name="action_view_branches" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-building">
+                            <field name="branch_count" widget="statinfo" string="Branches"/>
+                        </button>
+                        <button name="action_view_business_units" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-briefcase">
+                            <field name="bu_count" widget="statinfo" string="Business Units"/>
+                        </button>
+                        <button name="action_view_user_access" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-user"
+                                invisible="not user_id">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">User Access</span>
+                            </div>
+                        </button>
+                        <button name="action_view_delegations" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-exchange">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Delegations</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Persona Name (e.g., 'Doha Branch Manager')"/>
+                        </h1>
+                        <div class="text-muted">
+                            <field name="code" readonly="1"/>
+                            <span> | </span>
+                            <field name="matrix_access_summary" widget="text" readonly="1"/>
+                        </div>
+                    </div>
+                    
+                    <group>
+                        <group string="Basic Information">
+                            <field name="user_id"/>
+                            <field name="employee_id"/>
+                            <field name="company_id" options="{'no_create': True}"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Status">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="is_active_today" readonly="1"/>
+                            <field name="last_sync_date" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <field name="description" placeholder="Describe this persona's responsibilities..."/>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Matrix Access" name="matrix_access">
+                            <div class="alert alert-info">
+                                <strong>Matrix Access Control:</strong> 
+                                Defines which branches and business units this persona can access.
+                            </div>
+                            
+                            <group>
+                                <group string="Branch Assignments">
+                                    <field name="branch_ids" 
+                                           widget="many2many_tags" 
+                                           options="{'color_field': 'color'}"
+                                           domain="[('company_id', '=', company_id)]"/>
+                                    <field name="default_branch_id" 
+                                           domain="[('id', 'in', branch_ids)]"
+                                           options="{'no_create': True}"/>
+                                </group>
+                                
+                                <group string="Business Unit Assignments">
+                                    <field name="business_unit_ids" 
+                                           widget="many2many_tags"
+                                           options="{'color_field': 'color'}"/>
+                                    <field name="default_business_unit_id" 
+                                           domain="[('id', 'in', business_unit_ids)]"
+                                           options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Roles &amp; Authorities" name="roles">
+                            <group>
+                                <group string="Role Indicators">
+                                    <field name="is_branch_manager"/>
+                                    <field name="is_bu_leader"/>
+                                    <field name="is_cross_branch"/>
+                                    <field name="is_matrix_administrator"/>
+                                    <field name="is_approver"/>
+                                </group>
+                                
+                                <group string="Legacy Approval Flags">
+                                    <field name="can_approve_orders"/>
+                                    <field name="can_approve_expenses"/>
+                                    <field name="can_approve_leave"/>
+                                    <field name="can_manage_team"/>
+                                </group>
+                            </group>
+                            
+                            <group>
+                                <group string="Approval Limits">
+                                    <field name="approval_limit"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                                
+                                <group string="Hierarchy">
+                                    <field name="parent_id" options="{'no_create': True}"/>
+                                    <field name="job_level"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="SoD Permissions" name="sod_permissions">
+                            <div class="alert alert-warning">
+                                <strong>Segregation of Duties (SoD) Authority Flags:</strong>
+                                These permissions implement professional financial controls by restricting critical operations to authorized roles only.
+                            </div>
+                            
+                            <group>
+                                <group string="Product &amp; Procurement Controls">
+                                    <field name="can_modify_product_master"/>
+                                    <field name="can_access_cost_prices"/>
+                                </group>
+                                
+                                <group string="Financial Transaction Controls">
+                                    <field name="can_validate_invoices"/>
+                                    <field name="can_post_journal_entries"/>
+                                    <field name="can_execute_payments"/>
+                                    <field name="can_manage_pdc"/>
+                                </group>
+                            </group>
+                            
+                            <group>
+                                <group string="Inventory Controls">
+                                    <field name="can_adjust_inventory"/>
+                                </group>
+                                <group/>
+                            </group>
+                            
+                            <separator string="SoD Policy Guidelines"/>
+                            <div class="alert alert-info">
+                                <ul>
+                                    <li><strong>Sales:</strong> Cannot access cost prices (margin confidentiality)</li>
+                                    <li><strong>Procurement:</strong> Can modify product master but cannot approve own orders</li>
+                                    <li><strong>Finance:</strong> Accounting validates invoices; Treasury executes payments (separation)</li>
+                                    <li><strong>Inventory:</strong> Only Inventory Manager can post adjustments</li>
+                                    <li><strong>IT:</strong> Restricted from ALL transactional authorities</li>
+                                </ul>
+                            </div>
+                        </page>
+                        
+                        <page string="Delegation" name="delegation">
+                            <group>
+                                <group string="Current Delegation Status">
+                                    <field name="is_delegated" readonly="1"/>
+                                    <field name="delegate_id" readonly="1" invisible="not is_delegated"/>
+                                    <field name="delegation_start" readonly="1" invisible="not is_delegated"/>
+                                    <field name="delegation_end" readonly="1" invisible="not is_delegated"/>
+                                    <field name="effective_user_id" readonly="1"/>
+                                </group>
+                                
+                                <group string="Delegation Settings">
+                                    <field name="can_be_delegated"/>
+                                </group>
+                            </group>
+                            
+                            <separator string="Delegation History"/>
+                            <field name="delegation_history_ids" nolabel="1">
+                                <list string="Delegation History" decoration-success="state == 'active'" decoration-muted="state in ('expired', 'cancelled', 'revoked')">
+                                    <field name="delegate_id"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="duration_days"/>
+                                    <field name="remaining_days" invisible="state != 'active'"/>
+                                    <field name="state" widget="badge" decoration-success="state == 'active'" decoration-info="state == 'pending'" decoration-danger="state == 'revoked'"/>
+                                    <field name="reason"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                        <page string="Security Groups" name="security_groups">
+                            <field name="access_group_ids" widget="many2many_tags"/>
+                        </page>
+                        
+                        <page string="Team Hierarchy" name="team_hierarchy" invisible="not child_ids">
+                            <field name="child_ids" nolabel="1">
+                                <list string="Direct Reports">
+                                    <field name="name"/>
+                                    <field name="user_id"/>
+                                    <field name="job_level"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                        <page string="Advanced" name="advanced">
+                            <group>
+                                <group string="System Information">
+                                    <field name="user_count" readonly="1"/>
+                                    <field name="last_sync_date" readonly="1"/>
+                                    <field name="create_date" readonly="1"/>
+                                    <field name="write_date" readonly="1"/>
+                                    <field name="create_uid" readonly="1"/>
+                                    <field name="write_uid" readonly="1"/>
+                                </group>
+                                
+                                <group string="Multi-User Support (Future)">
+                                    <field name="secondary_user_ids" widget="many2many_tags"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Persona List View -->
+    <record id="view_ops_persona_tree" model="ir.ui.view">
+        <field name="name">ops.persona.list</field>
+        <field name="model">ops.persona</field>
+        <field name="arch" type="xml">
+            <list string="Personas" decoration-muted="not active" decoration-info="is_delegated">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code" readonly="1"/>
+                <field name="user_id"/>
+                <field name="company_id"/>
+                <field name="matrix_access_summary"/>
+                <field name="is_active_today" widget="boolean_toggle"/>
+                <field name="is_delegated" widget="boolean_toggle"/>
+                <field name="effective_user_id" optional="show"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Persona Search View -->
+    <record id="view_ops_persona_search" model="ir.ui.view">
+        <field name="name">ops.persona.search</field>
+        <field name="model">ops.persona</field>
+        <field name="arch" type="xml">
+            <search string="Search Personas">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="user_id"/>
+                <field name="company_id"/>
+                <field name="branch_ids"/>
+                <field name="business_unit_ids"/>
+                <separator/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Branch Managers" name="branch_managers" domain="[('is_branch_manager', '=', True)]"/>
+                <filter string="BU Leaders" name="bu_leaders" domain="[('is_bu_leader', '=', True)]"/>
+                <filter string="Matrix Administrators" name="matrix_admins" domain="[('is_matrix_administrator', '=', True)]"/>
+                <filter string="Approvers" name="approvers" domain="[('is_approver', '=', True)]"/>
+                <separator/>
+                <filter string="My Personas" name="my_personas" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <group>
+                    <filter string="Owner" name="group_owner" context="{'group_by': 'user_id'}"/>
+                    <filter string="Company" name="group_company" context="{'group_by': 'company_id'}"/>
+                    <filter string="Job Level" name="group_job_level" context="{'group_by': 'job_level'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Persona Kanban View -->
+    <record id="view_ops_persona_kanban" model="ir.ui.view">
+        <field name="name">ops.persona.kanban</field>
+        <field name="model">ops.persona</field>
+        <field name="arch" type="xml">
+            <kanban string="Personas" class="o_kanban_mobile">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="user_id"/>
+                <field name="company_id"/>
+                <field name="is_delegated"/>
+                <field name="delegate_id"/>
+                <field name="effective_user_id"/>
+                <field name="active"/>
+                <field name="is_active_today"/>
+                <field name="matrix_access_summary"/>
+                <field name="branch_count"/>
+                <field name="bu_count"/>
+                <field name="is_branch_manager"/>
+                <field name="is_bu_leader"/>
+                <field name="is_approver"/>
+                <templates>
+                    <t t-name="card">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click #{record.active.raw_value ? '' : 'oe_kanban_card_grey'}">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <div class="o_kanban_record_subtitle text-muted">
+                                        <span><field name="code"/></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <i class="fa fa-user"/> <field name="user_id"/> 
+                                    <t t-if="record.is_delegated.raw_value">
+                                        → <field name="effective_user_id"/>
+                                    </t>
+                                </div>
+                                <div>
+                                    <i class="fa fa-building"/> <field name="company_id"/>
+                                </div>
+                                <div class="text-muted" style="font-size: 0.9em;">
+                                    <field name="matrix_access_summary"/>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <t t-if="record.branch_count.raw_value">
+                                        <span class="badge badge-pill badge-info">
+                                            <i class="fa fa-building"/> <field name="branch_count"/>
+                                        </span>
+                                    </t>
+                                    <t t-if="record.bu_count.raw_value">
+                                        <span class="badge badge-pill badge-primary">
+                                            <i class="fa fa-briefcase"/> <field name="bu_count"/>
+                                        </span>
+                                    </t>
+                                    <t t-if="record.is_delegated.raw_value">
+                                        <span class="badge badge-warning">
+                                            <i class="fa fa-exchange"/> Delegated
+                                        </span>
+                                    </t>
+                                    <t t-if="record.is_branch_manager.raw_value">
+                                        <span class="badge badge-success">
+                                            <i class="fa fa-user-shield"/> Manager
+                                        </span>
+                                    </t>
+                                    <t t-if="record.is_approver.raw_value">
+                                        <span class="badge badge-secondary">
+                                            <i class="fa fa-check"/> Approver
+                                        </span>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Persona Action -->
+    <record id="action_ops_persona" model="ir.actions.act_window">
+        <field name="name">Personas</field>
+        <field name="res_model">ops.persona</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="context">{'default_active': True, 'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Persona!
+            </p>
+            <p>
+                Personas define user roles with specific matrix assignments for branches and business units.
+                They support delegation for temporary role transfers and comprehensive access control.
+            </p>
+        </field>
+    </record>
+
+    <!-- Persona Delegation Action -->
+    <record id="action_persona_delegation" model="ir.actions.act_window">
+        <field name="name">Active Delegations</field>
+        <field name="res_model">ops.persona</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_delegated', '=', True)]</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="target">current</field>
+    </record>
+
+    
+
+    <!-- Persona Tab in User Form -->
+    <record id="view_users_form_inherit_persona" model="ir.ui.view">
+        <field name="name">res.users.form.persona.tab</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Matrix Assignment" name="matrix_assignment">
+                    <group>
+                        <group name="active_persona" string="Active Persona (Computed)">
+                            <field name="branch_id" readonly="1"/>
+                            <field name="business_unit_ids" widget="many2many_tags" readonly="1"/>
+                        </group>
+                        <group name="matrix_info" string="Matrix Fields">
+                            <field name="ops_default_branch_id"/>
+                            <field name="ops_default_business_unit_id"/>
+                            <field name="ops_allowed_branch_ids" widget="many2many_tags"/>
+                            <field name="ops_allowed_business_unit_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="My Personas" name="my_personas">
+                            <field name="persona_ids" nolabel="1">
+                                <list string="My Personas" editable="bottom">
+                                    <field name="name"/>
+                                    <field name="company_id"/>
+                                    <field name="branch_count"/>
+                                    <field name="bu_count"/>
+                                    <field name="is_active_today"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page>   
+                                                
+                        <page string="Delegated to Me" name="delegated_personas">
+                            <field name="delegated_persona_ids" nolabel="1" readonly="1">
+                                <list string="Delegated Personas">
+                                    <field name="name"/>
+                                    <field name="user_id"/>
+                                    <field name="company_id"/>
+                                    <field name="delegation_start"/>
+                                    <field name="delegation_end"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

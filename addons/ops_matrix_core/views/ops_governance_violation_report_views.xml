@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Governance Violation Report Wizard Form -->
+    <record id="view_ops_governance_violation_report_form" model="ir.ui.view">
+        <field name="name">ops.governance.violation.report.form</field>
+        <field name="model">ops.governance.violation.report</field>
+        <field name="arch" type="xml">
+            <form string="Governance Violations Report">
+                <sheet>
+                    <group>
+                        <group string="Date Range">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group string="Matrix Filters">
+                            <field name="company_id" options="{'no_create': True}"/>
+                            <field name="branch_id" options="{'no_create': True}"/>
+                            <field name="business_unit_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Violation Filters">
+                            <field name="rule_id" options="{'no_create': True}"/>
+                            <field name="violation_type"/>
+                            <field name="approval_status"/>
+                        </group>
+                        <group string="Report Options">
+                            <field name="group_by"/>
+                            <field name="include_details"/>
+                            <field name="include_resolved"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Statistics" class="oe_read_only">
+                            <field name="violation_count" readonly="1"/>
+                            <field name="pending_count" readonly="1"/>
+                        </group>
+                        <group string="" class="oe_read_only">
+                            <field name="approved_count" readonly="1"/>
+                            <field name="rejected_count" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                
+                <footer>
+                    <button name="action_generate_report" type="object" 
+                            string="Generate Report" class="btn-primary"/>
+                    <button name="action_export_csv" type="object" 
+                            string="Export CSV" class="btn-secondary"/>
+                    <button name="action_view_violations" type="object" 
+                            string="View Violations" class="btn-secondary"/>
+                    <button name="action_view_summary" type="object" 
+                            string="View Summary" class="btn-link"/>
+                    <button special="cancel" string="Cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Governance Violation Report Action -->
+    <record id="action_ops_governance_violation_report" model="ir.actions.act_window">
+        <field name="name">Governance Violations Report</field>
+        <field name="res_model">ops.governance.violation.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_ops_governance_violation_report_form"/>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_ops_governance_rule"/>
+    </record>
+    
+    
+</odoo>

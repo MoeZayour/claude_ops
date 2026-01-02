@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Company Consolidation Report PDF Template -->
+    <record id="report_company_consolidation_pdf" model="ir.actions.report">
+        <field name="name">Company Consolidation Report</field>
+        <field name="model">ops.company.consolidation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_company_consolidation_document</field>
+        <field name="report_file">ops_matrix_accounting.report_company_consolidation_document</field>
+        <field name="binding_model_id" ref="model_ops_company_consolidation"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <template id="report_company_consolidation_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Company Consolidated P&amp;L Report</h2>
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <strong>Company:</strong> <span t-field="o.company_id.name"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Period:</strong> 
+                                <span t-field="o.date_from"/> to <span t-field="o.date_to"/>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <strong>Detail Level:</strong> <span t-field="o.report_detail_level"/>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <p class="text-center">
+                                    <em>Report data is computed dynamically. For detailed analysis, use the report wizard.</em>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3" t-if="o.report_data">
+                            <div class="col-12">
+                                <h4>Summary</h4>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><strong>Total Income</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'{:,.2f}'.format(o.report_data.get('totals', {}).get('total_income', 0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total Expenses</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'{:,.2f}'.format(o.report_data.get('totals', {}).get('total_expense', 0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="font-weight-bold">
+                                        <td><strong>Net Profit</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'{:,.2f}'.format(o.report_data.get('totals', {}).get('net_profit', 0))"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Company Consolidation Excel Export -->
+    <!-- Note: Excel export requires additional setup in Odoo 19 -->
+    <!-- Commented out for now - will be implemented with proper Excel library integration
+    <record id="report_company_consolidation_xlsx" model="ir.actions.report">
+        <field name="name">Company Consolidation Excel</field>
+        <field name="model">ops.company.consolidation</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">ops_matrix_accounting.report_company_consolidation_xlsx</field>
+        <field name="report_file">ops_matrix_accounting.report_company_consolidation_xlsx</field>
+        <field name="binding_model_id" ref="model_ops_company_consolidation"/>
+        <field name="binding_type">report</field>
+    </record>
+    -->
+    
+    <!-- Branch P&L Report PDF Template -->
+    <record id="report_branch_pl_pdf" model="ir.actions.report">
+        <field name="name">Branch P&amp;L Report</field>
+        <field name="model">ops.branch.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_branch_pl_document</field>
+        <field name="report_file">ops_matrix_accounting.report_branch_pl_document</field>
+        <field name="binding_model_id" ref="model_ops_branch_report"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <template id="report_branch_pl_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Professional Header -->
+                        <div class="text-center mb32" style="background: linear-gradient(135deg, #00897b 0%, #00695c 100%); padding: 25px; border-radius: 8px; color: white;">
+                            <h2 style="margin: 0; font-weight: bold;">🏢 Branch Profit &amp; Loss Report</h2>
+                            <p style="margin: 10px 0 0 0; opacity: 0.9;">Financial Performance Analysis by Branch</p>
+                        </div>
+
+                        <!-- Branch Information Card -->
+                        <div style="background-color: #e0f2f1; padding: 20px; border-radius: 5px; border-left: 4px solid #00897b; margin-bottom: 25px;">
+                            <div class="row">
+                                <div class="col-6">
+                                    <p style="margin: 5px 0;">
+                                        <strong style="color: #00695c;">Branch:</strong><br/>
+                                        <span t-field="o.branch_id.name" style="font-size: 1.2em; font-weight: bold;"/>
+                                    </p>
+                                    <p style="margin: 10px 0 0 0;">
+                                        <strong style="color: #00695c;">Branch Code:</strong>
+                                        <span t-field="o.branch_id.code" style="font-family: monospace; background-color: white; padding: 2px 6px; border-radius: 3px;"/>
+                                    </p>
+                                </div>
+                                <div class="col-6">
+                                    <p style="margin: 5px 0;">
+                                        <strong style="color: #00695c;">Company:</strong><br/>
+                                        <span t-field="o.branch_id.company_id.name"/>
+                                    </p>
+                                    <p style="margin: 10px 0 0 0;">
+                                        <strong style="color: #00695c;">Report Period:</strong><br/>
+                                        <span t-field="o.date_from"/> to <span t-field="o.date_to"/>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <p style="margin: 5px 0; font-size: 12px; color: #00695c;">
+                                        <strong>Manager:</strong> <span t-field="o.branch_id.manager_id.name"/> |
+                                        <strong>Business Units:</strong> <span t-esc="len(o.branch_id.business_unit_ids)"/> active
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <t t-if="o.report_data">
+                            <t t-set="totals" t-value="o.report_data.get('totals', {})"/>
+                            <t t-set="total_income" t-value="totals.get('total_income', 0)"/>
+                            <t t-set="total_expense" t-value="totals.get('total_expense', 0)"/>
+                            <t t-set="net_profit" t-value="totals.get('net_profit', 0)"/>
+                            <t t-set="profit_margin" t-value="(net_profit / total_income * 100) if total_income > 0 else 0"/>
+
+                            <!-- KPI Cards -->
+                            <div class="row mb-4">
+                                <div class="col-3">
+                                    <div style="background-color: #4CAF50; color: white; padding: 15px; border-radius: 5px; text-align: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15);">
+                                        <p style="margin: 0; font-size: 12px; opacity: 0.9;">Total Income</p>
+                                        <h3 style="margin: 10px 0 0 0; font-size: 1.5em;">
+                                            <span t-esc="'{:,.0f}'.format(total_income)"/>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div style="background-color: #FF9800; color: white; padding: 15px; border-radius: 5px; text-align: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15);">
+                                        <p style="margin: 0; font-size: 12px; opacity: 0.9;">Total Expenses</p>
+                                        <h3 style="margin: 10px 0 0 0; font-size: 1.5em;">
+                                            <span t-esc="'{:,.0f}'.format(total_expense)"/>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <t t-set="profit_color" t-value="'#4CAF50' if net_profit >= 0 else '#f44336'"/>
+                                    <div t-att-style="'background-color: %s; color: white; padding: 15px; border-radius: 5px; text-align: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15);' % profit_color">
+                                        <p style="margin: 0; font-size: 12px; opacity: 0.9;">Net Profit</p>
+                                        <h3 style="margin: 10px 0 0 0; font-size: 1.5em;">
+                                            <span t-esc="'{:,.0f}'.format(net_profit)"/>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <t t-set="margin_color" t-value="'#4CAF50' if profit_margin >= 15 else '#FF9800' if profit_margin >= 5 else '#f44336'"/>
+                                    <div t-att-style="'background-color: %s; color: white; padding: 15px; border-radius: 5px; text-align: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15);' % margin_color">
+                                        <p style="margin: 0; font-size: 12px; opacity: 0.9;">Profit Margin</p>
+                                        <h3 style="margin: 10px 0 0 0; font-size: 1.5em;">
+                                            <span t-esc="'{:.1f}'.format(profit_margin)"/>%
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Performance Alerts -->
+                            <t t-if="net_profit &lt; 0">
+                                <div style="margin-bottom: 20px; padding: 15px; background-color: #ffebee; border-left: 4px solid #f44336; border-radius: 5px;">
+                                    <strong style="color: #c62828;">⚠ Critical Alert:</strong>
+                                    <span style="color: #c62828;">
+                                        This branch is operating at a loss of <strong><span t-esc="'{:,.2f}'.format(abs(net_profit))"/></strong>.
+                                        Immediate review of cost structure and revenue streams recommended.
+                                    </span>
+                                </div>
+                            </t>
+                            <t t-if="net_profit >= 0 and profit_margin &lt; 5">
+                                <div style="margin-bottom: 20px; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
+                                    <strong style="color: #856404;">⚠ Warning:</strong>
+                                    <span style="color: #856404;">
+                                        Profit margin is below target threshold (<span t-esc="'{:.1f}'.format(profit_margin)"/>% vs. 5% minimum).
+                                        Consider cost optimization or pricing review.
+                                    </span>
+                                </div>
+                            </t>
+                            <t t-if="profit_margin >= 20">
+                                <div style="margin-bottom: 20px; padding: 15px; background-color: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 5px;">
+                                    <strong style="color: #2e7d32;">✓ Excellent Performance:</strong>
+                                    <span style="color: #2e7d32;">
+                                        Profit margin of <span t-esc="'{:.1f}'.format(profit_margin)"/>% exceeds excellent performance threshold (20%).
+                                        Strong financial health maintained.
+                                    </span>
+                                </div>
+                            </t>
+
+                            <!-- Detailed Financial Table -->
+                            <div style="margin-top: 20px;">
+                                <h4 style="color: #00695c; border-bottom: 2px solid #00897b; padding-bottom: 10px;">Financial Summary</h4>
+                                <table class="table table-sm" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 15px;">
+                                    <tbody>
+                                        <tr style="background-color: #f1f8f6;">
+                                            <td style="padding: 12px; font-weight: bold; color: #00695c;">Revenue / Income</td>
+                                            <td class="text-right" style="padding: 12px; font-weight: bold; color: #4CAF50; font-size: 1.1em;">
+                                                <span t-esc="'{:,.2f}'.format(total_income)"/>
+                                            </td>
+                                        </tr>
+                                        <tr style="background-color: #ffffff;">
+                                            <td style="padding: 12px; font-weight: bold; color: #00695c;">Operating Expenses</td>
+                                            <td class="text-right" style="padding: 12px; font-weight: bold; color: #FF9800; font-size: 1.1em;">
+                                                <span t-esc="'{:,.2f}'.format(total_expense)"/>
+                                            </td>
+                                        </tr>
+                                        <tr style="background-color: #e0f2f1; border-top: 2px solid #00897b;">
+                                            <td style="padding: 15px; font-weight: bold; font-size: 1.1em; color: #00695c;">
+                                                NET PROFIT / (LOSS)
+                                            </td>
+                                            <td class="text-right" style="padding: 15px;">
+                                                <t t-set="profit_display_color" t-value="'#4CAF50' if net_profit >= 0 else '#f44336'"/>
+                                                <strong t-att-style="'color: %s; font-size: 1.3em;' % profit_display_color">
+                                                    <span t-esc="'{:,.2f}'.format(net_profit)"/>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr style="background-color: #ffffff;">
+                                            <td style="padding: 12px; color: #666;">Profit Margin %</td>
+                                            <td class="text-right" style="padding: 12px;">
+                                                <t t-set="margin_text_color" t-value="'#4CAF50' if profit_margin >= 15 else '#FF9800' if profit_margin >= 5 else '#f44336'"/>
+                                                <span t-att-style="'color: %s; font-weight: bold;' % margin_text_color">
+                                                    <span t-esc="'{:.2f}'.format(profit_margin)"/>%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Performance Metrics Legend -->
+                            <div style="margin-top: 25px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #e0e0e0;">
+                                <p style="margin: 0; font-size: 12px; color: #666;">
+                                    <strong style="color: #00695c;">📊 Performance Thresholds:</strong><br/>
+                                    • <span style="color: #4CAF50; font-weight: bold;">Excellent:</span> Profit margin ≥ 20%<br/>
+                                    • <span style="color: #4CAF50; font-weight: bold;">Good:</span> Profit margin 15-20%<br/>
+                                    • <span style="color: #FF9800; font-weight: bold;">Acceptable:</span> Profit margin 5-15%<br/>
+                                    • <span style="color: #f44336; font-weight: bold;">Below Target:</span> Profit margin &lt; 5% or negative profit
+                                </p>
+                            </div>
+
+                        </t>
+                        <t t-else="">
+                            <div style="padding: 30px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px; text-align: center;">
+                                <h4 style="color: #856404; margin: 0;">ℹ️ No Data Available</h4>
+                                <p style="color: #856404; margin: 10px 0 0 0;">
+                                    Report data is computed dynamically. Use the report wizard to generate detailed analysis
+                                    or ensure transactions exist for the selected period.
+                                </p>
+                            </div>
+                        </t>
+
+                        <!-- Footer -->
+                        <div style="margin-top: 40px; padding: 12px; background-color: #f8f9fa; border-radius: 5px; font-size: 11px; color: #666; text-align: center;">
+                            <p style="margin: 0;">
+                                Generated on <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M:%S')"/> |
+                                OPS Matrix Framework - Branch Financial Analysis
+                            </p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Business Unit Report PDF Template -->
+    <record id="report_business_unit_pdf" model="ir.actions.report">
+        <field name="name">Business Unit Report</field>
+        <field name="model">ops.business.unit.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_business_unit_document</field>
+        <field name="report_file">ops_matrix_accounting.report_business_unit_document</field>
+        <field name="binding_model_id" ref="model_ops_business_unit_report"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <template id="report_business_unit_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Business Unit Profitability Report</h2>
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <strong>Business Unit:</strong> <span t-field="o.business_unit_id.name"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>BU Code:</strong> <span t-field="o.business_unit_id.code"/>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <strong>Period:</strong> 
+                                <span t-field="o.date_from"/> to <span t-field="o.date_to"/>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <p class="text-center">
+                                    <em>Report data is computed dynamically. For detailed analysis, use the report wizard.</em>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3" t-if="o.report_data">
+                            <div class="col-12">
+                                <h4>Performance Summary</h4>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><strong>Total Income</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'{:,.2f}'.format(o.report_data.get('totals', {}).get('total_income', 0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total Expenses</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'{:,.2f}'.format(o.report_data.get('totals', {}).get('total_expense', 0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="font-weight-bold">
+                                        <td><strong>Net Profit</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'{:,.2f}'.format(o.report_data.get('totals', {}).get('net_profit', 0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Profit Margin</strong></td>
+                                        <td class="text-right">
+                                            <span t-esc="'{:.2f}%'.format(o.report_data.get('totals', {}).get('profit_margin', 0))"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Consolidated Balance Sheet PDF Template -->
+    <record id="report_consolidated_balance_sheet_pdf" model="ir.actions.report">
+        <field name="name">Consolidated Balance Sheet</field>
+        <field name="model">ops.consolidated.balance.sheet</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_consolidated_balance_sheet_document</field>
+        <field name="report_file">ops_matrix_accounting.report_consolidated_balance_sheet_document</field>
+        <field name="binding_model_id" ref="model_ops_consolidated_balance_sheet"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <template id="report_consolidated_balance_sheet_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Consolidated Balance Sheet</h2>
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <strong>As of Date:</strong> <span t-field="o.date"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Currency:</strong> <span t-field="o.currency_id.name"/>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <strong>Companies:</strong> 
+                                <span t-esc="', '.join(o.company_ids.mapped('name'))"/>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <p class="text-center">
+                                    <em>Report data is computed dynamically. For detailed analysis, use the report wizard.</em>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3" t-if="o.report_data">
+                            <div class="col-12">
+                                <h4>Consolidated Position</h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="text-center bg-light">ASSETS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="font-weight-bold">
+                                            <td>Total Assets</td>
+                                            <td class="text-right">
+                                                <span t-esc="'{:,.2f}'.format(o.report_data.get('consolidated', {}).get('total_assets', 0))"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="text-center bg-light">LIABILITIES &amp; EQUITY</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Total Liabilities</td>
+                                            <td class="text-right">
+                                                <span t-esc="'{:,.2f}'.format(o.report_data.get('consolidated', {}).get('total_liabilities', 0))"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total Equity</td>
+                                            <td class="text-right">
+                                                <span t-esc="'{:,.2f}'.format(o.report_data.get('consolidated', {}).get('total_equity', 0))"/>
+                                            </td>
+                                        </tr>
+                                        <tr class="font-weight-bold border-top">
+                                            <td>Total Liabilities &amp; Equity</td>
+                                            <td class="text-right">
+                                                <span t-esc="'{:,.2f}'.format(o.report_data.get('consolidated', {}).get('total_liabilities', 0) + o.report_data.get('consolidated', {}).get('total_equity', 0))"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

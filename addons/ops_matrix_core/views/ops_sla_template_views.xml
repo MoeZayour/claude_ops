@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ops_sla_template_tree" model="ir.ui.view">
+        <field name="name">ops.sla.template.tree</field>
+        <field name="model">ops.sla.template</field>
+        <field name="arch" type="xml">
+            <list string="SLA Templates">
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="target_duration" widget="float_time"/>
+                <field name="calendar_id"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_sla_template_form" model="ir.ui.view">
+        <field name="name">ops.sla.template.form</field>
+        <field name="model">ops.sla.template</field>
+        <field name="arch" type="xml">
+            <form string="SLA Template">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" id="name" placeholder="e.g. Standard Approval SLA"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="model_id" options="{'no_create': True}"/>
+                            <field name="target_duration" widget="float_time"/>
+                        </group>
+                        <group>
+                            <field name="calendar_id" options="{'no_create': True}"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ops_sla_template" model="ir.actions.act_window">
+        <field name="name">SLA Templates</field>
+        <field name="res_model">ops.sla.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first SLA Template!
+            </p>
+        </field>
+    </record>
+
+    
+</odoo>

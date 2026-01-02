@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Task 2: Supply Chain Replenishment Dashboard - Add Branch Grouping -->
+    <record id="view_warehouse_orderpoint_search_inherit_ops" model="ir.ui.view">
+        <field name="name">stock.warehouse.orderpoint.search.ops.inherit</field>
+        <field name="model">stock.warehouse.orderpoint</field>
+        <field name="inherit_id" ref="stock.warehouse_orderpoint_search"/>
+        <field name="arch" type="xml">
+            <!-- Add branch filter in search view -->
+            <xpath expr="//search" position="inside">
+                <filter string="Branch" name="group_by_branch" context="{'group_by': 'branch_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

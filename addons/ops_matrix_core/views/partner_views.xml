@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Partner Form View to Add Stewardship Tab -->
+    <record id="view_res_partner_form_ops_stewardship" model="ir.ui.view">
+        <field name="name">res.partner.form.ops.stewardship</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Add OPS Stewardship Tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="OPS Stewardship" name="ops_stewardship">
+                    <group>
+                        <group string="Partner Status">
+                            <field name="ops_state" widget="radio" />
+                            <field name="active" />
+                        </group>
+                        <group string="Verification">
+                            <field name="ops_verification_date" readonly="1" />
+                            <field name="ops_verified_by_id" readonly="1" />
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Credit Management">
+                            <field name="ops_credit_limit" />
+                            <field name="ops_total_outstanding" readonly="1" />
+                            <field name="company_currency_id" readonly="1" />
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Restrictions">
+                            <field name="ops_confirmation_restrictions" readonly="1" nolabel="1" />
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <field name="ops_approval_notes" nolabel="1" placeholder="Add notes about partner approval..." />
+                    </group>
+                    
+                    <div class="oe_inline">
+                        <button name="action_approve" type="object" string="Approve" 
+                                class="oe_highlight" />
+                        <button name="action_block" type="object" string="Block" 
+                                />
+                        <button name="action_unblock" type="object" string="Unblock" 
+                                />
+                        <button name="action_reset_to_draft" type="object" string="Reset to Draft" 
+                                />
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner List View - Add Stewardship State Column -->
+    <record id="view_res_partner_tree_ops_stewardship" model="ir.ui.view">
+        <field name="name">res.partner.tree.ops.stewardship</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="ops_state" string="Stewardship" optional="show" />
+                <field name="ops_total_outstanding" string="Outstanding" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner Kanban View with Stewardship Status -->
+    <record id="view_res_partner_kanban_ops_stewardship" model="ir.ui.view">
+        <field name="name">res.partner.kanban.ops.stewardship</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="inside">
+                <field name="ops_state" />
+                <field name="ops_total_outstanding" />
+                <field name="ops_credit_limit" />
+            </xpath>
+            
+            <xpath expr="//templates" position="inside">
+                <t t-name="card">
+                    <div class="oe_kanban_card">
+                        <div class="oe_kanban_content">
+                            <div class="oe_partner_heading">
+                                <h4 class="oe_partner_name"><t t-esc="record.name.value"/></h4>
+                                <span class="badge badge-secondary"><t t-esc="record.ops_state.value"/></span>
+                            </div>
+                            
+                            <div t-if="record.ops_state.raw_value == 'draft'" class="alert alert-info">
+                                <i class="fa fa-warning"/> Partner not yet approved
+                            </div>
+                            <div t-elif="record.ops_state.raw_value == 'blocked'" class="alert alert-danger">
+                                <i class="fa fa-ban"/> Partner blocked
+                            </div>
+                            <div t-elif="record.ops_state.raw_value == 'approved'" class="alert alert-success">
+                                <i class="fa fa-check"/> Partner approved
+                            </div>
+                            
+                            <div t-if="record.ops_credit_limit.raw_value > 0" class="oe_partner_credit">
+                                <small>Outstanding: <t t-esc="record.ops_total_outstanding.value"/> / <t t-esc="record.ops_credit_limit.value"/></small>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner Search View with Stewardship Filters -->
+    <record id="view_res_partner_search_ops_stewardship" model="ir.ui.view">
+        <field name="name">res.partner.search.ops.stewardship</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <filter name="type_company" position="after">
+                <separator />
+                <filter name="stewardship_draft" string="Draft (Not Approved)" domain="[('ops_state', '=', 'draft')]" />
+                <filter name="stewardship_approved" string="Approved" domain="[('ops_state', '=', 'approved')]" />
+                <filter name="stewardship_blocked" string="Blocked" domain="[('ops_state', '=', 'blocked')]" />
+                <filter name="stewardship_archived" string="Archived" domain="[('ops_state', '=', 'archived')]" />
+                <separator />
+                <filter name="group_by_state" string="Stewardship State" context="{'group_by': 'ops_state'}" />
+            </filter>
+        </field>
+    </record>
+</odoo>

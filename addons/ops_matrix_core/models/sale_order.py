@@ -1,0 +1,539 @@
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError, UserError
+from typing import List, Dict, Any, Tuple
+import base64
+import io
+import logging
+
+_logger = logging.getLogger(__name__)
+try:
+    from pypdf import PdfMerger
+except ImportError:
+    try:
+        from PyPDF2 import PdfMerger
+    except ImportError:
+        PdfMerger = None
+
+class SaleOrder(models.Model):
+    _name = 'sale.order'
+    _inherit = ['sale.order', 'ops.governance.mixin', 'ops.matrix.mixin']
+    
+    # Governance Fields (explicitly declared for proper column creation)
+    approval_locked = fields.Boolean(
+        string='Approval Locked',
+        default=False,
+        help='Record is locked pending approval',
+        copy=False
+    )
+    
+    # Note: ops_branch_id and ops_business_unit_id are inherited from ops.matrix.mixin
+    # Additional sale order specific fields
+    ops_credit_check_passed = fields.Boolean(
+        string='Credit Check Passed',
+        default=False,
+        readonly=True,
+        help='Indicates if partner passed credit firewall check'
+    )
+    ops_credit_check_notes = fields.Text(
+        string='Credit Check Notes',
+        readonly=True,
+        help='Notes from credit firewall evaluation'
+    )
+
+    @api.constrains('order_line')
+    def _check_business_unit_silo(self) -> None:
+        """
+        Strictly enforce that a user can only sell products belonging to
+        their allowed Business Units.
+        
+        Note: This constraint works alongside the governance rules engine.
+        For more complex rules, use ops.governance.rule instead.
+        """
+        for order in self:
+            # Skip check for Superuser/Admin to allow setup
+            if order.env.is_superuser():
+                continue
+
+            # Get user's allowed units (from persona or legacy fields)
+            effective_access = order.user_id.get_effective_matrix_access()
+            user_allowed_units = effective_access['business_unit_ids'].ids if effective_access['business_unit_ids'] else []
+            
+            for line in order.order_line:
+                product_unit = line.product_id.business_unit_id
+                
+                # If product has a unit, and it's not in user's allowed list
+                if product_unit and product_unit.id not in user_allowed_units:
+                    raise ValidationError(_(
+                        "SILO VIOLATION: You cannot sell product '%s' (Unit: %s). "
+                        "You are not assigned to this Business Unit."
+                    ) % (line.product_id.name, product_unit.name))
+
+    def _get_products_availability_data(self) -> List[Dict[str, Any]]:
+        """
+        Task 4: Prepare data for Products Availability Report.
+        Returns availability data for each storable product in the sale order.
+        """
+        self.ensure_one()
+        availability_data = []
+        
+        for line in self.order_line:
+            product = line.product_id
+            
+            # Skip service and consumable products
+            if product.type in ['service', 'consu']:
+                continue
+            
+            # Get stock on hand for the product
+            stock_on_hand = product.qty_available
+            
+            # Calculate display qty = min(ordered qty, stock on hand)
+            display_qty = min(line.product_uom_qty, stock_on_hand)
+            
+            # Determine if stock is insufficient (for styling)
+            is_insufficient = stock_on_hand < line.product_uom_qty
+            
+            availability_data.append({
+                'sku': product.default_code or '',
+                'product_name': product.name,
+                'ordered_qty': line.product_uom_qty,
+                'stock_on_hand': stock_on_hand,
+                'display_qty': display_qty,
+                'is_insufficient': is_insufficient,
+            })
+        
+        return availability_data
+
+    def _check_partner_credit_firewall(self) -> Tuple[bool, str]:
+        """
+        Credit Firewall: Check if partner can have this order confirmed.
+        Returns (passed: bool, message: str)
+        """
+        self.ensure_one()
+        
+        if self.env.is_superuser():
+            return True, 'Superuser bypass'
+        
+        partner = self.partner_id
+        
+        # Check 1: Partner Stewardship State (soft-pass draft for branch users)
+        if hasattr(partner, 'ops_state'):
+            # Blocked/archived remain hard blocks
+            if partner.ops_state == 'blocked':
+                return False, 'Partner is blocked from transactions'
+            if partner.ops_state == 'archived':
+                return False, 'Partner is archived'
+
+            # Allow draft partners to proceed but log the state for auditing
+            if partner.ops_state == 'draft':
+                return True, 'Partner in draft state - soft-pass credit firewall'
+            
+            # Any other non-approved state is blocked
+            if partner.ops_state not in ['approved']:
+                return False, f'Partner state is "{partner.ops_state}" - orders cannot be confirmed'
+        
+        # Check 2: Partner Activity
+        if not partner.active:
+            return False, 'Partner is inactive'
+        
+        # Check 3: Credit Limit Enforcement
+        if hasattr(partner, 'ops_credit_limit') and hasattr(partner, 'ops_total_outstanding'):
+            if partner.ops_credit_limit > 0:
+                total_outstanding = partner.ops_total_outstanding
+                potential_total = total_outstanding + self.amount_total
+                
+                if potential_total > partner.ops_credit_limit:
+                    return False, (
+                        f'Order would exceed credit limit. '
+                        f'Current outstanding: {total_outstanding}, '
+                        f'Order amount: {self.amount_total}, '
+                        f'Credit limit: {partner.ops_credit_limit}'
+                    )
+        
+        # Check 4: Partner Confirmation Restrictions (if field exists)
+        if hasattr(partner, 'ops_confirmation_restrictions'):
+            if partner.ops_confirmation_restrictions:
+                return False, f'Partner restrictions: {partner.ops_confirmation_restrictions}'
+        
+        return True, 'Credit check passed'
+    
+    def action_confirm(self) -> bool:
+        """
+        Override action_confirm to enforce credit firewall and governance rules.
+        
+        This ensures that:
+        1. Governance rules (margins, discounts, approvals) are enforced
+        2. Credit firewall checks pass
+        3. All validations happen before state changes to 'sale'
+        """
+        for order in self:
+            _logger.info("OPS Governance: Checking SO %s for confirmation rules", order.name)
+            
+            # ADMIN BYPASS: Skip governance for administrators
+            if self.env.su or self.env.user.has_group('base.group_system'):
+                _logger.info("OPS Governance: Admin bypass for SO %s", order.name)
+                # Log admin override for audit trail
+                try:
+                    self.env['ops.security.audit'].sudo().log_security_override(
+                        model_name=order._name,
+                        record_id=order.id,
+                        reason='Admin bypass used to confirm Sale Order without governance checks'
+                    )
+                except Exception as e:
+                    _logger.warning("Failed to log admin override: %s", str(e))
+            else:
+                # Explicitly trigger Governance check for 'on_write' triggers
+                # This catches rules like:
+                # - "Discounts > 20% require approval"
+                # - "Margins < 15% require approval"
+                # - "Orders > $50K require approval"
+                order._enforce_governance_rules(order, trigger_type='on_write')
+                
+                _logger.info("OPS Governance: SO %s passed all governance checks", order.name)
+            
+            # Perform credit check
+            passed, message = order._check_partner_credit_firewall()
+            
+            if not passed:
+                order.write({
+                    'ops_credit_check_passed': False,
+                    'ops_credit_check_notes': message
+                })
+                raise UserError(_('Credit Firewall: ' + message))
+            
+            order.write({
+                'ops_credit_check_passed': True,
+                'ops_credit_check_notes': message
+            })
+        
+        # Call parent method to confirm
+        return super().action_confirm()
+    
+    def action_quotation_send(self):
+        """
+        Override email sending to enforce governance rules.
+        
+        This prevents users from sending quotations/orders by email
+        if they violate governance rules or have pending approvals.
+        """
+        # ADMIN BYPASS: Allow administrators to send anything
+        if self.env.su or self.env.user.has_group('base.group_system'):
+            # Log admin override for audit trail
+            try:
+                for order in self:
+                    self.env['ops.security.audit'].sudo().log_security_override(
+                        model_name=order._name,
+                        record_id=order.id,
+                        reason='Admin bypass used to send Sale Order/Quotation without governance checks'
+                    )
+            except Exception as e:
+                _logger.warning("Failed to log admin override: %s", str(e))
+            return super().action_quotation_send()
+        
+        for order in self:
+            _logger.info("OPS Governance: Checking SO %s for email commitment", order.name)
+            
+            # Check for pending approvals
+            if hasattr(order, 'approval_request_ids'):
+                pending_approvals = order.approval_request_ids.filtered(
+                    lambda a: a.state == 'pending'
+                )
+                
+                if pending_approvals:
+                    rule_names = ', '.join(pending_approvals.mapped('rule_id.name'))
+                    raise UserError(_(
+                        "🚫 COMMITMENT BLOCKED: You cannot Email document '%s' "
+                        "until it satisfies company Governance Rules.\n\n"
+                        "⏳ Pending Approval: %s\n\n"
+                        "This document is locked for external commitment (email or print) "
+                        "until the required approvals are granted."
+                    ) % (order.display_name, rule_names))
+            
+            # Enforce governance rules
+            try:
+                order._enforce_governance_rules(order, trigger_type='on_write')
+                _logger.info("OPS Governance: SO %s passed all governance checks for email", order.name)
+            except UserError as e:
+                # Re-raise with enhanced message for email context
+                error_message = str(e)
+                if 'requires approval' in error_message.lower():
+                    raise UserError(_(
+                        "🚫 COMMITMENT BLOCKED: You cannot Email document '%s'.\n\n"
+                        "%s\n\n"
+                        "External commitment (email/print) is blocked until approval is granted."
+                    ) % (order.display_name, error_message))
+                else:
+                    raise UserError(_(
+                        "🚫 COMMITMENT BLOCKED: You cannot Email document '%s'.\n\n%s"
+                    ) % (order.display_name, error_message))
+        
+        # If all checks pass, proceed with email wizard
+        return super().action_quotation_send()
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Override create to propagate matrix dimensions to lines."""
+        # Enforce branch isolation on creation (non-admin users)
+        sanitized_vals = []
+        for vals in vals_list:
+            user = self.env.user
+            # Skip superuser/admin bypass to avoid blocking setup
+            if not (self.env.su or user.has_group('base.group_system')):
+                branch_id = vals.get('ops_branch_id') or user.ops_default_branch_id.id
+                if branch_id:
+                    allowed = user.ops_allowed_branch_ids.ids
+                    if allowed and branch_id not in allowed:
+                        raise ValidationError(_(
+                            "Branch isolation violation: You cannot create Sale Orders in branch '%s'."
+                        ) % self.env['ops.branch'].browse(branch_id).display_name)
+                else:
+                    # Require a branch to be set for regular users
+                    raise ValidationError(_("Branch is required for Sale Orders."))
+            sanitized_vals.append(vals)
+
+        orders = super().create(sanitized_vals)
+        for order in orders:
+            if order.order_line:
+                order._propagate_matrix_to_lines('order_line')
+        return orders
+    
+    @api.onchange('ops_branch_id', 'ops_business_unit_id')
+    def _onchange_matrix_dimensions(self):
+        """Propagate matrix dimensions to order lines when changed."""
+        super()._onchange_matrix_dimensions()
+        if self.order_line:
+            for line in self.order_line:
+                line.ops_branch_id = self.ops_branch_id
+                line.ops_business_unit_id = self.ops_business_unit_id
+    
+    def _prepare_invoice(self):
+        """Propagate matrix dimensions to invoice."""
+        invoice_vals = super()._prepare_invoice()
+        invoice_vals.update(self._prepare_invoice_vals())
+        return invoice_vals
+
+    def action_print_product_bundle(self) -> Dict[str, Any]:
+        """
+        Task 5: Bulk Product Doc Generator (Smart Merge)
+        Generate a single merged PDF of product documents (datasheets) for a sale order,
+        removing duplicates using SHA-1 checksums.
+        """
+        self.ensure_one()
+        
+        if not PdfMerger:
+            raise UserError(_('PyPDF library is not installed. Cannot merge PDFs.'))
+        
+        # Collect all PDF attachments from products
+        pdf_attachments = []
+        seen_checksums = set()
+        
+        for line in self.order_line:
+            product = line.product_id
+            
+            # Find PDF attachments linked to this product
+            attachments = self.env['ir.attachment'].search([
+                ('res_model', '=', 'product.product'),
+                ('res_id', '=', product.id),
+                ('mimetype', '=', 'application/pdf'),
+            ])
+            
+            # Also check product template attachments
+            if product.product_tmpl_id:
+                template_attachments = self.env['ir.attachment'].search([
+                    ('res_model', '=', 'product.template'),
+                    ('res_id', '=', product.product_tmpl_id.id),
+                    ('mimetype', '=', 'application/pdf'),
+                ])
+                attachments |= template_attachments
+            
+            # Deduplicate by checksum
+            for attachment in attachments:
+                checksum = attachment.checksum
+                if checksum and checksum not in seen_checksums:
+                    seen_checksums.add(checksum)
+                    pdf_attachments.append(attachment)
+        
+        if not pdf_attachments:
+            raise UserError(_('No PDF documents found for the products in this sale order.'))
+        
+        # Merge PDFs
+        merger = PdfMerger()
+        
+        try:
+            for attachment in pdf_attachments:
+                # Decode base64 attachment data
+                pdf_data = base64.b64decode(attachment.datas)
+                pdf_stream = io.BytesIO(pdf_data)
+                merger.append(pdf_stream)
+            
+            # Get merged PDF output
+            output_stream = io.BytesIO()
+            merger.write(output_stream)
+            merger.close()
+            output_stream.seek(0)
+            
+            # Encode to base64
+            merged_pdf_data = base64.b64encode(output_stream.read()).decode('utf-8')
+            
+            # Create attachment for the merged PDF
+            attachment = self.env['ir.attachment'].create({
+                'name': f'Product_Bundle_{self.name}.pdf',
+                'type': 'binary',
+                'datas': merged_pdf_data,
+                'res_model': 'sale.order',
+                'res_id': self.id,
+                'mimetype': 'application/pdf',
+            })
+            
+            # Return action to open the merged PDF in a new tab
+            return {
+                'type': 'ir.actions.act_url',
+                'url': f'/web/content/{attachment.id}?download=true',
+                'target': 'new',
+            }
+            
+        except Exception as e:
+            raise UserError(_('Error merging PDFs: %s') % str(e))
+
+
+class SaleOrderLine(models.Model):
+    """Extend sale.order.line with Matrix Mixin for dimension propagation."""
+    _inherit = ['sale.order.line', 'ops.matrix.mixin']
+    _name = 'sale.order.line'
+    
+    # These fields are inherited from ops.matrix.mixin:
+    # - ops_branch_id
+    # - ops_business_unit_id
+    # - ops_company_id
+    # - ops_analytic_distribution
+    
+    # The Cost Shield: Field-Level Security for Sale Order Line Costs
+    can_user_access_cost_prices = fields.Boolean(
+        string='Can Access Cost Prices',
+        compute='_compute_can_user_access_cost_prices',
+        store=False,
+        help="Determines if the current user can view cost prices on sale order lines."
+    )
+    
+    # Cost Shield Protected Fields - ISS-002 Hardening
+    # These fields are restricted to Administrators and OPS Managers only
+    # Model-level security prevents both UI and API access by unauthorized users
+    purchase_price = fields.Float(
+        string='Cost',
+        compute='_compute_purchase_price',
+        digits='Product Price',
+        store=True,
+        groups="base.group_system,ops_matrix_core.group_ops_manager",
+        help="Unit cost price from product (protected field - Admin/OPS Manager only)"
+    )
+    
+    margin = fields.Float(
+        string='Margin',
+        compute='_compute_margin',
+        digits='Product Price',
+        store=True,
+        groups="base.group_system,ops_matrix_core.group_ops_manager",
+        help="Gross margin amount (Sale Price - Cost) x Quantity (protected field - Admin/OPS Manager only)"
+    )
+    
+    margin_percent = fields.Float(
+        string='Margin %',
+        compute='_compute_margin',
+        store=True,
+        groups="base.group_system,ops_matrix_core.group_ops_manager",
+        help="Gross margin percentage (protected field - Admin/OPS Manager only)"
+    )
+    
+    @api.depends_context('uid')
+    def _compute_can_user_access_cost_prices(self):
+        """
+        Check if user has authority to view cost prices on sale order lines.
+        
+        Security Logic:
+        - System administrators (base.group_system) always have access
+        - Other users must have 'can_access_cost_prices' authority flag
+        - This protects margin calculations from unauthorized viewing
+        
+        This implements "The Cost Shield" anti-fraud measure.
+        """
+        for record in self:
+            # Administrators bypass all restrictions
+            if self.env.user.has_group('base.group_system'):
+                record.can_user_access_cost_prices = True
+            else:
+                # Check persona authority flag
+                record.can_user_access_cost_prices = self.env.user.has_ops_authority('can_access_cost_prices')
+    
+    @api.depends('product_id', 'product_uom_id', 'product_uom_qty')
+    def _compute_purchase_price(self):
+        """
+        Compute the unit cost (purchase price) from product standard_price.
+        
+        ISS-002 Security: This field is protected by model-level groups,
+        preventing unauthorized users from accessing cost data via UI or API.
+        """
+        for line in self:
+            if line.product_id:
+                # Convert to line UOM if different from product UOM
+                line.purchase_price = line.product_id.standard_price
+            else:
+                line.purchase_price = 0.0
+    
+    @api.depends('product_id', 'purchase_price', 'product_uom_qty', 'price_unit', 'price_subtotal')
+    def _compute_margin(self):
+        """
+        Compute margin and margin percentage for sale order lines.
+        
+        ISS-002 Security: These fields are protected by model-level groups,
+        preventing unauthorized users from accessing margin data via UI or API.
+        
+        Calculation:
+        - Margin = (Unit Price - Cost) * Quantity
+        - Margin % = (Margin / Sale Price) * 100 if Sale Price > 0
+        """
+        for line in self:
+            if line.product_id:
+                # Calculate total cost
+                total_cost = line.purchase_price * line.product_uom_qty
+                
+                # Calculate margin (subtotal - cost)
+                line.margin = line.price_subtotal - total_cost
+                
+                # Calculate margin percentage
+                if line.price_subtotal:
+                    line.margin_percent = (line.margin / line.price_subtotal) * 100.0
+                else:
+                    line.margin_percent = 0.0
+            else:
+                line.margin = 0.0
+                line.margin_percent = 0.0
+    
+    def _get_default_ops_branch(self):
+        """Get default branch from parent order if available."""
+        if self._context.get('default_order_id'):
+            order = self.env['sale.order'].browse(self._context['default_order_id'])
+            if order.ops_branch_id:
+                return order.ops_branch_id.id
+        return super()._get_default_ops_branch()
+    
+    def _get_default_ops_business_unit(self):
+        """Get default BU from parent order if available."""
+        if self._context.get('default_order_id'):
+            order = self.env['sale.order'].browse(self._context['default_order_id'])
+            if order.ops_business_unit_id:
+                return order.ops_business_unit_id.id
+        return super()._get_default_ops_business_unit()
+    
+    @api.onchange('order_id')
+    def _onchange_order_id_propagate_dimensions(self):
+        """
+        When order_id changes or is set, inherit the order's matrix dimensions.
+        
+        This ensures that when a line is added to an order with specific dimensions,
+        it automatically gets the correct dimensions.
+        """
+        if self.order_id:
+            # Inherit dimensions from parent order if not already set
+            if not self.ops_branch_id and self.order_id.ops_branch_id:
+                self.ops_branch_id = self.order_id.ops_branch_id
+            if not self.ops_business_unit_id and self.order_id.ops_business_unit_id:
+                self.ops_business_unit_id = self.order_id.ops_business_unit_id

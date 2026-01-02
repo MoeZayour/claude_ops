@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View for ops.asset.category -->
+    <record id="view_ops_asset_category_form" model="ir.ui.view">
+        <field name="name">ops.asset.category.form</field>
+        <field name="model">ops.asset.category</field>
+        <field name="arch" type="xml">
+            <form string="Asset Category">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name" placeholder="e.g. Computer Hardware"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="journal_id"/>
+                            <field name="depreciation_method"/>
+                            <field name="depreciation_duration"/>
+                        </group>
+                        <group>
+                            <field name="asset_account_id"/>
+                            <field name="depreciation_account_id"/>
+                            <field name="expense_account_id"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- List View for ops.asset.category -->
+    <record id="view_ops_asset_category_list" model="ir.ui.view">
+        <field name="name">ops.asset.category.list</field>
+        <field name="model">ops.asset.category</field>
+        <field name="arch" type="xml">
+            <list string="Asset Categories">
+                <field name="name"/>
+                <field name="journal_id"/>
+                <field name="depreciation_method"/>
+                <field name="depreciation_duration"/>
+                <field name="asset_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action for ops.asset.category -->
+    <record id="action_ops_asset_category" model="ir.actions.act_window">
+        <field name="name">Asset Categories</field>
+        <field name="res_model">ops.asset.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new asset category.
+            </p>
+        </field>
+    </record>
+</odoo>

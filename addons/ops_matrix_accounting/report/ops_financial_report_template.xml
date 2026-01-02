@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define the PDF Report Action -->
+    <record id="action_report_ops_financial" model="ir.actions.report">
+        <field name="name">Financial Report</field>
+        <field name="model">ops.financial.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_financial_document</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_financial_document</field>
+        <field name="print_report_name">'Financial_Report_%s' % (object.report_type)</field>
+    </record>
+
+    <!-- QWeb PDF Template -->
+    <template id="report_ops_financial_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <!-- report_data is already available from _get_report_values context -->
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header Section with Professional Styling -->
+                        <div class="row mb32" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 8px;">
+                            <div class="col-12 text-center">
+                                <h2 style="color: white; margin: 0;"><strong t-esc="report_data['title']"/></h2>
+                            </div>
+                        </div>
+
+                        <!-- Matrix Headers with Enhanced Layout -->
+                        <div class="row mb16" style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #667eea;">
+                            <div class="col-6">
+                                <strong style="color: #667eea;">Company:</strong> <span t-esc="report_data['company']"/><br/>
+                                <strong style="color: #667eea;">Branch:</strong> <span t-esc="report_data['branch']"/><br/>
+                                <strong style="color: #667eea;">Period:</strong> <span t-esc="report_data['date_from']"/> to <span t-esc="report_data['date_to']"/>
+                            </div>
+                            <div class="col-6 text-right">
+                                <strong style="color: #667eea;">Prepared By:</strong> <span t-esc="report_data['user']"/><br/>
+                                <strong style="color: #667eea;">Date:</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/><br/>
+                                <strong style="color: #667eea;">Target Moves:</strong> <span t-esc="report_data['target_move']"/>
+                            </div>
+                        </div>
+
+                        <!-- KPI Cards Section (P&L Report Only) -->
+                        <t t-if="doc.report_type == 'pl'">
+                            <div class="row mb32">
+                                <!-- Total Revenue KPI -->
+                                <div class="col-3">
+                                    <div class="card text-center" style="border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px;">
+                                        <div style="background-color: #4CAF50; color: white; padding: 15px; border-radius: 8px 8px 0 0;">
+                                            <h6 style="margin: 0; font-size: 12px; opacity: 0.9;">TOTAL REVENUE</h6>
+                                            <h3 style="margin: 10px 0 5px 0; font-weight: bold;">
+                                                <span t-esc="'%.2f' % report_data.get('income_total', 0)"/>
+                                            </h3>
+                                            <small style="opacity: 0.8;">Income</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Total Expenses KPI -->
+                                <div class="col-3">
+                                    <div class="card text-center" style="border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px;">
+                                        <div style="background-color: #FF9800; color: white; padding: 15px; border-radius: 8px 8px 0 0;">
+                                            <h6 style="margin: 0; font-size: 12px; opacity: 0.9;">TOTAL EXPENSES</h6>
+                                            <h3 style="margin: 10px 0 5px 0; font-weight: bold;">
+                                                <span t-esc="'%.2f' % report_data.get('expense_total', 0)"/>
+                                            </h3>
+                                            <small style="opacity: 0.8;">Costs</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Gross Profit KPI -->
+                                <div class="col-3">
+                                    <t t-set="gross_profit" t-value="report_data.get('gross_profit', 0)"/>
+                                    <t t-set="gp_color" t-value="'#2196F3' if gross_profit >= 0 else '#f44336'"/>
+                                    <div class="card text-center" style="border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px;">
+                                        <div t-att-style="'background-color: %s; color: white; padding: 15px; border-radius: 8px 8px 0 0;' % gp_color">
+                                            <h6 style="margin: 0; font-size: 12px; opacity: 0.9;">GROSS PROFIT</h6>
+                                            <h3 style="margin: 10px 0 5px 0; font-weight: bold;">
+                                                <span t-esc="'%.2f' % gross_profit"/>
+                                            </h3>
+                                            <small style="opacity: 0.8;">
+                                                <t t-if="gross_profit >= 0">Positive</t>
+                                                <t t-if="gross_profit &lt; 0">⚠ Loss</t>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Net Profit KPI with Color Coding -->
+                                <div class="col-3">
+                                    <t t-set="net_profit" t-value="report_data.get('net_profit', 0)"/>
+                                    <t t-set="np_color" t-value="'#4CAF50' if net_profit >= 0 else '#f44336'"/>
+                                    <div class="card text-center" style="border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px;">
+                                        <div t-att-style="'background-color: %s; color: white; padding: 15px; border-radius: 8px 8px 0 0;' % np_color">
+                                            <h6 style="margin: 0; font-size: 12px; opacity: 0.9;">NET PROFIT</h6>
+                                            <h3 style="margin: 10px 0 5px 0; font-weight: bold;">
+                                                <span t-esc="'%.2f' % net_profit"/>
+                                            </h3>
+                                            <t t-set="margin_pct" t-value="(net_profit / report_data.get('income_total', 1) * 100) if report_data.get('income_total', 0) > 0 else 0"/>
+                                            <small style="opacity: 0.8;">
+                                                <span t-esc="'%.1f' % margin_pct"/>% Margin
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Conditional Alerts -->
+                            <div class="alerts mb16">
+                                <!-- Negative Net Profit Alert -->
+                                <t t-if="report_data.get('net_profit', 0) &lt; 0">
+                                    <div class="alert alert-danger" role="alert" style="border-left: 4px solid #f44336; background-color: #ffebee; padding: 12px; border-radius: 4px; margin-bottom: 10px;">
+                                        <strong>⚠ Critical Warning:</strong> Negative net profit detected!
+                                        <strong><span t-esc="'%.2f' % report_data['net_profit']"/></strong>
+                                        <br/>
+                                        <small>Immediate review required. Expenses exceed revenue in this period.</small>
+                                    </div>
+                                </t>
+
+                                <!-- Low Margin Alert -->
+                                <t t-if="report_data.get('net_profit', 0) >= 0 and margin_pct &lt; 5">
+                                    <div class="alert alert-warning" role="alert" style="border-left: 4px solid #FF9800; background-color: #fff3e0; padding: 12px; border-radius: 4px; margin-bottom: 10px;">
+                                        <strong>⚠ Caution:</strong> Profit margin below 5% threshold.
+                                        Current margin: <strong><span t-esc="'%.1f' % margin_pct"/>%</strong>
+                                        <br/>
+                                        <small>Consider cost reduction strategies or revenue optimization.</small>
+                                    </div>
+                                </t>
+
+                                <!-- Excellent Performance Alert -->
+                                <t t-if="report_data.get('net_profit', 0) > 0 and margin_pct >= 20">
+                                    <div class="alert alert-success" role="alert" style="border-left: 4px solid #4CAF50; background-color: #e8f5e9; padding: 12px; border-radius: 4px; margin-bottom: 10px;">
+                                        <strong>✓ Excellent Performance:</strong> Strong profit margin of <strong><span t-esc="'%.1f' % margin_pct"/>%</strong>!
+                                        <br/>
+                                        <small>Operations performing above industry standards. Continue current strategies.</small>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+
+                        <hr style="border-top: 2px solid #e0e0e0;"/>
+
+                        <!-- Report Content - General Ledger -->
+                        <t t-if="doc.report_type == 'gl'">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr style="background-color: #f5f5f5;">
+                                        <th>Date</th>
+                                        <th>Entry</th>
+                                        <th>Account</th>
+                                        <th>Partner</th>
+                                        <th>Label</th>
+                                        <th class="text-right">Debit</th>
+                                        <th class="text-right">Credit</th>
+                                        <th class="text-right">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="report_data['lines']" t-as="line">
+                                        <tr>
+                                            <td><span t-esc="line['date']"/></td>
+                                            <td>
+                                                <span t-esc="line['move_name']"/>
+                                                <!-- Drill-down: Show move_id for auditability -->
+                                                <t t-if="line.get('move_id')">
+                                                    <br/><small class="text-muted">(ID: <span t-esc="line['move_id']"/>)</small>
+                                                </t>
+                                            </td>
+                                            <td><span t-esc="line['account']"/></td>
+                                            <td><span t-esc="line['partner']"/></td>
+                                            <td><span t-esc="line['label']"/></td>
+                                            <td class="text-right"><span t-esc="'%.2f' % line['debit']"/></td>
+                                            <td class="text-right"><span t-esc="'%.2f' % line['credit']"/></td>
+                                            <td class="text-right"><span t-esc="'%.2f' % line['balance']"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Report Content - P&L -->
+                        <t t-if="doc.report_type == 'pl'">
+                            <h4>Income</h4>
+                            <table class="table table-sm table-bordered mb16">
+                                <thead>
+                                    <tr style="background-color: #f5f5f5;">
+                                        <th>Account</th>
+                                        <th class="text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="report_data['income_lines']" t-as="line">
+                                        <tr>
+                                            <td>
+                                                <span t-esc="line['account']"/>
+                                                <!-- Show account code for drill-down -->
+                                                <t t-if="line.get('account_id')">
+                                                    <br/><small class="text-muted">(Account ID: <span t-esc="line['account_id']"/>)</small>
+                                                </t>
+                                            </td>
+                                            <td class="text-right"><span t-esc="'%.2f' % line['amount']"/></td>
+                                        </tr>
+                                    </t>
+                                    <tr style="font-weight: bold; background-color: #e9ecef;">
+                                        <td>Total Income</td>
+                                        <td class="text-right"><span t-esc="'%.2f' % report_data['income_total']"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4>Expenses</h4>
+                            <table class="table table-sm table-bordered mb16">
+                                <thead>
+                                    <tr style="background-color: #f5f5f5;">
+                                        <th>Account</th>
+                                        <th class="text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="report_data['expense_lines']" t-as="line">
+                                        <tr>
+                                            <td>
+                                                <span t-esc="line['account']"/>
+                                                <!-- Show account code for drill-down -->
+                                                <t t-if="line.get('account_id')">
+                                                    <br/><small class="text-muted">(Account ID: <span t-esc="line['account_id']"/>)</small>
+                                                </t>
+                                            </td>
+                                            <td class="text-right"><span t-esc="'%.2f' % line['amount']"/></td>
+                                        </tr>
+                                    </t>
+                                    <tr style="font-weight: bold; background-color: #e9ecef;">
+                                        <td>Total Expenses</td>
+                                        <td class="text-right"><span t-esc="'%.2f' % report_data['expense_total']"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Enhanced Summary Table with Color Coding -->
+                            <table class="table table-sm table-bordered" style="margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                <tbody>
+                                    <tr style="font-weight: bold; background-color: #f5f5f5;">
+                                        <td style="padding: 12px;">Gross Profit</td>
+                                        <td class="text-right" style="padding: 12px;">
+                                            <span t-att-style="'color: %s; font-weight: bold;' % ('#2196F3' if report_data['gross_profit'] >= 0 else '#f44336')">
+                                                <span t-esc="'%.2f' % report_data['gross_profit']"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <t t-set="net_profit_color" t-value="'#4CAF50' if report_data['net_profit'] >= 0 else '#f44336'"/>
+                                    <tr style="font-weight: bold; font-size: 1.1em;" t-att-style="'background-color: %s; color: white;' % net_profit_color">
+                                        <td style="padding: 15px;">NET PROFIT / (LOSS)</td>
+                                        <td class="text-right" style="padding: 15px;">
+                                            <span t-esc="'%.2f' % report_data['net_profit']"/>
+                                            <t t-if="report_data['net_profit'] &lt; 0"> ⚠</t>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Profit Margin Analysis -->
+                            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 15px;">
+                                <h5 style="margin-top: 0; color: #667eea;">📊 Performance Metrics</h5>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <strong>Revenue:</strong> <span t-esc="'%.2f' % report_data['income_total']"/><br/>
+                                        <strong>Total Expenses:</strong> <span t-esc="'%.2f' % report_data['expense_total']"/><br/>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <t t-set="profit_margin" t-value="(report_data['net_profit'] / report_data['income_total'] * 100) if report_data.get('income_total', 0) > 0 else 0"/>
+                                        <strong>Profit Margin:</strong>
+                                        <span t-att-style="'color: %s; font-weight: bold;' % ('#4CAF50' if profit_margin >= 10 else '#FF9800' if profit_margin >= 5 else '#f44336')">
+                                            <span t-esc="'%.2f' % profit_margin"/>%
+                                        </span><br/>
+                                        <strong>Expense Ratio:</strong>
+                                        <span t-esc="'%.2f' % ((report_data['expense_total'] / report_data['income_total'] * 100) if report_data.get('income_total', 0) > 0 else 0)"/>%
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Report Content - Balance Sheet -->
+                        <t t-if="doc.report_type == 'bs'">
+                            <div class="row">
+                                <div class="col-6">
+                                    <h4>Assets</h4>
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr style="background-color: #f5f5f5;">
+                                                <th>Account</th>
+                                                <th class="text-right">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="report_data['asset_lines']" t-as="line">
+                                                <tr>
+                                                    <td><span t-esc="line['account']"/></td>
+                                                    <td class="text-right"><span t-esc="'%.2f' % line['amount']"/></td>
+                                                </tr>
+                                            </t>
+                                            <tr style="font-weight: bold; background-color: #e9ecef;">
+                                                <td>Total Assets</td>
+                                                <td class="text-right"><span t-esc="'%.2f' % report_data['asset_total']"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-6">
+                                    <h4>Liabilities</h4>
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr style="background-color: #f5f5f5;">
+                                                <th>Account</th>
+                                                <th class="text-right">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="report_data['liability_lines']" t-as="line">
+                                                <tr>
+                                                    <td><span t-esc="line['account']"/></td>
+                                                    <td class="text-right"><span t-esc="'%.2f' % line['amount']"/></td>
+                                                </tr>
+                                            </t>
+                                            <tr style="font-weight: bold; background-color: #e9ecef;">
+                                                <td>Total Liabilities</td>
+                                                <td class="text-right"><span t-esc="'%.2f' % report_data['liability_total']"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <h4>Equity</h4>
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr style="background-color: #f5f5f5;">
+                                                <th>Account</th>
+                                                <th class="text-right">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="report_data['equity_lines']" t-as="line">
+                                                <tr>
+                                                    <td><span t-esc="line['account']"/></td>
+                                                    <td class="text-right"><span t-esc="'%.2f' % line['amount']"/></td>
+                                                </tr>
+                                            </t>
+                                            <tr style="font-weight: bold; background-color: #e9ecef;">
+                                                <td>Total Equity</td>
+                                                <td class="text-right"><span t-esc="'%.2f' % report_data['equity_total']"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Report Content - Aged Partner -->
+                        <t t-if="doc.report_type == 'aged'">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr style="background-color: #f5f5f5;">
+                                        <th>Partner</th>
+                                        <th class="text-right">Debit</th>
+                                        <th class="text-right">Credit</th>
+                                        <th class="text-right">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="report_data['lines']" t-as="line">
+                                        <tr>
+                                            <td><span t-esc="line['partner']"/></td>
+                                            <td class="text-right"><span t-esc="'%.2f' % line['debit']"/></td>
+                                            <td class="text-right"><span t-esc="'%.2f' % line['credit']"/></td>
+                                            <td class="text-right"><span t-esc="'%.2f' % line['balance']"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <!-- Signature Section -->
+                        <div class="row mt64" style="margin-top: 60px; page-break-inside: avoid;">
+                            <div class="col-6" style="border-top: 2px solid #e0e0e0; padding-top: 20px;">
+                                <p style="margin-bottom: 5px;"><strong>Prepared by:</strong></p>
+                                <p style="margin-bottom: 30px;"><span t-esc="report_data['user']"/></p>
+                                <p style="margin-bottom: 5px;">Signature: _______________________</p>
+                                <p style="margin-bottom: 5px;">Date: <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/></p>
+                            </div>
+                            <div class="col-6 text-right" style="border-top: 2px solid #e0e0e0; padding-top: 20px;">
+                                <p style="margin-bottom: 5px;"><strong>Reviewed by:</strong></p>
+                                <p style="margin-bottom: 30px;">_______________________</p>
+                                <p style="margin-bottom: 5px;">Signature: _______________________</p>
+                                <p style="margin-bottom: 5px;">Date: _______________________</p>
+                            </div>
+                        </div>
+
+                        <!-- Footer Notes -->
+                        <div class="row mt16" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; page-break-inside: avoid;">
+                            <div class="col-12">
+                                <p style="margin: 0; font-size: 11px; color: #666;">
+                                    <strong>Notes:</strong> This report was generated by the OPS Matrix Financial Reporting System.
+                                    All figures are in the company's base currency. For audit trail purposes, all journal entries
+                                    are traceable via the move IDs shown in detail sections. Report accuracy depends on proper
+                                    classification of accounts and complete posting of all financial transactions.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

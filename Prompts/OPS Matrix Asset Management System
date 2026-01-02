@@ -1,0 +1,2131 @@
+# 🎯 PROJECT: OPS Matrix Asset Management System
+
+## OBJECTIVE
+Build a **native Fixed Asset Management system** within the `ops_matrix_accounting` module that fully integrates with the OPS Matrix Framework. This is NOT an adaptation of any external module - it must be built from scratch following OPS architectural patterns.
+
+---
+
+## 📚 FRAMEWORK CONTEXT
+
+### Architecture Principles (MUST FOLLOW)
+1. **Matrix Dimensions**: Every transactional model MUST have:
+   - `ops_branch_id` (Many2one to 'res.company', required)
+   - `ops_business_unit_id` (Many2one to 'ops.business.unit', required)
+   - Domain filtering: `[('id', 'in', allowed_company_ids)]` for branch
+
+2. **Drill-Down Hierarchy**: CEO → Branch → Business Unit → Individual Records
+
+3. **Governance Integration**: High-value operations trigger `ops.approval.request`
+
+4. **Audit Trail**: All state changes logged via `ops.audit.log`
+
+5. **Reporting Pattern**: Consolidated views with Branch/BU grouping and filtering
+
+---
+
+## 📁 FILE STRUCTURE TO CREATE
+
+```
+ops_matrix_accounting/
+├── models/
+│   ├── __init__.py                    # UPDATE: Add new imports
+│   ├── ops_asset_category.py          # NEW: Asset categories
+│   ├── ops_asset.py                   # NEW: Main asset model
+│   ├── ops_asset_depreciation.py      # NEW: Depreciation lines
+│   └── account_move.py                # NEW/UPDATE: Link to journal entries
+├── views/
+│   ├── ops_asset_category_views.xml   # NEW: Category management
+│   ├── ops_asset_views.xml            # NEW: Asset CRUD + analytics
+│   ├── ops_asset_depreciation_views.xml # NEW: Depreciation board
+│   └── ops_asset_menu.xml             # NEW: Menu structure
+├── wizard/
+│   ├── __init__.py                    # UPDATE: Add new imports
+│   ├── ops_asset_depreciation_wizard.py  # NEW: Run depreciation
+│   ├── ops_asset_disposal_wizard.py   # NEW: Dispose/Sell asset
+│   └── ops_asset_report_wizard.xml    # NEW: Asset register report
+├── report/
+│   ├── __init__.py                    # UPDATE: Add new imports
+│   ├── ops_asset_register_report.py   # NEW: Asset register logic
+│   ├── ops_asset_register_xlsx.py     # NEW: Excel export
+│   └── ops_asset_report_templates.xml # NEW: PDF template
+├── security/
+│   ├── ir.model.access.csv            # UPDATE: Add asset permissions
+│   └── ops_asset_security.xml         # NEW: Record rules
+└── data/
+    └── ops_asset_data.xml             # NEW: Default categories, sequences
+```
+
+---
+
+## 📐 MODEL SPECIFICATIONS
+
+### 1. `ops.asset.category` (ops_asset_category.py)
+
+```python
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+
+
+class OpsAssetCategory(models.Model):
+    _name = 'ops.asset.category'
+    _description = 'OPS Asset Category'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'name'
+
+    # === IDENTIFICATION ===
+    name = fields.Char(string='Category Name', required=True, tracking=True)
+    code = fields.Char(string='Code', required=True, tracking=True)
+    active = fields.Boolean(default=True)
+    
+    # === MATRIX DIMENSIONS (Optional for categories - serves as default) ===
+    ops_branch_id = fields.Many2one(
+        'res.company',
+        string='Default Branch',
+        help='Default branch for assets in this category. Leave empty for all branches.',
+        tracking=True
+    )
+    ops_business_unit_id = fields.Many2one(
+        'ops.business.unit',
+        string='Default Business Unit',
+        domain="[('company_id', '=', ops_branch_id)]",
+        help='Default BU for assets in this category.',
+        tracking=True
+    )
+    
+    # === DEPRECIATION SETTINGS ===
+    depreciation_method = fields.Selection([
+        ('linear', 'Straight Line / Linear'),
+        ('degressive', 'Declining Balance / Degressive'),
+        ('degressive_then_linear', 'Declining then Straight Line'),
+    ], string='Depreciation Method', default='linear', required=True, tracking=True)
+    
+    depreciation_duration = fields.Integer(
+        string='Duration (Months)',
+        default=60,
+        required=True,
+        help='Number of months for full depreciation'
+    )
+    depreciation_percentage = fields.Float(
+        string='Degressive Factor (%)',
+        default=30.0,
+        help='Annual depreciation percentage for declining balance method'
+    )
+    prorata_temporis = fields.Boolean(
+        string='Prorata Temporis',
+        default=True,
+        help='Calculate depreciation from acquisition date (not full first period)'
+    )
+    
+    # === ACCOUNTING ===
+    asset_account_id = fields.Many2one(
+        'account.account',
+        string='Asset Account',
+        required=True,
+        domain="[('account_type', '=', 'asset_non_current')]",
+        help='Account for asset gross value'
+    )
+    depreciation_account_id = fields.Many2one(
+        'account.account',
+        string='Depreciation Account',
+        required=True,
+        domain="[('account_type', '=', 'asset_non_current')]",
+        help='Accumulated depreciation account (contra asset)'
+    )
+    expense_account_id = fields.Many2one(
+        'account.account',
+        string='Expense Account',
+        required=True,
+        domain="[('account_type', '=', 'expense_depreciation')]",
+        help='Depreciation expense account (P&L)'
+    )
+    journal_id = fields.Many2one(
+        'account.journal',
+        string='Journal',
+        required=True,
+        domain="[('type', '=', 'general')]"
+    )
+    
+    # === ANALYTICS ===
+    analytic_account_id = fields.Many2one(
+        'account.analytic.account',
+        string='Analytic Account'
+    )
+    
+    # === GOVERNANCE ===
+    requires_approval_above = fields.Monetary(
+        string='Approval Required Above',
+        currency_field='currency_id',
+        default=0.0,
+        help='Assets above this value require governance approval'
+    )
+    currency_id = fields.Many2one(
+        'res.currency',
+        default=lambda self: self.env.company.currency_id
+    )
+    
+    # === RELATIONSHIPS ===
+    asset_ids = fields.One2many('ops.asset', 'category_id', string='Assets')
+    asset_count = fields.Integer(compute='_compute_asset_count', string='Asset Count')
+    
+    @api.depends('asset_ids')
+    def _compute_asset_count(self):
+        for rec in self:
+            rec.asset_count = len(rec.asset_ids)
+    
+    _sql_constraints = [
+        ('code_uniq', 'unique(code)', 'Category code must be unique!'),
+    ]
+```
+
+---
+
+### 2. `ops.asset` (ops_asset.py) - MAIN MODEL
+
+```python
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
+from dateutil.relativedelta import relativedelta
+import logging
+
+_logger = logging.getLogger(__name__)
+
+
+class OpsAsset(models.Model):
+    _name = 'ops.asset'
+    _description = 'OPS Fixed Asset'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'acquisition_date desc, id desc'
+    _check_company_auto = True
+
+    # === IDENTIFICATION ===
+    name = fields.Char(string='Asset Name', required=True, tracking=True, index=True)
+    code = fields.Char(string='Asset Code', readonly=True, copy=False, default='New')
+    
+    # === MATRIX DIMENSIONS (CRITICAL) ===
+    ops_branch_id = fields.Many2one(
+        'res.company',
+        string='Branch',
+        required=True,
+        default=lambda self: self.env.company,
+        tracking=True,
+        index=True,
+        domain="[('id', 'in', allowed_company_ids)]"
+    )
+    ops_business_unit_id = fields.Many2one(
+        'ops.business.unit',
+        string='Business Unit',
+        required=True,
+        tracking=True,
+        index=True,
+        domain="[('company_id', '=', ops_branch_id)]"
+    )
+    company_id = fields.Many2one(
+        'res.company',
+        related='ops_branch_id',
+        store=True,
+        string='Company'
+    )
+    allowed_company_ids = fields.Many2many(
+        'res.company',
+        compute='_compute_allowed_company_ids'
+    )
+    
+    @api.depends_context('allowed_company_ids')
+    def _compute_allowed_company_ids(self):
+        for rec in self:
+            rec.allowed_company_ids = self.env.context.get('allowed_company_ids', self.env.company.ids)
+    
+    # === CATEGORIZATION ===
+    category_id = fields.Many2one(
+        'ops.asset.category',
+        string='Category',
+        required=True,
+        tracking=True,
+        index=True
+    )
+    
+    # === STATE MANAGEMENT ===
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('pending_approval', 'Pending Approval'),
+        ('confirmed', 'Confirmed'),
+        ('running', 'Running'),
+        ('fully_depreciated', 'Fully Depreciated'),
+        ('disposed', 'Disposed'),
+        ('cancelled', 'Cancelled'),
+    ], string='Status', default='draft', tracking=True, index=True)
+    
+    # === FINANCIAL VALUES ===
+    currency_id = fields.Many2one(
+        'res.currency',
+        related='ops_branch_id.currency_id',
+        store=True
+    )
+    acquisition_value = fields.Monetary(
+        string='Acquisition Value',
+        required=True,
+        tracking=True,
+        currency_field='currency_id'
+    )
+    salvage_value = fields.Monetary(
+        string='Salvage Value',
+        default=0.0,
+        tracking=True,
+        currency_field='currency_id',
+        help='Residual value at end of useful life'
+    )
+    depreciable_value = fields.Monetary(
+        string='Depreciable Value',
+        compute='_compute_depreciable_value',
+        store=True,
+        currency_field='currency_id'
+    )
+    accumulated_depreciation = fields.Monetary(
+        string='Accumulated Depreciation',
+        compute='_compute_depreciation_totals',
+        store=True,
+        currency_field='currency_id'
+    )
+    book_value = fields.Monetary(
+        string='Book Value',
+        compute='_compute_depreciation_totals',
+        store=True,
+        currency_field='currency_id'
+    )
+    
+    @api.depends('acquisition_value', 'salvage_value')
+    def _compute_depreciable_value(self):
+        for asset in self:
+            asset.depreciable_value = asset.acquisition_value - asset.salvage_value
+    
+    @api.depends('depreciation_line_ids.amount', 'depreciation_line_ids.state', 'acquisition_value')
+    def _compute_depreciation_totals(self):
+        for asset in self:
+            posted_lines = asset.depreciation_line_ids.filtered(lambda l: l.state == 'posted')
+            asset.accumulated_depreciation = sum(posted_lines.mapped('amount'))
+            asset.book_value = asset.acquisition_value - asset.accumulated_depreciation
+    
+    # === DATES ===
+    acquisition_date = fields.Date(
+        string='Acquisition Date',
+        required=True,
+        default=fields.Date.today,
+        tracking=True
+    )
+    service_date = fields.Date(
+        string='In-Service Date',
+        tracking=True,
+        help='Date asset started being used (defaults to acquisition date)'
+    )
+    disposal_date = fields.Date(string='Disposal Date', tracking=True)
+    
+    # === DEPRECIATION SETTINGS (Inherited from category, can override) ===
+    depreciation_method = fields.Selection([
+        ('linear', 'Straight Line / Linear'),
+        ('degressive', 'Declining Balance / Degressive'),
+        ('degressive_then_linear', 'Declining then Straight Line'),
+    ], string='Depreciation Method', required=True, tracking=True)
+    depreciation_duration = fields.Integer(
+        string='Duration (Months)',
+        required=True,
+        tracking=True
+    )
+    depreciation_percentage = fields.Float(
+        string='Degressive Factor (%)',
+        tracking=True
+    )
+    prorata_temporis = fields.Boolean(string='Prorata Temporis', default=True)
+    
+    # === RELATIONSHIPS ===
+    depreciation_line_ids = fields.One2many(
+        'ops.asset.depreciation.line',
+        'asset_id',
+        string='Depreciation Board'
+    )
+    move_ids = fields.One2many(
+        'account.move',
+        'ops_asset_id',
+        string='Journal Entries'
+    )
+    move_count = fields.Integer(compute='_compute_move_count')
+    
+    # === ACCOUNTING LINKS ===
+    purchase_invoice_id = fields.Many2one(
+        'account.move',
+        string='Purchase Invoice',
+        domain="[('move_type', '=', 'in_invoice')]"
+    )
+    purchase_invoice_line_id = fields.Many2one(
+        'account.move.line',
+        string='Invoice Line'
+    )
+    
+    # === ASSET DETAILS ===
+    description = fields.Text(string='Description')
+    serial_number = fields.Char(string='Serial Number', tracking=True)
+    model = fields.Char(string='Model')
+    manufacturer = fields.Char(string='Manufacturer')
+    location = fields.Char(string='Physical Location')
+    
+    # === RESPONSIBLE ===
+    responsible_user_id = fields.Many2one(
+        'res.users',
+        string='Responsible',
+        default=lambda self: self.env.user,
+        tracking=True
+    )
+    department_id = fields.Many2one('hr.department', string='Department')
+    
+    # === GOVERNANCE ===
+    approval_request_id = fields.Many2one(
+        'ops.approval.request',
+        string='Approval Request',
+        readonly=True
+    )
+    
+    # === DISPOSAL ===
+    disposal_type = fields.Selection([
+        ('sale', 'Sale'),
+        ('scrap', 'Scrap'),
+        ('loss', 'Loss/Write-off'),
+        ('donation', 'Donation'),
+    ], string='Disposal Type')
+    disposal_value = fields.Monetary(
+        string='Disposal Value',
+        currency_field='currency_id'
+    )
+    disposal_gain_loss = fields.Monetary(
+        string='Gain/Loss on Disposal',
+        compute='_compute_disposal_gain_loss',
+        store=True,
+        currency_field='currency_id'
+    )
+    
+    @api.depends('disposal_value', 'book_value', 'state')
+    def _compute_disposal_gain_loss(self):
+        for asset in self:
+            if asset.state == 'disposed':
+                asset.disposal_gain_loss = asset.disposal_value - asset.book_value
+            else:
+                asset.disposal_gain_loss = 0.0
+    
+    @api.depends('move_ids')
+    def _compute_move_count(self):
+        for asset in self:
+            asset.move_count = len(asset.move_ids)
+    
+    # === SEQUENCES ===
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('code', 'New') == 'New':
+                vals['code'] = self.env['ir.sequence'].next_by_code('ops.asset') or 'New'
+            # Set service_date default
+            if not vals.get('service_date') and vals.get('acquisition_date'):
+                vals['service_date'] = vals['acquisition_date']
+        return super().create(vals_list)
+    
+    # === ONCHANGE ===
+    @api.onchange('category_id')
+    def _onchange_category_id(self):
+        if self.category_id:
+            self.depreciation_method = self.category_id.depreciation_method
+            self.depreciation_duration = self.category_id.depreciation_duration
+            self.depreciation_percentage = self.category_id.depreciation_percentage
+            self.prorata_temporis = self.category_id.prorata_temporis
+            if self.category_id.ops_branch_id and not self.ops_branch_id:
+                self.ops_branch_id = self.category_id.ops_branch_id
+            if self.category_id.ops_business_unit_id and not self.ops_business_unit_id:
+                self.ops_business_unit_id = self.category_id.ops_business_unit_id
+    
+    @api.onchange('ops_branch_id')
+    def _onchange_ops_branch_id(self):
+        """Reset BU when branch changes"""
+        if self.ops_business_unit_id and self.ops_business_unit_id.company_id != self.ops_branch_id:
+            self.ops_business_unit_id = False
+    
+    # === VALIDATION ===
+    @api.constrains('acquisition_value', 'salvage_value')
+    def _check_values(self):
+        for asset in self:
+            if asset.acquisition_value <= 0:
+                raise ValidationError(_('Acquisition value must be greater than zero.'))
+            if asset.salvage_value < 0:
+                raise ValidationError(_('Salvage value cannot be negative.'))
+            if asset.salvage_value > asset.acquisition_value:
+                raise ValidationError(_('Salvage value cannot exceed acquisition value.'))
+    
+    @api.constrains('depreciation_duration')
+    def _check_duration(self):
+        for asset in self:
+            if asset.depreciation_duration <= 0:
+                raise ValidationError(_('Depreciation duration must be greater than zero.'))
+    
+    # === STATE TRANSITIONS ===
+    def action_confirm(self):
+        """Confirm asset - check if approval required"""
+        for asset in self:
+            if asset.state != 'draft':
+                raise UserError(_('Only draft assets can be confirmed.'))
+            
+            # Check governance rules
+            if self._requires_approval(asset):
+                asset._create_approval_request()
+                asset.state = 'pending_approval'
+            else:
+                asset.state = 'confirmed'
+                asset._log_audit('confirm', _('Asset confirmed'))
+        return True
+    
+    def action_start_depreciation(self):
+        """Start depreciation - generate depreciation board"""
+        for asset in self:
+            if asset.state != 'confirmed':
+                raise UserError(_('Only confirmed assets can start depreciation.'))
+            asset._compute_depreciation_board()
+            asset.state = 'running'
+            asset._log_audit('start_depreciation', _('Depreciation started'))
+        return True
+    
+    def action_reset_to_draft(self):
+        """Reset to draft"""
+        for asset in self:
+            if asset.state not in ('confirmed', 'pending_approval', 'cancelled'):
+                raise UserError(_('Cannot reset to draft from current state.'))
+            # Check no posted depreciation
+            if asset.depreciation_line_ids.filtered(lambda l: l.state == 'posted'):
+                raise UserError(_('Cannot reset asset with posted depreciation entries.'))
+            asset.depreciation_line_ids.unlink()
+            asset.state = 'draft'
+            asset._log_audit('reset_draft', _('Asset reset to draft'))
+        return True
+    
+    def action_cancel(self):
+        """Cancel asset"""
+        for asset in self:
+            if asset.depreciation_line_ids.filtered(lambda l: l.state == 'posted'):
+                raise UserError(_('Cannot cancel asset with posted depreciation entries.'))
+            asset.state = 'cancelled'
+            asset._log_audit('cancel', _('Asset cancelled'))
+        return True
+    
+    def action_set_fully_depreciated(self):
+        """Mark as fully depreciated"""
+        for asset in self:
+            if asset.state == 'running' and asset.book_value <= asset.salvage_value:
+                asset.state = 'fully_depreciated'
+                asset._log_audit('fully_depreciated', _('Asset fully depreciated'))
+        return True
+    
+    # === DEPRECIATION BOARD COMPUTATION ===
+    def _compute_depreciation_board(self):
+        """Generate depreciation schedule based on method"""
+        self.ensure_one()
+        self.depreciation_line_ids.filtered(lambda l: l.state == 'draft').unlink()
+        
+        if self.depreciation_method == 'linear':
+            self._compute_linear_depreciation()
+        elif self.depreciation_method == 'degressive':
+            self._compute_degressive_depreciation()
+        else:
+            self._compute_degressive_then_linear()
+    
+    def _compute_linear_depreciation(self):
+        """Straight-line depreciation calculation"""
+        self.ensure_one()
+        
+        depreciable = self.depreciable_value
+        duration = self.depreciation_duration
+        
+        if duration <= 0 or depreciable <= 0:
+            return
+        
+        monthly_amount = depreciable / duration
+        start_date = self.service_date or self.acquisition_date
+        
+        # Prorata for first month
+        lines = []
+        remaining = depreciable
+        
+        for i in range(duration):
+            dep_date = start_date + relativedelta(months=i)
+            
+            if i == duration - 1:
+                # Last line takes remaining
+                amount = remaining
+            else:
+                amount = min(monthly_amount, remaining)
+            
+            if amount > 0:
+                lines.append({
+                    'asset_id': self.id,
+                    'sequence': i + 1,
+                    'depreciation_date': dep_date,
+                    'amount': amount,
+                    'cumulative_amount': depreciable - remaining + amount,
+                    'remaining_value': remaining - amount,
+                    'state': 'draft',
+                })
+            remaining -= amount
+        
+        self.env['ops.asset.depreciation.line'].create(lines)
+    
+    def _compute_degressive_depreciation(self):
+        """Declining balance depreciation"""
+        self.ensure_one()
+        
+        annual_rate = self.depreciation_percentage / 100
+        duration = self.depreciation_duration
+        start_date = self.service_date or self.acquisition_date
+        
+        lines = []
+        remaining = self.depreciable_value
+        cumulative = 0
+        
+        for i in range(duration):
+            dep_date = start_date + relativedelta(months=i)
+            
+            # Monthly degressive amount
+            amount = (remaining * annual_rate) / 12
+            amount = min(amount, remaining - self.salvage_value)
+            
+            if amount <= 0:
+                break
+            
+            cumulative += amount
+            remaining -= amount
+            
+            lines.append({
+                'asset_id': self.id,
+                'sequence': i + 1,
+                'depreciation_date': dep_date,
+                'amount': amount,
+                'cumulative_amount': cumulative,
+                'remaining_value': remaining,
+                'state': 'draft',
+            })
+        
+        self.env['ops.asset.depreciation.line'].create(lines)
+    
+    def _compute_degressive_then_linear(self):
+        """Declining balance switching to straight-line when more advantageous"""
+        # Similar logic - switch when linear > degressive
+        self._compute_degressive_depreciation()  # Simplified for now
+    
+    # === GOVERNANCE INTEGRATION ===
+    def _requires_approval(self, asset):
+        """Check if asset requires approval based on governance rules"""
+        # Check category threshold
+        if asset.category_id.requires_approval_above:
+            if asset.acquisition_value > asset.category_id.requires_approval_above:
+                return True
+        
+        # Check governance rules
+        rules = self.env['ops.governance.rule'].search([
+            ('model_name', '=', 'ops.asset'),
+            ('active', '=', True),
+            '|',
+            ('ops_branch_id', '=', False),
+            ('ops_branch_id', '=', asset.ops_branch_id.id),
+        ])
+        
+        for rule in rules:
+            if asset.acquisition_value > rule.threshold_amount:
+                return True
+        
+        return False
+    
+    def _create_approval_request(self):
+        """Create approval request for high-value asset"""
+        self.ensure_one()
+        request = self.env['ops.approval.request'].create({
+            'name': _('Asset Approval: %s') % self.name,
+            'request_type': 'asset_acquisition',
+            'model_name': 'ops.asset',
+            'res_id': self.id,
+            'ops_branch_id': self.ops_branch_id.id,
+            'ops_business_unit_id': self.ops_business_unit_id.id,
+            'amount': self.acquisition_value,
+            'requested_by': self.env.user.id,
+            'description': _('Approval required for asset: %s\nValue: %s %s') % (
+                self.name, self.acquisition_value, self.currency_id.symbol
+            ),
+        })
+        self.approval_request_id = request
+        return request
+    
+    def action_approve(self):
+        """Called when approval is granted"""
+        for asset in self:
+            if asset.state == 'pending_approval':
+                asset.state = 'confirmed'
+                asset._log_audit('approved', _('Asset approved'))
+        return True
+    
+    def action_reject(self):
+        """Called when approval is rejected"""
+        for asset in self:
+            if asset.state == 'pending_approval':
+                asset.state = 'draft'
+                asset._log_audit('rejected', _('Asset approval rejected'))
+        return True
+    
+    # === AUDIT LOGGING ===
+    def _log_audit(self, action, description):
+        """Create audit log entry"""
+        self.ensure_one()
+        if hasattr(self.env, 'ops.audit.log'):
+            try:
+                self.env['ops.audit.log'].create({
+                    'model_name': 'ops.asset',
+                    'res_id': self.id,
+                    'action': action,
+                    'description': description,
+                    'ops_branch_id': self.ops_branch_id.id,
+                    'ops_business_unit_id': self.ops_business_unit_id.id,
+                    'user_id': self.env.user.id,
+                })
+            except Exception as e:
+                _logger.warning('Could not create audit log: %s', e)
+    
+    # === SMART BUTTONS ===
+    def action_view_moves(self):
+        """Open related journal entries"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Journal Entries'),
+            'res_model': 'account.move',
+            'view_mode': 'tree,form',
+            'domain': [('ops_asset_id', '=', self.id)],
+            'context': {'default_ops_asset_id': self.id},
+        }
+    
+    def action_open_depreciation_board(self):
+        """Open depreciation board"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Depreciation Board'),
+            'res_model': 'ops.asset.depreciation.line',
+            'view_mode': 'tree,form',
+            'domain': [('asset_id', '=', self.id)],
+            'context': {'default_asset_id': self.id},
+        }
+```
+
+---
+
+### 3. `ops.asset.depreciation.line` (ops_asset_depreciation.py)
+
+```python
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+
+
+class OpsAssetDepreciationLine(models.Model):
+    _name = 'ops.asset.depreciation.line'
+    _description = 'OPS Asset Depreciation Line'
+    _order = 'depreciation_date, sequence'
+
+    # === RELATIONSHIPS ===
+    asset_id = fields.Many2one(
+        'ops.asset',
+        string='Asset',
+        required=True,
+        ondelete='cascade',
+        index=True
+    )
+    move_id = fields.Many2one(
+        'account.move',
+        string='Journal Entry',
+        readonly=True
+    )
+    
+    # === MATRIX DIMENSIONS (Inherited for filtering/reporting) ===
+    ops_branch_id = fields.Many2one(
+        related='asset_id.ops_branch_id',
+        store=True,
+        index=True
+    )
+    ops_business_unit_id = fields.Many2one(
+        related='asset_id.ops_business_unit_id',
+        store=True,
+        index=True
+    )
+    
+    # === LINE DETAILS ===
+    sequence = fields.Integer(string='#', required=True)
+    depreciation_date = fields.Date(
+        string='Depreciation Date',
+        required=True,
+        index=True
+    )
+    
+    # === AMOUNTS ===
+    currency_id = fields.Many2one(related='asset_id.currency_id', store=True)
+    amount = fields.Monetary(
+        string='Depreciation Amount',
+        required=True,
+        currency_field='currency_id'
+    )
+    cumulative_amount = fields.Monetary(
+        string='Cumulative Depreciation',
+        currency_field='currency_id'
+    )
+    remaining_value = fields.Monetary(
+        string='Book Value',
+        currency_field='currency_id'
+    )
+    
+    # === STATE ===
+    state = fields.Selection([
+        ('draft', 'Scheduled'),
+        ('posted', 'Posted'),
+        ('cancelled', 'Cancelled'),
+    ], string='Status', default='draft', index=True)
+    
+    # === ACTIONS ===
+    def action_post_depreciation(self):
+        """Post depreciation entry to accounting"""
+        for line in self:
+            if line.state != 'draft':
+                raise UserError(_('Only scheduled lines can be posted.'))
+            
+            move = line._create_depreciation_move()
+            move.action_post()
+            
+            line.write({
+                'move_id': move.id,
+                'state': 'posted'
+            })
+            
+            # Check if fully depreciated
+            line.asset_id.action_set_fully_depreciated()
+        
+        return True
+    
+    def _create_depreciation_move(self):
+        """Create journal entry for depreciation"""
+        self.ensure_one()
+        asset = self.asset_id
+        category = asset.category_id
+        
+        move_vals = {
+            'journal_id': category.journal_id.id,
+            'date': self.depreciation_date,
+            'ref': _('Depreciation: %s') % asset.name,
+            'ops_asset_id': asset.id,
+            'ops_branch_id': asset.ops_branch_id.id,
+            'ops_business_unit_id': asset.ops_business_unit_id.id,
+            'line_ids': [
+                # Debit: Depreciation Expense
+                (0, 0, {
+                    'name': _('Depreciation: %s') % asset.name,
+                    'account_id': category.expense_account_id.id,
+                    'debit': self.amount,
+                    'credit': 0.0,
+                    'ops_branch_id': asset.ops_branch_id.id,
+                    'ops_business_unit_id': asset.ops_business_unit_id.id,
+                    'analytic_distribution': {str(category.analytic_account_id.id): 100} if category.analytic_account_id else False,
+                }),
+                # Credit: Accumulated Depreciation
+                (0, 0, {
+                    'name': _('Accumulated Dep: %s') % asset.name,
+                    'account_id': category.depreciation_account_id.id,
+                    'debit': 0.0,
+                    'credit': self.amount,
+                    'ops_branch_id': asset.ops_branch_id.id,
+                    'ops_business_unit_id': asset.ops_business_unit_id.id,
+                }),
+            ],
+        }
+        
+        return self.env['account.move'].create(move_vals)
+    
+    def action_cancel(self):
+        """Cancel posted depreciation (reverse entry)"""
+        for line in self:
+            if line.state != 'posted':
+                raise UserError(_('Only posted lines can be cancelled.'))
+            if line.move_id:
+                line.move_id.button_cancel()
+                line.move_id.unlink()
+            line.state = 'cancelled'
+        return True
+```
+
+---
+
+### 4. Extend `account.move` (account_move.py)
+
+```python
+# -*- coding: utf-8 -*-
+from odoo import models, fields
+
+
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+    
+    # Link to asset (for depreciation entries)
+    ops_asset_id = fields.Many2one(
+        'ops.asset',
+        string='Related Asset',
+        index=True,
+        ondelete='set null'
+    )
+
+
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
+    
+    ops_asset_id = fields.Many2one(
+        related='move_id.ops_asset_id',
+        store=True,
+        string='Related Asset'
+    )
+```
+
+---
+
+## 🎨 VIEW SPECIFICATIONS
+
+### 5. Asset Views (ops_asset_views.xml)
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ ASSET FORM VIEW ============ -->
+    <record id="ops_asset_view_form" model="ir.ui.view">
+        <field name="name">ops.asset.form</field>
+        <field name="model">ops.asset</field>
+        <field name="arch" type="xml">
+            <form string="Fixed Asset">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_start_depreciation" string="Start Depreciation" type="object"
+                            class="btn-primary"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object"
+                            invisible="state not in ('confirmed', 'pending_approval', 'cancelled')"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('disposed', 'cancelled')"/>
+                    <button name="%(ops_matrix_accounting.action_asset_disposal_wizard)d" 
+                            string="Dispose Asset" type="action"
+                            class="btn-warning"
+                            invisible="state not in ('running', 'fully_depreciated')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,running,fully_depreciated"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_moves" type="object"
+                                class="oe_stat_button" icon="fa-book">
+                            <field name="move_count" widget="statinfo" string="Entries"/>
+                        </button>
+                        <button name="action_open_depreciation_board" type="object"
+                                class="oe_stat_button" icon="fa-calendar">
+                            <span>Depreciation Board</span>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Disposed" bg_color="bg-danger"
+                            invisible="state != 'disposed'"/>
+                    <widget name="web_ribbon" title="Pending Approval" bg_color="bg-warning"
+                            invisible="state != 'pending_approval'"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Asset Name..."/>
+                        </h1>
+                        <h4>
+                            <field name="code" readonly="1"/>
+                        </h4>
+                    </div>
+                    
+                    <!-- MATRIX DIMENSIONS - PROMINENT PLACEMENT -->
+                    <group>
+                        <group string="Matrix Dimensions" class="oe_highlight">
+                            <field name="ops_branch_id" options="{'no_create': True}"/>
+                            <field name="ops_business_unit_id" options="{'no_create': True}"/>
+                            <field name="allowed_company_ids" invisible="1"/>
+                        </group>
+                        <group string="Classification">
+                            <field name="category_id"/>
+                            <field name="responsible_user_id"/>
+                            <field name="department_id"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <!-- TAB 1: FINANCIAL -->
+                        <page string="Financial" name="financial">
+                            <group>
+                                <group string="Values">
+                                    <field name="acquisition_value"/>
+                                    <field name="salvage_value"/>
+                                    <field name="depreciable_value"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                                <group string="Current Status">
+                                    <field name="accumulated_depreciation"/>
+                                    <field name="book_value" class="oe_highlight"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="Dates">
+                                    <field name="acquisition_date"/>
+                                    <field name="service_date"/>
+                                    <field name="disposal_date" invisible="state != 'disposed'"/>
+                                </group>
+                                <group string="Source">
+                                    <field name="purchase_invoice_id"/>
+                                    <field name="purchase_invoice_line_id"
+                                           domain="[('move_id', '=', purchase_invoice_id)]"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- TAB 2: DEPRECIATION SETTINGS -->
+                        <page string="Depreciation" name="depreciation">
+                            <group>
+                                <group string="Method">
+                                    <field name="depreciation_method"/>
+                                    <field name="depreciation_duration"/>
+                                    <field name="depreciation_percentage"
+                                           invisible="depreciation_method == 'linear'"/>
+                                    <field name="prorata_temporis"/>
+                                </group>
+                            </group>
+                            <separator string="Depreciation Schedule"/>
+                            <field name="depreciation_line_ids" readonly="state != 'running'">
+                                <tree string="Depreciation Board" editable="bottom"
+                                      decoration-success="state == 'posted'"
+                                      decoration-muted="state == 'cancelled'">
+                                    <field name="sequence" readonly="1"/>
+                                    <field name="depreciation_date"/>
+                                    <field name="amount"/>
+                                    <field name="cumulative_amount"/>
+                                    <field name="remaining_value"/>
+                                    <field name="state"/>
+                                    <field name="move_id" optional="show"/>
+                                    <button name="action_post_depreciation" type="object"
+                                            string="Post" icon="fa-check"
+                                            invisible="state != 'draft'"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <!-- TAB 3: ASSET DETAILS -->
+                        <page string="Details" name="details">
+                            <group>
+                                <group string="Identification">
+                                    <field name="serial_number"/>
+                                    <field name="model"/>
+                                    <field name="manufacturer"/>
+                                </group>
+                                <group string="Location">
+                                    <field name="location"/>
+                                </group>
+                            </group>
+                            <separator string="Description"/>
+                            <field name="description" placeholder="Additional notes..."/>
+                        </page>
+                        
+                        <!-- TAB 4: DISPOSAL (if disposed) -->
+                        <page string="Disposal" name="disposal"
+                              invisible="state != 'disposed'">
+                            <group>
+                                <group>
+                                    <field name="disposal_type"/>
+                                    <field name="disposal_date"/>
+                                </group>
+                                <group>
+                                    <field name="disposal_value"/>
+                                    <field name="disposal_gain_loss"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- TAB 5: GOVERNANCE -->
+                        <page string="Governance" name="governance"
+                              invisible="not approval_request_id">
+                            <group>
+                                <field name="approval_request_id"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+    <!-- ============ ASSET TREE VIEW ============ -->
+    <record id="ops_asset_view_tree" model="ir.ui.view">
+        <field name="name">ops.asset.tree</field>
+        <field name="model">ops.asset</field>
+        <field name="arch" type="xml">
+            <tree string="Fixed Assets"
+                  decoration-warning="state == 'pending_approval'"
+                  decoration-success="state == 'running'"
+                  decoration-muted="state in ('disposed', 'cancelled')"
+                  decoration-info="state == 'fully_depreciated'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="ops_branch_id"/>
+                <field name="ops_business_unit_id"/>
+                <field name="category_id"/>
+                <field name="acquisition_date"/>
+                <field name="acquisition_value" sum="Total Acquisition"/>
+                <field name="accumulated_depreciation" sum="Total Depreciation"/>
+                <field name="book_value" sum="Total Book Value"/>
+                <field name="state"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- ============ ASSET SEARCH VIEW ============ -->
+    <record id="ops_asset_view_search" model="ir.ui.view">
+        <field name="name">ops.asset.search</field>
+        <field name="model">ops.asset</field>
+        <field name="arch" type="xml">
+            <search string="Search Assets">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="serial_number"/>
+                <field name="category_id"/>
+                <field name="ops_branch_id"/>
+                <field name="ops_business_unit_id"/>
+                <separator/>
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_running" string="Running" domain="[('state', '=', 'running')]"/>
+                <filter name="filter_fully_depreciated" string="Fully Depreciated" 
+                        domain="[('state', '=', 'fully_depreciated')]"/>
+                <filter name="filter_disposed" string="Disposed" domain="[('state', '=', 'disposed')]"/>
+                <separator/>
+                <filter name="filter_pending_approval" string="Pending Approval"
+                        domain="[('state', '=', 'pending_approval')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Branch" name="groupby_branch" context="{'group_by': 'ops_branch_id'}"/>
+                    <filter string="Business Unit" name="groupby_bu" context="{'group_by': 'ops_business_unit_id'}"/>
+                    <filter string="Category" name="groupby_category" context="{'group_by': 'category_id'}"/>
+                    <filter string="Status" name="groupby_state" context="{'group_by': 'state'}"/>
+                    <filter string="Acquisition Month" name="groupby_acq_month"
+                            context="{'group_by': 'acquisition_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- ============ ASSET PIVOT VIEW (DRILL-DOWN) ============ -->
+    <record id="ops_asset_view_pivot" model="ir.ui.view">
+        <field name="name">ops.asset.pivot</field>
+        <field name="model">ops.asset</field>
+        <field name="arch" type="xml">
+            <pivot string="Asset Analysis">
+                <field name="ops_branch_id" type="row"/>
+                <field name="ops_business_unit_id" type="row"/>
+                <field name="category_id" type="col"/>
+                <field name="acquisition_value" type="measure"/>
+                <field name="accumulated_depreciation" type="measure"/>
+                <field name="book_value" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    
+    <!-- ============ ASSET GRAPH VIEW ============ -->
+    <record id="ops_asset_view_graph" model="ir.ui.view">
+        <field name="name">ops.asset.graph</field>
+        <field name="model">ops.asset</field>
+        <field name="arch" type="xml">
+            <graph string="Assets by Branch" type="bar">
+                <field name="ops_branch_id"/>
+                <field name="book_value" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    
+    <!-- ============ ASSET KANBAN VIEW ============ -->
+    <record id="ops_asset_view_kanban" model="ir.ui.view">
+        <field name="name">ops.asset.kanban</field>
+        <field name="model">ops.asset</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="ops_branch_id"/>
+                <field name="ops_business_unit_id"/>
+                <field name="book_value"/>
+                <field name="state"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <strong><field name="name"/></strong>
+                                <span class="float-end badge rounded-pill">
+                                    <field name="state"/>
+                                </span>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <field name="code"/> | <field name="category_id"/>
+                                <div>
+                                    <strong>Branch:</strong> <field name="ops_branch_id"/>
+                                </div>
+                                <div>
+                                    <strong>BU:</strong> <field name="ops_business_unit_id"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    Book Value: <field name="book_value" widget="monetary"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- ============ ACTIONS ============ -->
+    <record id="action_ops_asset" model="ir.actions.act_window">
+        <field name="name">Fixed Assets</field>
+        <field name="res_model">ops.asset</field>
+        <field name="view_mode">tree,form,pivot,graph,kanban</field>
+        <field name="search_view_id" ref="ops_asset_view_search"/>
+        <field name="context">{'search_default_filter_running': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first fixed asset
+            </p>
+            <p>
+                Track and manage fixed assets across branches and business units.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Action for Consolidated View (CEO Level) -->
+    <record id="action_ops_asset_consolidated" model="ir.actions.act_window">
+        <field name="name">Asset Analysis</field>
+        <field name="res_model">ops.asset</field>
+        <field name="view_mode">pivot,graph,tree</field>
+        <field name="search_view_id" ref="ops_asset_view_search"/>
+        <field name="context">{'search_default_groupby_branch': 1}</field>
+    </record>
+</odoo>
+```
+
+---
+
+## 🔐 SECURITY SPECIFICATIONS
+
+### 6. Security Rules (ops_asset_security.xml)
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ RECORD RULES ============ -->
+    
+    <!-- Asset: User sees own Branch/BU -->
+    <record id="ops_asset_rule_user" model="ir.rule">
+        <field name="name">OPS Asset: User Branch/BU</field>
+        <field name="model_id" ref="model_ops_asset"/>
+        <field name="domain_force">[
+            ('ops_branch_id', 'in', company_ids),
+            '|',
+            ('ops_business_unit_id', '=', False),
+            ('ops_business_unit_id.user_ids', 'in', [user.id])
+        ]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- Asset: Manager sees all in Branch -->
+    <record id="ops_asset_rule_manager" model="ir.rule">
+        <field name="name">OPS Asset: Manager Full Branch</field>
+        <field name="model_id" ref="model_ops_asset"/>
+        <field name="domain_force">[('ops_branch_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('account.group_account_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    
+    <!-- Depreciation Line: Same as Asset -->
+    <record id="ops_asset_depreciation_rule_user" model="ir.rule">
+        <field name="name">OPS Depreciation: User Branch/BU</field>
+        <field name="model_id" ref="model_ops_asset_depreciation_line"/>
+        <field name="domain_force">[('ops_branch_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    
+    <!-- Category: All users can read -->
+    <record id="ops_asset_category_rule_read" model="ir.rule">
+        <field name="name">OPS Asset Category: Read All</field>
+        <field name="model_id" ref="model_ops_asset_category"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>
+```
+
+### 7. Access Rights (ir.model.access.csv) - ADD THESE LINES
+
+```csv
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ops_asset_category_user,ops.asset.category.user,model_ops_asset_category,account.group_account_invoice,1,0,0,0
+access_ops_asset_category_manager,ops.asset.category.manager,model_ops_asset_category,account.group_account_manager,1,1,1,1
+access_ops_asset_user,ops.asset.user,model_ops_asset,account.group_account_invoice,1,1,1,0
+access_ops_asset_manager,ops.asset.manager,model_ops_asset,account.group_account_manager,1,1,1,1
+access_ops_asset_depreciation_user,ops.asset.depreciation.user,model_ops_asset_depreciation_line,account.group_account_invoice,1,0,0,0
+access_ops_asset_depreciation_manager,ops.asset.depreciation.manager,model_ops_asset_depreciation_line,account.group_account_manager,1,1,1,1
+```
+
+---
+
+## 🧙 WIZARD SPECIFICATIONS
+
+### 8. Disposal Wizard (ops_asset_disposal_wizard.py)
+
+```python
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+
+
+class OpsAssetDisposalWizard(models.TransientModel):
+    _name = 'ops.asset.disposal.wizard'
+    _description = 'Asset Disposal Wizard'
+
+    asset_id = fields.Many2one(
+        'ops.asset',
+        string='Asset',
+        required=True,
+        default=lambda self: self.env.context.get('active_id')
+    )
+    disposal_date = fields.Date(
+        string='Disposal Date',
+        required=True,
+        default=fields.Date.today
+    )
+    disposal_type = fields.Selection([
+        ('sale', 'Sale'),
+        ('scrap', 'Scrap'),
+        ('loss', 'Loss/Write-off'),
+        ('donation', 'Donation'),
+    ], string='Disposal Type', required=True, default='sale')
+    
+    disposal_value = fields.Monetary(
+        string='Disposal Value',
+        currency_field='currency_id'
+    )
+    currency_id = fields.Many2one(
+        related='asset_id.currency_id'
+    )
+    
+    # Info fields
+    book_value = fields.Monetary(
+        related='asset_id.book_value',
+        string='Current Book Value'
+    )
+    gain_loss = fields.Monetary(
+        string='Expected Gain/Loss',
+        compute='_compute_gain_loss',
+        currency_field='currency_id'
+    )
+    
+    # Governance
+    requires_approval = fields.Boolean(
+        compute='_compute_requires_approval'
+    )
+    
+    @api.depends('disposal_value', 'book_value')
+    def _compute_gain_loss(self):
+        for wiz in self:
+            wiz.gain_loss = wiz.disposal_value - wiz.book_value
+    
+    @api.depends('asset_id', 'book_value')
+    def _compute_requires_approval(self):
+        for wiz in self:
+            wiz.requires_approval = wiz.book_value > 0  # Simplified check
+    
+    def action_dispose(self):
+        """Process asset disposal"""
+        self.ensure_one()
+        asset = self.asset_id
+        
+        # Post any remaining scheduled depreciation up to disposal date
+        pending_lines = asset.depreciation_line_ids.filtered(
+            lambda l: l.state == 'draft' and l.depreciation_date <= self.disposal_date
+        )
+        pending_lines.action_post_depreciation()
+        
+        # Create disposal journal entry
+        self._create_disposal_move()
+        
+        # Update asset
+        asset.write({
+            'state': 'disposed',
+            'disposal_date': self.disposal_date,
+            'disposal_type': self.disposal_type,
+            'disposal_value': self.disposal_value,
+        })
+        
+        asset._log_audit('disposed', _('Asset disposed via %s') % self.disposal_type)
+        
+        return {'type': 'ir.actions.act_window_close'}
+    
+    def _create_disposal_move(self):
+        """Create disposal journal entry"""
+        self.ensure_one()
+        asset = self.asset_id
+        category = asset.category_id
+        
+        lines = []
+        
+        # 1. Remove asset from books (Credit Asset Account)
+        lines.append((0, 0, {
+            'name': _('Disposal: %s') % asset.name,
+            'account_id': category.asset_account_id.id,
+            'debit': 0.0,
+            'credit': asset.acquisition_value,
+            'ops_branch_id': asset.ops_branch_id.id,
+            'ops_business_unit_id': asset.ops_business_unit_id.id,
+        }))
+        
+        # 2. Remove accumulated depreciation (Debit Acc. Dep.)
+        lines.append((0, 0, {
+            'name': _('Acc. Dep. Reversal: %s') % asset.name,
+            'account_id': category.depreciation_account_id.id,
+            'debit': asset.accumulated_depreciation,
+            'credit': 0.0,
+            'ops_branch_id': asset.ops_branch_id.id,
+            'ops_business_unit_id': asset.ops_business_unit_id.id,
+        }))
+        
+        # 3. Record disposal proceeds (if sale)
+        if self.disposal_value > 0:
+            # Debit Cash/Receivables
+            lines.append((0, 0, {
+                'name': _('Disposal Proceeds: %s') % asset.name,
+                'account_id': self.env.company.account_journal_payment_debit_account_id.id,
+                'debit': self.disposal_value,
+                'credit': 0.0,
+                'ops_branch_id': asset.ops_branch_id.id,
+                'ops_business_unit_id': asset.ops_business_unit_id.id,
+            }))
+        
+        # 4. Gain or Loss
+        gain_loss = self.disposal_value - asset.book_value
+        if gain_loss != 0:
+            # TODO: Configure gain/loss accounts in category
+            gain_loss_account = category.expense_account_id  # Simplified
+            lines.append((0, 0, {
+                'name': _('Gain/Loss on Disposal: %s') % asset.name,
+                'account_id': gain_loss_account.id,
+                'debit': max(0, -gain_loss),  # Loss
+                'credit': max(0, gain_loss),   # Gain
+                'ops_branch_id': asset.ops_branch_id.id,
+                'ops_business_unit_id': asset.ops_business_unit_id.id,
+            }))
+        
+        move = self.env['account.move'].create({
+            'journal_id': category.journal_id.id,
+            'date': self.disposal_date,
+            'ref': _('Asset Disposal: %s') % asset.name,
+            'ops_asset_id': asset.id,
+            'ops_branch_id': asset.ops_branch_id.id,
+            'ops_business_unit_id': asset.ops_business_unit_id.id,
+            'line_ids': lines,
+        })
+        
+        move.action_post()
+        return move
+```
+
+---
+
+## 📊 REPORTING SPECIFICATIONS
+
+### 9. Asset Register Report (ops_asset_register_report.py) - CONTINUED
+
+```python
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+
+
+class OpsAssetRegisterReport(models.TransientModel):
+    _name = 'ops.asset.register.report'
+    _description = 'OPS Asset Register Report'
+
+    # === FILTERS ===
+    date_from = fields.Date(
+        string='From Date',
+        required=True,
+        default=lambda self: fields.Date.today().replace(month=1, day=1)
+    )
+    date_to = fields.Date(
+        string='To Date',
+        required=True,
+        default=fields.Date.today
+    )
+    
+    # === MATRIX FILTERS ===
+    ops_branch_ids = fields.Many2many(
+        'res.company',
+        string='Branches',
+        help='Leave empty for all branches'
+    )
+    ops_business_unit_ids = fields.Many2many(
+        'ops.business.unit',
+        string='Business Units',
+        help='Leave empty for all BUs'
+    )
+    
+    # === OTHER FILTERS ===
+    category_ids = fields.Many2many(
+        'ops.asset.category',
+        string='Categories',
+        help='Leave empty for all categories'
+    )
+    state = fields.Selection([
+        ('all', 'All'),
+        ('draft', 'Draft'),
+        ('running', 'Running'),
+        ('fully_depreciated', 'Fully Depreciated'),
+        ('disposed', 'Disposed'),
+    ], string='Status', default='all')
+    
+    # === GROUPING ===
+    group_by = fields.Selection([
+        ('branch', 'Branch'),
+        ('business_unit', 'Business Unit'),
+        ('category', 'Category'),
+        ('branch_bu', 'Branch → Business Unit'),
+        ('branch_category', 'Branch → Category'),
+    ], string='Group By', default='branch_bu')
+    
+    # === OUTPUT ===
+    output_format = fields.Selection([
+        ('pdf', 'PDF'),
+        ('xlsx', 'Excel'),
+    ], string='Format', default='xlsx')
+
+    def _get_domain(self):
+        """Build domain based on filters"""
+        domain = []
+        
+        # Date filter - assets acquired in range OR still active
+        domain += [
+            '|',
+            '&', ('acquisition_date', '>=', self.date_from),
+                 ('acquisition_date', '<=', self.date_to),
+            '&', ('acquisition_date', '<=', self.date_to),
+                 '|', ('disposal_date', '=', False),
+                      ('disposal_date', '>=', self.date_from)
+        ]
+        
+        # Branch filter
+        if self.ops_branch_ids:
+            domain.append(('ops_branch_id', 'in', self.ops_branch_ids.ids))
+        
+        # BU filter
+        if self.ops_business_unit_ids:
+            domain.append(('ops_business_unit_id', 'in', self.ops_business_unit_ids.ids))
+        
+        # Category filter
+        if self.category_ids:
+            domain.append(('category_id', 'in', self.category_ids.ids))
+        
+        # State filter
+        if self.state != 'all':
+            domain.append(('state', '=', self.state))
+        
+        return domain
+
+    def _get_report_data(self):
+        """Fetch and organize report data"""
+        domain = self._get_domain()
+        assets = self.env['ops.asset'].search(domain, order='ops_branch_id, ops_business_unit_id, category_id, name')
+        
+        # Group data
+        grouped_data = {}
+        totals = {
+            'acquisition_value': 0,
+            'accumulated_depreciation': 0,
+            'book_value': 0,
+            'count': 0,
+        }
+        
+        for asset in assets:
+            # Determine group key
+            if self.group_by == 'branch':
+                key = (asset.ops_branch_id.id, asset.ops_branch_id.name)
+            elif self.group_by == 'business_unit':
+                key = (asset.ops_business_unit_id.id, asset.ops_business_unit_id.name)
+            elif self.group_by == 'category':
+                key = (asset.category_id.id, asset.category_id.name)
+            elif self.group_by == 'branch_bu':
+                key = (
+                    f"{asset.ops_branch_id.id}-{asset.ops_business_unit_id.id}",
+                    f"{asset.ops_branch_id.name} / {asset.ops_business_unit_id.name}"
+                )
+            else:  # branch_category
+                key = (
+                    f"{asset.ops_branch_id.id}-{asset.category_id.id}",
+                    f"{asset.ops_branch_id.name} / {asset.category_id.name}"
+                )
+            
+            if key not in grouped_data:
+                grouped_data[key] = {
+                    'name': key[1],
+                    'assets': [],
+                    'subtotals': {
+                        'acquisition_value': 0,
+                        'accumulated_depreciation': 0,
+                        'book_value': 0,
+                        'count': 0,
+                    }
+                }
+            
+            asset_data = {
+                'code': asset.code,
+                'name': asset.name,
+                'category': asset.category_id.name,
+                'branch': asset.ops_branch_id.name,
+                'business_unit': asset.ops_business_unit_id.name,
+                'acquisition_date': asset.acquisition_date,
+                'acquisition_value': asset.acquisition_value,
+                'accumulated_depreciation': asset.accumulated_depreciation,
+                'book_value': asset.book_value,
+                'state': asset.state,
+                'serial_number': asset.serial_number or '',
+            }
+            
+            grouped_data[key]['assets'].append(asset_data)
+            grouped_data[key]['subtotals']['acquisition_value'] += asset.acquisition_value
+            grouped_data[key]['subtotals']['accumulated_depreciation'] += asset.accumulated_depreciation
+            grouped_data[key]['subtotals']['book_value'] += asset.book_value
+            grouped_data[key]['subtotals']['count'] += 1
+            
+            totals['acquisition_value'] += asset.acquisition_value
+            totals['accumulated_depreciation'] += asset.accumulated_depreciation
+            totals['book_value'] += asset.book_value
+            totals['count'] += 1
+        
+        return {
+            'grouped_data': grouped_data,
+            'totals': totals,
+            'filters': {
+                'date_from': self.date_from,
+                'date_to': self.date_to,
+                'branches': ', '.join(self.ops_branch_ids.mapped('name')) or 'All',
+                'business_units': ', '.join(self.ops_business_unit_ids.mapped('name')) or 'All',
+                'categories': ', '.join(self.category_ids.mapped('name')) or 'All',
+                'state': dict(self._fields['state'].selection).get(self.state),
+                'group_by': dict(self._fields['group_by'].selection).get(self.group_by),
+            }
+        }
+
+    def action_generate_report(self):
+        """Generate report based on selected format"""
+        self.ensure_one()
+        
+        if self.output_format == 'xlsx':
+            return self._generate_xlsx()
+        else:
+            return self._generate_pdf()
+
+    def _generate_xlsx(self):
+        """Generate Excel report"""
+        return {
+            'type': 'ir.actions.report',
+            'report_type': 'xlsx',
+            'report_name': 'ops_matrix_accounting.asset_register_xlsx',
+            'report_file': 'ops_matrix_accounting.asset_register_xlsx',
+            'data': {'wizard_id': self.id},
+        }
+
+    def _generate_pdf(self):
+        """Generate PDF report"""
+        return self.env.ref('ops_matrix_accounting.action_report_asset_register').report_action(self)
+```
+
+---
+
+### 10. Asset Register XLSX Export (ops_asset_register_xlsx.py)
+
+```python
+# -*- coding: utf-8 -*-
+from odoo import models, _
+import logging
+
+_logger = logging.getLogger(__name__)
+
+try:
+    from odoo.addons.report_xlsx.report.report_xlsx import ReportXlsx
+except ImportError:
+    _logger.debug('report_xlsx not installed, using base AbstractModel')
+    ReportXlsx = models.AbstractModel
+
+
+class OpsAssetRegisterXlsx(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.asset_register_xlsx'
+    _inherit = 'report.report_xlsx.abstract'
+    _description = 'Asset Register XLSX Report'
+
+    def generate_xlsx_report(self, workbook, data, wizards):
+        wizard = self.env['ops.asset.register.report'].browse(data.get('wizard_id'))
+        report_data = wizard._get_report_data()
+        
+        # === FORMATS ===
+        title_format = workbook.add_format({
+            'bold': True,
+            'font_size': 16,
+            'align': 'center',
+            'valign': 'vcenter',
+            'bg_color': '#1a237e',
+            'font_color': 'white',
+        })
+        header_format = workbook.add_format({
+            'bold': True,
+            'font_size': 11,
+            'align': 'center',
+            'valign': 'vcenter',
+            'bg_color': '#3949ab',
+            'font_color': 'white',
+            'border': 1,
+        })
+        group_format = workbook.add_format({
+            'bold': True,
+            'font_size': 11,
+            'bg_color': '#e8eaf6',
+            'border': 1,
+        })
+        money_format = workbook.add_format({
+            'num_format': '#,##0.00',
+            'align': 'right',
+            'border': 1,
+        })
+        date_format = workbook.add_format({
+            'num_format': 'yyyy-mm-dd',
+            'align': 'center',
+            'border': 1,
+        })
+        text_format = workbook.add_format({
+            'border': 1,
+        })
+        subtotal_format = workbook.add_format({
+            'bold': True,
+            'num_format': '#,##0.00',
+            'align': 'right',
+            'bg_color': '#c5cae9',
+            'border': 1,
+        })
+        total_format = workbook.add_format({
+            'bold': True,
+            'num_format': '#,##0.00',
+            'align': 'right',
+            'bg_color': '#1a237e',
+            'font_color': 'white',
+            'border': 2,
+        })
+        
+        # === WORKSHEET ===
+        sheet = workbook.add_worksheet('Asset Register')
+        sheet.set_landscape()
+        sheet.set_paper(9)  # A4
+        
+        # Column widths
+        sheet.set_column('A:A', 12)   # Code
+        sheet.set_column('B:B', 30)   # Name
+        sheet.set_column('C:C', 18)   # Category
+        sheet.set_column('D:D', 15)   # Branch
+        sheet.set_column('E:E', 15)   # BU
+        sheet.set_column('F:F', 12)   # Acq Date
+        sheet.set_column('G:G', 15)   # Acq Value
+        sheet.set_column('H:H', 15)   # Acc Dep
+        sheet.set_column('I:I', 15)   # Book Value
+        sheet.set_column('J:J', 12)   # Status
+        sheet.set_column('K:K', 15)   # Serial
+        
+        row = 0
+        
+        # === TITLE ===
+        sheet.merge_range(row, 0, row, 10, 'OPS FIXED ASSET REGISTER', title_format)
+        row += 1
+        
+        # === FILTERS ===
+        filters = report_data['filters']
+        sheet.write(row, 0, f"Period: {filters['date_from']} to {filters['date_to']}")
+        row += 1
+        sheet.write(row, 0, f"Branches: {filters['branches']} | BUs: {filters['business_units']}")
+        row += 1
+        sheet.write(row, 0, f"Categories: {filters['categories']} | Status: {filters['state']}")
+        row += 1
+        sheet.write(row, 0, f"Grouped By: {filters['group_by']}")
+        row += 2
+        
+        # === HEADERS ===
+        headers = ['Code', 'Asset Name', 'Category', 'Branch', 'Business Unit', 
+                   'Acq. Date', 'Acq. Value', 'Acc. Depreciation', 'Book Value', 
+                   'Status', 'Serial #']
+        for col, header in enumerate(headers):
+            sheet.write(row, col, header, header_format)
+        row += 1
+        
+        # === DATA ===
+        for key, group in report_data['grouped_data'].items():
+            # Group header
+            sheet.merge_range(row, 0, row, 10, group['name'], group_format)
+            row += 1
+            
+            # Assets
+            for asset in group['assets']:
+                sheet.write(row, 0, asset['code'], text_format)
+                sheet.write(row, 1, asset['name'], text_format)
+                sheet.write(row, 2, asset['category'], text_format)
+                sheet.write(row, 3, asset['branch'], text_format)
+                sheet.write(row, 4, asset['business_unit'], text_format)
+                sheet.write(row, 5, asset['acquisition_date'], date_format)
+                sheet.write(row, 6, asset['acquisition_value'], money_format)
+                sheet.write(row, 7, asset['accumulated_depreciation'], money_format)
+                sheet.write(row, 8, asset['book_value'], money_format)
+                sheet.write(row, 9, asset['state'], text_format)
+                sheet.write(row, 10, asset['serial_number'], text_format)
+                row += 1
+            
+            # Subtotals
+            sheet.write(row, 5, f"Subtotal ({group['subtotals']['count']} assets)", subtotal_format)
+            sheet.write(row, 6, group['subtotals']['acquisition_value'], subtotal_format)
+            sheet.write(row, 7, group['subtotals']['accumulated_depreciation'], subtotal_format)
+            sheet.write(row, 8, group['subtotals']['book_value'], subtotal_format)
+            row += 1
+        
+        # === GRAND TOTALS ===
+        row += 1
+        totals = report_data['totals']
+        sheet.write(row, 5, f"GRAND TOTAL ({totals['count']} assets)", total_format)
+        sheet.write(row, 6, totals['acquisition_value'], total_format)
+        sheet.write(row, 7, totals['accumulated_depreciation'], total_format)
+        sheet.write(row, 8, totals['book_value'], total_format)
+```
+
+---
+
+### 11. Run Depreciation Wizard (ops_asset_depreciation_wizard.py)
+
+```python
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+
+
+class OpsAssetDepreciationWizard(models.TransientModel):
+    _name = 'ops.asset.depreciation.wizard'
+    _description = 'Run Asset Depreciation Wizard'
+
+    date = fields.Date(
+        string='Depreciation Date',
+        required=True,
+        default=fields.Date.today,
+        help='Post all scheduled depreciation entries up to this date'
+    )
+    
+    # === MATRIX FILTERS ===
+    ops_branch_ids = fields.Many2many(
+        'res.company',
+        string='Branches',
+        help='Leave empty for all branches'
+    )
+    ops_business_unit_ids = fields.Many2many(
+        'ops.business.unit',
+        string='Business Units',
+        help='Leave empty for all BUs'
+    )
+    category_ids = fields.Many2many(
+        'ops.asset.category',
+        string='Categories',
+        help='Leave empty for all categories'
+    )
+    
+    # === PREVIEW ===
+    preview_line_ids = fields.Many2many(
+        'ops.asset.depreciation.line',
+        string='Lines to Post',
+        compute='_compute_preview_lines'
+    )
+    preview_count = fields.Integer(compute='_compute_preview_lines')
+    preview_total = fields.Monetary(
+        compute='_compute_preview_lines',
+        currency_field='currency_id'
+    )
+    currency_id = fields.Many2one(
+        'res.currency',
+        default=lambda self: self.env.company.currency_id
+    )
+
+    @api.depends('date', 'ops_branch_ids', 'ops_business_unit_ids', 'category_ids')
+    def _compute_preview_lines(self):
+        for wiz in self:
+            domain = [
+                ('depreciation_date', '<=', wiz.date),
+                ('state', '=', 'draft'),
+                ('asset_id.state', '=', 'running'),
+            ]
+            
+            if wiz.ops_branch_ids:
+                domain.append(('ops_branch_id', 'in', wiz.ops_branch_ids.ids))
+            if wiz.ops_business_unit_ids:
+                domain.append(('ops_business_unit_id', 'in', wiz.ops_business_unit_ids.ids))
+            if wiz.category_ids:
+                domain.append(('asset_id.category_id', 'in', wiz.category_ids.ids))
+            
+            lines = self.env['ops.asset.depreciation.line'].search(domain)
+            wiz.preview_line_ids = lines
+            wiz.preview_count = len(lines)
+            wiz.preview_total = sum(lines.mapped('amount'))
+
+    def action_run_depreciation(self):
+        """Post all scheduled depreciation entries"""
+        self.ensure_one()
+        
+        if not self.preview_line_ids:
+            raise UserError(_('No depreciation entries to post for the selected criteria.'))
+        
+        posted_count = 0
+        errors = []
+        
+        for line in self.preview_line_ids:
+            try:
+                line.action_post_depreciation()
+                posted_count += 1
+            except Exception as e:
+                errors.append(f"{line.asset_id.name}: {str(e)}")
+        
+        # Return result message
+        message = _('Successfully posted %d depreciation entries.') % posted_count
+        if errors:
+            message += _('\n\nErrors:\n') + '\n'.join(errors[:10])
+            if len(errors) > 10:
+                message += _('\n... and %d more errors') % (len(errors) - 10)
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Depreciation Run Complete'),
+                'message': message,
+                'type': 'success' if not errors else 'warning',
+                'sticky': True,
+            }
+        }
+```
+
+---
+
+## 📋 MANIFEST & MENU UPDATES
+
+### 12. Update __manifest__.py
+
+```python
+# Add to existing manifest's 'data' list:
+{
+    # ... existing content ...
+    'data': [
+        # ... existing files ...
+        
+        # Asset Management (NEW)
+        'security/ops_asset_security.xml',
+        'data/ops_asset_data.xml',
+        'views/ops_asset_category_views.xml',
+        'views/ops_asset_views.xml',
+        'views/ops_asset_depreciation_views.xml',
+        'views/ops_asset_menu.xml',
+        'wizard/ops_asset_depreciation_wizard_views.xml',
+        'wizard/ops_asset_disposal_wizard_views.xml',
+        'wizard/ops_asset_report_wizard_views.xml',
+        'report/ops_asset_report_templates.xml',
+    ],
+    'depends': [
+        # ... existing deps ...
+        'hr',  # For department_id (if not already)
+    ],
+    'external_dependencies': {
+        'python': ['xlsxwriter'],
+    },
+}
+```
+
+---
+
+### 13. Asset Menu (ops_asset_menu.xml)
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ ROOT MENU ============ -->
+    <menuitem id="menu_ops_asset_root"
+              name="Fixed Assets"
+              parent="ops_matrix_accounting.menu_ops_accounting_root"
+              sequence="30"/>
+    
+    <!-- ============ ASSET MANAGEMENT ============ -->
+    <menuitem id="menu_ops_asset_management"
+              name="Asset Management"
+              parent="menu_ops_asset_root"
+              sequence="10"/>
+    
+    <menuitem id="menu_ops_asset_list"
+              name="Assets"
+              parent="menu_ops_asset_management"
+              action="action_ops_asset"
+              sequence="10"/>
+    
+    <menuitem id="menu_ops_asset_category"
+              name="Asset Categories"
+              parent="menu_ops_asset_management"
+              action="action_ops_asset_category"
+              sequence="20"/>
+    
+    <!-- ============ OPERATIONS ============ -->
+    <menuitem id="menu_ops_asset_operations"
+              name="Operations"
+              parent="menu_ops_asset_root"
+              sequence="20"/>
+    
+    <menuitem id="menu_ops_asset_run_depreciation"
+              name="Run Depreciation"
+              parent="menu_ops_asset_operations"
+              action="action_asset_depreciation_wizard"
+              sequence="10"/>
+    
+    <!-- ============ REPORTS ============ -->
+    <menuitem id="menu_ops_asset_reports"
+              name="Reports"
+              parent="menu_ops_asset_root"
+              sequence="30"/>
+    
+    <menuitem id="menu_ops_asset_register_report"
+              name="Asset Register"
+              parent="menu_ops_asset_reports"
+              action="action_asset_register_wizard"
+              sequence="10"/>
+    
+    <menuitem id="menu_ops_asset_analysis"
+              name="Asset Analysis"
+              parent="menu_ops_asset_reports"
+              action="action_ops_asset_consolidated"
+              sequence="20"/>
+</odoo>
+```
+
+---
+
+### 14. Data File (ops_asset_data.xml)
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ============ SEQUENCE ============ -->
+        <record id="seq_ops_asset" model="ir.sequence">
+            <field name="name">OPS Asset Sequence</field>
+            <field name="code">ops.asset</field>
+            <field name="prefix">AST/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <!-- ============ DEFAULT CATEGORIES ============ -->
+        <record id="asset_category_buildings" model="ops.asset.category">
+            <field name="name">Buildings</field>
+            <field name="code">BUILD</field>
+            <field name="depreciation_method">linear</field>
+            <field name="depreciation_duration">480</field>
+            <field name="prorata_temporis">True</field>
+        </record>
+        
+        <record id="asset_category_vehicles" model="ops.asset.category">
+            <field name="name">Vehicles</field>
+            <field name="code">VEH</field>
+            <field name="depreciation_method">linear</field>
+            <field name="depreciation_duration">60</field>
+            <field name="prorata_temporis">True</field>
+        </record>
+        
+        <record id="asset_category_equipment" model="ops.asset.category">
+            <field name="name">Equipment &amp; Machinery</field>
+            <field name="code">EQUIP</field>
+            <field name="depreciation_method">linear</field>
+            <field name="depreciation_duration">120</field>
+            <field name="prorata_temporis">True</field>
+        </record>
+        
+        <record id="asset_category_it" model="ops.asset.category">
+            <field name="name">IT Equipment</field>
+            <field name="code">IT</field>
+            <field name="depreciation_method">linear</field>
+            <field name="depreciation_duration">36</field>
+            <field name="prorata_temporis">True</field>
+        </record>
+        
+        <record id="asset_category_furniture" model="ops.asset.category">
+            <field name="name">Furniture &amp; Fixtures</field>
+            <field name="code">FURN</field>
+            <field name="depreciation_method">linear</field>
+            <field name="depreciation_duration">84</field>
+            <field name="prorata_temporis">True</field>
+        </record>
+    </data>
+</odoo>
+```
+
+## ✅ IMPLEMENTATION CHECKLIST
+
+After generating all files, verify:
+
+- [ ] `models/__init__.py` imports all new models
+- [ ] `wizard/__init__.py` imports all new wizards
+- [ ] `report/__init__.py` imports all new reports
+- [ ] `__manifest__.py` includes all new data/view files
+- [ ] `security/ir.model.access.csv` has all new model permissions
+- [ ] Run `odoo -u ops_matrix_accounting` to test installation
+- [ ] Create test asset category with valid accounts
+- [ ] Create test asset and verify depreciation board generation
+- [ ] Post depreciation and verify journal entry has matrix dimensions
+- [ ] Test drill-down from pivot view (Branch → BU → Asset)
+- [ ] Test Excel export with matrix filters
+
+---
+
+## 🎯 KEY INTEGRATION POINTS
+
+1. **account.move Extension**: Ensure `ops_branch_id` and `ops_business_unit_id` already exist on `account.move` from `ops_matrix_core`. If not, the `account_move.py` file adds the `ops_asset_id` link.
+
+2. **Governance Rules**: If `ops.governance.rule` expects specific `model_name` values, add `'ops.asset'` to its selection field.
+
+3. **Audit Log**: Verify `ops.audit.log` accepts the fields being passed in `_log_audit()`.
+
+4. **Consolidated Reports**: Add asset-related lines to your existing P&L parser to show depreciation by Branch/BU.

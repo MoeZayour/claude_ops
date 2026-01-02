@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Product Request List View -->
+    <record id="view_ops_product_request_tree" model="ir.ui.view">
+        <field name="name">ops.product.request.tree</field>
+        <field name="model">ops.product.request</field>
+        <field name="arch" type="xml">
+            <list string="Product Requests">
+                <field name="name" />
+                <field name="product_id" />
+                <field name="quantity" />
+                <field name="required_date" />
+                <field name="branch_id" />
+                <field name="state" />
+                <field name="priority" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Product Request Form View -->
+    <record id="view_ops_product_request_form" model="ir.ui.view">
+        <field name="name">ops.product.request.form</field>
+        <field name="model">ops.product.request</field>
+        <field name="arch" type="xml">
+            <form string="Product Request">
+                <header>
+                    <button name="action_submit" type="object" string="Submit" class="oe_highlight" />
+                    <button name="action_approve" type="object" string="Approve" class="oe_highlight" />
+                    <button name="action_start" type="object" string="Start" />
+                    <button name="action_receive" type="object" string="Mark Received" />
+                    <button name="action_cancel" type="object" string="Cancel" />
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,in_progress,received,cancelled" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    
+                    <notebook>
+                        <!-- Request Details Tab -->
+                        <page string="Request Details" name="request_details">
+                            <group>
+                                <group>
+                                    <field name="request_date" readonly="1" />
+                                    <field name="requester_id" readonly="1" />
+                                    <field name="priority" />
+                                </group>
+                                <group>
+                                    <field name="description" />
+                                </group>
+                            </group>
+                            
+                            <group string="Product Information">
+                                <group>
+                                    <field name="product_id" required="1" />
+                                    <field name="part_number" readonly="1" />
+                                    <field name="quantity" required="1" />
+                                    <field name="uom_id" readonly="1" />
+                                </group>
+                                <group>
+                                    <field name="required_date" required="1" />
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Organization Tab -->
+                        <page string="Organization" name="organization">
+                            <group>
+                                <group>
+                                    <field name="branch_id" required="1" />
+                                    <field name="business_unit_id" />
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Approval Tab -->
+                        <page string="Approval" name="approval">
+                            <group>
+                                <group string="Approval Chain">
+                                    <field name="approver_ids" widget="many2many_tags" />
+                                    <field name="approval_notes" />
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Linked Records Tab -->
+                        <page string="Linked Records" name="linked_records">
+                            <group>
+                                <group>
+                                    <field name="purchase_order_line_id" readonly="1" />
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread" />
+                    <field name="activity_ids" widget="mail_activity" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product Request Search View -->
+    <record id="view_ops_product_request_search" model="ir.ui.view">
+        <field name="name">ops.product.request.search</field>
+        <field name="model">ops.product.request</field>
+        <field name="arch" type="xml">
+            <search string="Product Requests">
+                <field name="name" string="Request Number" />
+                <field name="product_id" />
+                <field name="branch_id" />
+                <field name="state" />
+                <field name="priority" />
+                <field name="requester_id" />
+                <separator />
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]" />
+                <filter name="submitted" string="Submitted" domain="[('state', '=', 'submitted')]" />
+                <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]" />
+                <filter name="in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]" />
+                <filter name="received" string="Received" domain="[('state', '=', 'received')]" />
+                <separator />
+                <filter name="urgent" string="Urgent" domain="[('priority', '=', 'urgent')]" />
+                <filter name="high_priority" string="High Priority" domain="[('priority', 'in', ['urgent', 'high'])]" />
+                <separator />
+                <filter name="my_requests" string="My Requests" domain="[('requester_id', '=', uid)]" />
+                <separator />
+                <group>
+                    <filter name="group_by_state" string="State" context="{'group_by': 'state'}" />
+                    <filter name="group_by_branch" string="Branch" context="{'group_by': 'branch_id'}" />
+                    <filter name="group_by_priority" string="Priority" context="{'group_by': 'priority'}" />
+                    <filter name="group_by_requester" string="Requester" context="{'group_by': 'requester_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_ops_product_request" model="ir.actions.act_window">
+        <field name="name">Product Requests</field>
+        <field name="res_model">ops.product.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">Create a new product request</p>
+            <p>Use product requests to manage procurement requirements across branches and business units.</p>
+        </field>
+    </record>
+
+    
+</odoo>

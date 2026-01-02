@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- OPS Matrix Root Menu -->
+    <menuitem
+        id="menu_ops_matrix_root"
+        name="OPS Matrix"
+        web_icon="ops_matrix_core,static/description/icon.png"
+        sequence="1"
+        groups="base.group_user"/>
+
+    <!-- Dashboards Menu -->
+    <menuitem
+        id="menu_ops_dashboards"
+        name="Dashboards"
+        parent="menu_ops_matrix_root"
+        sequence="10"
+        groups="base.group_user"/>
+
+    <menuitem id="menu_ops_executive_dashboard"
+              name="Executive Dashboard"
+              parent="menu_ops_dashboards"
+              action="action_ops_executive_dashboard"
+              sequence="10"
+              groups="base.group_system,ops_matrix_core.group_ops_manager"/>
+
+    <menuitem id="menu_ops_branch_manager_dashboard"
+              name="Branch Performance"
+              parent="menu_ops_dashboards"
+              action="action_ops_branch_manager_dashboard"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_manager"/>
+
+    <menuitem id="menu_ops_bu_leader_dashboard"
+                name="BU Performance"
+                parent="menu_ops_dashboards"
+                action="action_ops_bu_leader_dashboard"
+                sequence="30"
+                groups="ops_matrix_core.group_ops_manager"/>
+
+    <menuitem id="menu_ops_sales_dashboard"
+                name="Sales Performance"
+                parent="menu_ops_dashboards"
+                action="action_ops_sales_dashboard"
+                sequence="40"
+                groups="sales_team.group_sale_salesman"/>
+
+    <!-- Governance Menu -->
+    <menuitem id="menu_ops_governance_root"
+              name="Governance"
+              parent="menu_ops_matrix_root"
+              sequence="20"
+              groups="base.group_system,ops_matrix_core.group_ops_manager"/>
+
+    <menuitem id="menu_ops_approval_dashboard"
+              name="Approvals Dashboard"
+              parent="menu_ops_governance_root"
+              action="action_ops_approval_dashboard"
+              sequence="5"
+              groups="base.group_user"/>
+
+    <menuitem id="menu_ops_governance_rules"
+              name="Rules"
+              parent="menu_ops_governance_root"
+              action="action_ops_governance_rule"
+              sequence="10"/>
+
+    <menuitem id="menu_ops_persona"
+              name="Personas"
+              parent="menu_ops_governance_root"
+              action="action_ops_persona"
+              sequence="20"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_ops_persona_delegation"
+              name="Active Delegations"
+              parent="menu_ops_governance_root"
+              action="action_persona_delegation"
+              sequence="30"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_ops_approval_request"
+              name="Approval Requests"
+              parent="menu_ops_governance_root"
+              action="action_ops_approval_request"
+              sequence="40"/>
+
+    <menuitem id="menu_ops_dashboard_widget_management"
+              name="Dashboard Widgets"
+              parent="menu_ops_governance_root"
+              action="action_ops_dashboard_widget"
+              sequence="50"
+              groups="ops_matrix_core.group_ops_matrix_administrator"/>
+
+    <menuitem id="menu_ops_sla_instance"
+              name="SLA Instances"
+              parent="menu_ops_governance_root"
+              action="action_ops_sla_instance"
+              sequence="60"/>
+              
+    <menuitem id="menu_ops_governance_violation_report"
+              name="Violations Report"
+              parent="menu_ops_governance_root"
+              action="action_ops_governance_violation_report"
+              sequence="70"
+              groups="ops_matrix_core.group_ops_matrix_administrator"/>
+
+    <menuitem id="menu_ops_archive_policy"
+              name="Archive Policies"
+              parent="menu_ops_governance_root"
+              action="action_ops_archive_policy"
+              sequence="80"/>
+
+    <menuitem id="menu_ops_api_root"
+              name="API Integration"
+              parent="menu_ops_governance_root"
+              sequence="100"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+
+    <menuitem id="menu_ops_api_keys"
+              name="API Keys"
+              parent="menu_ops_api_root"
+              action="action_ops_api_key"
+              sequence="10"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+
+    <menuitem id="menu_ops_audit_logs"
+              name="API Audit Logs"
+              parent="menu_ops_api_root"
+              action="action_ops_audit_log"
+              sequence="20"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+
+    <menuitem id="menu_ops_api_analytics"
+              name="API Usage Analytics"
+              parent="menu_ops_api_root"
+              action="action_ops_api_analytics"
+              sequence="30"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_ops_configuration"
+              name="Configuration"
+              parent="menu_ops_matrix_root"
+              sequence="100"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_ops_companies"
+              name="Companies"
+              parent="menu_ops_configuration"
+              action="base.action_res_company_form"
+              sequence="10"/>
+
+    <menuitem id="menu_ops_business_unit"
+              name="Business Units"
+              parent="menu_ops_configuration"
+              action="action_ops_business_unit"
+              sequence="15"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_ops_branch"
+              name="Operational Branches"
+              parent="menu_ops_configuration"
+              action="action_ops_branch"
+              sequence="20"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_ops_sla_template"
+              name="SLA Templates"
+              parent="menu_ops_configuration"
+              action="action_ops_sla_template"
+              sequence="50"/>
+
+    <!-- Other Menus -->
+    <menuitem id="menu_ops_analytic_setup" 
+              name="Setup Matrix Analytic" 
+              parent="account.menu_finance_configuration"
+              action="action_ops_analytic_setup"
+              sequence="100"
+              groups="account.group_account_manager"/>
+
+    <menuitem id="menu_ops_inter_branch_transfer"
+              name="Inter-Branch Transfers"
+              parent="stock.menu_stock_root"
+              action="action_ops_inter_branch_transfer"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_user"/>
+
+    <menuitem id="menu_ops_product_request"
+              name="Product Requests"
+              parent="stock.menu_stock_root"
+              action="action_ops_product_request"
+              sequence="50" />
+</odoo>

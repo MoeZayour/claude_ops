@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Enhanced General Ledger Wizard Form View -->
+    <record id="view_ops_general_ledger_wizard_enhanced_form" model="ir.ui.view">
+        <field name="name">ops.general.ledger.wizard.enhanced.form</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="arch" type="xml">
+            <form string="General Ledger Report with Matrix Filters">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>General Ledger Report</h1>
+                        <h3 class="text-muted">Matrix-Enhanced Financial Reporting</h3>
+                        <div class="text-muted mt-2">
+                            <field name="filter_summary" widget="text" readonly="1"/>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Stats Alert -->
+                    <div class="alert alert-info" role="alert" invisible="record_count == 0">
+                        <div class="row">
+                            <div class="col-8">
+                                <strong>Estimated records:</strong> 
+                                <field name="record_count" readonly="1"/> transactions
+                            </div>
+                            <div class="col-4 text-right">
+                                <span invisible="record_count &lt;= 10000" class="badge badge-success">
+                                    Good size
+                                </span>
+                                <span invisible="record_count &lt;= 10000 or record_count &gt; 50000" class="badge badge-warning">
+                                    Large dataset
+                                </span>
+                                <span invisible="record_count &lt;= 50000" class="badge badge-danger">
+                                    Very large - use filters
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabbed Interface for Filters -->
+                    <notebook>
+                        <!-- Tab 1: Period & Company -->
+                        <page string="Period &amp; Company" name="page_period">
+                            <group>
+                                <group string="Reporting Period">
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="include_initial_balance"/>
+                                </group>
+                                
+                                <group string="Company &amp; Journals">
+                                    <field name="company_id" options="{'no_create': True}"/>
+                                    <field name="journal_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                            
+                            <group>
+                                <group string="Transaction Filters">
+                                    <field name="target_move" widget="radio"/>
+                                    <field name="reconciled" widget="radio"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Tab 2: Matrix Dimensions (PRIMARY FEATURE) -->
+                        <page string="Matrix Dimensions" name="page_matrix">
+                            <div class="alert alert-primary" role="alert">
+                                <h4><i class="fa fa-filter"/> Matrix Filtering</h4>
+                                <p>Filter transactions by Branch and/or Business Unit dimensions for precise organizational reporting.</p>
+                            </div>
+                            
+                            <group>
+                                <group string="Branch Selection">
+                                    <field name="branch_ids" widget="many2many_tags" options="{'no_create': True, 'color_field': 'color'}"/>
+                                </group>
+                                
+                                <group string="Business Unit Selection">
+                                    <field name="business_unit_ids" widget="many2many_tags" options="{'no_create': True, 'color_field': 'color'}"/>
+                                </group>
+                            </group>
+                            
+                            <separator string="Matrix Filter Mode"/>
+                            <group>
+                                <field name="matrix_filter_mode" widget="radio" class="oe_inline"/>
+                            </group>
+                            
+                            <div class="alert alert-info mt-3" role="alert">
+                                <h5>Filter Mode Explanation:</h5>
+                                <ul class="mb-0">
+                                    <li invisible="matrix_filter_mode != 'any'">
+                                        <strong>Any Dimension:</strong> Shows transactions matching ANY selected branch OR business unit (inclusive)
+                                    </li>
+                                    <li invisible="matrix_filter_mode != 'both'">
+                                        <strong>Both Dimensions:</strong> Shows transactions matching BOTH selected branch AND business unit (restrictive)
+                                    </li>
+                                    <li invisible="matrix_filter_mode != 'exact'">
+                                        <strong>Exact Combination:</strong> Shows only transactions with exact branch-BU combinations (e.g., Branch A + BU X only)
+                                    </li>
+                                </ul>
+                            </div>
+                        </page>
+                        
+                        <!-- Tab 3: Accounts -->
+                        <page string="Accounts" name="page_accounts">
+                            <group>
+                                <group string="Account Selection">
+                                    <field name="account_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                    <field name="account_type_ids"/>
+                                </group>
+                                
+                                <group string="Display Options">
+                                    <field name="display_account" widget="radio"/>
+                                </group>
+                            </group>
+                            
+                            <div class="alert alert-secondary mt-3" role="alert">
+                                <p class="mb-0">
+                                    <strong>Tip:</strong> Leave account fields empty to include all accounts, or select specific accounts/types for focused analysis.
+                                </p>
+                            </div>
+                        </page>
+                        
+                        <!-- Tab 4: Partners -->
+                        <page string="Partners" name="page_partners">
+                            <group>
+                                <group string="Partner Filter">
+                                    <field name="partner_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                            
+                            <div class="alert alert-secondary mt-3" role="alert">
+                                <p class="mb-0">
+                                    <strong>Optional:</strong> Filter by specific partners to analyze supplier/customer transactions.
+                                </p>
+                            </div>
+                        </page>
+                        
+                        <!-- Tab 5: Report Options -->
+                        <page string="Report Options" name="page_options">
+                            <group>
+                                <group string="Report Format">
+                                    <field name="report_format" widget="radio"/>
+                                    <field name="sort_by"/>
+                                </group>
+                                
+                                <group string="Grouping &amp; Consolidation">
+                                    <field name="group_by_date"/>
+                                    <separator string="Consolidate By:"/>
+                                    <field name="consolidate_by_branch"/>
+                                    <field name="consolidate_by_bu"/>
+                                    <field name="consolidate_by_partner"/>
+                                </group>
+                            </group>
+                            
+                            <div class="alert alert-info mt-3" role="alert">
+                                <h5>Format Guide:</h5>
+                                <ul class="mb-0">
+                                    <li><strong>Detailed:</strong> Line-by-line transaction listing (best for &lt;10k records)</li>
+                                    <li><strong>Summary:</strong> Aggregated by account and selected dimensions (efficient for large datasets)</li>
+                                    <li><strong>Both:</strong> Combined detailed and summary views</li>
+                                </ul>
+                            </div>
+                        </page>
+                    </notebook>
+                    
+                    <!-- Action Buttons -->
+                    <footer>
+                        <button name="action_generate_report"
+                                string="Generate Report"
+                                type="object"
+                                class="btn-primary"
+                                icon="fa-file-pdf-o"
+                                invisible="not date_from or not date_to"/>
+                        <button name="action_export_to_excel"
+                                string="Export to Excel"
+                                type="object"
+                                class="btn-secondary"
+                                icon="fa-file-excel-o"
+                                invisible="not date_from or not date_to"/>
+                        <button name="action_view_transactions"
+                                string="View Transactions"
+                                type="object"
+                                class="btn-secondary"
+                                icon="fa-list"
+                                invisible="not date_from or not date_to"/>
+                        <button string="Cancel"
+                                class="btn-secondary"
+                                icon="fa-times"
+                                special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Action to Open Enhanced Wizard -->
+    <record id="action_ops_general_ledger_wizard_enhanced" model="ir.actions.act_window">
+        <field name="name">General Ledger (Matrix)</field>
+        <field name="res_model">ops.general.ledger.wizard.enhanced</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+    
+    <!-- Menu Item -->
+    <menuitem id="menu_ops_general_ledger_enhanced"
+              name="General Ledger (Matrix)"
+              parent="account.menu_finance_reports"
+              action="action_ops_general_ledger_wizard_enhanced"
+              sequence="5"/>
+
+</odoo>

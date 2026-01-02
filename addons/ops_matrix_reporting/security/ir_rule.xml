@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ================================================================
+             CRITICAL SECURITY: Sales Analysis Record Rules
+             ================================================================= -->
+        
+        <!-- Sales Analysis: Users see only their Branch AND Business Unit -->
+        <record id="rule_ops_sales_analysis_branch_bu_intersection" model="ir.rule">
+            <field name="name">Sales Analysis: Branch AND BU Intersection</field>
+            <field name="model_id" ref="model_ops_sales_analysis"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_user'))]"/>
+            <field name="domain_force">
+                ['&amp;',
+                    ('ops_branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                    ('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)
+                ]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Sales Analysis: Managers see all data (for team oversight) -->
+        <record id="rule_ops_sales_analysis_manager_full" model="ir.rule">
+            <field name="name">Sales Analysis: Manager Full Access</field>
+            <field name="model_id" ref="model_ops_sales_analysis"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Sales Analysis: Admins see all (full access) -->
+        <record id="rule_ops_sales_analysis_admin_full" model="ir.rule">
+            <field name="name">Sales Analysis: Admin Full Access</field>
+            <field name="model_id" ref="model_ops_sales_analysis"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- ================================================================
+             CRITICAL SECURITY: Financial Analysis Record Rules
+             ================================================================= -->
+        
+        <!-- Financial Analysis: Users see only their Branch AND Business Unit -->
+        <record id="rule_ops_financial_analysis_branch_bu_intersection" model="ir.rule">
+            <field name="name">Financial Analysis: Branch AND BU Intersection</field>
+            <field name="model_id" ref="model_ops_financial_analysis"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_user'))]"/>
+            <field name="domain_force">
+                ['&amp;',
+                    ('ops_branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                    ('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)
+                ]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Financial Analysis: Managers see all (for team oversight) -->
+        <record id="rule_ops_financial_analysis_manager_full" model="ir.rule">
+            <field name="name">Financial Analysis: Manager Full Access</field>
+            <field name="model_id" ref="model_ops_financial_analysis"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Financial Analysis: Admins see all -->
+        <record id="rule_ops_financial_analysis_admin_full" model="ir.rule">
+            <field name="name">Financial Analysis: Admin Full Access</field>
+            <field name="model_id" ref="model_ops_financial_analysis"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- ================================================================
+             CRITICAL SECURITY: Inventory Analysis Record Rules
+             ================================================================= -->
+        
+        <!-- Inventory Analysis: Users see only their Business Unit -->
+        <record id="rule_ops_inventory_analysis_bu_visibility" model="ir.rule">
+            <field name="name">Inventory Analysis: Business Unit Visibility</field>
+            <field name="model_id" ref="model_ops_inventory_analysis"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_user'))]"/>
+            <field name="domain_force">
+                ['|',
+                    ('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids),
+                    ('ops_business_unit_id', '=', False)
+                ]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Inventory Analysis: Warehouse Managers see their locations -->
+        <record id="rule_ops_inventory_analysis_warehouse_manager" model="ir.rule">
+            <field name="name">Inventory Analysis: Warehouse Manager Access</field>
+            <field name="model_id" ref="model_ops_inventory_analysis"/>
+            <field name="groups" eval="[(4, ref('stock.group_stock_manager'))]"/>
+            <field name="domain_force">
+                ['|',
+                    ('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids),
+                    ('ops_business_unit_id', '=', False)
+                ]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Inventory Analysis: Admins see all -->
+        <record id="rule_ops_inventory_analysis_admin_full" model="ir.rule">
+            <field name="name">Inventory Analysis: Admin Full Access</field>
+            <field name="model_id" ref="model_ops_inventory_analysis"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+    </data>
+</odoo>

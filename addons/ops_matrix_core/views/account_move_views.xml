@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Account Move (Invoice/Bill) Form View - Add Matrix Fields -->
+    <record id="view_move_form_matrix_inherit" model="ir.ui.view">
+        <field name="name">account.move.form.matrix.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Branch/BU fields after partner -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="ops_branch_id"
+                       options="{'no_open': True, 'no_create': True}"
+                       invisible="move_type in ['entry']"/>
+                <field name="ops_business_unit_id"
+                       options="{'no_open': True, 'no_create': True}"
+                       invisible="move_type in ['entry']"/>
+                <field name="ops_analytic_summary"
+                       widget="text"
+                       readonly="1"
+                       invisible="move_type in ['entry']"/>
+            </xpath>
+            
+            <!-- Add computed company field for visibility -->
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="ops_company_id" invisible="1"/>
+                <!-- Anti-Fraud Security: Authority check field -->
+                <field name="can_user_validate_invoices" invisible="1"/>
+            </xpath>
+            
+            <!-- Anti-Fraud Security: Restrict Post button to authorized users only -->
+            <xpath expr="//button[@name='action_post']" position="attributes">
+                <attribute name="invisible">not can_user_validate_invoices or state != 'draft'</attribute>
+            </xpath>
+            
+            <!-- Add recompute button in header for draft moves -->
+            <xpath expr="//header" position="inside">
+                <button name="action_recompute_analytic_distribution"
+                        string="Recompute Analytic"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="state != 'draft'"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Account Move Tree View - Add Matrix Columns -->
+    <record id="view_move_tree_matrix_inherit" model="ir.ui.view">
+        <field name="name">account.move.tree.matrix.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="ops_branch_id" optional="show"/>
+                <field name="ops_business_unit_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Account Move Invoice Tree View - Add Matrix Columns -->
+    <record id="view_invoice_tree_matrix_inherit" model="ir.ui.view">
+        <field name="name">account.move.invoice.tree.matrix.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <!-- In Odoo 19, invoice tree uses status_in_payment instead of state -->
+            <xpath expr="//field[@name='status_in_payment']" position="before">
+                <field name="ops_branch_id" optional="show"/>
+                <field name="ops_business_unit_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Account Move Search View - Add Matrix Filters -->
+    <record id="view_account_invoice_filter_matrix_inherit" model="ir.ui.view">
+        <field name="name">account.invoice.search.matrix.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='late']" position="after">
+                <separator/>
+                <filter string="Branch" name="group_by_branch" context="{'group_by': 'ops_branch_id'}"/>
+                <filter string="Business Unit" name="group_by_bu" context="{'group_by': 'ops_business_unit_id'}"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="ops_branch_id"/>
+                <field name="ops_business_unit_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

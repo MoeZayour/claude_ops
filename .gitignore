@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+
+# Odoo
+*.pyc
+filestore/
+sessions/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Environment
+.env
+*.env
+
+# Docker volumes data (if any)
+data/
+postgres_data/
+
+# OS files
+.DS_Store
+Thumbs.db

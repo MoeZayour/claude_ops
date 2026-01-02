@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ops_asset_depreciation_list" model="ir.ui.view">
+        <field name="name">ops.asset.depreciation.list</field>
+        <field name="model">ops.asset.depreciation</field>
+        <field name="arch" type="xml">
+            <list string="Depreciation Lines" sample="1">
+                <field name="name"/>
+                <field name="depreciation_date"/>
+                <field name="amount"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_asset_depreciation_form" model="ir.ui.view">
+        <field name="name">ops.asset.depreciation.form</field>
+        <field name="model">ops.asset.depreciation</field>
+        <field name="arch" type="xml">
+            <form string="Depreciation Line">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="asset_id"/>
+                        <field name="depreciation_date"/>
+                        <field name="amount"/>
+                        <field name="state"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

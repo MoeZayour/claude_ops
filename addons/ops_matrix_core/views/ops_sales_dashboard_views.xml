@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- =========================================== -->
+        <!-- SALES DASHBOARD VIEWS                       -->
+        <!-- =========================================== -->
+        
+        <!-- 4.1 Sales Matrix Pivot (Branch x BU) -->
+        <record id="view_ops_sales_matrix_pivot" model="ir.ui.view">
+            <field name="name">ops.sales.dashboard.matrix.pivot</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <pivot string="Sales Matrix (Branch x Business Unit)" sample="1" disable_linking="false">
+                    <field name="ops_branch_id" type="row" string="Branch"/>
+                    <field name="ops_business_unit_id" type="row" string="Business Unit"/>
+                    <field name="date_order" type="col" interval="month" string="Month"/>
+                    <field name="amount_total" type="measure" string="Total Sales"/>
+                    <field name="amount_untaxed" type="measure" string="Net Sales"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- 4.2 Sales Trend by Matrix Graph -->
+        <record id="view_ops_sales_trend_graph" model="ir.ui.view">
+            <field name="name">ops.sales.dashboard.trend.graph</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <graph string="Sales Trend by Branch &amp; BU" type="line" sample="1">
+                    <field name="date_order" type="col" interval="month"/>
+                    <field name="ops_branch_id" type="row"/>
+                    <field name="ops_business_unit_id" type="row"/>
+                    <field name="amount_total" type="measure" operator="+"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- 4.3 Sales Funnel by Matrix -->
+        <record id="view_ops_sales_funnel_pivot" model="ir.ui.view">
+            <field name="name">ops.sales.dashboard.funnel.pivot</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <pivot string="Sales Funnel by Matrix" sample="1" disable_linking="false">
+                    <field name="ops_branch_id" type="row"/>
+                    <field name="ops_business_unit_id" type="row"/>
+                    <field name="state" type="col"/>
+                    <field name="amount_total" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- 4.4 Top Customers by Matrix -->
+        <record id="view_ops_top_customers_pivot" model="ir.ui.view">
+            <field name="name">ops.sales.dashboard.top.customers.pivot</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <pivot string="Top Customers by Matrix" sample="1" disable_linking="false">
+                    <field name="partner_id" type="row"/>
+                    <field name="ops_branch_id" type="row"/>
+                    <field name="ops_business_unit_id" type="row"/>
+                    <field name="date_order" type="col" interval="quarter"/>
+                    <field name="amount_total" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- 4.5 Product Performance by Matrix -->
+        <record id="view_ops_product_performance_pivot" model="ir.ui.view">
+            <field name="name">ops.sales.dashboard.product.performance.pivot</field>
+            <field name="model">sale.order.line</field>
+            <field name="arch" type="xml">
+                <pivot string="Product Performance by Matrix" sample="1" disable_linking="false">
+                    <field name="product_id" type="row"/>
+                    <field name="order_id" type="row" invisible="1"/>
+                    <field name="price_subtotal" type="measure"/>
+                    <field name="product_uom_qty" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- 4.6 Sales Dashboard Action -->
+        <record id="action_ops_sales_dashboard" model="ir.actions.act_window">
+            <field name="name">Sales Performance Matrix</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">pivot,graph,list,form</field>
+            <field name="view_id" ref="view_ops_sales_matrix_pivot"/>
+            <field name="search_view_id" ref="sale.view_sales_order_filter"/>
+            <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
+            <field name="context">{
+                'search_default_current_year': 1,
+                'search_default_filter_my_sales': 1,
+                'pivot_measures': ['amount_total', 'amount_untaxed'],
+                'graph_measures': ['amount_total'],
+                'graph_mode': 'bar',
+                'pivot_row_groupby': ['ops_branch_id', 'ops_business_unit_id'],
+                'pivot_column_groupby': ['date_order:month']
+            }</field>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- SALES QUICK ACTIONS                         -->
+        <!-- =========================================== -->
+        
+        <!-- Quick Action: Sales Funnel Dashboard -->
+        <record id="action_ops_sales_funnel_dashboard" model="ir.actions.act_window">
+            <field name="name">Sales Funnel Matrix</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">pivot,graph</field>
+            <field name="view_id" ref="view_ops_sales_funnel_pivot"/>
+            <field name="domain">[]</field>
+            <field name="context">{
+                'search_default_filter_my_sales': 1,
+                'search_default_current_quarter': 1,
+                'pivot_measures': ['amount_total'],
+                'graph_mode': 'bar',
+                'pivot_row_groupby': ['ops_branch_id', 'ops_business_unit_id'],
+                'pivot_column_groupby': ['state']
+            }</field>
+        </record>
+        
+        <!-- Quick Action: Top Customers Dashboard -->
+        <record id="action_ops_top_customers_dashboard" model="ir.actions.act_window">
+            <field name="name">Top Customers Matrix</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">pivot,list,form</field>
+            <field name="view_id" ref="view_ops_top_customers_pivot"/>
+            <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
+            <field name="context">{
+                'search_default_current_year': 1,
+                'pivot_measures': ['amount_total'],
+                'pivot_row_groupby': ['partner_id', 'ops_branch_id', 'ops_business_unit_id'],
+                'pivot_column_groupby': ['date_order:quarter']
+            }</field>
+        </record>
+        
+        <!-- Quick Action: Product Performance Dashboard -->
+        <record id="action_ops_product_performance_dashboard" model="ir.actions.act_window">
+            <field name="name">Product Performance Matrix</field>
+            <field name="res_model">sale.order.line</field>
+            <field name="view_mode">pivot,graph</field>
+            <field name="view_id" ref="view_ops_product_performance_pivot"/>
+            <field name="domain">[('order_id.state', 'in', ['sale', 'done'])]</field>
+            <field name="context">{
+                'search_default_current_year': 1,
+                'pivot_measures': ['price_subtotal', 'product_uom_qty'],
+                'graph_measures': ['price_subtotal'],
+                'graph_mode': 'bar',
+                'pivot_row_groupby': ['product_id']
+            }</field>
+        </record>
+        
+        <!-- Quick Action: Pending Sales Orders -->
+        <record id="action_ops_pending_sales_orders" model="ir.actions.act_window">
+            <field name="name">Pending Sales Orders</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">list,form,kanban</field>
+            <field name="domain">[('state', 'in', ['draft', 'sent'])]</field>
+            <field name="context">{
+                'search_default_filter_my_sales': 1,
+                'group_by': ['ops_branch_id', 'ops_business_unit_id']
+            }</field>
+        </record>
+    </data>
+</odoo>

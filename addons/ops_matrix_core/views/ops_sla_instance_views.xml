@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ops_sla_instance_tree" model="ir.ui.view">
+        <field name="name">ops.sla.instance.tree</field>
+        <field name="model">ops.sla.instance</field>
+        <field name="arch" type="xml">
+            <list string="SLA Instances" create="0" edit="0">
+                <field name="template_id"/>
+                <field name="res_model"/>
+                <field name="res_id"/>
+                <field name="start_datetime"/>
+                <field name="deadline"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="status" widget="badge" 
+                       decoration-info="status == 'running'"
+                       decoration-warning="status == 'warning'"
+                       decoration-danger="status in ('critical', 'violated')"
+                       decoration-success="status == 'completed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_sla_instance_form" model="ir.ui.view">
+        <field name="name">ops.sla.instance.form</field>
+        <field name="model">ops.sla.instance</field>
+        <field name="arch" type="xml">
+            <form string="SLA Instance" create="0" edit="0">
+                <header>
+                    <button name="action_complete" string="Mark Completed" type="object" class="oe_highlight" invisible="status == 'completed'"/>
+                    <field name="status" widget="statusbar" statusbar_visible="running,warning,critical,violated,completed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="template_id"/>
+                            <field name="res_model"/>
+                            <field name="res_id"/>
+                        </group>
+                        <group>
+                            <field name="start_datetime"/>
+                            <field name="deadline"/>
+                            <field name="progress" widget="progressbar"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ops_sla_instance" model="ir.actions.act_window">
+        <field name="name">SLA Instances</field>
+        <field name="res_model">ops.sla.instance</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    
+</odoo>

@@ -1,0 +1,153 @@
+ Container gemini_odoo19_db Running 
+ Container gemini_odoo19_db Waiting 
+ Container gemini_odoo19_db Healthy 
+ Container gemini_odoo19-gemini_odoo19-run-cf8855b01b03 Creating 
+ Container gemini_odoo19-gemini_odoo19-run-cf8855b01b03 Created 
+2025-12-23 19:56:21,304 1 INFO ? odoo: Odoo version 19.0-20251208 
+2025-12-23 19:56:21,304 1 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf 
+2025-12-23 19:56:21,304 1 INFO ? odoo: addons paths: _NamespacePath(['/usr/lib/python3/dist-packages/odoo/addons', '/var/lib/odoo/addons/19.0', '/mnt/extra-addons', '/usr/lib/python3/dist-packages/addons']) 
+2025-12-23 19:56:21,304 1 INFO ? odoo: database: odoo@gemini_odoo19_db:5432 
+2025-12-23 19:56:21,582 1 WARNING ? odoo.service.server: Unit testing in workers mode could fail; use --workers 0. 
+2025-12-23 19:56:21,582 1 INFO ? odoo.service.server: HTTP service (werkzeug) running on 0.0.0.0:8089 
+2025-12-23 19:56:21,601 1 INFO mz-db odoo.tests.common: Importing test framework 
+2025-12-23 19:56:21,652 1 INFO mz-db odoo.modules.loading: loading 1 modules... 
+2025-12-23 19:56:21,657 1 INFO mz-db odoo.modules.loading: 1 modules loaded in 0.00s, 0 queries (+0 extra) 
+2025-12-23 19:56:21,690 1 INFO mz-db odoo.modules.loading: updating modules list 
+2025-12-23 19:56:21,693 1 INFO mz-db odoo.addons.base.models.ir_module: ALLOW access to module.update_list on [] to user __system__ #1 via n/a 
+2025-12-23 19:56:22,559 1 INFO mz-db odoo.addons.base.models.ir_module: ALLOW access to module.button_upgrade on ['OPS Matrix Accounting', 'OPS Matrix Core', 'OPS Matrix Reporting'] to user __system__ #1 via n/a 
+2025-12-23 19:56:22,559 1 INFO mz-db odoo.addons.base.models.ir_module: ALLOW access to module.update_list on ['OPS Matrix Accounting', 'OPS Matrix Core', 'OPS Matrix Reporting'] to user __system__ #1 via n/a 
+2025-12-23 19:56:23,189 1 INFO mz-db odoo.addons.base.models.ir_module: ALLOW access to module.button_install on [] to user __system__ #1 via n/a 
+2025-12-23 19:56:23,232 1 WARNING mz-db odoo.modules.migration: Invalid version for upgrade script '/mnt/extra-addons/ops_matrix_core/migrations/__pycache__' 
+2025-12-23 19:56:23,233 1 INFO mz-db odoo.modules.loading: loading 76 modules... 
+2025-12-23 19:56:23,797 1 INFO mz-db odoo.modules.loading: Loading module ops_matrix_core (66/76) 
+2025-12-23 19:56:24,109 1 INFO mz-db odoo.registry: module ops_matrix_core: creating or updating database tables 
+2025-12-23 19:56:24,461 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/ir_module_category.xml 
+2025-12-23 19:56:24,464 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/res_groups.xml 
+2025-12-23 19:56:24,470 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/security/ir.model.access.csv 
+2025-12-23 19:56:24,493 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/security/ir_rule.xml 
+2025-12-23 19:56:24,503 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/ir_sequence_data.xml 
+2025-12-23 19:56:24,508 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/ir_cron_data.xml 
+2025-12-23 19:56:24,528 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/ir_cron_archiver.xml 
+2025-12-23 19:56:24,531 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/product_rules.xml 
+2025-12-23 19:56:24,532 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/sale_order_actions.xml 
+2025-12-23 19:56:24,538 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/templates/ops_persona_templates.xml 
+2025-12-23 19:56:24,543 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/templates/ops_governance_rule_templates.xml 
+2025-12-23 19:56:24,548 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/templates/ops_user_templates.xml 
+2025-12-23 19:56:24,551 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/data/templates/ops_sla_templates.xml 
+2025-12-23 19:56:24,554 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/ops_branch_views.xml 
+2025-12-23 19:56:24,618 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/ops_business_unit_views.xml 
+2025-12-23 19:56:24,651 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/ops_persona_views.xml 
+2025-12-23 19:56:24,717 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/ops_persona_delegation_views.xml 
+2025-12-23 19:56:24,734 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/res_users_views.xml 
+2025-12-23 19:56:24,759 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/ops_governance_rule_views.xml 
+2025-12-23 19:56:24,783 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/ops_approval_request_views.xml 
+2025-12-23 19:56:24,804 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/ops_approval_dashboard_views.xml 
+2025-12-23 19:56:24,835 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/ops_archive_policy_views.xml 
+2025-12-23 19:56:24,853 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/ops_sla_template_views.xml 
+2025-12-23 19:56:24,872 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/ops_sla_instance_views.xml 
+2025-12-23 19:56:24,889 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/product_views.xml 
+2025-12-23 19:56:24,932 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/sale_order_views.xml 
+2025-12-23 19:56:24,994 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/sale_order_import_wizard_views.xml 
+2025-12-23 19:56:25,005 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/stock_picking_views.xml 
+2025-12-23 19:56:25,047 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/views/stock_warehouse_orderpoint_views.xml 
+2025-12-23 19:56:25,064 1 INFO mz-db odoo.modules.loading: loading ops_matrix_core/reports/ops_products_availability_report.xml 
+2025-12-23 19:56:25,090 1 WARNING mz-db odoo.modules.loading: The models ['sale.order.import.wizard'] have no access rules in module ops_matrix_core, consider adding some, like:
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+ops_matrix_core.access_sale_order_import_wizard,access_sale_order_import_wizard,ops_matrix_core.model_sale_order_import_wizard,base.group_user,1,0,0,0 
+2025-12-23 19:56:25,122 1 INFO mz-db odoo.modules.loading: Module ops_matrix_core loaded in 1.33s, 1314 queries (+1314 other) 
+2025-12-23 19:56:25,138 1 INFO mz-db odoo.modules.loading: Loading module ops_matrix_accounting (73/76) 
+2025-12-23 19:56:25,252 1 INFO mz-db odoo.registry: module ops_matrix_accounting: creating or updating database tables 
+2025-12-23 19:56:25,318 1 WARNING mz-db odoo.addons.base.models.ir_model: Two fields (ops_branch_id, branch_id) of stock.picking() have the same label: Branch. [Modules: ops_matrix_accounting and ops_matrix_core] 
+2025-12-23 19:56:25,318 1 WARNING mz-db odoo.addons.base.models.ir_model: Two fields (ops_business_unit_id, business_unit_id) of stock.picking() have the same label: Business Unit. [Modules: ops_matrix_accounting and ops_matrix_core] 
+2025-12-23 19:56:25,456 1 INFO mz-db odoo.modules.loading: loading ops_matrix_accounting/security/ir.model.access.csv 
+2025-12-23 19:56:25,467 1 INFO mz-db odoo.modules.loading: loading ops_matrix_accounting/views/ops_accounting_menus.xml 
+2025-12-23 19:56:25,474 1 INFO mz-db odoo.modules.loading: loading ops_matrix_accounting/views/ops_pdc_views.xml 
+2025-12-23 19:56:25,513 1 INFO mz-db odoo.modules.loading: loading ops_matrix_accounting/views/ops_budget_views.xml 
+2025-12-23 19:56:25,538 1 INFO mz-db odoo.modules.loading: loading ops_matrix_accounting/views/ops_general_ledger_wizard_views.xml 
+2025-12-23 19:56:25,549 1 INFO mz-db odoo.modules.loading: loading ops_matrix_accounting/views/ops_financial_report_wizard_views.xml 
+2025-12-23 19:56:25,560 1 INFO mz-db odoo.modules.loading: loading ops_matrix_accounting/reports/ops_general_ledger_template.xml 
+2025-12-23 19:56:25,568 1 INFO mz-db odoo.modules.loading: loading ops_matrix_accounting/reports/ops_financial_report_template.xml 
+2025-12-23 19:56:25,576 1 INFO mz-db odoo.modules.loading: loading ops_matrix_accounting/data/templates/ops_budget_templates.xml 
+2025-12-23 19:56:25,594 1 INFO mz-db odoo.modules.loading: Module ops_matrix_accounting loaded in 0.46s, 565 queries (+565 other) 
+2025-12-23 19:56:25,594 1 INFO mz-db odoo.modules.loading: Loading module ops_matrix_reporting (74/76) 
+2025-12-23 19:56:25,620 1 INFO mz-db odoo.registry: module ops_matrix_reporting: creating or updating database tables 
+2025-12-23 19:56:25,672 1 INFO mz-db odoo.modules.loading: loading ops_matrix_reporting/security/ir.model.access.csv 
+2025-12-23 19:56:25,686 1 INFO mz-db odoo.modules.loading: loading ops_matrix_reporting/security/ir_rule.xml 
+2025-12-23 19:56:25,691 1 INFO mz-db odoo.modules.loading: loading ops_matrix_reporting/views/ops_sales_analysis_views.xml 
+2025-12-23 19:56:25,731 1 INFO mz-db odoo.modules.loading: loading ops_matrix_reporting/views/ops_financial_analysis_views.xml 
+2025-12-23 19:56:25,754 1 INFO mz-db odoo.modules.loading: loading ops_matrix_reporting/views/ops_inventory_analysis_views.xml 
+2025-12-23 19:56:25,777 1 INFO mz-db odoo.modules.loading: loading ops_matrix_reporting/views/reporting_menu.xml 
+2025-12-23 19:56:25,815 1 INFO mz-db odoo.modules.loading: Module ops_matrix_reporting loaded in 0.22s, 278 queries (+278 other) 
+2025-12-23 19:56:25,821 1 INFO mz-db odoo.modules.loading: 76 modules loaded in 2.59s, 2157 queries (+2157 extra) 
+2025-12-23 19:56:25,979 1 WARNING mz-db odoo.modules.migration: Invalid version for upgrade script '/mnt/extra-addons/ops_matrix_core/migrations/__pycache__' 
+2025-12-23 19:56:26,145 1 INFO mz-db odoo.registry: verifying fields for every extended model 
+2025-12-23 19:56:26,651 1 INFO mz-db odoo.modules.loading: Modules loaded. 
+2025-12-23 19:56:26,668 1 INFO mz-db odoo.registry: Registry changed, signaling through the database 
+2025-12-23 19:56:26,670 1 INFO mz-db odoo.registry: Registry loaded in 5.087s 
+2025-12-23 19:56:26,670 1 INFO mz-db odoo.service.server: Starting post tests 
+2025-12-23 19:56:26,671 1 INFO mz-db odoo.addons.ops_matrix_core.tests.test_matrix_lifecycle: >>> STARTING MATRIX LIFECYCLE TEST SETUP <<< 
+2025-12-23 19:56:27,052 1 INFO mz-db odoo.tests.suite: ====================================================================== 
+2025-12-23 19:56:27,052 1 ERROR mz-db odoo.tests.suite: ERROR: setUpClass (odoo.addons.ops_matrix_core.tests.test_matrix_lifecycle.TestMatrixLifecycle)
+Traceback (most recent call last):
+  File "/mnt/extra-addons/ops_matrix_core/tests/test_matrix_lifecycle.py", line 22, in setUpClass
+    cls._init_matrix_data()
+  File "/mnt/extra-addons/ops_matrix_core/tests/test_matrix_lifecycle.py", line 92, in _init_matrix_data
+    cls.user_sales_rep = cls._create_persona(
+                         ^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/extra-addons/ops_matrix_core/tests/test_matrix_lifecycle.py", line 123, in _create_persona
+    user = env['res.users'].create({
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/orm/decorators.py", line 365, in create
+    return method(self, vals_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/hr/models/res_users.py", line 165, in create
+    res = super().create(vals_list)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/orm/decorators.py", line 365, in create
+    return method(self, vals_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/digest/models/res_users.py", line 12, in create
+    users = super(ResUsers, self).create(vals_list)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/orm/decorators.py", line 365, in create
+    return method(self, vals_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/auth_signup/models/res_users.py", line 270, in create
+    users = super(ResUsers, self).create(vals_list)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/orm/decorators.py", line 365, in create
+    return method(self, vals_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/mail/models/discuss/res_users.py", line 14, in create
+    users = super().create(vals_list)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/orm/decorators.py", line 365, in create
+    return method(self, vals_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/mail/models/res_users.py", line 182, in create
+    users = super().create(vals_list)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/orm/decorators.py", line 365, in create
+    return method(self, vals_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/base/models/res_users.py", line 1357, in create
+    users = super().create(vals_list)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/orm/decorators.py", line 365, in create
+    return method(self, vals_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/addons/base/models/res_users.py", line 580, in create
+    users = super().create(vals_list)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/orm/decorators.py", line 365, in create
+    return method(self, vals_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/orm/models.py", line 4651, in create
+    raise ValueError(f"Invalid field {field_name!r} in {self._name!r}")
+ValueError: Invalid field 'groups_id' in 'res.users'
+ 
+2025-12-23 19:56:27,196 1 INFO mz-db odoo.addons.base.models.ir_attachment: filestore gc 0 checked, 0 removed 
+2025-12-23 19:56:27,196 1 INFO mz-db odoo.service.server: 0 post-tests in 0.53s, 262 queries 
+2025-12-23 19:56:27,196 1 INFO mz-db odoo.tests.stats: ops_matrix_core: 2 tests 0.53s 262 queries 
+2025-12-23 19:56:27,197 1 INFO mz-db odoo.service.server: Stopping workers gracefully 
+

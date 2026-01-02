@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- =========================================== -->
+        <!-- DASHBOARD CONFIGURATION VIEWS               -->
+        <!-- =========================================== -->
+        
+        <!-- Dashboard Configuration Form View -->
+        <record id="view_ops_dashboard_config_form" model="ir.ui.view">
+            <field name="name">ops.dashboard.config.form</field>
+            <field name="model">ops.dashboard.config</field>
+            <field name="arch" type="xml">
+                <form string="Dashboard Configuration">
+                    <sheet>
+                        <group>
+                            <group string="User Preferences">
+                                <field name="user_id" readonly="1"/>
+                                <field name="dashboard_layout"/>
+                                <field name="default_date_range"/>
+                            </group>
+                            <group string="Display Options">
+                                <field name="show_branch_first"/>
+                                <field name="include_inactive_dimensions"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Color Scheme">
+                            <group>
+                                <field name="color_scheme"/>
+                            </group>
+                            <group name="custom_colors">
+                                <field name="primary_color" widget="color"/>
+                                <field name="secondary_color" widget="color"/>
+                                <field name="success_color" widget="color"/>
+                                <field name="warning_color" widget="color"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Performance Settings">
+                            <group>
+                                <field name="cache_duration"/>
+                                <field name="auto_refresh"/>
+                            </group>
+                            <group>
+                                <field name="refresh_interval"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Widgets">
+                            <field name="enabled_widgets" widget="many2many_tags"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button string="Save Configuration" name="action_save_configuration" type="object" class="btn-primary"/>
+                        <button string="Reset to Defaults" name="action_reset_to_defaults" type="object" class="btn-secondary"/>
+                        <button string="Cancel" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- DASHBOARD WIDGET VIEWS                      -->
+        <!-- =========================================== -->
+        
+        <!-- Widget Tree View -->
+        <record id="view_ops_dashboard_widget_tree" model="ir.ui.view">
+            <field name="name">ops.dashboard.widget.tree</field>
+            <field name="model">ops.dashboard.widget</field>
+            <field name="arch" type="xml">
+                <list string="Dashboard Widgets">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="widget_type"/>
+                    <field name="model_name"/>
+                    <field name="width"/>
+                    <field name="is_system"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+        
+        <!-- Widget Form View -->
+        <record id="view_ops_dashboard_widget_form" model="ir.ui.view">
+            <field name="name">ops.dashboard.widget.form</field>
+            <field name="model">ops.dashboard.widget</field>
+            <field name="arch" type="xml">
+                <form string="Dashboard Widget">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                        <group>
+                            <group string="Basic Information">
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="widget_type"/>
+                                <field name="is_system" readonly="1"/>
+                            </group>
+                            <group string="Display">
+                                <field name="sequence"/>
+                                <field name="icon"/>
+                                <field name="color" widget="color"/>
+                                <field name="width"/>
+                                <field name="height"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Data Configuration">
+                            <group>
+                                <field name="model_name"/>
+                                <field name="measure_field"/>
+                                <field name="dimension_field"/>
+                            </group>
+                            <group>
+                                <field name="group_by_fields"/>
+                                <field name="sort_by"/>
+                                <field name="limit"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Filters">
+                            <field name="domain" widget="domain" options="{'model': 'model_name'}"/>
+                        </group>
+                        
+                        <group string="Security">
+                            <group>
+                                <field name="group_ids" widget="many2many_tags"/>
+                            </group>
+                            <group>
+                                <field name="company_ids" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Widget Kanban View -->
+        <record id="view_ops_dashboard_widget_kanban" model="ir.ui.view">
+            <field name="name">ops.dashboard.widget.kanban</field>
+            <field name="model">ops.dashboard.widget</field>
+            <field name="arch" type="xml">
+                <kanban string="Dashboard Widgets">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="widget_type"/>
+                    <field name="icon"/>
+                    <field name="color"/>
+                    <field name="active"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click" t-att-style="'border-left: 3px solid ' + record.color.raw_value">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <i t-if="record.icon.raw_value" t-att-class="record.icon.raw_value"/>
+                                            <t t-esc="record.name.value"/>
+                                        </strong>
+                                    </div>
+                                    <span class="badge badge-pill" t-att-class="record.active.raw_value ? 'badge-success' : 'badge-secondary'">
+                                        <t t-if="record.active.raw_value">Active</t>
+                                        <t t-else="">Inactive</t>
+                                    </span>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <span class="badge badge-info"><t t-esc="record.widget_type.value"/></span>
+                                    <span class="badge badge-secondary"><t t-esc="record.code.value"/></span>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+        <!-- Widget Search View -->
+        <record id="view_ops_dashboard_widget_search" model="ir.ui.view">
+            <field name="name">ops.dashboard.widget.search</field>
+            <field name="model">ops.dashboard.widget</field>
+            <field name="arch" type="xml">
+                <search string="Dashboard Widgets">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="widget_type"/>
+                    <field name="model_name"/>
+                    <separator/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                    <separator/>
+                    <filter string="KPI" name="kpi" domain="[('widget_type', '=', 'kpi')]"/>
+                    <filter string="Chart" name="chart" domain="[('widget_type', '=', 'chart')]"/>
+                    <filter string="Pivot" name="pivot" domain="[('widget_type', '=', 'pivot')]"/>
+                    <filter string="Graph" name="graph" domain="[('widget_type', '=', 'graph')]"/>
+                    <separator/>
+                    <filter string="System Widgets" name="system" domain="[('is_system', '=', True)]"/>
+                    <filter string="Custom Widgets" name="custom" domain="[('is_system', '=', False)]"/>
+                    <group>
+                        <filter string="Type" name="group_by_type" context="{'group_by': 'widget_type'}"/>
+                        <filter string="Model" name="group_by_model" context="{'group_by': 'model_name'}"/>
+                        <filter string="Width" name="group_by_width" context="{'group_by': 'width'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- ACTIONS                                     -->
+        <!-- =========================================== -->
+        
+        <!-- Dashboard Configuration Action -->
+        <record id="action_ops_dashboard_config" model="ir.actions.act_window">
+            <field name="name">Dashboard Configuration</field>
+            <field name="res_model">ops.dashboard.config</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{
+                'default_user_id': uid
+            }</field>
+        </record>
+        
+        <!-- Dashboard Widget Management Action -->
+        <record id="action_ops_dashboard_widget" model="ir.actions.act_window">
+            <field name="name">Dashboard Widgets</field>
+            <field name="res_model">ops.dashboard.widget</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="search_view_id" ref="view_ops_dashboard_widget_search"/>
+            <field name="context">{
+                'search_default_active': 1
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first Dashboard Widget!
+                </p>
+                <p>
+                    Dashboard widgets are reusable components that can be added to various dashboards.
+                    Configure the widget type, data source, and display options.
+                </p>
+            </field>
+        </record>
+        
+        
+    </data>
+</odoo>

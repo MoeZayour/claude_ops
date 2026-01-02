@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- =========================================== -->
+        <!-- BRANCH MANAGER DASHBOARD VIEWS              -->
+        <!-- =========================================== -->
+        
+        <!-- 2.1 Branch Performance Pivot -->
+        <record id="view_ops_branch_performance_pivot" model="ir.ui.view">
+            <field name="name">ops.branch.dashboard.pivot</field>
+            <field name="model">account.move.line</field>
+            <field name="arch" type="xml">
+                <pivot string="Branch Performance Dashboard" sample="1" disable_linking="false">
+                    <field name="ops_business_unit_id" type="row" string="Business Unit"/>
+                    <field name="account_id" type="row" string="Account"/>
+                    <field name="date" type="col" interval="week" string="Week"/>
+                    <field name="debit" type="measure" string="Expense"/>
+                    <field name="credit" type="measure" string="Income"/>
+                    <field name="balance" type="measure" string="Net"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- 2.2 Branch Revenue Graph -->
+        <record id="view_ops_branch_revenue_graph" model="ir.ui.view">
+            <field name="name">ops.branch.dashboard.revenue.graph</field>
+            <field name="model">account.move.line</field>
+            <field name="arch" type="xml">
+                <graph string="Branch Revenue by BU" type="line" sample="1">
+                    <field name="date" type="col" interval="week"/>
+                    <field name="ops_business_unit_id" type="row"/>
+                    <field name="credit" type="measure" operator="+" string="Revenue"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- 2.3 Branch Expense Graph -->
+        <record id="view_ops_branch_expense_graph" model="ir.ui.view">
+            <field name="name">ops.branch.dashboard.expense.graph</field>
+            <field name="model">account.move.line</field>
+            <field name="arch" type="xml">
+                <graph string="Branch Expenses by Account" type="pie" sample="1">
+                    <field name="account_id" type="row"/>
+                    <field name="debit" type="measure" operator="+" string="Expenses"/>
+                </graph>
+            </field>
+        </record>
+        
+        <!-- 2.4 Branch Sales Dashboard -->
+        <record id="view_ops_branch_sales_pivot" model="ir.ui.view">
+            <field name="name">ops.branch.dashboard.sales.pivot</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <pivot string="Branch Sales Dashboard" sample="1" disable_linking="false">
+                    <field name="ops_business_unit_id" type="row" string="Business Unit"/>
+                    <field name="partner_id" type="row" string="Customer"/>
+                    <field name="date_order" type="col" interval="month" string="Month"/>
+                    <field name="amount_total" type="measure" string="Total Sales"/>
+                    <field name="amount_untaxed" type="measure" string="Net Sales"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- 2.5 Branch Inventory Dashboard -->
+        <record id="view_ops_branch_inventory_pivot" model="ir.ui.view">
+            <field name="name">ops.branch.dashboard.inventory.pivot</field>
+            <field name="model">stock.quant</field>
+            <field name="arch" type="xml">
+                <pivot string="Branch Inventory Dashboard" sample="1" disable_linking="false">
+                    <field name="product_id" type="row" string="Product"/>
+                    <field name="location_id" type="row" string="Location"/>
+                    <field name="inventory_date" type="col" interval="week" string="Week"/>
+                    <field name="quantity" type="measure" string="Quantity"/>
+                    <field name="inventory_quantity" type="measure" string="Inventory"/>
+                </pivot>
+            </field>
+        </record>
+        
+        <!-- 2.6 Branch Manager Dashboard Action -->
+        <record id="action_ops_branch_manager_dashboard" model="ir.actions.act_window">
+            <field name="name">Branch Performance Dashboard</field>
+            <field name="res_model">account.move.line</field>
+            <field name="view_mode">pivot,graph</field>
+            <field name="view_id" ref="view_ops_branch_performance_pivot"/>
+            <field name="search_view_id" ref="account.view_account_move_line_filter"/>
+            <field name="domain">[('move_id.state', '=', 'posted')]</field>
+            <field name="context">{
+                'search_default_group_by_bu': 1,
+                'search_default_group_by_account': 1,
+                'search_default_current_month': 1,
+                'pivot_measures': ['debit', 'credit', 'balance'],
+                'graph_measures': ['debit', 'credit'],
+                'graph_mode': 'line',
+                'pivot_row_groupby': ['ops_business_unit_id', 'account_id'],
+                'pivot_column_groupby': ['date:week']
+            }</field>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- BRANCH MANAGER QUICK ACTIONS                -->
+        <!-- =========================================== -->
+        
+        <!-- Quick Action: My Branch Sales -->
+        <record id="action_ops_my_branch_sales" model="ir.actions.act_window">
+            <field name="name">My Branch Sales</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">pivot,graph,list,form</field>
+            <field name="view_id" ref="view_ops_branch_sales_pivot"/>
+            <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
+            <field name="context">{
+                'search_default_filter_my_sales': 1,
+                'search_default_current_month': 1,
+                'group_by': ['ops_business_unit_id', 'partner_id']
+            }</field>
+        </record>
+        
+        <!-- Quick Action: My Branch Inventory -->
+        <record id="action_ops_my_branch_inventory" model="ir.actions.act_window">
+            <field name="name">My Branch Inventory</field>
+            <field name="res_model">stock.quant</field>
+            <field name="view_mode">pivot,list,form</field>
+            <field name="view_id" ref="view_ops_branch_inventory_pivot"/>
+            <field name="domain">[]</field>
+            <field name="context">{
+                'search_default_internal_loc': 1
+            }</field>
+        </record>
+        
+        <!-- Quick Action: Branch Pending Tasks -->
+        <record id="action_ops_branch_pending_tasks" model="ir.actions.act_window">
+            <field name="name">Branch Pending Tasks</field>
+            <field name="res_model">mail.activity</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('res_model', 'in', ['sale.order', 'purchase.order', 'account.move', 'stock.picking']), ('user_id', '=', uid)]</field>
+            <field name="context">{
+                'search_default_today': 1,
+                'search_default_overdue': 1
+            }</field>
+        </record>
+    </data>
+</odoo>

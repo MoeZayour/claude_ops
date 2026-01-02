@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+    ====================================================
+    OPS Matrix Accounting Menu Structure
+    - This file consolidates all accounting-related menus.
+    - It establishes a clear hierarchy under the main Odoo Accounting app.
+    - OVERRIDE: Renames "Invoicing" to "Accounting" in app launcher.
+    ====================================================
+    -->
+
+    <!-- =================== APP NAME OVERRIDE =================== -->
+    <!-- Override the root Invoicing menu to display as "Accounting" -->
+    <record id="account.menu_finance" model="ir.ui.menu">
+        <field name="name">Accounting</field>
+    </record>
+
+    <!-- =================== OPS MATRIX SUB-MENUS =================== -->
+
+    <!-- Main OPS Accounting Root Menu -->
+    <menuitem
+        id="menu_ops_accounting_root"
+        name="OPS Matrix"
+        parent="account.menu_finance"
+        sequence="100"/>
+
+    <!-- =================== ASSET MANAGEMENT =================== -->
+
+    <!-- Asset Management Main Menu -->
+    <menuitem
+        id="menu_ops_asset_management"
+        name="Asset Management"
+        parent="menu_ops_accounting_root"
+        sequence="10"/>
+
+    <!-- Menu for Assets -->
+    <menuitem
+        id="menu_ops_asset"
+        name="Assets"
+        parent="menu_ops_asset_management"
+        action="action_ops_asset"
+        sequence="10"/>
+
+    <!-- Menu for Depreciation Lines -->
+    <menuitem
+        id="menu_ops_asset_depreciation"
+        name="Depreciation Lines"
+        parent="menu_ops_asset_management"
+        action="action_ops_asset_depreciation"
+        sequence="20"/>
+
+    <!-- Asset Configuration Menu -->
+    <menuitem
+        id="menu_ops_asset_configuration"
+        name="Configuration"
+        parent="menu_ops_asset_management"
+        sequence="100"/>
+
+    <!-- Menu for Asset Categories -->
+    <menuitem
+        id="menu_ops_asset_category"
+        name="Asset Categories"
+        parent="menu_ops_asset_configuration"
+        action="action_ops_asset_category"
+        sequence="10"/>
+
+    <!-- =================== FINANCIAL REPORTS =================== -->
+
+    <!-- Reporting Main Menu -->
+    <menuitem
+        id="menu_ops_accounting_reports"
+        name="Financial Reports"
+        parent="menu_ops_accounting_root"
+        sequence="20"/>
+
+</odoo>

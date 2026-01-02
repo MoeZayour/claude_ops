@@ -1,0 +1,316 @@
+/* OPS Matrix Reporting Module Styles */
+
+/* General Reporting View Styles */
+.ops-reporting-container {
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+/* Sales Analysis Specific Styles */
+.view-ops-sales-analysis {
+    background-color: #ffffff;
+}
+
+.ops-sales-tree {
+    font-size: 0.875rem;
+}
+
+.ops-sales-tree .o_data_cell {
+    padding: 0.5rem;
+}
+
+.ops-sales-revenue {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.ops-sales-margin {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.ops-sales-margin-negative {
+    color: #dc3545;
+}
+
+/* Financial Analysis Specific Styles */
+.view-ops-financial-analysis {
+    background-color: #ffffff;
+}
+
+.ops-financial-tree {
+    font-size: 0.875rem;
+}
+
+.ops-financial-tree .o_data_cell {
+    padding: 0.5rem;
+}
+
+.ops-financial-debit {
+    font-weight: 600;
+    color: #dc3545;
+}
+
+.ops-financial-credit {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.ops-financial-balance-positive {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.ops-financial-balance-negative {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* Inventory Analysis Specific Styles */
+.view-ops-inventory-analysis {
+    background-color: #ffffff;
+}
+
+.ops-inventory-tree {
+    font-size: 0.875rem;
+}
+
+.ops-inventory-tree .o_data_cell {
+    padding: 0.5rem;
+}
+
+.ops-inventory-zero-stock {
+    color: #ff6b6b;
+}
+
+.ops-inventory-reserved {
+    font-weight: 600;
+    color: #ffc107;
+}
+
+.ops-inventory-value {
+    font-weight: 600;
+    color: #17a2b8;
+}
+
+/* Pivot Table Styles */
+.o_pivot {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+}
+
+.o_pivot_measure_row {
+    background-color: #f8f9fa;
+}
+
+.o_pivot_header_cell_opened {
+    background-color: #e7f3ff;
+}
+
+/* Graph/Chart Styles */
+.o_graph_view {
+    padding: 1rem;
+}
+
+.o_graph_title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 1rem;
+}
+
+/* Search Filter Styles */
+.o_search_options {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+}
+
+.o_filter_button {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    margin: 0.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.o_filter_button:hover {
+    background-color: #e7f3ff;
+    border-color: #0066cc;
+}
+
+.o_filter_button.active {
+    background-color: #0066cc;
+    color: #ffffff;
+    border-color: #0066cc;
+}
+
+/* Dashboard Styles */
+.ops-dashboard-container {
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.ops-dashboard-card {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ops-dashboard-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #0066cc;
+    padding-bottom: 0.5rem;
+}
+
+.ops-dashboard-metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.ops-dashboard-metric-label {
+    font-weight: 500;
+    color: #666666;
+}
+
+.ops-dashboard-metric-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0066cc;
+}
+
+/* Spreadsheet Dashboard Styles */
+.spreadsheet-dashboard {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.spreadsheet-dashboard-sheet {
+    padding: 1rem;
+}
+
+.spreadsheet-dashboard-pivot {
+    margin: 1rem 0;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+/* Menu Styles */
+.o_menu_item.menu-ops-reporting {
+    color: #0066cc;
+}
+
+.o_menu_item.menu-ops-reporting:before {
+    content: "📊";
+    margin-right: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ops-dashboard-container {
+        padding: 1rem;
+    }
+
+    .ops-dashboard-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .ops-dashboard-metric {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ops-dashboard-metric-value {
+        margin-top: 0.5rem;
+    }
+
+    .o_pivot {
+        font-size: 0.75rem;
+    }
+
+    .ops-sales-tree,
+    .ops-financial-tree,
+    .ops-inventory-tree {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .o_filter_button {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        margin: 0.125rem;
+    }
+
+    .ops-dashboard-card-title {
+        font-size: 1rem;
+    }
+
+    .ops-dashboard-metric-value {
+        font-size: 1.125rem;
+    }
+}
+
+/* Accessibility Improvements */
+.ops-reporting-container:focus-within {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+}
+
+.o_filter_button:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+    .ops-reporting-container {
+        background-color: #1a1a1a;
+    }
+
+    .ops-dashboard-card,
+    .o_pivot,
+    .o_graph_view {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+
+    .ops-dashboard-card-title {
+        color: #ffffff;
+        border-bottom-color: #4a9eff;
+    }
+
+    .ops-dashboard-metric-label {
+        color: #b0b0b0;
+    }
+
+    .o_filter_button {
+        background-color: #3d3d3d;
+        border-color: #555555;
+        color: #e0e0e0;
+    }
+
+    .o_filter_button:hover {
+        background-color: #4a5568;
+        border-color: #4a9eff;
+    }
+
+    .o_search_options {
+        background-color: #262626;
+        border-color: #444444;
+    }
+}

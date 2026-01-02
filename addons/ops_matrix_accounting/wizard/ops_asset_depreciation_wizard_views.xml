@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_ops_asset_depreciation_wizard_form" model="ir.ui.view">
+            <field name="name">ops.asset.depreciation.wizard.form</field>
+            <field name="model">ops.asset.depreciation.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Calculate Asset Depreciation">
+                    <p>
+                        Select a date and optionally a set of assets to calculate depreciation.
+                        If no assets are selected, depreciation will be calculated for all eligible assets.
+                    </p>
+                    <group>
+                        <field name="date"/>
+                        <field name="asset_category_id"/>
+                    </group>
+                    <footer>
+                        <button name="action_run_depreciation" string="Calculate" type="object" class="btn-primary" data-hotkey="q"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_ops_asset_depreciation_wizard" model="ir.actions.act_window">
+            <field name="name">Calculate Depreciation</field>
+            <field name="res_model">ops.asset.depreciation.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

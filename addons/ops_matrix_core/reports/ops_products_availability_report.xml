@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Task 4: Products Availability Report Template -->
+    
+    <!-- Define the report action -->
+    <record id="action_report_products_availability" model="ir.actions.report">
+        <field name="name">Products Availability</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_core.report_products_availability_document</field>
+        <field name="report_file">ops_matrix_core.report_products_availability_document</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Products_Availability_%s' % (object.name)</field>
+    </record>
+
+    <!-- Define the QWeb template -->
+    <template id="report_products_availability_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Professional Header -->
+                        <div class="text-center mb32" style="background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%); padding: 25px; border-radius: 8px; color: white;">
+                            <h2 style="margin: 0; font-weight: bold;">📦 Products Availability Report</h2>
+                            <p style="margin: 10px 0 0 0; opacity: 0.9;">Stock Status Analysis for Sale Order</p>
+                        </div>
+
+                        <!-- Order Information Card -->
+                        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; border-left: 4px solid #42a5f5; margin-bottom: 25px;">
+                            <div class="row">
+                                <div class="col-4">
+                                    <p style="margin: 5px 0;">
+                                        <strong style="color: #42a5f5;">Sale Order:</strong><br/>
+                                        <span t-field="o.name" style="font-size: 1.1em;"/>
+                                    </p>
+                                </div>
+                                <div class="col-4">
+                                    <p style="margin: 5px 0;">
+                                        <strong style="color: #42a5f5;">Customer:</strong><br/>
+                                        <span t-field="o.partner_id.name" style="font-size: 1.1em;"/>
+                                    </p>
+                                </div>
+                                <div class="col-4">
+                                    <p style="margin: 5px 0;">
+                                        <strong style="color: #42a5f5;">Order Date:</strong><br/>
+                                        <span t-field="o.date_order" style="font-size: 1.1em;"/>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-4">
+                                    <p style="margin: 5px 0;">
+                                        <strong style="color: #42a5f5;">State:</strong>
+                                        <t t-if="o.state == 'draft'">
+                                            <span style="padding: 3px 8px; background-color: #9E9E9E; color: white; border-radius: 3px; font-size: 11px;">Draft</span>
+                                        </t>
+                                        <t t-if="o.state == 'sent'">
+                                            <span style="padding: 3px 8px; background-color: #2196F3; color: white; border-radius: 3px; font-size: 11px;">Quotation Sent</span>
+                                        </t>
+                                        <t t-if="o.state == 'sale'">
+                                            <span style="padding: 3px 8px; background-color: #4CAF50; color: white; border-radius: 3px; font-size: 11px;">Sale Order</span>
+                                        </t>
+                                        <t t-if="o.state == 'cancel'">
+                                            <span style="padding: 3px 8px; background-color: #f44336; color: white; border-radius: 3px; font-size: 11px;">Cancelled</span>
+                                        </t>
+                                    </p>
+                                </div>
+                                <div class="col-4">
+                                    <p style="margin: 5px 0;">
+                                        <strong style="color: #42a5f5;">Branch:</strong>
+                                        <span t-field="o.ops_branch_id.name"/>
+                                    </p>
+                                </div>
+                                <div class="col-4">
+                                    <p style="margin: 5px 0;">
+                                        <strong style="color: #42a5f5;">Business Unit:</strong>
+                                        <span t-field="o.ops_business_unit_id.name"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <t t-set="availability_data" t-value="o._get_products_availability_data()"/>
+                        
+                        <t t-if="not availability_data">
+                            <div style="padding: 30px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px; text-align: center;">
+                                <h4 style="color: #856404; margin: 0;">ℹ️ No Storable Products</h4>
+                                <p style="color: #856404; margin: 10px 0 0 0;">This sale order does not contain any storable products requiring availability check.</p>
+                            </div>
+                        </t>
+                        
+                        <t t-else="">
+                            <!-- Availability Summary Cards -->
+                            <t t-set="total_lines" t-value="len(availability_data)"/>
+                            <t t-set="insufficient_lines" t-value="sum(1 for line in availability_data if line.get('is_insufficient', False))"/>
+                            <t t-set="sufficient_lines" t-value="total_lines - insufficient_lines"/>
+                            
+                            <div class="row mb-3">
+                                <div class="col-4">
+                                    <div style="background-color: #2196F3; color: white; padding: 15px; border-radius: 5px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                        <h4 style="margin: 0;"><span t-esc="total_lines"/></h4>
+                                        <p style="margin: 5px 0 0 0; font-size: 12px;">Total Product Lines</p>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div style="background-color: #4CAF50; color: white; padding: 15px; border-radius: 5px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                        <h4 style="margin: 0;"><span t-esc="sufficient_lines"/></h4>
+                                        <p style="margin: 5px 0 0 0; font-size: 12px;">✓ Available in Stock</p>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div t-att-style="'background-color: %s; color: white; padding: 15px; border-radius: 5px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);' % ('#f44336' if insufficient_lines > 0 else '#4CAF50')">
+                                        <h4 style="margin: 0;"><span t-esc="insufficient_lines"/></h4>
+                                        <p style="margin: 5px 0 0 0; font-size: 12px;">
+                                            <t t-if="insufficient_lines > 0">⚠ Out of Stock</t>
+                                            <t t-else="">✓ All Available</t>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Alert for insufficient stock -->
+                            <t t-if="insufficient_lines > 0">
+                                <div style="margin-bottom: 20px; padding: 15px; background-color: #ffebee; border-left: 4px solid #f44336; border-radius: 5px;">
+                                    <strong style="color: #c62828;">⚠ Stock Alert:</strong>
+                                    <span style="color: #c62828;">
+                                        <span t-esc="insufficient_lines"/> product<span t-if="insufficient_lines > 1">s</span> have insufficient stock to fulfill this order completely.
+                                        Review highlighted items below.
+                                    </span>
+                                </div>
+                            </t>
+
+                            <!-- Enhanced Product Table -->
+                            <table class="table table-sm" style="box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                                <thead>
+                                    <tr style="background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%); color: white;">
+                                        <th style="padding: 12px; border: none;">Model (SKU)</th>
+                                        <th style="padding: 12px; border: none;">Product Name</th>
+                                        <th class="text-right" style="padding: 12px; border: none;">Ordered Qty</th>
+                                        <th class="text-right" style="padding: 12px; border: none;">Stock On Hand</th>
+                                        <th class="text-right" style="padding: 12px; border: none;">Availability</th>
+                                        <th class="text-center" style="padding: 12px; border: none;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="availability_data" t-as="line">
+                                        <t t-set="row_bg" t-value="'#ffffff' if line_index % 2 == 0 else '#f9f9f9'"/>
+                                        <t t-set="is_insufficient" t-value="line.get('is_insufficient', False)"/>
+                                        <t t-set="highlight_bg" t-value="'#ffebee' if is_insufficient else row_bg"/>
+                                        
+                                        <tr t-att-style="'background-color: %s;' % highlight_bg">
+                                            <td style="padding: 10px; border: 1px solid #e0e0e0;">
+                                                <strong><span t-esc="line['sku']"/></strong>
+                                            </td>
+                                            <td style="padding: 10px; border: 1px solid #e0e0e0;">
+                                                <span t-esc="line['product_name']"/>
+                                            </td>
+                                            <td class="text-right" style="padding: 10px; border: 1px solid #e0e0e0;">
+                                                <strong style="color: #1976d2;">
+                                                    <span t-esc="'%.2f' % line['ordered_qty']"/>
+                                                </strong>
+                                            </td>
+                                            <td class="text-right" style="padding: 10px; border: 1px solid #e0e0e0;">
+                                                <span t-att-style="'color: %s; font-weight: bold;' % ('#4CAF50' if line['stock_on_hand'] >= line['ordered_qty'] else '#f44336')">
+                                                    <span t-esc="'%.2f' % line['stock_on_hand']"/>
+                                                </span>
+                                            </td>
+                                            <td class="text-right" style="padding: 10px; border: 1px solid #e0e0e0;">
+                                                <span t-att-style="'color: %s; font-weight: bold; font-size: 1.1em;' % ('#f44336' if is_insufficient else '#4CAF50')">
+                                                    <span t-esc="'%.2f' % line['display_qty']"/>
+                                                </span>
+                                            </td>
+                                            <td class="text-center" style="padding: 10px; border: 1px solid #e0e0e0;">
+                                                <t t-if="is_insufficient">
+                                                    <span style="display: inline-block; padding: 4px 10px; background-color: #f44336; color: white; border-radius: 12px; font-size: 11px; font-weight: bold;">
+                                                        ⚠ SHORT <span t-esc="'%.2f' % (line['ordered_qty'] - line['stock_on_hand'])"/>
+                                                    </span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span style="display: inline-block; padding: 4px 10px; background-color: #4CAF50; color: white; border-radius: 12px; font-size: 11px; font-weight: bold;">
+                                                        ✓ AVAILABLE
+                                                    </span>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            
+                            <!-- Legend -->
+                            <div style="padding: 15px; background-color: #f8f9fa; border-radius: 5px; border: 1px solid #e0e0e0;">
+                                <p style="margin: 0; font-size: 12px;">
+                                    <strong style="color: #1976d2;">📊 Report Legend:</strong><br/>
+                                    • <strong>Ordered Qty:</strong> Quantity requested by customer<br/>
+                                    • <strong>Stock On Hand:</strong> Current available inventory at order's warehouse/branch<br/>
+                                    • <strong>Availability:</strong> Actual quantity that can be fulfilled (min of ordered qty and stock on hand)<br/>
+                                    • <span style="color: #4CAF50; font-weight: bold;">Green values</span> indicate sufficient stock to fulfill order<br/>
+                                    • <span style="color: #f44336; font-weight: bold;">Red values</span> indicate insufficient stock - procurement or transfer may be required
+                                </p>
+                            </div>
+
+                            <!-- Order Fulfillment Summary -->
+                            <div class="mt-3" style="page-break-inside: avoid;">
+                                <t t-if="insufficient_lines > 0">
+                                    <div style="padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
+                                        <h5 style="color: #856404; margin: 0 0 10px 0;">⚠️ Action Required</h5>
+                                        <p style="color: #856404; margin: 0; font-size: 13px;">
+                                            This order cannot be fully fulfilled with current stock levels. Consider the following actions:<br/>
+                                            1. <strong>Purchase Order:</strong> Initiate procurement for out-of-stock items<br/>
+                                            2. <strong>Inter-Branch Transfer:</strong> Request transfer from branches with available stock<br/>
+                                            3. <strong>Customer Communication:</strong> Inform customer of expected delays or partial shipment options<br/>
+                                            4. <strong>Alternative Products:</strong> Suggest substitute products if available
+                                        </p>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div style="padding: 15px; background-color: #e8f5e9; border-left: 4px solid #4CAF50; border-radius: 5px;">
+                                        <h5 style="color: #2e7d32; margin: 0 0 10px 0;">✓ Ready to Fulfill</h5>
+                                        <p style="color: #2e7d32; margin: 0; font-size: 13px;">
+                                            All products are available in sufficient quantities. This order can be fulfilled immediately.
+                                            Proceed with delivery processing and shipping arrangements.
+                                        </p>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+
+                        <!-- Footer -->
+                        <div style="margin-top: 40px; padding: 12px; background-color: #f8f9fa; border-radius: 5px; font-size: 11px; color: #666; text-align: center;">
+                            <p style="margin: 0;">
+                                Generated on <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M:%S')"/> |
+                                OPS Matrix Framework - Stock Availability Analysis
+                            </p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

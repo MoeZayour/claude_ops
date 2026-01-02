@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ops_archive_policy_tree" model="ir.ui.view">
+        <field name="name">ops.archive.policy.tree</field>
+        <field name="model">ops.archive.policy</field>
+        <field name="arch" type="xml">
+            <list string="Archive Policies">
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="retention_months"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_archive_policy_form" model="ir.ui.view">
+        <field name="name">ops.archive.policy.form</field>
+        <field name="model">ops.archive.policy</field>
+        <field name="arch" type="xml">
+            <form string="Archive Policy">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Clean Up Old Logs"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="model_id" options="{'no_create': True}"/>
+                            <field name="retention_months"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Filter" name="filter">
+                            <group>
+                                <field name="domain_code" widget="ace" options="{'mode': 'python'}"/>
+                            </group>
+                            <p class="text-muted">
+                                Records older than the retention period matching this domain will be permanently deleted.
+                            </p>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ops_archive_policy" model="ir.actions.act_window">
+        <field name="name">Archive Policies</field>
+        <field name="res_model">ops.archive.policy</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    
+</odoo>

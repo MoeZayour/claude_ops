@@ -1,0 +1,126 @@
+/*
+ * OPS Matrix Framework - UI Theme
+ * Version: 1.0
+ * Odoo 19 CE Compatible
+ */
+
+/* ============================================
+   STATUS BAR COLORS
+   ============================================ */
+
+/* Draft State - Gray */
+.o_statusbar_status .o_arrow_button[data-value="draft"],
+.o_statusbar_status .o_arrow_button[data-value="new"] {
+    --StatusBar-arrow-bg: #6c757d !important;
+}
+
+/* Confirmed/Validated State - Blue */
+.o_statusbar_status .o_arrow_button[data-value="confirmed"],
+.o_statusbar_status .o_arrow_button[data-value="validated"],
+.o_statusbar_status .o_arrow_button[data-value="open"] {
+    --StatusBar-arrow-bg: #007bff !important;
+}
+
+/* Approved State - Teal */
+.o_statusbar_status .o_arrow_button[data-value="approved"],
+.o_statusbar_status .o_arrow_button[data-value="running"] {
+    --StatusBar-arrow-bg: #17a2b8 !important;
+}
+
+/* Posted/Done State - Green */
+.o_statusbar_status .o_arrow_button[data-value="posted"],
+.o_statusbar_status .o_arrow_button[data-value="done"],
+.o_statusbar_status .o_arrow_button[data-value="collected"],
+.o_statusbar_status .o_arrow_button[data-value="completed"],
+.o_statusbar_status .o_arrow_button[data-value="closed"] {
+    --StatusBar-arrow-bg: #28a745 !important;
+}
+
+/* Cancelled/Rejected State - Red */
+.o_statusbar_status .o_arrow_button[data-value="cancelled"],
+.o_statusbar_status .o_arrow_button[data-value="rejected"],
+.o_statusbar_status .o_arrow_button[data-value="bounced"] {
+    --StatusBar-arrow-bg: #dc3545 !important;
+}
+
+/* Pending/Hold State - Yellow */
+.o_statusbar_status .o_arrow_button[data-value="pending"],
+.o_statusbar_status .o_arrow_button[data-value="hold"],
+.o_statusbar_status .o_arrow_button[data-value="deposited"] {
+    --StatusBar-arrow-bg: #ffc107 !important;
+}
+
+/* ============================================
+   FORM ALERTS - OPS BRANDED
+   ============================================ */
+
+.o_form_view .alert.ops-alert-info {
+    background-color: #e7f3ff;
+    border-color: #b8daff;
+    color: #004085;
+}
+
+.o_form_view .alert.ops-alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+    color: #856404;
+}
+
+.o_form_view .alert.ops-alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.o_form_view .alert.ops-alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+/* ============================================
+   BUTTON ENHANCEMENTS
+   ============================================ */
+
+/* Primary button subtle shadow */
+.o_form_view .o_form_statusbar .btn-primary {
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.25);
+}
+
+/* Danger button confirmation highlight */
+.o_form_view .o_form_statusbar .btn-danger {
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.25);
+}
+
+/* ============================================
+   NOTEBOOK TAB ICONS
+   ============================================ */
+
+.o_notebook .nav-link .fa {
+    margin-right: 6px;
+    opacity: 0.8;
+}
+
+/* ============================================
+   MONETARY FIELD COLORS
+   ============================================ */
+
+.o_field_monetary.text-danger,
+.o_list_table .text-danger {
+    color: #dc3545 !important;
+}
+
+.o_field_monetary.text-success,
+.o_list_table .text-success {
+    color: #28a745 !important;
+}
+
+/* ============================================
+   KANBAN CARD STATES
+   ============================================ */
+
+.o_kanban_record.oe_kanban_color_0 { border-left: 3px solid #6c757d; }  /* Draft */
+.o_kanban_record.oe_kanban_color_1 { border-left: 3px solid #007bff; }  /* Confirmed */
+.o_kanban_record.oe_kanban_color_2 { border-left: 3px solid #28a745; }  /* Done */
+.o_kanban_record.oe_kanban_color_3 { border-left: 3px solid #dc3545; }  /* Cancelled */
+.o_kanban_record.oe_kanban_color_4 { border-left: 3px solid #ffc107; }  /* Warning */
