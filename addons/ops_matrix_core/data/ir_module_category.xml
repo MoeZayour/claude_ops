@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_ops_matrix" model="ir.module.category">
+        <field name="name">OPS Matrix</field>
+        <field name="description">Multi-Branch and Business Unit Management Framework</field>
+        <field name="sequence">1</field>
+    </record>
+</odoo>
