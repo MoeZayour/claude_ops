@@ -91,6 +91,12 @@ def _set_not_null_constraints(env):
         _logger.info("ops_analytic_account_id column does not exist yet, skipping check")
         return
     
+    # Ensure an analytic plan exists (required for account.analytic.account.plan_id)
+    plan = env['account.analytic.plan'].search([('name', '=', 'Matrix Branch')], limit=1)
+    if not plan:
+        _logger.warning("No analytic plan found (Matrix Branch). Skipping analytic account creation to avoid install-time sync errors.")
+        return
+
     # Find companies without analytic accounts
     env.cr.execute("""
         SELECT id, name, ops_code, id as company_id
@@ -106,6 +112,7 @@ def _set_not_null_constraints(env):
                 'name': f"{name} - OPS",
                 'code': ops_code or 'OPS',
                 'company_id': comp_id,
+                'plan_id': plan.id,
             })
             env.cr.execute("""
                 UPDATE res_company

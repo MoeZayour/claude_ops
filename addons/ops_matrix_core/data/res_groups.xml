@@ -3,35 +3,30 @@
     <record id="group_ops_user" model="res.groups">
         <field name="name">OPS User</field>
         <field name="comment">Basic OPS Matrix access. Can view branch/BU information and create requests.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
     
     <record id="group_ops_manager" model="res.groups">
         <field name="name">OPS Manager</field>
         <field name="comment">Can manage operations within assigned branches and business units.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_user'))]"/>
     </record>
     
     <record id="group_ops_admin" model="res.groups">
         <field name="name">OPS Administrator</field>
         <field name="comment">Full access to OPS Matrix configuration.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager'))]"/>
     </record>
 
     <record id="group_ops_product_approver" model="res.groups">
         <field name="name">Product Approver</field>
         <field name="comment">Can approve product requests from other users/branches.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_user'))]"/>
     </record>
     
     <record id="group_ops_matrix_administrator" model="res.groups">
         <field name="name">Matrix Administrator</field>
         <field name="comment">Full access to matrix configuration including dashboard widgets.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_admin'))]"/>
     </record>
 
@@ -39,7 +34,6 @@
     <record id="group_ops_it_admin" model="res.groups">
         <field name="name">IT Administrator</field>
         <field name="comment">System administration with NO access to business transactions (orders, invoices, payments, etc.). Can manage users, system configuration, and technical settings only.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
@@ -47,20 +41,17 @@
     <record id="group_ops_see_cost" model="res.groups">
         <field name="name">Can See Product Costs</field>
         <field name="comment">Grants visibility to product cost prices. Required for margin calculations and purchase planning.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
     </record>
 
     <record id="group_ops_see_margin" model="res.groups">
         <field name="name">Can See Profit Margins</field>
         <field name="comment">Grants visibility to profit margin data in sales orders and reports. Typically assigned to sales managers and executives.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
     </record>
 
     <record id="group_ops_see_valuation" model="res.groups">
         <field name="name">Can See Stock Valuation</field>
         <field name="comment">Grants visibility to inventory valuation amounts. Required for financial reporting and stock analysis.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
     </record>
 
@@ -68,64 +59,67 @@
     <record id="group_ops_executive" model="res.groups">
         <field name="name">Executive / CEO</field>
         <field name="comment">Executive-level access with read-only oversight across all branches and business units. Cannot modify transactions.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_user')), (4, ref('ops_matrix_core.group_ops_see_cost')), (4, ref('ops_matrix_core.group_ops_see_margin')), (4, ref('ops_matrix_core.group_ops_see_valuation'))]"/>
     </record>
 
     <record id="group_ops_cfo" model="res.groups">
         <field name="name">CFO / Owner</field>
         <field name="comment">Full financial access across all entities. Can view and modify all financial data, approve high-value transactions.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost')), (4, ref('ops_matrix_core.group_ops_see_margin')), (4, ref('ops_matrix_core.group_ops_see_valuation'))]"/>
     </record>
 
     <record id="group_ops_bu_leader" model="res.groups">
         <field name="name">Business Unit Leader</field>
         <field name="comment">Cross-branch visibility within assigned business unit. Can oversee multiple branches under their BU.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_margin'))]"/>
+    </record>
+
+    <record id="group_ops_cross_branch_bu_leader" model="res.groups">
+        <field name="name">Cross-Branch BU Leader</field>
+        <field name="comment">Business unit leaders with visibility across all branches for their BU.</field>
+        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_bu_leader'))]"/>
     </record>
 
     <!-- Functional Manager Groups -->
     <record id="group_ops_sales_manager" model="res.groups">
         <field name="name">Sales Manager</field>
         <field name="comment">Manage sales operations, approve discounts, view costs and margins for their branch.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost')), (4, ref('ops_matrix_core.group_ops_see_margin'))]"/>
     </record>
 
     <record id="group_ops_purchase_manager" model="res.groups">
         <field name="name">Purchase Manager</field>
         <field name="comment">Manage purchase operations, approve purchase orders, view product costs.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
     </record>
 
     <record id="group_ops_inventory_manager" model="res.groups">
         <field name="name">Inventory Manager</field>
         <field name="comment">Manage inventory operations, approve adjustments, view stock valuation.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_valuation'))]"/>
     </record>
 
     <record id="group_ops_finance_manager" model="res.groups">
         <field name="name">Finance Manager</field>
         <field name="comment">Manage financial operations, approve payments and invoices, full financial visibility.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost')), (4, ref('ops_matrix_core.group_ops_see_margin')), (4, ref('ops_matrix_core.group_ops_see_valuation'))]"/>
+    </record>
+
+    <record id="group_ops_cost_controller" model="res.groups">
+        <field name="name">OPS Cost Controller</field>
+        <field name="comment">Access to cost and margin controls for financial analysis.</field>
+        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_finance_manager'))]"/>
     </record>
 
     <record id="group_ops_accountant" model="res.groups">
         <field name="name">Accountant / Controller</field>
         <field name="comment">Full accounting access including cost, margin, and valuation data. Can create journal entries and reconcile accounts.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_user')), (4, ref('ops_matrix_core.group_ops_see_cost')), (4, ref('ops_matrix_core.group_ops_see_margin')), (4, ref('ops_matrix_core.group_ops_see_valuation'))]"/>
     </record>
 
     <record id="group_ops_treasury" model="res.groups">
         <field name="name">Treasury Officer</field>
         <field name="comment">Manage cash flow, payments, and banking operations. View financial data for cash management.</field>
-        <field name="category_id" ref="ops_matrix_core.module_category_ops_matrix"/>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_user'))]"/>
     </record>
 </odoo>

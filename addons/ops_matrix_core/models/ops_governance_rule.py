@@ -81,6 +81,7 @@ class OpsGovernanceRule(models.Model):
         ('price_override', 'Price Override'),
         ('approval_workflow', 'Approval Workflow'),
         ('notification', 'Notification'),
+        ('approval', 'Approval (Legacy Template)'),
         ('legacy', 'Legacy (Backward Compatibility)'),
     ], string='Rule Type',
        required=True,
@@ -112,6 +113,22 @@ class OpsGovernanceRule(models.Model):
             'On State Change: Only when status field changes (draft→confirmed). '
             'Performance Tip: Use specific triggers instead of "Always" for better performance. '
             'Example: Discount validation on "On Write" since discounts can change after creation.')
+
+    # Generic threshold/comparison helpers for template data (backward compatibility)
+    threshold_value = fields.Float(
+        string='Threshold Value',
+        help='Generic numeric threshold used by template rules (e.g., discount % or amount). '
+             'Kept for backward compatibility with seeded templates.'
+    )
+    comparison_operator = fields.Selection([
+        ('greater_than', 'Greater Than'),
+        ('greater_or_equal', 'Greater Than or Equal'),
+        ('less_than', 'Less Than'),
+        ('less_or_equal', 'Less Than or Equal'),
+        ('equal', 'Equal To'),
+        ('not_equal', 'Not Equal To'),
+    ], string='Comparison Operator', default='greater_than',
+       help='Comparison operator used with threshold_value for legacy/template rules.')
     
     # New unified condition logic field - Changed to Char for domain widget
     condition_logic = fields.Char(
@@ -141,6 +158,9 @@ class OpsGovernanceRule(models.Model):
         ('on_create', 'On Create'),
         ('on_update', 'On Update'),
         ('on_state_change', 'On State Change'),
+        # Legacy template placeholders for seeded rules
+        ('discount_percent', 'Discount Percent (Template)'),
+        ('amount_total', 'Amount Total (Template)'),
     ], string='Trigger Condition (Legacy)', default='always')
     
     state_condition = fields.Char(string='State Condition',

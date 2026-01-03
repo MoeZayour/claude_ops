@@ -25,27 +25,28 @@ class OpsAssetCategory(models.Model):
     active = fields.Boolean(default=True, help="Set active to false to hide the category without removing it.")
 
     journal_id = fields.Many2one(
-        'account.journal', string='Journal', required=True,
+        'account.journal', string='Journal', required=False,
+        ondelete='set null',
         domain="[('type', '=', 'general')]",
-        help="Journal for posting depreciation entries."
+        help="Journal for posting depreciation entries. Optional until accounting is configured; cleared if removed during chart changes."
     )
 
     asset_account_id = fields.Many2one(
         'account.account', string='Asset Account',
-        required=True, ondelete='restrict',
-        help="Account to book the value of new assets. This account must be of type 'Asset'."
+        required=False, ondelete='set null',
+        help="Account to book the value of new assets. Optional until accounting is configured; cleared if removed during chart changes."
     )
 
     depreciation_account_id = fields.Many2one(
         'account.account', string='Accumulated Depreciation Account',
-        required=True, ondelete='restrict',
-        help="Account for accumulated depreciation. This account must be of type 'Asset'."
+        required=False, ondelete='set null',
+        help="Account for accumulated depreciation. Optional until accounting is configured; cleared if removed during chart changes."
     )
 
     expense_account_id = fields.Many2one(
         'account.account', string='Depreciation Expense Account',
-        required=True, ondelete='restrict',
-        help="Account for the periodic depreciation expense. This account must be of type 'Expense'."
+        required=False, ondelete='set null',
+        help="Account for the periodic depreciation expense. Optional until accounting is configured; cleared if removed during chart changes."
     )
 
     depreciation_method = fields.Selection([
