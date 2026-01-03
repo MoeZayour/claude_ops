@@ -6,15 +6,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class PurchaseOrder(models.Model):
-    _inherit = ['purchase.order', 'ops.governance.mixin']
-    
-    # Governance Fields (explicitly declared for proper column creation)
-    approval_locked = fields.Boolean(
-        string='Approval Locked',
-        default=False,
-        help='Record is locked pending approval',
-        copy=False
-    )
+    _inherit = ['purchase.order', 'ops.governance.mixin', 'ops.approval.mixin']
     
     # OPS Matrix Fields
     ops_branch_id = fields.Many2one(

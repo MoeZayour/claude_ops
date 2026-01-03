@@ -100,6 +100,8 @@
         
         # Reports
         'reports/ops_products_availability_report.xml',
+        'wizard/ops_approval_recall_wizard_views.xml',
+        'wizard/ops_approval_reject_wizard_views.xml',
     ],
     'demo': [
         'demo/ops_demo_data.xml',

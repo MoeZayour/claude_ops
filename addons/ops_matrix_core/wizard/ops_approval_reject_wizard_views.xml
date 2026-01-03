@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ops_approval_reject_wizard_form" model="ir.ui.view">
+        <field name="name">ops.approval.reject.wizard.form</field>
+        <field name="model">ops.approval.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reject Approval Request">
+                <group>
+                    <field name="approval_request_id" invisible="1"/>
+                    <field name="rejection_reason" placeholder="Explain why you are rejecting this request and what needs to change..."/>
+                </group>
+                <footer>
+                    <button string="Confirm Rejection" name="action_confirm_reject" type="object" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

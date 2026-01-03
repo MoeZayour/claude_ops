@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Governance Violation Report Wizard Form -->
     <record id="view_ops_governance_violation_report_form" model="ir.ui.view">
         <field name="name">ops.governance.violation.report.form</field>
         <field name="model">ops.governance.violation.report</field>
@@ -59,7 +58,6 @@
         </field>
     </record>
     
-    <!-- Governance Violation Report Action -->
     <record id="action_ops_governance_violation_report" model="ir.actions.act_window">
         <field name="name">Governance Violations Report</field>
         <field name="res_model">ops.governance.violation.report</field>
@@ -68,6 +66,4 @@
         <field name="target">new</field>
         <field name="binding_model_id" ref="model_ops_governance_rule"/>
     </record>
-    
-    
 </odoo>

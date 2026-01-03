@@ -3,7 +3,7 @@ from odoo.exceptions import ValidationError
 from typing import List, Dict, Any
 
 class StockPicking(models.Model):
-    _inherit = ['stock.picking', 'ops.matrix.mixin']
+    _inherit = ['stock.picking', 'ops.matrix.mixin', 'ops.approval.mixin']
     _name = 'stock.picking'
 
     # Note: branch fields now come from ops.matrix.mixin as ops_branch_id and ops_business_unit_id

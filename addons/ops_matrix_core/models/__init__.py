@@ -10,6 +10,7 @@ from . import ops_business_unit     # Third: BU model (depends on branch)
 from . import ops_matrix_config     # Fourth: Configuration model
 from . import ops_mixin             # Fifth: Mixin (depends on branch/BU)
 from . import ops_matrix_mixin      # Sixth: Matrix dimension propagation mixin
+from . import ops_approval_mixin    # Approval locking mixin
 from . import ops_analytic_mixin    # Analytic Mixin for financial models
 from . import ops_analytic_setup    # Analytic accounting setup wizard
 from . import ops_performance_indexes  # Performance optimization indexes
@@ -55,6 +56,7 @@ from . import pricelist
 from . import sale_order
 from . import purchase_order
 from . import account_move
+from . import account_payment
 from . import stock_warehouse
 from . import stock_warehouse_orderpoint
 from . import stock_picking

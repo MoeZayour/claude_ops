@@ -419,7 +419,7 @@ class OpsApprovalRequest(models.Model):
         """Approve the request."""
         self.ensure_one()
         if self.state != 'pending':
-            return False
+            raise UserError(_('Only pending requests can be approved.'))
             
         self.write({
             'state': 'approved',
@@ -427,73 +427,48 @@ class OpsApprovalRequest(models.Model):
             'approved_date': fields.Datetime.now(),
         })
         
-        # Unlock the record if it was locked
+        # Unlock the record
         if self.model_name and self.res_id:
             try:
                 record = self.env[self.model_name].browse(self.res_id)
                 if record.exists() and hasattr(record, 'approval_locked'):
-                    record.write({'approval_locked': False})
+                    record.with_context(approval_unlock=True).write({
+                        'approval_locked': False,
+                        'approval_request_id': False,
+                    })
+                    
+                    # Post to document
+                    if hasattr(record, 'message_post'):
+                        record.message_post(
+                            body=_('Approval GRANTED by %s') % self.env.user.name,
+                            message_type='notification',
+                            subtype_xmlid='mail.mt_note'
+                        )
             except Exception as e:
                 _logger.debug(f"Could not unlock record: {e}")
         
-        # Send notification
-        try:
-            self.message_post(
-                body=_("Approval granted by %s") % self.env.user.name,
-                message_type='notification'
-            )
-        except Exception:
-            pass
+        # Post to approval request
+        self.message_post(
+            body=_('Approval GRANTED by %s') % self.env.user.name,
+            message_type='notification',
+            subtype_xmlid='mail.mt_comment'
+        )
         
         return True
 
-    def action_reject(self) -> bool:
-        """Reject the request."""
+    def action_reject(self):
+        """Open wizard to reject with reason."""
         self.ensure_one()
         if self.state != 'pending':
-            return False
-            
-        self.write({
-            'state': 'rejected',
-            'approved_by': self.env.user.id,
-            'approved_date': fields.Datetime.now(),
-        })
+            raise UserError(_('Only pending requests can be rejected.'))
         
-        # Unlock the record if it was locked
-        if self.model_name and self.res_id:
-            try:
-                record = self.env[self.model_name].browse(self.res_id)
-                if record.exists() and hasattr(record, 'approval_locked'):
-                    record.write({'approval_locked': False})
-            except Exception as e:
-                _logger.debug(f"Could not unlock record: {e}")
-        
-        # Send notification
-        try:
-            self.message_post(
-                body=_("Approval rejected by %s. Reason: %s") % (self.env.user.name, self.response_notes or 'No reason given'),
-                message_type='notification'
-            )
-        except Exception:
-            pass
-        
-        return True
-
-    def action_cancel(self) -> bool:
-        """Cancel the request."""
-        self.ensure_one()
-        if self.state != 'pending':
-            return False
-            
-        self.write({'state': 'cancelled'})
-        
-        # Unlock the record if it was locked
-        if self.model_name and self.res_id:
-            try:
-                record = self.env[self.model_name].browse(self.res_id)
-                if record.exists() and hasattr(record, 'approval_locked'):
-                    record.write({'approval_locked': False})
-            except Exception as e:
-                _logger.debug(f"Could not unlock record: {e}")
-        
-        return True
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Reject Approval Request'),
+            'res_model': 'ops.approval.reject.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_approval_request_id': self.id,
+            },
+        }

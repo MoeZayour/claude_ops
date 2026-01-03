@@ -1,25 +1,5 @@
 
 # -*- coding: utf-8 -*-
-from . import wizard
-from .hooks import post_init_hook
-
-# ... (all other model file contents) ...
-
-from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
-from odoo.tools.safe_eval import safe_eval
-import logging
-
-_logger = logging.getLogger(__name__)
-
-class OpsGovernanceRule(models.Model):
-    _name = 'ops.governance.rule'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'OPS Governance Rule - Dynamic Rule Engine with Matrix & Pricing Controls'
-    _order = 'sequence, name'
-
-    # ... (rest of ops_governance_rule.py)
-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import json

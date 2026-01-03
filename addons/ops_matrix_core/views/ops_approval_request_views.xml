@@ -20,10 +20,6 @@
                             string="Reject" 
                             type="object" 
                             invisible="state != 'pending'"/>
-                    <button name="action_cancel" 
-                            string="Cancel" 
-                            type="object" 
-                            invisible="state != 'pending'"/>
                     <field name="state" widget="statusbar" statusbar_visible="pending,approved,rejected"/>
                 </header>
                 

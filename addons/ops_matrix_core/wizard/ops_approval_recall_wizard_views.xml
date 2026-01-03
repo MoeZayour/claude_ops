@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ops_approval_recall_wizard_form" model="ir.ui.view">
+        <field name="name">ops.approval.recall.wizard.form</field>
+        <field name="model">ops.approval.recall.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Recall Approval Request">
+                <group>
+                    <field name="approval_request_id" invisible="1"/>
+                    <field name="document_id" invisible="1"/>
+                    <field name="document_model" invisible="1"/>
+                    <field name="recall_reason" placeholder="Explain why you need to recall this approval request and what changes you will make..."/>
+                </group>
+                <footer>
+                    <button string="Confirm Recall" name="action_confirm_recall" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

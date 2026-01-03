@@ -16,15 +16,7 @@ except ImportError:
 
 class SaleOrder(models.Model):
     _name = 'sale.order'
-    _inherit = ['sale.order', 'ops.governance.mixin', 'ops.matrix.mixin']
-    
-    # Governance Fields (explicitly declared for proper column creation)
-    approval_locked = fields.Boolean(
-        string='Approval Locked',
-        default=False,
-        help='Record is locked pending approval',
-        copy=False
-    )
+    _inherit = ['sale.order', 'ops.governance.mixin', 'ops.matrix.mixin', 'ops.approval.mixin']
     
     # Note: ops_branch_id and ops_business_unit_id are inherited from ops.matrix.mixin
     # Additional sale order specific fields

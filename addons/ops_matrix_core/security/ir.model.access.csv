@@ -28,8 +28,6 @@ access_ops_approval_workflow_user,ops.approval.workflow.user,model_ops_approval_
 access_ops_approval_workflow_manager,ops.approval.workflow.manager,model_ops_approval_workflow,group_ops_manager,1,1,1,1
 access_ops_approval_workflow_step_user,ops.approval.workflow.step.user,model_ops_approval_workflow_step,group_ops_user,1,0,0,0
 access_ops_approval_workflow_step_manager,ops.approval.workflow.step.manager,model_ops_approval_workflow_step,group_ops_manager,1,1,1,1
-access_ops_gov_violation_report_user,ops.governance.violation.report.user,model_ops_governance_violation_report,group_ops_user,1,1,1,1
-access_ops_gov_violation_report_manager,ops.governance.violation.report.manager,model_ops_governance_violation_report,group_ops_manager,1,1,1,1
 access_ops_approval_req_user,ops.approval.request.user,model_ops_approval_request,group_ops_user,1,1,1,0
 access_ops_approval_req_manager,ops.approval.request.manager,model_ops_approval_request,group_ops_manager,1,1,1,1
 access_ops_approval_req_sale_user,ops.approval.request.sale.user,model_ops_approval_request,sales_team.group_sale_salesman,1,1,1,0
