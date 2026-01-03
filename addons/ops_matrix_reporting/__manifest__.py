@@ -20,9 +20,10 @@
     'auto_install': False,
     'depends': [
         'ops_matrix_core',
+        'sale',
         'account',
         'stock',
-        'spreadsheet_dashboard',
+        # # 'spreadsheet_dashboard',  # Removed - Enterprise only  # Removed - Enterprise only
     ],
     'data': [
         # Security
