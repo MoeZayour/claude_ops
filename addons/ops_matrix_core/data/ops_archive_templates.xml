@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="archive_policy_approval_requests" model="ops.archive.policy">
+        <field name="name">Archive Old Approval Requests</field>
+        <field name="model_id" ref="ops_matrix_core.model_ops_approval_request"/>
+        <field name="domain_code">[]</field>
+        <field name="retention_months">12</field>
+        <field name="active">False</field>
+    </record>
+
+    <record id="archive_policy_sla_instances" model="ops.archive.policy">
+        <field name="name">Archive Old SLA Instances</field>
+        <field name="model_id" ref="ops_matrix_core.model_ops_sla_instance"/>
+        <field name="domain_code">[]</field>
+        <field name="retention_months">6</field>
+        <field name="active">False</field>
+    </record>
+
+    <record id="archive_policy_transfers" model="ops.archive.policy">
+        <field name="name">Archive Old Transfers</field>
+        <field name="model_id" ref="ops_matrix_core.model_ops_inter_branch_transfer"/>
+        <field name="domain_code">[]</field>
+        <field name="retention_months">24</field>
+        <field name="active">False</field>
+    </record>
+</odoo>

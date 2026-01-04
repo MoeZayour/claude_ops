@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sla_template_quote_response" model="ops.sla.template">
+        <field name="name">Quote Response Time</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="target_duration">24</field>
+        <field name="target_days">1</field>
+        <field name="active">False</field>
+    </record>
+
+    <record id="sla_template_approval_standard" model="ops.sla.template">
+        <field name="name">Standard Approval Time</field>
+        <field name="model_id" ref="ops_matrix_core.model_ops_approval_request"/>
+        <field name="target_duration">24</field>
+        <field name="target_days">1</field>
+        <field name="active">False</field>
+    </record>
+</odoo>

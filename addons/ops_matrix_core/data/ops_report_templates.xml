@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Standard P&L Template -->
+        <record id="report_template_pnl" model="ops.report.template">
+            <field name="name">Standard P&L</field>
+            <field name="report_type">profit_loss</field>
+            <field name="is_system_template">True</field>
+        </record>
+
+        <record id="report_template_pnl_line_1" model="ops.report.template.line">
+            <field name="template_id" ref="report_template_pnl"/>
+            <field name="sequence">10</field>
+            <field name="section_name">REVENUE</field>
+            <field name="is_section_header">True</field>
+            <field name="show_subtotal">True</field>
+            <field name="account_type">income</field>
+        </record>
+
+        <record id="report_template_pnl_line_2" model="ops.report.template.line">
+            <field name="template_id" ref="report_template_pnl"/>
+            <field name="sequence">20</field>
+            <field name="section_name">COGS</field>
+            <field name="is_section_header">True</field>
+            <field name="show_subtotal">True</field>
+            <field name="account_type">expense</field>
+            <field name="account_code_pattern">5%</field>
+        </record>
+
+        <record id="report_template_pnl_line_3" model="ops.report.template.line">
+            <field name="template_id" ref="report_template_pnl"/>
+            <field name="sequence">30</field>
+            <field name="section_name">OPEX</field>
+            <field name="is_section_header">True</field>
+            <field name="show_subtotal">True</field>
+            <field name="account_type">expense</field>
+            <field name="account_code_pattern">6%</field>
+        </record>
+
+        <!-- Standard Balance Sheet Template -->
+        <record id="report_template_bs" model="ops.report.template">
+            <field name="name">Standard Balance Sheet</field>
+            <field name="report_type">balance_sheet</field>
+            <field name="is_system_template">True</field>
+        </record>
+
+        <record id="report_template_bs_line_1" model="ops.report.template.line">
+            <field name="template_id" ref="report_template_bs"/>
+            <field name="sequence">10</field>
+            <field name="section_name">ASSETS</field>
+            <field name="is_section_header">True</field>
+            <field name="show_subtotal">True</field>
+            <field name="account_type">asset</field>
+        </record>
+
+        <record id="report_template_bs_line_2" model="ops.report.template.line">
+            <field name="template_id" ref="report_template_bs"/>
+            <field name="sequence">20</field>
+            <field name="section_name">LIABILITIES</field>
+            <field name="is_section_header">True</field>
+            <field name="show_subtotal">True</field>
+            <field name="account_type">liability</field>
+        </record>
+
+        <record id="report_template_bs_line_3" model="ops.report.template.line">
+            <field name="template_id" ref="report_template_bs"/>
+            <field name="sequence">30</field>
+            <field name="section_name">EQUITY</field>
+            <field name="is_section_header">True</field>
+            <field name="show_subtotal">True</field>
+            <field name="account_type">equity</field>
+        </record>
+
+        <!-- Standard Trial Balance Template -->
+        <record id="report_template_tb" model="ops.report.template">
+            <field name="name">Standard Trial Balance</field>
+            <field name="report_type">trial_balance</field>
+            <field name="is_system_template">True</field>
+        </record>
+
+        <record id="report_template_tb_line_1" model="ops.report.template.line">
+            <field name="template_id" ref="report_template_tb"/>
+            <field name="sequence">10</field>
+            <field name="section_name">ALL ACCOUNTS</field>
+            <field name="is_section_header">True</field>
+            <field name="show_subtotal">False</field>
+        </record>
+
+    </data>
+</odoo>

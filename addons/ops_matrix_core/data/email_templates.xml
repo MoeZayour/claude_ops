@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Email template for escalation reminder to original approver -->
+        <record id="email_template_escalation_reminder" model="mail.template">
+            <field name="name">Approval Escalation Reminder</field>
+            <field name="model_id" ref="model_ops_approval_request"/>
+            <field name="subject">Approval Escalated: {{ object.res_name }}</field>
+            <field name="email_to">{{ object.create_uid.email }}</field>
+            <field name="body_html"><![CDATA[
+<p>Dear {{ object.create_uid.name }},</p>
+<p>
+    This is a notification that the approval request for <strong>{{ object.res_name }}</strong> has been escalated due to a timeout.
+</p>
+<p>
+    The request has been reassigned to a new approver. Your timely action on future requests is appreciated.
+</p>
+<p>
+    <a href="{{ object.get_portal_url() }}" style="background-color: #875A7B; padding: 10px; text-decoration: none; color: #fff; border-radius: 5px;">View Request</a>
+</p>
+<p>
+    Thank you,
+</p>
+<p>
+    <em>The Odoo System</em>
+</p>
+            ]]></field>
+        </record>
+
+        <!-- Email template for new approver -->
+        <record id="email_template_escalation_new_approver" model="mail.template">
+            <field name="name">Escalated Approval Request</field>
+            <field name="model_id" ref="model_ops_approval_request"/>
+            <field name="subject">Escalated Approval Required: {{ object.res_name }}</field>
+            <field name="email_to">{{ user.email }}</field>
+            <field name="body_html"><![CDATA[
+<p>Dear {{ user.name }},</p>
+<p>
+    An approval request for <strong>{{ object.res_name }}</strong> has been escalated to you for your review and action.
+</p>
+<p>
+    <strong>Reason for Escalation:</strong> The request exceeded the defined response time for the previous approver.
+</p>
+<p>
+    Please review the request at your earliest convenience.
+</p>
+<p>
+    <a href="{{ object.get_portal_url() }}" style="background-color: #875A7B; padding: 10px; text-decoration: none; color: #fff; border-radius: 5px;">View Request</a>
+</p>
+<p>
+    Thank you,
+</p>
+<p>
+    <em>The Odoo System</em>
+</p>
+            ]]></field>
+        </record>
+
+    </data>
+</odoo>

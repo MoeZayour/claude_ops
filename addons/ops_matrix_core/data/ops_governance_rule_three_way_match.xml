@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="rule_three_way_match_override" model="ops.governance.rule">
+            <field name="name">Three-Way Match Override</field>
+            <field name="model_id" ref="model_account_move"/>
+            <field name="request_type">three_way_match_override</field>
+            <field name="description">Requires Purchase Manager approval to override a three-way match block on a vendor bill.</field>
+            <field name="active">True</field>
+            <field name="is_system_rule">True</field>
+            <field name="required_approver_persona_id" ref="ops_matrix_core.ops_persona_purchase_manager"/>
+        </record>
+
+    </data>
+</odoo>

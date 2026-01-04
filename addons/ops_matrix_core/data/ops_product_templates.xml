@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- =================================================== -->
+        <!-- PRODUCT CATEGORIES FOR COMPREHENSIVE TESTING -->
+        <!-- =================================================== -->
+        
+        <!-- Root Category -->
+        <record id="product_category_all" model="product.category">
+            <field name="name">All Products</field>
+            <field name="parent_id" eval="False"/>
+        </record>
+        
+        <!-- Electronics Category -->
+        <record id="product_category_electronics" model="product.category">
+            <field name="name">Electronics</field>
+            <field name="parent_id" ref="product_category_all"/>
+        </record>
+        
+        <record id="product_category_mobile" model="product.category">
+            <field name="name">Mobile Phones</field>
+            <field name="parent_id" ref="product_category_electronics"/>
+        </record>
+        
+        <record id="product_category_laptop" model="product.category">
+            <field name="name">Laptops</field>
+            <field name="parent_id" ref="product_category_electronics"/>
+        </record>
+        
+        <!-- Home Appliances -->
+        <record id="product_category_appliances" model="product.category">
+            <field name="name">Home Appliances</field>
+            <field name="parent_id" ref="product_category_all"/>
+        </record>
+        
+        <!-- Furniture -->
+        <record id="product_category_furniture" model="product.category">
+            <field name="name">Furniture</field>
+            <field name="parent_id" ref="product_category_all"/>
+        </record>
+        
+        <!-- Coffee Products -->
+        <record id="product_category_coffee" model="product.category">
+            <field name="name">Coffee Products</field>
+            <field name="parent_id" ref="product_category_all"/>
+        </record>
+        
+        <!-- Services -->
+        <record id="product_category_services" model="product.category">
+            <field name="name">Services</field>
+            <field name="parent_id" ref="product_category_all"/>
+        </record>
+        
+        <record id="product_category_consulting" model="product.category">
+            <field name="name">Consulting Services</field>
+            <field name="parent_id" ref="product_category_services"/>
+        </record>
+        
+        <record id="product_category_maintenance" model="product.category">
+            <field name="name">Maintenance Services</field>
+            <field name="parent_id" ref="product_category_services"/>
+        </record>
+        
+        <!-- Luxury Goods (High Margin) -->
+        <record id="product_category_luxury" model="product.category">
+            <field name="name">Luxury Goods</field>
+            <field name="parent_id" ref="product_category_all"/>
+        </record>
+        
+        <!-- Commodities (Low Margin) -->
+        <record id="product_category_commodity" model="product.category">
+            <field name="name">Commodities</field>
+            <field name="parent_id" ref="product_category_all"/>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO PRODUCTS - ELECTRONICS -->
+        <!-- =================================================== -->
+        
+        <record id="product_iphone_15" model="product.product">
+            <field name="name">iPhone 15 Pro</field>
+            <field name="default_code">IPH15-PRO</field>
+            <field name="categ_id" ref="product_category_mobile"/>
+            <field name="type">consu</field>
+            <field name="list_price">4500.00</field>
+            <field name="standard_price">3200.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">serial</field>
+            <field name="description">Latest iPhone Pro model with advanced camera</field>
+        </record>
+        
+        <record id="product_macbook_pro" model="product.product">
+            <field name="name">MacBook Pro 16"</field>
+            <field name="default_code">MBP-16</field>
+            <field name="categ_id" ref="product_category_laptop"/>
+            <field name="type">consu</field>
+            <field name="list_price">8500.00</field>
+            <field name="standard_price">6200.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">serial</field>
+            <field name="description">Professional laptop for creative work</field>
+        </record>
+        
+        <record id="product_samsung_tv" model="product.product">
+            <field name="name">Samsung 65" 4K TV</field>
+            <field name="default_code">SAM-TV-65</field>
+            <field name="categ_id" ref="product_category_appliances"/>
+            <field name="type">consu</field>
+            <field name="list_price">3500.00</field>
+            <field name="standard_price">2500.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">none</field>
+            <field name="description">Ultra HD 4K Smart TV</field>
+        </record>
+        
+        <record id="product_airpods_pro" model="product.product">
+            <field name="name">AirPods Pro</field>
+            <field name="default_code">AIRPODS-PRO</field>
+            <field name="categ_id" ref="product_category_electronics"/>
+            <field name="type">consu</field>
+            <field name="list_price">1200.00</field>
+            <field name="standard_price">850.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">none</field>
+            <field name="description">Wireless earbuds with noise cancellation</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO PRODUCTS - FURNITURE -->
+        <!-- =================================================== -->
+        
+        <record id="product_office_chair" model="product.product">
+            <field name="name">Ergonomic Office Chair</field>
+            <field name="default_code">CHAIR-ERG</field>
+            <field name="categ_id" ref="product_category_furniture"/>
+            <field name="type">consu</field>
+            <field name="list_price">1200.00</field>
+            <field name="standard_price">850.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">none</field>
+            <field name="description">Premium ergonomic office chair</field>
+        </record>
+        
+        <record id="product_office_desk" model="product.product">
+            <field name="name">Executive Office Desk</field>
+            <field name="default_code">DESK-EXEC</field>
+            <field name="categ_id" ref="product_category_furniture"/>
+            <field name="type">consu</field>
+            <field name="list_price">2500.00</field>
+            <field name="standard_price">1750.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">none</field>
+            <field name="description">Mahogany executive desk with storage</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO PRODUCTS - COFFEE -->
+        <!-- =================================================== -->
+        
+        <record id="product_arabic_coffee" model="product.product">
+            <field name="name">Arabic Coffee Blend (1kg)</field>
+            <field name="default_code">COFF-ARAB</field>
+            <field name="categ_id" ref="product_category_coffee"/>
+            <field name="type">consu</field>
+            <field name="list_price">85.00</field>
+            <field name="standard_price">45.00</field>
+            <field name="uom_id" ref="uom.product_uom_kgm"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="description">Premium Arabic coffee blend</field>
+        </record>
+        
+        <record id="product_espresso_machine" model="product.product">
+            <field name="name">Commercial Espresso Machine</field>
+            <field name="default_code">ESPRESSO-PRO</field>
+            <field name="categ_id" ref="product_category_coffee"/>
+            <field name="type">consu</field>
+            <field name="list_price">8500.00</field>
+            <field name="standard_price">6200.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">serial</field>
+            <field name="description">Professional grade espresso machine</field>
+        </record>
+        
+        <record id="product_turkish_coffee" model="product.product">
+            <field name="name">Turkish Coffee (500g)</field>
+            <field name="default_code">COFF-TURK-500</field>
+            <field name="categ_id" ref="product_category_coffee"/>
+            <field name="type">consu</field>
+            <field name="list_price">65.00</field>
+            <field name="standard_price">35.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="description">Fine Turkish coffee blend</field>
+        </record>
+        
+        <record id="product_coffee_cups" model="product.product">
+            <field name="name">Coffee Cups Set (6)</field>
+            <field name="default_code">CUPS-COFF-6</field>
+            <field name="categ_id" ref="product_category_coffee"/>
+            <field name="type">consu</field>
+            <field name="list_price">120.00</field>
+            <field name="standard_price">75.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">none</field>
+            <field name="description">Porcelain coffee cups set of 6</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO PRODUCTS - SERVICES -->
+        <!-- =================================================== -->
+        
+        <record id="product_it_consulting" model="product.product">
+            <field name="name">IT Consulting (Hourly)</field>
+            <field name="default_code">SRV-IT-CON</field>
+            <field name="categ_id" ref="product_category_consulting"/>
+            <field name="type">service</field>
+            <field name="list_price">350.00</field>
+            <field name="standard_price">150.00</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">none</field>
+            <field name="description">Professional IT consulting services</field>
+        </record>
+        
+        <record id="product_cloud_consulting" model="product.product">
+            <field name="name">Cloud Migration Consulting</field>
+            <field name="default_code">SRV-CLOUD-MIG</field>
+            <field name="categ_id" ref="product_category_consulting"/>
+            <field name="type">service</field>
+            <field name="list_price">500.00</field>
+            <field name="standard_price">200.00</field>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="tracking">none</field>
+            <field name="description">AWS/Azure cloud migration services</field>
+        </record>
+        
+        <record id="product_system_maintenance" model="product.product">
+            <field name="name">Monthly System Maintenance</field>
+            <field name="default_code">SRV-MAINT-MON</field>
+            <field name="categ_id" ref="product_category_maintenance"/>
+            <field name="type">service</field>
+            <field name="list_price">1500.00</field>
+            <field name="standard_price">600.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="tracking">none</field>
+            <field name="description">Monthly IT system maintenance contract</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO PRODUCTS - LUXURY GOODS (HIGH MARGIN) -->
+        <!-- =================================================== -->
+        
+        <record id="product_rolex_watch" model="product.product">
+            <field name="name">Rolex Submariner</field>
+            <field name="default_code">ROLEX-SUB</field>
+            <field name="categ_id" ref="product_category_luxury"/>
+            <field name="type">consu</field>
+            <field name="list_price">35000.00</field>
+            <field name="standard_price">21000.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">serial</field>
+            <field name="description">Luxury Swiss watch - Submariner collection</field>
+        </record>
+        
+        <record id="product_designer_bag" model="product.product">
+            <field name="name">Designer Handbag</field>
+            <field name="default_code">BAG-DESIGN</field>
+            <field name="categ_id" ref="product_category_luxury"/>
+            <field name="type">consu</field>
+            <field name="list_price">5500.00</field>
+            <field name="standard_price">3300.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">none</field>
+            <field name="description">Premium designer leather handbag</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO PRODUCTS - COMMODITIES (LOW MARGIN) -->
+        <!-- =================================================== -->
+        
+        <record id="product_rice_5kg" model="product.product">
+            <field name="name">Basmati Rice (5kg)</field>
+            <field name="default_code">RICE-BAS-5KG</field>
+            <field name="categ_id" ref="product_category_commodity"/>
+            <field name="type">consu</field>
+            <field name="list_price">25.00</field>
+            <field name="standard_price">22.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">none</field>
+            <field name="description">Premium basmati rice 5kg pack</field>
+        </record>
+        
+        <record id="product_sugar_1kg" model="product.product">
+            <field name="name">White Sugar (1kg)</field>
+            <field name="default_code">SUGAR-WH-1KG</field>
+            <field name="categ_id" ref="product_category_commodity"/>
+            <field name="type">consu</field>
+            <field name="list_price">8.00</field>
+            <field name="standard_price">7.20</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="tracking">none</field>
+            <field name="description">Refined white sugar 1kg</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- BUNDLE PRODUCTS -->
+        <!-- =================================================== -->
+        
+        <record id="product_home_office_bundle" model="product.product">
+            <field name="name">Home Office Bundle</field>
+            <field name="default_code">BUNDLE-HOME-OFF</field>
+            <field name="categ_id" ref="product_category_electronics"/>
+            <field name="type">consu</field>
+            <field name="list_price">5500.00</field>
+            <field name="standard_price">3850.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="tracking">none</field>
+            <field name="description">Complete home office setup: laptop + chair + accessories</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DIGITAL PRODUCTS -->
+        <!-- =================================================== -->
+        
+        <record id="product_software_license" model="product.product">
+            <field name="name">Business Software License</field>
+            <field name="default_code">SW-LICENSE</field>
+            <field name="categ_id" ref="product_category_services"/>
+            <field name="type">service</field>
+            <field name="list_price">2500.00</field>
+            <field name="standard_price">1000.00</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="tracking">none</field>
+            <field name="description">Annual software license with updates and support</field>
+        </record>
+        
+    </data>
+</odoo>

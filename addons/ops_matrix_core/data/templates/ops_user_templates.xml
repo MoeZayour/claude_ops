@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============= TEMPLATE USERS (SIMPLIFIED - NO GROUP ASSIGNMENTS) ============= -->
+        <!-- Note: Template users are marked as inactive and used as references in governance rules.
+                   Group assignments are skipped to avoid dependency on external module group definitions. -->
+        
+        <!-- [TEMPLATE] User - Sales (Restricted) -->
+        <record id="template_user_sales_restricted" model="res.users">
+            <field name="name">[TEMPLATE] User - Sales (Restricted)</field>
+            <field name="login">template_sales_restricted</field>
+            <field name="password">admin</field>
+            <field name="email">template.sales@example.com</field>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- [TEMPLATE] User - Warehouse Worker -->
+        <record id="template_user_warehouse_worker" model="res.users">
+            <field name="name">[TEMPLATE] User - Warehouse Worker</field>
+            <field name="login">template_warehouse_worker</field>
+            <field name="password">admin</field>
+            <field name="email">template.warehouse@example.com</field>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- [TEMPLATE] User - Branch Manager -->
+        <record id="template_user_branch_manager" model="res.users">
+            <field name="name">[TEMPLATE] User - Branch Manager</field>
+            <field name="login">template_branch_manager</field>
+            <field name="password">admin</field>
+            <field name="email">template.branch.manager@example.com</field>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- [TEMPLATE] User - HQ Auditor -->
+        <record id="template_user_hq_auditor" model="res.users">
+            <field name="name">[TEMPLATE] User - HQ Auditor</field>
+            <field name="login">template_hq_auditor</field>
+            <field name="password">admin</field>
+            <field name="email">template.auditor@example.com</field>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- [TEMPLATE] User - Finance Manager -->
+        <record id="template_user_finance_manager" model="res.users">
+            <field name="name">[TEMPLATE] User - Finance Manager</field>
+            <field name="login">template_finance_manager</field>
+            <field name="password">admin</field>
+            <field name="email">template.finance.manager@example.com</field>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- [TEMPLATE] User - HR Specialist -->
+        <record id="template_user_hr_specialist" model="res.users">
+            <field name="name">[TEMPLATE] User - HR Specialist</field>
+            <field name="login">template_hr_specialist</field>
+            <field name="password">admin</field>
+            <field name="email">template.hr@example.com</field>
+            <field name="active" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

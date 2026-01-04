@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- =================================================== -->
+        <!-- GOVERNANCE RULES FOR DEMO DATA -->
+        <!-- =================================================== -->
+        
+        <!-- Matrix Validation Rule -->
+        <record id="rule_matrix_validation" model="ops.governance.rule">
+            <field name="name">Matrix Validation: All Transactions</field>
+            <field name="code">GR-MATRIX-001</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="rule_type">matrix_validation</field>
+            <field name="enforce_branch_bu" eval="True"/>
+            <field name="branch_required" eval="True"/>
+            <field name="bu_required" eval="True"/>
+            <field name="require_approval" eval="False"/>
+            <field name="trigger_condition">always</field>
+            <field name="sequence">10</field>
+            <field name="active">True</field>
+            <field name="description">Ensures all sales orders have Branch and Business Unit assigned</field>
+        </record>
+        
+        <!-- Retail Discount Policy -->
+        <record id="rule_retail_discount" model="ops.governance.rule">
+            <field name="name">Retail Discount Policy</field>
+            <field name="code">GR-DISC-001</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="rule_type">discount_limit</field>
+            <field name="enforce_discount_limit" eval="True"/>
+            <field name="global_discount_limit">15.0</field>
+            <field name="discount_validation_level">line</field>
+            <field name="require_approval" eval="True"/>
+            <field name="allowed_business_unit_ids" eval="[(6, 0, [ref('bu_retail')])]"/>
+            <field name="trigger_condition">always</field>
+            <field name="sequence">20</field>
+            <field name="active">True</field>
+            <field name="description">Retail division discount policy - max 15% with approval required</field>
+        </record>
+        
+        <!-- Coffee Division Discount Policy -->
+        <record id="rule_coffee_discount" model="ops.governance.rule">
+            <field name="name">Coffee Division Discount Policy</field>
+            <field name="code">GR-DISC-002</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="rule_type">discount_limit</field>
+            <field name="enforce_discount_limit" eval="True"/>
+            <field name="global_discount_limit">10.0</field>
+            <field name="discount_validation_level">line</field>
+            <field name="require_approval" eval="True"/>
+            <field name="allowed_business_unit_ids" eval="[(6, 0, [ref('bu_coffee')])]"/>
+            <field name="trigger_condition">always</field>
+            <field name="sequence">50</field>
+            <field name="active">True</field>
+            <field name="description">Coffee division discount policy - max 10% with approval</field>
+        </record>
+        
+        <!-- Wholesale Discount Policy -->
+        <record id="rule_wholesale_discount" model="ops.governance.rule">
+            <field name="name">Wholesale Discount Policy</field>
+            <field name="code">GR-DISC-003</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="rule_type">discount_limit</field>
+            <field name="enforce_discount_limit" eval="True"/>
+            <field name="global_discount_limit">25.0</field>
+            <field name="discount_validation_level">line</field>
+            <field name="require_approval" eval="True"/>
+            <field name="allowed_business_unit_ids" eval="[(6, 0, [ref('bu_wholesale')])]"/>
+            <field name="trigger_condition">always</field>
+            <field name="sequence">60</field>
+            <field name="active">True</field>
+            <field name="description">Wholesale distribution discount policy - max 25%</field>
+        </record>
+        
+        <!-- Retail Margin Protection -->
+        <record id="rule_retail_margin" model="ops.governance.rule">
+            <field name="name">Retail Margin Protection</field>
+            <field name="code">GR-MARGIN-001</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="rule_type">margin_protection</field>
+            <field name="enforce_margin_protection" eval="True"/>
+            <field name="global_minimum_margin">20.0</field>
+            <field name="warning_margin_threshold">5.0</field>
+            <field name="require_approval" eval="True"/>
+            <field name="allowed_business_unit_ids" eval="[(6, 0, [ref('bu_retail')])]"/>
+            <field name="trigger_condition">always</field>
+            <field name="sequence">30</field>
+            <field name="active">True</field>
+            <field name="description">Retail margin protection - minimum 20% margin required</field>
+        </record>
+        
+        <!-- Coffee Margin Protection -->
+        <record id="rule_coffee_margin" model="ops.governance.rule">
+            <field name="name">Coffee Margin Protection</field>
+            <field name="code">GR-MARGIN-002</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="rule_type">margin_protection</field>
+            <field name="enforce_margin_protection" eval="True"/>
+            <field name="global_minimum_margin">35.0</field>
+            <field name="warning_margin_threshold">5.0</field>
+            <field name="require_approval" eval="True"/>
+            <field name="allowed_business_unit_ids" eval="[(6, 0, [ref('bu_coffee')])]"/>
+            <field name="trigger_condition">always</field>
+            <field name="sequence">70</field>
+            <field name="active">True</field>
+            <field name="description">Coffee division margin protection - minimum 35% margin</field>
+        </record>
+        
+        <!-- Price Override Control -->
+        <record id="rule_price_override" model="ops.governance.rule">
+            <field name="name">Price Override Authorization</field>
+            <field name="code">GR-PRICE-001</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="rule_type">price_override</field>
+            <field name="enforce_price_override" eval="True"/>
+            <field name="global_max_price_variance">10.0</field>
+            <field name="require_approval" eval="True"/>
+            <field name="allowed_business_unit_ids" eval="[(6, 0, [ref('bu_retail')])]"/>
+            <field name="trigger_condition">always</field>
+            <field name="sequence">40</field>
+            <field name="active">True</field>
+            <field name="description">Price override authorization for retail - max 10% variance</field>
+        </record>
+        
+        <!-- Services Price Override -->
+        <record id="rule_services_price" model="ops.governance.rule">
+            <field name="name">Services Price Authorization</field>
+            <field name="code">GR-PRICE-002</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="company_id" ref="company_uae"/>
+            <field name="rule_type">price_override</field>
+            <field name="enforce_price_override" eval="True"/>
+            <field name="global_max_price_variance">15.0</field>
+            <field name="require_approval" eval="True"/>
+            <field name="allowed_business_unit_ids" eval="[(6, 0, [ref('bu_services')])]"/>
+            <field name="trigger_condition">always</field>
+            <field name="sequence">80</field>
+            <field name="active">True</field>
+            <field name="description">Services price override - max 15% variance for consulting</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DISCOUNT LIMITS BY PERSONA -->
+        <!-- =================================================== -->
+        
+        <!-- Discount Limit for Sales Rep -->
+        <record id="discount_limit_sales_rep" model="ops.governance.discount.limit">
+            <field name="rule_id" ref="rule_retail_discount"/>
+            <field name="persona_id" ref="persona_sales_rep"/>
+            <field name="max_discount_percent">10.0</field>
+            <field name="approval_required_above">5.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [ref('persona_doha_manager')])]"/>
+        </record>
+        
+        <!-- Discount Limit for Dubai Sales Manager -->
+        <record id="discount_limit_dubai_sales" model="ops.governance.discount.limit">
+            <field name="rule_id" ref="rule_retail_discount"/>
+            <field name="persona_id" ref="persona_dubai_sales"/>
+            <field name="max_discount_percent">15.0</field>
+            <field name="approval_required_above">10.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [ref('persona_retail_leader')])]"/>
+        </record>
+        
+        <!-- Discount Limit for Doha Manager -->
+        <record id="discount_limit_doha_mgr" model="ops.governance.discount.limit">
+            <field name="rule_id" ref="rule_retail_discount"/>
+            <field name="persona_id" ref="persona_doha_manager"/>
+            <field name="max_discount_percent">20.0</field>
+            <field name="approval_required_above">15.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [ref('persona_retail_leader')])]"/>
+        </record>
+        
+        <!-- Wholesale Discount Limit for Warehouse Manager -->
+        <record id="discount_limit_warehouse_mgr" model="ops.governance.discount.limit">
+            <field name="rule_id" ref="rule_wholesale_discount"/>
+            <field name="persona_id" ref="persona_warehouse_mgr"/>
+            <field name="max_discount_percent">20.0</field>
+            <field name="approval_required_above">15.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [ref('persona_ceo_qatar')])]"/>
+        </record>
+        
+        <!-- Coffee Discount Limit for Doha Manager -->
+        <record id="discount_limit_coffee_doha" model="ops.governance.discount.limit">
+            <field name="rule_id" ref="rule_coffee_discount"/>
+            <field name="persona_id" ref="persona_doha_manager"/>
+            <field name="max_discount_percent">12.0</field>
+            <field name="approval_required_above">8.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [ref('persona_ceo_qatar')])]"/>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- MARGIN RULES BY PRODUCT CATEGORY -->
+        <!-- =================================================== -->
+        
+        <!-- Margin Rules for Electronics -->
+        <record id="margin_rule_electronics" model="ops.governance.margin.rule">
+            <field name="rule_id" ref="rule_retail_margin"/>
+            <field name="product_category_id" ref="product_category_electronics"/>
+            <field name="minimum_margin_percent">25.0</field>
+            <field name="warning_margin_percent">30.0</field>
+            <field name="critical_margin_percent">20.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [
+                ref('persona_doha_manager'),
+                ref('persona_retail_leader')
+            ])]"/>
+        </record>
+        
+        <!-- Margin Rules for Furniture -->
+        <record id="margin_rule_furniture" model="ops.governance.margin.rule">
+            <field name="rule_id" ref="rule_retail_margin"/>
+            <field name="product_category_id" ref="product_category_furniture"/>
+            <field name="minimum_margin_percent">30.0</field>
+            <field name="warning_margin_percent">35.0</field>
+            <field name="critical_margin_percent">25.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [
+                ref('persona_doha_manager'),
+                ref('persona_retail_leader')
+            ])]"/>
+        </record>
+        
+        <!-- Margin Rules for Coffee -->
+        <record id="margin_rule_coffee" model="ops.governance.margin.rule">
+            <field name="rule_id" ref="rule_coffee_margin"/>
+            <field name="product_category_id" ref="product_category_coffee"/>
+            <field name="minimum_margin_percent">40.0</field>
+            <field name="warning_margin_percent">45.0</field>
+            <field name="critical_margin_percent">35.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [
+                ref('persona_doha_manager'),
+                ref('persona_retail_leader')
+            ])]"/>
+        </record>
+        
+        <!-- Luxury Goods Margin Rule -->
+        <record id="margin_rule_luxury" model="ops.governance.margin.rule">
+            <field name="rule_id" ref="rule_retail_margin"/>
+            <field name="product_category_id" ref="product_category_luxury"/>
+            <field name="minimum_margin_percent">50.0</field>
+            <field name="warning_margin_percent">55.0</field>
+            <field name="critical_margin_percent">45.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [
+                ref('persona_ceo_qatar'),
+                ref('persona_retail_leader')
+            ])]"/>
+        </record>
+        
+        <!-- Commodities Margin Rule -->
+        <record id="margin_rule_commodity" model="ops.governance.margin.rule">
+            <field name="rule_id" ref="rule_retail_margin"/>
+            <field name="product_category_id" ref="product_category_commodity"/>
+            <field name="minimum_margin_percent">10.0</field>
+            <field name="warning_margin_percent">15.0</field>
+            <field name="critical_margin_percent">5.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [
+                ref('persona_doha_manager'),
+                ref('persona_retail_leader')
+            ])]"/>
+        </record>
+        
+        <!-- Services Margin Rule -->
+        <record id="margin_rule_services" model="ops.governance.margin.rule">
+            <field name="rule_id" ref="rule_retail_margin"/>
+            <field name="product_category_id" ref="product_category_services"/>
+            <field name="minimum_margin_percent">55.0</field>
+            <field name="warning_margin_percent">60.0</field>
+            <field name="critical_margin_percent">50.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [
+                ref('persona_dubai_sales')
+            ])]"/>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- PRICE AUTHORITIES BY PERSONA -->
+        <!-- =================================================== -->
+        
+        <!-- Price Authority for Sales Rep -->
+        <record id="price_auth_sales_rep" model="ops.governance.price.authority">
+            <field name="rule_id" ref="rule_price_override"/>
+            <field name="persona_id" ref="persona_sales_rep"/>
+            <field name="max_price_variance_percent">5.0</field>
+            <field name="approval_required_above">2.0</field>
+            <field name="approver_persona_ids" eval="[(6, 0, [ref('persona_doha_manager')])]"/>
+        </record>
+        
+        <!-- Price Authority for Doha Manager -->
+        <record id="price_auth_doha_mgr" model="ops.governance.price.authority">
+            <field name="rule_id" ref="rule_price_override"/>
+            <field name="persona_id" ref="persona_doha_manager"/>
+            <field name="max_price_variance_percent">10.0</field>
+            <field name="can_override_without_approval" eval="True"/>
+            <field name="approval_required_above">8.0</field>
+        </record>
+        
+        <!-- Services Price Authority for Dubai Sales -->
+        <record id="price_auth_dubai_sales" model="ops.governance.price.authority">
+            <field name="rule_id" ref="rule_services_price"/>
+            <field name="persona_id" ref="persona_dubai_sales"/>
+            <field name="max_price_variance_percent">12.0</field>
+            <field name="can_override_without_approval" eval="True"/>
+            <field name="approval_required_above">10.0</field>
+        </record>
+        
+    </data>
+</odoo>

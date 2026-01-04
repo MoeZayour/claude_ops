@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        OPS MATRIX FRAMEWORK - CLEAN INSTALLATION
+        ==========================================
+        This file contains ONLY essential structural elements.
+        No pre-configured companies, branches, or business units.
+        
+        Use the Welcome Wizard (Settings → OPS Matrix → Setup Wizard)
+        to configure your organization structure.
+    -->
+    
+    <data noupdate="0">
+        
+        <!-- =================================================== -->
+        <!-- DEFAULT CONFIGURATION (Auto-created per company)   -->
+        <!-- =================================================== -->
+        <!-- Configuration is created automatically via get_config() -->
+        <!-- No hardcoded configuration here -->
+        
+        <!-- =================================================== -->
+        <!-- ANALYTIC PLANS (Structure Only)                    -->
+        <!-- =================================================== -->
+        
+        <record id="analytic_plan_branch" model="account.analytic.plan">
+            <field name="name">Matrix Branch</field>
+            <field name="description">Branch dimension for OPS Matrix reporting</field>
+        </record>
+        
+        <record id="analytic_plan_business_unit" model="account.analytic.plan">
+            <field name="name">Matrix Business Unit</field>
+            <field name="description">Business Unit dimension for OPS Matrix reporting</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- INDUSTRY TEMPLATE METADATA                         -->
+        <!-- (Templates applied via wizard, not data files)    -->
+        <!-- =================================================== -->
+        
+        <!-- Industry templates are dynamically loaded via Python -->
+        <!-- See ops.matrix.config.apply_industry_template() -->
+        
+    </data>
+</odoo>

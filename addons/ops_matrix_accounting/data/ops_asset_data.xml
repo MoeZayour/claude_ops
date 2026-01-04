@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Minimal accounting scaffolding to allow asset categories to install on a fresh DB -->
+
+    <!-- Journals -->
+    <record id="ops_asset_journal" model="account.journal" forcecreate="0">
+        <field name="name">OPS Asset Journal</field>
+        <field name="code">OPSA</field>
+        <field name="type">general</field>
+        <field name="show_on_dashboard" eval="False"/>
+    </record>
+
+    <!-- Accounts (generic, can be adjusted post-install) -->
+    <record id="ops_account_asset" model="account.account" forcecreate="0">
+        <field name="name">OPS Fixed Assets</field>
+        <field name="code">150000</field>
+        <field name="account_type">asset_fixed</field>
+        <field name="reconcile" eval="False"/>
+    </record>
+
+    <record id="ops_account_accumulated_depreciation" model="account.account" forcecreate="0">
+        <field name="name">OPS Accumulated Depreciation</field>
+        <field name="code">150100</field>
+        <field name="account_type">asset_fixed</field>
+        <field name="reconcile" eval="False"/>
+    </record>
+
+    <record id="ops_account_depreciation_expense" model="account.account" forcecreate="0">
+        <field name="name">OPS Depreciation Expense</field>
+        <field name="code">680000</field>
+        <field name="account_type">expense_depreciation</field>
+        <field name="reconcile" eval="False"/>
+    </record>
+
+    <!-- Asset Categories using OPS defaults -->
+    <record id="asset_category_buildings" model="ops.asset.category">
+        <field name="name">Buildings</field>
+        <field name="depreciation_method">straight_line</field>
+        <field name="depreciation_duration">30</field>
+        <field name="journal_id" ref="ops_asset_journal"/>
+        <field name="asset_account_id" ref="ops_account_asset"/>
+        <field name="depreciation_account_id" ref="ops_account_accumulated_depreciation"/>
+        <field name="expense_account_id" ref="ops_account_depreciation_expense"/>
+        <field name="active">True</field>
+    </record>
+    
+    <record id="asset_category_vehicles" model="ops.asset.category">
+        <field name="name">Vehicles</field>
+        <field name="depreciation_method">straight_line</field>
+        <field name="depreciation_duration">5</field>
+        <field name="journal_id" ref="ops_asset_journal"/>
+        <field name="asset_account_id" ref="ops_account_asset"/>
+        <field name="depreciation_account_id" ref="ops_account_accumulated_depreciation"/>
+        <field name="expense_account_id" ref="ops_account_depreciation_expense"/>
+        <field name="active">True</field>
+    </record>
+    
+    <record id="asset_category_equipment" model="ops.asset.category">
+        <field name="name">Equipment</field>
+        <field name="depreciation_method">straight_line</field>
+        <field name="depreciation_duration">7</field>
+        <field name="journal_id" ref="ops_asset_journal"/>
+        <field name="asset_account_id" ref="ops_account_asset"/>
+        <field name="depreciation_account_id" ref="ops_account_accumulated_depreciation"/>
+        <field name="expense_account_id" ref="ops_account_depreciation_expense"/>
+        <field name="active">True</field>
+    </record>
+    
+    <record id="asset_category_it_equipment" model="ops.asset.category">
+        <field name="name">IT Equipment</field>
+        <field name="depreciation_method">straight_line</field>
+        <field name="depreciation_duration">3</field>
+        <field name="journal_id" ref="ops_asset_journal"/>
+        <field name="asset_account_id" ref="ops_account_asset"/>
+        <field name="depreciation_account_id" ref="ops_account_accumulated_depreciation"/>
+        <field name="expense_account_id" ref="ops_account_depreciation_expense"/>
+        <field name="active">True</field>
+    </record>
+</odoo>

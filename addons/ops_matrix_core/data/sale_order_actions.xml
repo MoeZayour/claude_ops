@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_so_check_governance" model="ir.actions.server">
+        <field name="name">OPS: Check Governance Rules</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    for record in records:
+        record.action_check_governance_rules()
+        </field>
+    </record>
+
+    <record id="action_so_request_approval" model="ir.actions.server">
+        <field name="name">OPS: Request Approval</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    for record in records:
+        record.action_request_approval()
+        </field>
+    </record>
+</odoo>

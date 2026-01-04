@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ir_cron_archive_executor" model="ir.cron">
+        <field name="name">OPS: Execute Archive Policies</field>
+        <field name="model_id" ref="ops_matrix_core.model_ops_archive_policy"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_execute_archive_policies()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="ir_cron_audit_log_cleanup" model="ir.cron">
+        <field name="name">OPS: Cleanup Old Audit Logs</field>
+        <field name="model_id" ref="ops_matrix_core.model_ops_audit_log"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_cleanup_old_logs(days=90)</field>
+        <field name="interval_number">7</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+</odoo>

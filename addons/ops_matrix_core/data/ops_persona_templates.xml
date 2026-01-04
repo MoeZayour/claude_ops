@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ============================================================ -->
+        <!-- CORPORATE MATRIX PERSONA SUITE WITH SOD HIERARCHY           -->
+        <!-- Updated with Segregation of Duties Authority Fields         -->
+        <!-- ============================================================ -->
+        
+        <!-- ============================================================ -->
+        <!-- TOP LEVEL - FINANCIAL CONTROLLER (ANCHOR)                   -->
+        <!-- ============================================================ -->
+        
+        <!-- Financial Controller - SoD Anchor (No Parent) -->
+        <record id="persona_financial_controller" model="ops.persona">
+            <field name="name">Financial Controller</field>
+            <field name="code">FIN_CTRL</field>
+            <field name="description">Final authority for Finance, Sales, and Purchase operations. Validates invoices and posts journal entries. Cannot execute payments (separation from Treasury).</field>
+            <field name="job_level">executive</field>
+            <field name="is_approver" eval="True"/>
+            <field name="can_approve_orders" eval="True"/>
+            <field name="can_approve_expenses" eval="True"/>
+            <field name="can_approve_leave" eval="True"/>
+            <field name="can_manage_team" eval="True"/>
+            <!-- SoD Authority Fields -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="True"/>
+            <field name="can_validate_invoices" eval="True"/>
+            <field name="can_post_journal_entries" eval="True"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- ============================================================ -->
+        <!-- EXECUTIVE LEVEL                                              -->
+        <!-- ============================================================ -->
+        
+        <!-- 1. CEO - Chief Executive Officer -->
+        <record id="persona_ceo" model="ops.persona">
+            <field name="name">Chief Executive Officer (CEO)</field>
+            <field name="code">CEO</field>
+            <field name="description">Highest executive responsible for overall company operations, strategy, and decision-making</field>
+            <field name="job_level">executive</field>
+            <field name="is_approver" eval="True"/>
+            <field name="is_matrix_administrator" eval="True"/>
+            <field name="can_approve_orders" eval="True"/>
+            <field name="can_approve_expenses" eval="True"/>
+            <field name="can_approve_leave" eval="True"/>
+            <field name="can_manage_team" eval="True"/>
+            <!-- SoD Authority Fields - Full Executive Authority -->
+            <field name="can_modify_product_master" eval="True"/>
+            <field name="can_access_cost_prices" eval="True"/>
+            <field name="can_validate_invoices" eval="True"/>
+            <field name="can_post_journal_entries" eval="True"/>
+            <field name="can_execute_payments" eval="True"/>
+            <field name="can_adjust_inventory" eval="True"/>
+            <field name="can_manage_pdc" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- 2. CFO - Chief Financial Officer -->
+        <record id="persona_cfo" model="ops.persona">
+            <field name="name">Chief Financial Officer (CFO)</field>
+            <field name="code">CFO</field>
+            <field name="description">Executive responsible for financial planning, management, reporting, and accounting oversight</field>
+            <field name="job_level">executive</field>
+            <field name="is_approver" eval="True"/>
+            <field name="can_approve_orders" eval="True"/>
+            <field name="can_approve_expenses" eval="True"/>
+            <field name="can_manage_team" eval="True"/>
+            <!-- SoD Authority Fields - Full Financial Authority -->
+            <field name="can_modify_product_master" eval="True"/>
+            <field name="can_access_cost_prices" eval="True"/>
+            <field name="can_validate_invoices" eval="True"/>
+            <field name="can_post_journal_entries" eval="True"/>
+            <field name="can_execute_payments" eval="True"/>
+            <field name="can_adjust_inventory" eval="True"/>
+            <field name="can_manage_pdc" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- 3. Sales Leader -->
+        <record id="persona_sales_leader" model="ops.persona">
+            <field name="name">Sales Leader</field>
+            <field name="code">SALES_LEADER</field>
+            <field name="description">Senior sales executive responsible for sales strategy, team leadership, and revenue targets</field>
+            <field name="job_level">director</field>
+            <field name="parent_id" ref="persona_financial_controller"/>
+            <field name="is_bu_leader" eval="True"/>
+            <field name="is_approver" eval="True"/>
+            <field name="can_approve_orders" eval="True"/>
+            <field name="can_approve_expenses" eval="True"/>
+            <field name="can_manage_team" eval="True"/>
+            <!-- SoD Authority Fields - Sales Executive -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="True"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- ============================================================ -->
+        <!-- MANAGER LEVEL (ESCALATE TO FINANCIAL CONTROLLER)            -->
+        <!-- ============================================================ -->
+        
+        <!-- 4. Sales Manager -->
+        <record id="persona_sales_manager" model="ops.persona">
+            <field name="name">Sales Manager</field>
+            <field name="code">SALES_MGR</field>
+            <field name="description">Manager responsible for sales team coordination, customer relationships, and deal closure. Cannot access cost prices to protect margin confidentiality.</field>
+            <field name="job_level">manager</field>
+            <field name="parent_id" ref="persona_financial_controller"/>
+            <field name="is_approver" eval="True"/>
+            <field name="can_approve_orders" eval="True"/>
+            <field name="can_manage_team" eval="True"/>
+            <!-- SoD Authority Fields - Sales Manager -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="False"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- Purchase Manager (NEW) -->
+        <record id="persona_purchase_manager" model="ops.persona">
+            <field name="name">Purchase Manager</field>
+            <field name="code">PURCHASE_MGR</field>
+            <field name="description">Approves purchase orders and manages procurement strategy. Full access to product costs and suppliers.</field>
+            <field name="job_level">manager</field>
+            <field name="parent_id" ref="persona_financial_controller"/>
+            <field name="is_approver" eval="True"/>
+            <field name="can_approve_orders" eval="True"/>
+            <field name="can_approve_expenses" eval="True"/>
+            <field name="can_approve_leave" eval="True"/>
+            <field name="can_manage_team" eval="True"/>
+            <!-- SoD Authority Fields - Purchase Manager -->
+            <field name="can_modify_product_master" eval="True"/>
+            <field name="can_access_cost_prices" eval="True"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- 9. Logistics Manager (Inventory Manager Role) -->
+        <record id="persona_logistics_manager" model="ops.persona">
+            <field name="name">Logistics Manager</field>
+            <field name="code">LOG_MGR</field>
+            <field name="description">Manager responsible for warehouse operations, inventory management, and logistics coordination. Authorizes inventory adjustments.</field>
+            <field name="job_level">manager</field>
+            <field name="parent_id" ref="persona_financial_controller"/>
+            <field name="is_branch_manager" eval="True"/>
+            <field name="is_approver" eval="True"/>
+            <field name="can_approve_orders" eval="True"/>
+            <field name="can_manage_team" eval="True"/>
+            <!-- SoD Authority Fields - Inventory Manager -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="True"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="True"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- Treasury Officer (NEW) -->
+        <record id="persona_treasury_officer" model="ops.persona">
+            <field name="name">Treasury Officer</field>
+            <field name="code">TREASURY_OFF</field>
+            <field name="description">Authorized to execute payments and manage cash flow, PDC operations. Cannot validate invoices or post journal entries (separation from Accounting).</field>
+            <field name="job_level">manager</field>
+            <field name="parent_id" ref="persona_financial_controller"/>
+            <field name="is_approver" eval="True"/>
+            <field name="can_approve_expenses" eval="True"/>
+            <field name="can_manage_team" eval="False"/>
+            <!-- SoD Authority Fields - Treasury Officer -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="False"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="True"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- 6. HR Manager (HR Specialist Role) -->
+        <record id="persona_hr_manager" model="ops.persona">
+            <field name="name">HR Manager</field>
+            <field name="code">HR_MGR</field>
+            <field name="description">Manager responsible for human resources, recruitment, employee relations, and leave management. No transactional or financial authorities.</field>
+            <field name="job_level">manager</field>
+            <field name="parent_id" ref="persona_financial_controller"/>
+            <field name="is_approver" eval="True"/>
+            <field name="can_approve_leave" eval="True"/>
+            <field name="can_manage_team" eval="True"/>
+            <!-- SoD Authority Fields - HR -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="False"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- 7. Chief Accountant -->
+        <record id="persona_chief_accountant" model="ops.persona">
+            <field name="name">Chief Accountant</field>
+            <field name="code">CHIEF_ACCT</field>
+            <field name="description">Senior accountant responsible for financial reporting, compliance, and accounting team leadership. Can validate invoices and post entries.</field>
+            <field name="job_level">manager</field>
+            <field name="parent_id" ref="persona_financial_controller"/>
+            <field name="is_approver" eval="True"/>
+            <field name="can_approve_expenses" eval="True"/>
+            <field name="can_manage_team" eval="True"/>
+            <!-- SoD Authority Fields - Chief Accountant -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="True"/>
+            <field name="can_validate_invoices" eval="True"/>
+            <field name="can_post_journal_entries" eval="True"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- 12. System Administrator -->
+        <record id="persona_sys_admin" model="ops.persona">
+            <field name="name">System Administrator</field>
+            <field name="code">SYS_ADMIN</field>
+            <field name="description">Administrator responsible for system configuration, security, and technical infrastructure. EXPLICITLY RESTRICTED from all transactional and financial authorities to prevent system abuse.</field>
+            <field name="job_level">senior</field>
+            <field name="parent_id" ref="persona_financial_controller"/>
+            <field name="is_matrix_administrator" eval="True"/>
+            <field name="can_manage_team" eval="True"/>
+            <!-- SoD Authority Fields - ALL FALSE FOR IT ADMIN -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="False"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- ============================================================ -->
+        <!-- USER LEVEL (ESCALATE TO RESPECTIVE MANAGERS)                -->
+        <!-- ============================================================ -->
+        
+        <!-- 5. Sales Representative -->
+        <record id="persona_sales_rep" model="ops.persona">
+            <field name="name">Sales Representative</field>
+            <field name="code">SALES_REP</field>
+            <field name="description">Sales professional managing customer accounts, quotations, and order processing. Cannot modify product costs or approve own orders.</field>
+            <field name="job_level">mid</field>
+            <field name="parent_id" ref="persona_sales_manager"/>
+            <!-- SoD Authority Fields - Sales Rep -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="False"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- Purchase Officer (NEW) -->
+        <record id="persona_purchase_officer" model="ops.persona">
+            <field name="name">Purchase Officer</field>
+            <field name="code">PURCHASE_OFF</field>
+            <field name="description">Creates purchase orders and manages vendor relationships. Can modify product master data but cannot approve own orders.</field>
+            <field name="job_level">mid</field>
+            <field name="parent_id" ref="persona_purchase_manager"/>
+            <field name="can_approve_orders" eval="False"/>
+            <field name="can_approve_expenses" eval="False"/>
+            <field name="can_approve_leave" eval="False"/>
+            <field name="can_manage_team" eval="False"/>
+            <!-- SoD Authority Fields - Purchase Officer -->
+            <field name="can_modify_product_master" eval="True"/>
+            <field name="can_access_cost_prices" eval="True"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- 10. Logistics Clerk (Warehouse Operator Role) -->
+        <record id="persona_logistics_clerk" model="ops.persona">
+            <field name="name">Logistics Clerk</field>
+            <field name="code">LOG_CLERK</field>
+            <field name="description">Staff responsible for inventory handling, picking, packing, and shipment processing. Cannot post inventory adjustments.</field>
+            <field name="job_level">mid</field>
+            <field name="parent_id" ref="persona_logistics_manager"/>
+            <!-- SoD Authority Fields - Warehouse Operator -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="False"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- 8. Accountant -->
+        <record id="persona_accountant" model="ops.persona">
+            <field name="name">Accountant</field>
+            <field name="code">ACCOUNTANT</field>
+            <field name="description">Accounting professional handling financial transactions, journal entries, and reconciliations. Cannot validate invoices independently.</field>
+            <field name="job_level">mid</field>
+            <field name="parent_id" ref="persona_chief_accountant"/>
+            <!-- SoD Authority Fields - Accountant -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="True"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- AR Clerk (NEW - Direct to Financial Controller) -->
+        <record id="persona_ar_clerk" model="ops.persona">
+            <field name="name">Accounts Receivable Clerk</field>
+            <field name="code">AR_CLERK</field>
+            <field name="description">Manages customer invoices and collections. Cannot validate invoices or post journal entries.</field>
+            <field name="job_level">mid</field>
+            <field name="parent_id" ref="persona_financial_controller"/>
+            <field name="can_approve_orders" eval="False"/>
+            <field name="can_approve_expenses" eval="False"/>
+            <field name="can_approve_leave" eval="False"/>
+            <field name="can_manage_team" eval="False"/>
+            <!-- SoD Authority Fields - AR Clerk -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="False"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- AP Clerk (NEW - Direct to Financial Controller) -->
+        <record id="persona_ap_clerk" model="ops.persona">
+            <field name="name">Accounts Payable Clerk</field>
+            <field name="code">AP_CLERK</field>
+            <field name="description">Processes vendor bills and payment requests. Cannot execute payments or validate invoices.</field>
+            <field name="job_level">mid</field>
+            <field name="parent_id" ref="persona_financial_controller"/>
+            <field name="can_approve_orders" eval="False"/>
+            <field name="can_approve_expenses" eval="False"/>
+            <field name="can_approve_leave" eval="False"/>
+            <field name="can_manage_team" eval="False"/>
+            <!-- SoD Authority Fields - AP Clerk -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="False"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- 11. Technical Support -->
+        <record id="persona_tech_support" model="ops.persona">
+            <field name="name">Technical Support</field>
+            <field name="code">TECH_SUPPORT</field>
+            <field name="description">Support specialist assisting customers with technical issues and system troubleshooting. No transactional authorities.</field>
+            <field name="job_level">mid</field>
+            <!-- SoD Authority Fields - Technical Support -->
+            <field name="can_modify_product_master" eval="False"/>
+            <field name="can_access_cost_prices" eval="False"/>
+            <field name="can_validate_invoices" eval="False"/>
+            <field name="can_post_journal_entries" eval="False"/>
+            <field name="can_execute_payments" eval="False"/>
+            <field name="can_adjust_inventory" eval="False"/>
+            <field name="can_manage_pdc" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+    </data>
+</odoo>

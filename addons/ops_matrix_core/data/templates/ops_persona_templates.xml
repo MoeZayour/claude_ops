@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="persona_template_sales_rep" model="ops.persona">
+        <field name="name">Branch Sales Representative</field>
+        <field name="description">Sales representative working within a single branch.</field>
+        <field name="active">False</field>
+    </record>
+
+    <record id="persona_template_branch_manager" model="ops.persona">
+        <field name="name">Branch Manager</field>
+        <field name="description">Full branch manager with oversight of all operations.</field>
+        <field name="active">False</field>
+    </record>
+
+    <record id="persona_template_bu_leader" model="ops.persona">
+        <field name="name">Business Unit Leader</field>
+        <field name="description">BU leader with cross-branch visibility.</field>
+        <field name="active">False</field>
+    </record>
+</odoo>

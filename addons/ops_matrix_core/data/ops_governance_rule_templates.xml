@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sales Order Rules -->
+        <record id="rule_high_value_order_approval" model="ops.governance.rule">
+            <field name="name">High Value Order Approval</field>
+            <field name="code">GR_SO_001</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="trigger_type">on_create</field>
+            <field name="action_type">require_approval</field>
+            <field name="error_message">Orders over $50,000 require manager approval</field>
+            <field name="condition_code">result = record.amount_total > 50000</field>
+            <field name="approval_persona_ids" eval="[(4, ref('persona_sales_manager'))]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="rule_large_discount_approval" model="ops.governance.rule">
+            <field name="name">Large Discount Approval Required</field>
+            <field name="code">GR_SO_002</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="trigger_type">on_write</field>
+            <field name="action_type">require_approval</field>
+            <field name="error_message">Discounts over 20% require director approval</field>
+            <field name="condition_code">
+# Check if any order line has discount > 20%
+result = False
+for line in record.order_line:
+    if line.discount > 20:
+        result = True
+        break
+            </field>
+            <field name="approval_persona_ids" eval="[(4, ref('persona_sales_director'))]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="rule_credit_limit_warning" model="ops.governance.rule">
+            <field name="name">Customer Credit Limit Warning</field>
+            <field name="code">GR_SO_003</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="trigger_type">on_create</field>
+            <field name="action_type">warning</field>
+            <field name="error_message">Warning: Customer is approaching credit limit</field>
+            <field name="condition_code">
+# Check if customer has credit limit set
+if record.partner_id.credit_limit > 0:
+    total_due = record.partner_id.credit + record.amount_total
+    result = total_due > (record.partner_id.credit_limit * 0.9)
+else:
+    result = False
+            </field>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- Purchase Order Rules -->
+        <record id="rule_purchase_approval_50k" model="ops.governance.rule">
+            <field name="name">Purchase Order Approval - Over 50K</field>
+            <field name="code">GR_PO_001</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="trigger_type">on_create</field>
+            <field name="action_type">require_approval</field>
+            <field name="error_message">Purchase orders over $50,000 require manager approval</field>
+            <field name="condition_code">result = record.amount_total > 50000</field>
+            <field name="approval_persona_ids" eval="[(4, ref('persona_purchasing_manager'))]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="rule_purchase_approval_100k" model="ops.governance.rule">
+            <field name="name">Purchase Order Approval - Over 100K</field>
+            <field name="code">GR_PO_002</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="trigger_type">on_create</field>
+            <field name="action_type">require_approval</field>
+            <field name="error_message">Purchase orders over $100,000 require director approval</field>
+            <field name="condition_code">result = record.amount_total > 100000</field>
+            <field name="approval_persona_ids" eval="[(4, ref('persona_operations_director'))]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- Invoice Rules -->
+        <record id="rule_invoice_approval_payment_terms" model="ops.governance.rule">
+            <field name="name">Custom Payment Terms Approval</field>
+            <field name="code">GR_INV_001</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="trigger_type">on_create</field>
+            <field name="action_type">require_approval</field>
+            <field name="error_message">Custom payment terms require finance manager approval</field>
+            <field name="condition_code">
+# Check if payment term is not standard (e.g., not 30 days)
+result = record.move_type == 'out_invoice' and record.invoice_payment_term_id.name not in ['Immediate Payment', '30 Days']
+            </field>
+            <field name="approval_persona_ids" eval="[(4, ref('persona_finance_manager'))]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- Inventory Rules -->
+        <record id="rule_stock_adjustment_approval" model="ops.governance.rule">
+            <field name="name">Large Stock Adjustment Approval</field>
+            <field name="code">GR_INV_002</field>
+            <field name="model_id" ref="stock.model_stock_quant"/>
+            <field name="trigger_type">on_write</field>
+            <field name="action_type">require_approval</field>
+            <field name="error_message">Stock adjustments over 100 units require warehouse manager approval</field>
+            <field name="condition_code">
+# Check if quantity change is significant
+result = abs(record.quantity - record._origin.quantity) > 100
+            </field>
+            <field name="approval_persona_ids" eval="[(4, ref('persona_warehouse_manager'))]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- Customer/Vendor Rules -->
+        <record id="rule_customer_credit_limit_approval" model="ops.governance.rule">
+            <field name="name">Customer Credit Limit Change Approval</field>
+            <field name="code">GR_CUS_001</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="trigger_type">on_write</field>
+            <field name="action_type">require_approval</field>
+            <field name="error_message">Credit limit changes over $50,000 require finance director approval</field>
+            <field name="condition_code">
+# Check if credit limit was increased significantly
+if 'credit_limit' in record._fields and record._origin.credit_limit:
+    increase = record.credit_limit - record._origin.credit_limit
+    result = increase > 50000
+else:
+    result = False
+            </field>
+            <field name="approval_persona_ids" eval="[(4, ref('persona_finance_director'))]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- Cross-Branch Rules -->
+        <record id="rule_cross_branch_order" model="ops.governance.rule">
+            <field name="name">Cross-Branch Order Warning</field>
+            <field name="code">GR_BR_001</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="trigger_type">on_create</field>
+            <field name="action_type">warning</field>
+            <field name="error_message">This order is for a customer from a different branch</field>
+            <field name="condition_code">
+# Check if customer's branch differs from user's branch
+user_branch = env.user.ops_default_branch_id
+customer_branch = record.partner_id.ops_default_branch_id
+result = user_branch and customer_branch and user_branch != customer_branch
+            </field>
+            <field name="active" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

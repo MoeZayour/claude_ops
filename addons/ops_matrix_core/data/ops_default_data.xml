@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        DEFAULT DATA FOR OPS MATRIX FRAMEWORK
+        =====================================
+        CLEAN INSTALLATION: System starts with only "My Company" (created by Odoo).
+        Demo companies, branches, and business units have been removed for clean production installs.
+        
+        NOTE: Demo data can be loaded separately via demo/ops_demo_data.xml if needed for testing.
+    -->
+    
+    <data noupdate="1">
+        
+        <!-- =================================================== -->
+        <!-- NO DEMO COMPANIES OR BRANCHES IN PRODUCTION -->
+        <!-- =================================================== -->
+        <!--
+            The system will start with:
+            - "My Company" (automatically created by Odoo)
+            - Users create their own Branches and Business Units via Setup Wizard
+            
+            This ensures a clean, customer-specific installation.
+        -->
+        
+        
+    </data>
+</odoo>

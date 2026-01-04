@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ============================================== -->
+        <!-- OPS GOVERNANCE RULE TEMPLATES                 -->
+        <!-- Reference templates for common scenarios      -->
+        <!-- All archived by default (active="False")      -->
+        <!-- ============================================== -->
+        
+        <!-- 1. High-Value PO Approval: Requires CFO approval for Purchase Orders exceeding $10,000 -->
+        <record id="gov_template_po_10k" model="ops.governance.rule">
+            <field name="name">High-Value PO Approval ($10K+)</field>
+            <field name="code">GOV_PO_10K</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="rule_type">approval_workflow</field>
+            <field name="trigger_event">on_write</field>
+            <field name="condition_logic">amount_total > 10000</field>
+            <field name="require_approval" eval="True"/>
+            <field name="error_message">Purchase Orders exceeding $10,000 require CFO approval before confirmation. This ensures proper expenditure oversight and financial control.</field>
+            <!-- Legacy fields for backward compatibility -->
+            <field name="trigger_type">on_create</field>
+            <field name="action_type">require_approval</field>
+            <field name="condition_code"><![CDATA[
+# Check if Purchase Order total exceeds $10,000
+result = record.amount_total > 10000
+            ]]></field>
+            <field name="sequence">10</field>
+            <field name="active" eval="False"/>
+        </record>
+        
+        <!-- 2. Branch Geographic Sales Restriction: Prevents Sales Orders where Branch country does not match Customer country -->
+        <record id="gov_template_geo_restriction" model="ops.governance.rule">
+            <field name="name">Branch Geographic Sales Restriction</field>
+            <field name="code">GOV_GEO_RESTR</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="trigger_type">on_write</field>
+            <field name="action_type">block</field>
+            <field name="error_message">Cross-border sales blocked: Branch country must match Customer country for regulatory compliance. Please route this order through the appropriate regional branch.</field>
+            <field name="condition_code"><![CDATA[
+# Enforce geographic compliance: Branch country must match Customer country
+result = False
+if hasattr(record, 'ops_branch_id') and record.ops_branch_id and record.partner_id:
+    branch_country = record.ops_branch_id.country_id
+    customer_country = record.partner_id.country_id
+    if branch_country and customer_country:
+        result = (branch_country != customer_country)
+            ]]></field>
+            <field name="sequence">20</field>
+            <field name="active" eval="False"/>
+        </record>
+        
+        <!-- 3. Retail Discount Cap: Triggers Sales Manager approval if line item discount exceeds 20% -->
+        <record id="gov_template_retail_discount_20" model="ops.governance.rule">
+            <field name="name">Retail Discount Cap (20%)</field>
+            <field name="code">GOV_DISC_20</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="trigger_type">on_write</field>
+            <field name="action_type">require_approval</field>
+            <field name="error_message">Line item discounts exceeding 20% require Sales Manager approval to maintain profitability targets and prevent margin erosion.</field>
+            <field name="condition_code"><![CDATA[
+# Check if any order line has discount greater than 20%
+result = any(line.discount > 20.0 for line in record.order_line if line.product_id)
+            ]]></field>
+            <field name="sequence">30</field>
+            <field name="active" eval="False"/>
+        </record>
+        
+        <!-- 4. BU Expense Lockdown: Expenses assigned to TECH BU exceeding $1,000 require BU Leader verification -->
+        <record id="gov_template_tech_bu_expense" model="ops.governance.rule">
+            <field name="name">BU Expense Lockdown - TECH Division</field>
+            <field name="code">GOV_EXP_BU</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="trigger_type">on_create</field>
+            <field name="action_type">require_approval</field>
+            <field name="error_message">Expenses over $1,000 assigned to the TECH Business Unit require BU Leader verification to ensure budget compliance and proper cost allocation.</field>
+            <field name="condition_code"><![CDATA[
+# Check if this is a vendor bill for TECH BU exceeding $1,000
+result = False
+if record.move_type == 'in_invoice':
+    if hasattr(record, 'ops_business_unit_id') and record.ops_business_unit_id:
+        # Check if BU code is TECH (or name contains TECH)
+        bu_code = record.ops_business_unit_id.code or ''
+        bu_name = record.ops_business_unit_id.name or ''
+        is_tech_bu = ('TECH' in bu_code.upper()) or ('TECH' in bu_name.upper())
+        
+        if is_tech_bu and record.amount_total > 1000:
+            result = True
+            ]]></field>
+            <field name="sequence">40</field>
+            <field name="active" eval="False"/>
+        </record>
+        
+        <!-- 5. Mandatory Customer VAT: Blocks invoicing if customer in Retail industry does not have VAT number -->
+        <record id="gov_template_vat_requirement" model="ops.governance.rule">
+            <field name="name">Mandatory Customer VAT - Retail Industry</field>
+            <field name="code">GOV_VAT_REQ</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="trigger_type">on_create</field>
+            <field name="action_type">block</field>
+            <field name="error_message">VAT number is mandatory for Retail industry customers. Please update customer master data with valid VAT registration before creating invoice.</field>
+            <field name="condition_code"><![CDATA[
+# Block invoice creation if customer is in Retail industry without VAT number
+result = False
+if record.move_type == 'out_invoice' and record.partner_id:
+    customer = record.partner_id
+    # Check if customer industry contains "Retail"
+    if customer.industry_id:
+        industry_name = customer.industry_id.name or ''
+        is_retail = 'RETAIL' in industry_name.upper()
+        
+        # Block if Retail customer without VAT
+        if is_retail and not customer.vat:
+            result = True
+            ]]></field>
+            <field name="sequence">50</field>
+            <field name="active" eval="False"/>
+        </record>
+        
+    </data>
+</odoo>

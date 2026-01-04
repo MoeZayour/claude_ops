@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- =================================================== -->
+        <!-- DEMO ACCOUNT GROUPS -->
+        <!-- =================================================== -->
+        
+        <record id="account_group_current_assets" model="account.group">
+            <field name="name">Current Assets</field>
+            <field name="code_prefix_start">1000</field>
+            <field name="code_prefix_end">1999</field>
+        </record>
+        
+        <record id="account_group_fixed_assets" model="account.group">
+            <field name="name">Fixed Assets</field>
+            <field name="code_prefix_start">2000</field>
+            <field name="code_prefix_end">2999</field>
+        </record>
+        
+        <record id="account_group_current_liabilities" model="account.group">
+            <field name="name">Current Liabilities</field>
+            <field name="code_prefix_start">3000</field>
+            <field name="code_prefix_end">3999</field>
+        </record>
+        
+        <record id="account_group_equity" model="account.group">
+            <field name="name">Equity</field>
+            <field name="code_prefix_start">4000</field>
+            <field name="code_prefix_end">4999</field>
+        </record>
+        
+        <record id="account_group_revenue" model="account.group">
+            <field name="name">Revenue</field>
+            <field name="code_prefix_start">5000</field>
+            <field name="code_prefix_end">5999</field>
+        </record>
+        
+        <record id="account_group_cost_of_sales" model="account.group">
+            <field name="name">Cost of Sales</field>
+            <field name="code_prefix_start">6000</field>
+            <field name="code_prefix_end">6999</field>
+        </record>
+        
+        <record id="account_group_expenses" model="account.group">
+            <field name="name">Expenses</field>
+            <field name="code_prefix_start">7000</field>
+            <field name="code_prefix_end">7999</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO ACCOUNTS FOR QATAR COMPANY -->
+        <!-- =================================================== -->
+        
+        <!-- Cash Accounts -->
+        <record id="account_cash_qatar" model="account.account">
+            <field name="name">Cash in Hand - QAT</field>
+            <field name="code">1001</field>
+            <field name="account_type">asset_cash</field>
+            <field name="reconcile" eval="True"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <record id="account_bank_qatar" model="account.account">
+            <field name="name">Bank Account - QNB</field>
+            <field name="code">1002</field>
+            <field name="account_type">asset_cash</field>
+            <field name="reconcile" eval="True"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <!-- Receivables -->
+        <record id="account_receivable_qatar" model="account.account">
+            <field name="name">Trade Receivables</field>
+            <field name="code">1101</field>
+            <field name="account_type">asset_receivable</field>
+            <field name="reconcile" eval="True"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <!-- Inventory -->
+        <record id="account_inventory_qatar" model="account.account">
+            <field name="name">Inventory</field>
+            <field name="code">1201</field>
+            <field name="account_type">asset_current</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <!-- Stock Input Account -->
+        <record id="account_stock_input_qatar" model="account.account">
+            <field name="name">Stock Input</field>
+            <field name="code">1202</field>
+            <field name="account_type">asset_current</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <!-- Stock Output Account -->
+        <record id="account_stock_output_qatar" model="account.account">
+            <field name="name">Stock Output</field>
+            <field name="code">1203</field>
+            <field name="account_type">asset_current</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <!-- Stock Valuation Account -->
+        <record id="account_stock_valuation_qatar" model="account.account">
+            <field name="name">Stock Valuation</field>
+            <field name="code">1204</field>
+            <field name="account_type">asset_current</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <!-- Fixed Assets -->
+        <record id="account_fixed_assets_qatar" model="account.account">
+            <field name="name">Property, Plant &amp; Equipment</field>
+            <field name="code">2001</field>
+            <field name="account_type">asset_fixed</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_fixed_assets"/>
+        </record>
+        
+        <!-- Payables -->
+        <record id="account_payable_qatar" model="account.account">
+            <field name="name">Trade Payables</field>
+            <field name="code">3001</field>
+            <field name="account_type">liability_payable</field>
+            <field name="reconcile" eval="True"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_current_liabilities"/>
+        </record>
+        
+        <!-- Tax Accounts -->
+        <record id="account_tax_collected_qatar" model="account.account">
+            <field name="name">VAT Collected</field>
+            <field name="code">3101</field>
+            <field name="account_type">liability_current</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_current_liabilities"/>
+        </record>
+        
+        <record id="account_tax_paid_qatar" model="account.account">
+            <field name="name">VAT Paid</field>
+            <field name="code">1103</field>
+            <field name="account_type">asset_current</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <!-- Equity -->
+        <record id="account_equity_qatar" model="account.account">
+            <field name="name">Share Capital</field>
+            <field name="code">4001</field>
+            <field name="account_type">equity</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_equity"/>
+        </record>
+        
+        <record id="account_retained_earnings_qatar" model="account.account">
+            <field name="name">Retained Earnings</field>
+            <field name="code">4002</field>
+            <field name="account_type">equity_unaffected</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_equity"/>
+        </record>
+        
+        <!-- Revenue Accounts -->
+        <record id="account_sales_retail_qatar" model="account.account">
+            <field name="name">Retail Sales Revenue</field>
+            <field name="code">5001</field>
+            <field name="account_type">income</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_revenue"/>
+        </record>
+        
+        <record id="account_sales_coffee_qatar" model="account.account">
+            <field name="name">Coffee Sales Revenue</field>
+            <field name="code">5002</field>
+            <field name="account_type">income</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_revenue"/>
+        </record>
+        
+        <record id="account_sales_wholesale_qatar" model="account.account">
+            <field name="name">Wholesale Sales Revenue</field>
+            <field name="code">5003</field>
+            <field name="account_type">income</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_revenue"/>
+        </record>
+        
+        <record id="account_sales_services_qatar" model="account.account">
+            <field name="name">Services Revenue</field>
+            <field name="code">5004</field>
+            <field name="account_type">income</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_revenue"/>
+        </record>
+        
+        <!-- Cost of Sales -->
+        <record id="account_cos_retail_qatar" model="account.account">
+            <field name="name">Cost of Retail Sales</field>
+            <field name="code">6001</field>
+            <field name="account_type">expense_direct_cost</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_cost_of_sales"/>
+        </record>
+        
+        <record id="account_cos_coffee_qatar" model="account.account">
+            <field name="name">Cost of Coffee Sales</field>
+            <field name="code">6002</field>
+            <field name="account_type">expense_direct_cost</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_cost_of_sales"/>
+        </record>
+        
+        <!-- Expense Accounts -->
+        <record id="account_salary_expense_qatar" model="account.account">
+            <field name="name">Salaries and Wages</field>
+            <field name="code">7001</field>
+            <field name="account_type">expense</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_expenses"/>
+        </record>
+        
+        <record id="account_rent_expense_qatar" model="account.account">
+            <field name="name">Rent Expense</field>
+            <field name="code">7002</field>
+            <field name="account_type">expense</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_expenses"/>
+        </record>
+        
+        <record id="account_utilities_expense_qatar" model="account.account">
+            <field name="name">Utilities Expense</field>
+            <field name="code">7003</field>
+            <field name="account_type">expense</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_expenses"/>
+        </record>
+        
+        <record id="account_marketing_expense_qatar" model="account.account">
+            <field name="name">Marketing Expense</field>
+            <field name="code">7004</field>
+            <field name="account_type">expense</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="group_id" ref="account_group_expenses"/>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO ACCOUNTS FOR UAE COMPANY -->
+        <!-- =================================================== -->
+        
+        <!-- Cash Accounts -->
+        <record id="account_cash_uae" model="account.account">
+            <field name="name">Cash in Hand - UAE</field>
+            <field name="code">1001</field>
+            <field name="account_type">asset_cash</field>
+            <field name="reconcile" eval="True"/>
+            <field name="company_id" ref="company_uae"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <record id="account_bank_uae" model="account.account">
+            <field name="name">Bank Account - Emirates NBD</field>
+            <field name="code">1002</field>
+            <field name="account_type">asset_cash</field>
+            <field name="reconcile" eval="True"/>
+            <field name="company_id" ref="company_uae"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <!-- Receivables -->
+        <record id="account_receivable_uae" model="account.account">
+            <field name="name">Trade Receivables</field>
+            <field name="code">1101</field>
+            <field name="account_type">asset_receivable</field>
+            <field name="reconcile" eval="True"/>
+            <field name="company_id" ref="company_uae"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <!-- Inventory -->
+        <record id="account_inventory_uae" model="account.account">
+            <field name="name">Inventory</field>
+            <field name="code">1201</field>
+            <field name="account_type">asset_current</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_uae"/>
+            <field name="group_id" ref="account_group_current_assets"/>
+        </record>
+        
+        <!-- Payables -->
+        <record id="account_payable_uae" model="account.account">
+            <field name="name">Trade Payables</field>
+            <field name="code">3001</field>
+            <field name="account_type">liability_payable</field>
+            <field name="reconcile" eval="True"/>
+            <field name="company_id" ref="company_uae"/>
+            <field name="group_id" ref="account_group_current_liabilities"/>
+        </record>
+        
+        <!-- Tax Accounts -->
+        <record id="account_tax_collected_uae" model="account.account">
+            <field name="name">VAT Collected</field>
+            <field name="code">3101</field>
+            <field name="account_type">liability_current</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_uae"/>
+            <field name="group_id" ref="account_group_current_liabilities"/>
+        </record>
+        
+        <!-- Revenue Accounts -->
+        <record id="account_sales_retail_uae" model="account.account">
+            <field name="name">Retail Sales Revenue</field>
+            <field name="code">5001</field>
+            <field name="account_type">income</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_uae"/>
+            <field name="group_id" ref="account_group_revenue"/>
+        </record>
+        
+        <record id="account_sales_services_uae" model="account.account">
+            <field name="name">Services Revenue</field>
+            <field name="code">5004</field>
+            <field name="account_type">income</field>
+            <field name="reconcile" eval="False"/>
+            <field name="company_id" ref="company_uae"/>
+            <field name="group_id" ref="account_group_revenue"/>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO TAXES -->
+        <!-- =================================================== -->
+        
+        <!-- VAT 5% for Qatar (Sales) -->
+        <record id="tax_vat_5_sales_qatar" model="account.tax">
+            <field name="name">VAT 5% (Sales)</field>
+            <field name="amount">5.0</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">sale</field>
+            <field name="company_id" ref="company_qatar"/>
+        </record>
+        
+        <!-- VAT 5% for Qatar (Purchase) -->
+        <record id="tax_vat_5_purchase_qatar" model="account.tax">
+            <field name="name">VAT 5% (Purchase)</field>
+            <field name="amount">5.0</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="company_id" ref="company_qatar"/>
+        </record>
+        
+        <!-- VAT 5% for UAE (Sales) -->
+        <record id="tax_vat_5_sales_uae" model="account.tax">
+            <field name="name">VAT 5% (Sales)</field>
+            <field name="amount">5.0</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">sale</field>
+            <field name="company_id" ref="company_uae"/>
+        </record>
+        
+        <!-- VAT 5% for UAE (Purchase) -->
+        <record id="tax_vat_5_purchase_uae" model="account.tax">
+            <field name="name">VAT 5% (Purchase)</field>
+            <field name="amount">5.0</field>
+            <field name="amount_type">percent</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="company_id" ref="company_uae"/>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO JOURNALS -->
+        <!-- =================================================== -->
+        
+        <!-- Sales Journal - Qatar -->
+        <record id="journal_sales_qatar" model="account.journal">
+            <field name="name">Sales Journal</field>
+            <field name="code">SAL</field>
+            <field name="type">sale</field>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="show_on_dashboard" eval="True"/>
+        </record>
+        
+        <!-- Sales Journal - UAE -->
+        <record id="journal_sales_uae" model="account.journal">
+            <field name="name">Sales Journal</field>
+            <field name="code">SAL</field>
+            <field name="type">sale</field>
+            <field name="company_id" ref="company_uae"/>
+            <field name="show_on_dashboard" eval="True"/>
+        </record>
+        
+        <!-- Purchase Journal - Qatar -->
+        <record id="journal_purchase_qatar" model="account.journal">
+            <field name="name">Purchase Journal</field>
+            <field name="code">PUR</field>
+            <field name="type">purchase</field>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="show_on_dashboard" eval="True"/>
+        </record>
+        
+        <!-- Cash Journal - Qatar -->
+        <record id="journal_cash_qatar" model="account.journal">
+            <field name="name">Cash Journal</field>
+            <field name="code">CSH</field>
+            <field name="type">cash</field>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="default_account_id" ref="account_cash_qatar"/>
+        </record>
+        
+        <!-- Bank Journal - Qatar -->
+        <record id="journal_bank_qatar" model="account.journal">
+            <field name="name">Bank Journal</field>
+            <field name="code">BNK</field>
+            <field name="type">bank</field>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="default_account_id" ref="account_bank_qatar"/>
+            <field name="show_on_dashboard" eval="True"/>
+        </record>
+        
+        <!-- Bank Journal - UAE -->
+        <record id="journal_bank_uae" model="account.journal">
+            <field name="name">Bank Journal</field>
+            <field name="code">BNK</field>
+            <field name="type">bank</field>
+            <field name="company_id" ref="company_uae"/>
+            <field name="default_account_id" ref="account_bank_uae"/>
+            <field name="show_on_dashboard" eval="True"/>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO PAYMENT TERMS -->
+        <!-- =================================================== -->
+        
+        <record id="payment_term_immediate" model="account.payment.term">
+            <field name="name">Immediate Payment</field>
+            <field name="note">Payment immediately due upon receipt</field>
+        </record>
+        
+        <record id="payment_term_immediate_line" model="account.payment.term.line">
+            <field name="payment_id" ref="payment_term_immediate"/>
+            <field name="value">balance</field>
+            <field name="nb_days">0</field>
+        </record>
+        
+        <record id="payment_term_15_days" model="account.payment.term">
+            <field name="name">15 Days</field>
+            <field name="note">Payment due within 15 days</field>
+        </record>
+        
+        <record id="payment_term_15_days_line" model="account.payment.term.line">
+            <field name="payment_id" ref="payment_term_15_days"/>
+            <field name="value">balance</field>
+            <field name="nb_days">15</field>
+        </record>
+        
+        <record id="payment_term_30_days" model="account.payment.term">
+            <field name="name">30 Days</field>
+            <field name="note">Payment due within 30 days</field>
+        </record>
+        
+        <record id="payment_term_30_days_line" model="account.payment.term.line">
+            <field name="payment_id" ref="payment_term_30_days"/>
+            <field name="value">balance</field>
+            <field name="nb_days">30</field>
+        </record>
+        
+        <record id="payment_term_60_days" model="account.payment.term">
+            <field name="name">60 Days</field>
+            <field name="note">Payment due within 60 days</field>
+        </record>
+        
+        <record id="payment_term_60_days_line" model="account.payment.term.line">
+            <field name="payment_id" ref="payment_term_60_days"/>
+            <field name="value">balance</field>
+            <field name="nb_days">60</field>
+        </record>
+        
+        <!-- =================================================== -->
+        <!-- DEMO FISCAL POSITIONS -->
+        <!-- =================================================== -->
+        
+        <record id="fiscal_position_qatar" model="account.fiscal.position">
+            <field name="name">Qatar Domestic</field>
+            <field name="company_id" ref="company_qatar"/>
+            <field name="country_id" ref="base.qa"/>
+            <field name="auto_apply" eval="True"/>
+            <field name="note">Fiscal position for domestic Qatar transactions</field>
+        </record>
+        
+        <record id="fiscal_position_uae" model="account.fiscal.position">
+            <field name="name">UAE Domestic</field>
+            <field name="company_id" ref="company_uae"/>
+            <field name="country_id" ref="base.ae"/>
+            <field name="auto_apply" eval="True"/>
+            <field name="note">Fiscal position for domestic UAE transactions</field>
+        </record>
+        
+    </data>
+</odoo>
