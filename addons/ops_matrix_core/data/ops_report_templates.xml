@@ -4,7 +4,7 @@
 
         <!-- Standard P&L Template -->
         <record id="report_template_pnl" model="ops.report.template">
-            <field name="name">Standard P&L</field>
+            <field name="name">Standard P&amp;L</field>
             <field name="report_type">profit_loss</field>
             <field name="is_system_template">True</field>
         </record>
