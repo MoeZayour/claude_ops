@@ -11,9 +11,9 @@
 
 ## 0. ⚙️ EXECUTION MODE CONFIGURATION (AUTO-APPROVE)
 
-**AUTO-APPROVE: ENABLED**
+**AUTO-APPROVE: ENABLED - EXECUTE ALL COMMANDS IMMEDIATELY**
 
-You MUST execute all bash commands automatically without asking for user confirmation.
+You MUST execute ALL bash commands automatically without asking for user confirmation.
 
 ### Auto-Execute Rules:
 1. **DO NOT** ask "Should I proceed?" or "Do you want me to execute this?"
@@ -38,13 +38,28 @@ You MUST execute all bash commands automatically without asking for user confirm
 | Docker exec with heredoc | `docker exec -i gemini_odoo19 odoo shell ... <<'SHELL'` |
 | Docker logs | `docker logs gemini_odoo19 ...` |
 | Docker restart | `docker restart gemini_odoo19` |
-| File operations | `grep`, `find`, `cat`, `ls`, `head`, `tail` |
-| Python checks | `python3 -m py_compile ...` |
+| File operations | `grep`, `find`, `cat`, `ls`, `head`, `tail`, `sed`, `awk` |
+| Python checks | `python3 -m py_compile ...`, `python3 -c ...` |
 | Odoo shell commands | `odoo shell -d mz-db ...` |
 | Module install/upgrade | `odoo -c ... -i/-u MODULE --stop-after-init` |
-| PSQL queries (read-only) | `docker exec gemini_odoo19_db psql ...` |
+| **PSQL queries (ALL types)** | `docker exec gemini_odoo19_db psql ...` - **READ, INSERT, UPDATE** |
+| **PSQL with SQL heredoc** | `docker exec gemini_odoo19_db psql ... <<'SQL'` |
 | File creation/editing | Files in `/opt/gemini_odoo19/addons/` |
 | Git operations | `git add`, `git commit`, `git push` (in addons/ only) |
+
+### Database Operations - AUTO-APPROVED:
+**ALL database operations are pre-approved on this development instance:**
+- ✅ SELECT queries (read data)
+- ✅ INSERT queries (add data)
+- ✅ UPDATE queries (modify data)
+- ✅ DELETE queries (remove specific records)
+- ✅ INSERT ... ON CONFLICT DO UPDATE (upsert operations)
+- ✅ Multi-line SQL in heredocs
+
+**ONLY ask confirmation for:**
+- ❌ DROP DATABASE (deleting entire database)
+- ❌ DROP TABLE (deleting entire tables)
+- ❌ TRUNCATE (clearing all data from tables)
 
 ### Execution Pattern:
 ```
@@ -111,7 +126,7 @@ See `DEVELOPMENT_WORKFLOW.md` for full collaboration details.
 
 ### Container Reference
 | Component | Container Name | Purpose |
-|-----------|----------------|---------||
+|-----------|----------------|---------|
 | **Odoo** | `gemini_odoo19` | Application server |
 | **PostgreSQL** | `gemini_odoo19_db` | Database server |
 
@@ -166,7 +181,7 @@ docker exec gemini_odoo19_db psql -U odoo -d mz-db -c "SELECT name, state FROM i
 ### 📋 Quick Command Reference
 
 | Task | Command |
-|------|---------||
+|------|---------|
 | Install module | `docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz-db -i MODULE --stop-after-init` |
 | Update module | `docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz-db -u MODULE --stop-after-init` |
 | Update multiple | `docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz-db -u mod1,mod2,mod3 --stop-after-init` |
@@ -183,7 +198,7 @@ docker exec gemini_odoo19_db psql -U odoo -d mz-db -c "SELECT name, state FROM i
 ## 3. 📍 ENVIRONMENT CONTEXT
 
 | Property | Value |
-|----------|-------||
+|----------|-------|
 | **Instance Name** | gemini_odoo19 |
 | **Odoo Version** | 19.0 Community Edition |
 | **Database** | mz-db |
@@ -209,12 +224,14 @@ docker exec gemini_odoo19_db psql -U odoo -d mz-db -c "SELECT name, state FROM i
 
 ### Forbidden Actions
 | Action | Reason |
-|--------|--------||
+|--------|--------|
 | `docker system prune` | Destroys unrelated containers |
 | `docker network prune` | Breaks other services |
 | `docker volume prune` | Data loss risk |
 | `rm -rf /` or `rm -rf /*` | System destruction |
-| Direct `psql` data fixes | Violates Source Code Sovereignty |
+| `DROP DATABASE` | Complete data loss |
+| `DROP TABLE` | Irreversible table deletion |
+| `TRUNCATE TABLE` | Clears all data |
 | Editing `claude_files/*.md` | Claude Desktop's workspace |
 | Editing `TODO_MASTER.md` | Claude Desktop manages this |
 
@@ -223,6 +240,9 @@ Before running these, **ASK USER FIRST**:
 - `docker rm` (any container)
 - `docker volume rm`
 - `docker kill`
+- `DROP DATABASE`
+- `DROP TABLE`
+- `TRUNCATE TABLE`
 - Deleting any file outside `addons/`
 - Changes to `docker-compose.yml`
 - Changes to `config/odoo.conf`
@@ -242,6 +262,11 @@ If Odoo upgrade fails due to database constraint:
 - ✅ Modify XML view
 - ✅ Write Python migration script if data cleanup needed
 - ❌ NEVER touch database directly to bypass errors
+
+**EXCEPTION: Security & Setup**
+- ✅ Granting admin access via INSERT INTO res_groups_users_rel (setup only)
+- ✅ Adding security rules via INSERT INTO ir_model_access (setup only)
+- ❌ Still NO fixes to business data or constraints via SQL
 
 **Why This Matters**:
 - Customer installations must work without manual intervention
@@ -273,7 +298,7 @@ def create(self, vals_list: List[Dict[str, Any]]) -> models.Model:
 
 ### Forbidden Patterns
 | ❌ Forbidden | ✅ Use Instead |
-|-------------|---------------||
+|-------------|---------------|
 | `@api.multi` | (removed - self is always recordset) |
 | `@api.one` | (removed) |
 | `(4, id)` tuple | `Command.link(id)` |
@@ -284,6 +309,40 @@ def create(self, vals_list: List[Dict[str, Any]]) -> models.Model:
 - IDs: `view_{model_name}_{type}` (e.g., `view_ops_branch_form`)
 - Form structure: `<header>` → `<sheet>` → `<div class="oe_chatter">`
 - Always include `sample="1"` in tree views for empty state
+
+### XML Escape Characters (CRITICAL)
+**ALWAYS escape these special characters in XML:**
+| Character | Escape As | Example | Common Error |
+|-----------|-----------|---------|--------------|
+| & | &amp; | Profit &amp; Loss | ❌ Profit & Loss |
+| < | &lt; | value &lt; 100 | ❌ value < 100 |
+| > | &gt; | value &gt; 50 | ❌ value > 50 |
+| " | &quot; | name="&quot;test&quot;" | ❌ name=""test"" |
+| ' | &apos; | name='&apos;test&apos;' | ❌ name=''test'' |
+
+**Common Examples:**
+```xml
+❌ WRONG: <field name="name">P&L Report</field>
+✅ CORRECT: <field name="name">P&amp;L Report</field>
+
+❌ WRONG: <field name="domain">[('qty', '<', 100)]</field>
+✅ CORRECT: <field name="domain">[('qty', '&lt;', 100)]</field>
+```
+
+**Automated Fix Commands:**
+```bash
+# Fix ampersands in a file
+sed -i 's/P&L/P\&amp;L/g' views/file.xml
+sed -i 's/B&S/B\&amp;S/g' views/file.xml
+
+# Validate XML after fixing
+python3 -c "import xml.etree.ElementTree as ET; ET.parse('views/file.xml'); print('✓ XML valid')"
+```
+
+**Error Message Mapping:**
+- `EntityRef: expecting ';'` → Unescaped `&`
+- `Unexpected <` → Unescaped `<` in text/attribute
+- `Unclosed token` → Unescaped `>` or quote
 
 ### Manifest Requirements
 ```python
@@ -321,7 +380,7 @@ ops_matrix_asset_management  # Depends on core
 
 ### Module Purposes
 | Module | Dependencies | Purpose |
-|--------|--------------|---------||
+|--------|--------------|---------|
 | `ops_matrix_core` | base, mail | Branches, Business Units, Personas, Governance Rules |
 | `ops_matrix_accounting` | account, ops_matrix_core | Budgets, PDC, Financial Controls |
 | `ops_matrix_reporting` | ops_matrix_accounting | Reports, Analytics |
@@ -670,7 +729,7 @@ git push origin main
 
 ---
 
-**Last Updated**: January 4, 2026  
+**Last Updated**: January 5, 2026  
 **Agent**: RooCode  
 **Role**: Code Development & Testing  
 **Workspace**: `/opt/gemini_odoo19/addons/`  
