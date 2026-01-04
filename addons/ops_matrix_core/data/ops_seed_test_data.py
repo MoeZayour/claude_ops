@@ -62,25 +62,25 @@ def seed_test_data(env):
     # 7. Governance Rules - SKIPPED (rules not available)
     _logger.info("\n[7/12] Activating Governance Rules... SKIPPED")
     
-    # 8. Sales Orders (for Excel import & approval testing) - SKIPPED (user permissions needed)
-    _logger.info("\n[8/12] Creating Sales Orders... SKIPPED")
-    sales_orders = []
+        # 8. Sales Orders (for Excel import & approval testing)
+    _logger.info("\n[8/12] Creating Sales Orders...")
+    sales_orders = setup_sales_orders(env, branch_dubai, branch_abudhabi, customers, products, users)
     
     # 9. Purchase Orders (for Three-Way Match testing) - SKIPPED (user permissions needed)
-    _logger.info("\n[9/12] Creating Purchase Orders... SKIPPED")
-    purchase_orders = []
+    _logger.info("\n[9/12] Creating Purchase Orders...")
+    purchase_orders = setup_purchase_orders(env, branch_dubai, vendors, products, users)
 
     # 10. Stock Receipts (for Three-Way Match) - SKIPPED
-    _logger.info("\n[10/12] Processing Stock Receipts... SKIPPED")
-    receipts = []
+    _logger.info("\n[10/12] Processing Stock Receipts...")
+    receipts = setup_stock_receipts(env, purchase_orders)
 
     # 11. Vendor Bills (for Three-Way Match) - SKIPPED
-    _logger.info("\n[11/12] Creating Vendor Bills... SKIPPED")
-    bills = []
+    _logger.info("\n[11/12] Creating Vendor Bills...")
+    bills = setup_vendor_bills(env, purchase_orders, vendors)
 
     # 12. Approval Requests (for escalation testing) - SKIPPED
-    _logger.info("\n[12/12] Creating Approval Requests... SKIPPED")
-    approvals = []
+    _logger.info("\n[12/12] Creating Approval Requests...")
+    approvals = setup_approval_requests(env, sales_orders, users)
     
     _logger.info("\n" + "=" * 80)
     _logger.info("TEST DATA SEEDING COMPLETE!")
@@ -102,14 +102,20 @@ def seed_test_data(env):
 
 def setup_company(env):
     """Setup main company"""
-    company = env['res.company'].search([('name', '=', 'My Company')], limit=1)
+    company = env['res.company'].search([('name', '=', 'Test Trading LLC')], limit=1)
     if not company:
-        company = env['res.company'].create({
-            'name': 'Test Trading LLC',
-            'currency_id': env.ref('base.AED').id,
-            'country_id': env.ref('base.ae').id,
-        })
-    
+        # Try to find the default company and update it
+        default_company = env['res.company'].search([('name', '=', 'My Company')], limit=1)
+        if default_company:
+            company = default_company
+        else:
+            # Create new company if neither exists
+            company = env['res.company'].create({
+                'name': 'Test Trading LLC',
+                'currency_id': env.ref('base.AED').id,
+                'country_id': env.ref('base.ae').id,
+            })
+
     company.write({
         'name': 'Test Trading LLC',
         'street': 'Sheikh Zayed Road',
@@ -118,7 +124,7 @@ def setup_company(env):
         'phone': '+971-4-1234567',
         'email': 'info@testtrading.ae',
     })
-    
+
     return company
 
 
@@ -419,11 +425,11 @@ def setup_governance_rules(env, company):
 def setup_sales_orders(env, branch_dubai, branch_abudhabi, customers, products, users):
     """Create sales orders for testing"""
     SO = env['sale.order']
-    
+
     sales_orders = []
     
     # SO1: Small order (no approval needed)
-    so1 = SO.with_user(users['sales_rep_dubai']).create({
+    so1 = SO.with_user(env.ref('base.user_admin')).create({
         'partner_id': customers[0].id,
         'ops_branch_id': branch_dubai.id,
         'date_order': datetime.now(),
@@ -439,7 +445,7 @@ def setup_sales_orders(env, branch_dubai, branch_abudhabi, customers, products, 
     _logger.info(f"  ✓ Created SO: {so1.name} (Small - No approval)")
     
     # SO2: Large order (needs approval)
-    so2 = SO.with_user(users['sales_rep_dubai']).create({
+    so2 = SO.with_user(env.ref('base.user_admin')).create({
         'partner_id': customers[1].id,
         'ops_branch_id': branch_dubai.id,
         'date_order': datetime.now(),
@@ -460,7 +466,7 @@ def setup_sales_orders(env, branch_dubai, branch_abudhabi, customers, products, 
     _logger.info(f"  ✓ Created SO: {so2.name} (Large - Needs approval)")
     
     # SO3: For Excel import testing (draft state)
-    so3 = SO.with_user(users['sales_rep_dubai']).create({
+    so3 = SO.with_user(env.ref('base.user_admin')).create({
         'partner_id': customers[2].id,
         'ops_branch_id': branch_abudhabi.id,
         'date_order': datetime.now(),
@@ -474,11 +480,11 @@ def setup_sales_orders(env, branch_dubai, branch_abudhabi, customers, products, 
 def setup_purchase_orders(env, branch_dubai, vendors, products, users):
     """Create purchase orders for Three-Way Match testing"""
     PO = env['purchase.order']
-    
+
     purchase_orders = []
     
     # PO1: Perfect match scenario (100 units)
-    po1 = PO.with_user(users['purchase_mgr']).create({
+    po1 = PO.with_user(env.ref('base.user_admin')).create({
         'partner_id': vendors[0].id,
         'ops_branch_id': branch_dubai.id,
         'date_order': datetime.now(),
@@ -498,7 +504,7 @@ def setup_purchase_orders(env, branch_dubai, vendors, products, users):
     _logger.info(f"  ✓ Created PO: {po1.name} (Perfect match - 100 units)")
     
     # PO2: Partial receipt scenario (50 ordered, will receive 30)
-    po2 = PO.with_user(users['purchase_mgr']).create({
+    po2 = PO.with_user(env.ref('base.user_admin')).create({
         'partner_id': vendors[1].id,
         'ops_branch_id': branch_dubai.id,
         'date_order': datetime.now(),
@@ -518,7 +524,7 @@ def setup_purchase_orders(env, branch_dubai, vendors, products, users):
     _logger.info(f"  ✓ Created PO: {po2.name} (Partial - 50 units)")
     
     # PO3: Over-billing scenario (100 ordered, will bill for 120)
-    po3 = PO.with_user(users['purchase_mgr']).create({
+    po3 = PO.with_user(env.ref('base.user_admin')).create({
         'partner_id': vendors[0].id,
         'ops_branch_id': branch_dubai.id,
         'date_order': datetime.now(),
@@ -577,7 +583,7 @@ def setup_stock_receipts(env, purchase_orders):
 def setup_vendor_bills(env, purchase_orders, vendors):
     """Create vendor bills (some matching, some not)"""
     Bill = env['account.move']
-    
+
     bills = []
     
     # Bill for PO1: Perfect match (100 units @ correct price)
@@ -625,7 +631,7 @@ def setup_vendor_bills(env, purchase_orders, vendors):
 def setup_approval_requests(env, sales_orders, users):
     """Create approval requests for escalation testing"""
     Approval = env['ops.approval.request']
-    
+
     approvals = []
     
     # Only create approval if SO2 is large enough to trigger rules
@@ -634,7 +640,7 @@ def setup_approval_requests(env, sales_orders, users):
         
         # Check if approval was auto-created
         existing_approval = Approval.search([
-            ('res_model', '=', 'sale.order'),
+            ('model_name', '=', 'sale.order'),
             ('res_id', '=', so.id),
         ], limit=1)
         
@@ -645,13 +651,14 @@ def setup_approval_requests(env, sales_orders, users):
             # Manually create for testing
             approval = Approval.create({
                 'name': f'Approval for {so.name}',
-                'res_model': 'sale.order',
+                'model_name': 'sale.order',
                 'res_id': so.id,
-                'requested_by_id': users['sales_rep_dubai'].id,
-                'current_approver_id': users['sales_mgr_dubai'].id,
+                'requested_by': env.ref('base.user_admin').id,
+                'rule_id': 4,  # Three-Way Match Override rule
+                'approver_ids': [(6, 0, [env.ref('base.user_admin').id])],
                 'state': 'pending',
-                'amount': so.amount_total,
-                'description': f'Large order requiring approval: {so.amount_total} AED',
+                'actual_value': so.amount_total,
+                'name': f'Large order requiring approval: {so.amount_total} AED',
             })
             approvals.append(approval)
             _logger.info(f"  ✓ Created Approval: {approval.name} (For escalation test)")
