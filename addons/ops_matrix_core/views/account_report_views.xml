@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="account_report_view_search_inherit" model="ir.ui.view">
+            <field name="name">account.report.search.inherit</field>
+            <field name="model">account.report</field>
+            <field name="inherit_id" ref="account.account_report_view_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_print']" position="before">
+                    <button name="action_open_apply_template_wizard" string="Apply Template" type="object" class="btn-primary"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

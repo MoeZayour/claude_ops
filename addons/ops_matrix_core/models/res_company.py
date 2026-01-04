@@ -10,6 +10,13 @@ class ResCompany(models.Model):
     _inherit = 'res.company'
 
     # ==================================================================
+    # THREE-WAY MATCH CONFIGURATION
+    # ==================================================================
+    enable_three_way_match = fields.Boolean('Enable Three-Way Match', default=True)
+    three_way_match_tolerance = fields.Float('Match Tolerance (%)', default=5.0)
+    three_way_match_block_validation = fields.Boolean('Block Invoice Validation', default=True)
+
+    # ==================================================================
     # OPS MATRIX FIELDS - Legal Entity Only
     # ==================================================================
     

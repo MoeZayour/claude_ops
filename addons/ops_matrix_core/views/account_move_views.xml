@@ -34,11 +34,47 @@
             
             <!-- Add recompute button in header for draft moves -->
             <xpath expr="//header" position="inside">
+                <button name="action_request_three_way_override"
+                        string="Request Override"
+                        type="object"
+                        class="btn-primary"
+                        invisible="three_way_match_status != 'blocked'"/>
                 <button name="action_recompute_analytic_distribution"
                         string="Recompute Analytic"
                         type="object"
                         class="btn-secondary"
                         invisible="state != 'draft'"/>
+            </xpath>
+            
+            <!-- Three-Way Match Enhancements -->
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                 <div class="alert alert-danger text-center"
+                     role="alert"
+                     invisible="three_way_match_status != 'blocked'">
+                    <strong>Three-Way Match Blocked:</strong>
+                    <p><field name="three_way_match_issues" readonly="1"/></p>
+                </div>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="three_way_match_status" widget="badge" 
+                    decoration-success="three_way_match_status == 'matched'" 
+                    decoration-danger="three_way_match_status == 'blocked'" 
+                    decoration-warning="three_way_match_status == 'override_approved'"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Override" name="override" invisible="three_way_match_override_approved == False">
+                    <group>
+                        <group>
+                            <field name="three_way_match_override_approved"/>
+                            <field name="three_way_match_override_by"/>
+                            <field name="three_way_match_override_date"/>
+                        </group>
+                        <group>
+                            <field name="three_way_match_override_reason"/>
+                        </group>
+                    </group>
+                </page>
             </xpath>
         </field>
     </record>

@@ -39,6 +39,7 @@
         # Template Data Files (Active templates for reference)
         'data/templates/ops_persona_templates.xml',
         'data/templates/ops_governance_rule_templates.xml',
+        'data/ops_governance_rule_three_way_match.xml',
         'data/templates/ops_sla_templates.xml',
         
         # Views - Main Structure (load Business Unit before Branch, as Branch references BU action)
@@ -57,8 +58,10 @@
         'views/ops_governance_rule_views.xml',
         'views/ops_approval_dashboard_views.xml',
         'views/ops_governance_violation_report_views.xml',
+        'views/ops_three_way_match_views.xml',
         'views/ops_archive_policy_views.xml',
         'views/ops_analytic_views.xml',
+        'views/ops_report_template_views.xml',
         
         # Views - SLA
         'views/ops_sla_template_views.xml',
@@ -81,6 +84,7 @@
         'views/stock_warehouse_orderpoint_views.xml',
         'views/ops_product_request_views.xml',
         'views/product_silo_views.xml',
+        'views/account_report_views.xml',
         
         # Views - API Integration & Security
         'views/ops_api_key_views.xml',
@@ -93,6 +97,9 @@
         'data/ir_cron_data.xml',
         'data/ir_cron_archiver.xml',
         'data/sale_order_actions.xml',
+        'data/ir_cron_escalation.xml',
+        'data/email_templates.xml',
+        'data/ops_report_templates.xml',
         
         # Archive policy templates (inactive by default)
         'data/ops_archive_templates.xml',
@@ -101,7 +108,9 @@
         'reports/ops_products_availability_report.xml',
         'wizard/ops_approval_recall_wizard_views.xml',
         'wizard/ops_approval_reject_wizard_views.xml',
+        'wizard/three_way_match_override_wizard_views.xml',
         'wizard/sale_order_import_wizard_views.xml',
+        'wizard/apply_report_template_wizard_views.xml',
     ],
     'demo': [
         'demo/ops_demo_data.xml',

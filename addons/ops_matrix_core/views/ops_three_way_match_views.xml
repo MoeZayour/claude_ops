@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Tree View -->
+        <record id="ops_three_way_match_tree_view" model="ir.ui.view">
+            <field name="name">ops.three.way.match.tree</field>
+            <field name="model">ops.three.way.match</field>
+            <field name="arch" type="xml">
+                <tree string="Three-Way Match" decoration-danger="is_blocked == True" decoration-warning="match_state == 'under_billed'">
+                    <field name="purchase_order_id"/>
+                    <field name="purchase_line_id"/>
+                    <field name="ordered_qty"/>
+                    <field name="received_qty"/>
+                    <field name="billed_qty"/>
+                    <field name="qty_variance"/>
+                    <field name="qty_variance_percent"/>
+                    <field name="match_state"/>
+                    <field name="is_blocked"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="ops_three_way_match_form_view" model="ir.ui.view">
+            <field name="name">ops.three.way.match.form</field>
+            <field name="model">ops.three.way.match</field>
+            <field name="arch" type="xml">
+                <form string="Three-Way Match">
+                    <header>
+                        <field name="match_state" widget="statusbar" statusbar_visible="matched,under_billed,over_billed,no_receipt,partial_receipt"/>
+                    </header>
+                    <sheet>
+                        <div class="alert alert-danger" role="alert" attrs="{'invisible': [('is_blocked', '=', False)]}">
+                            <strong>Blocked:</strong> <field name="blocking_reason"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="purchase_order_id"/>
+                                <field name="purchase_line_id"/>
+                            </group>
+                            <group>
+                                <field name="ordered_qty"/>
+                                <field name="received_qty"/>
+                                <field name="billed_qty"/>
+                            </group>
+                            <group>
+                                <field name="qty_variance"/>
+                                <field name="qty_variance_percent"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="ops_three_way_match_search_view" model="ir.ui.view">
+            <field name="name">ops.three.way.match.search</field>
+            <field name="model">ops.three.way.match</field>
+            <field name="arch" type="xml">
+                <search string="Three-Way Match Search">
+                    <field name="purchase_order_id"/>
+                    <field name="purchase_line_id"/>
+                    <filter string="Blocked" name="blocked" domain="[ ('is_blocked', '=', True)]"/>
+                    <filter string="Over Billed" name="over_billed" domain="[('match_state', '=', 'over_billed')]"/>
+                    <filter string="No Receipt" name="no_receipt" domain="[('match_state', '=', 'no_receipt')]"/>
+                    <filter string="Matched" name="matched" domain="[('match_state', '=', 'matched')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Purchase Order" name="groupby_po" context="{'group_by': 'purchase_order_id'}"/>
+                        <filter string="Match Status" name="groupby_match_state" context="{'group_by': 'match_state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="ops_three_way_match_action" model="ir.actions.act_window">
+            <field name="name">Three-Way Match Report</field>
+            <field name="res_model">ops.three.way.match</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="ops_three_way_match_search_view"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No three-way match records found.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu -->
+        <menuitem id="menu_three_way_match_report"
+                  name="Three-Way Match Report"
+                  action="ops_three_way_match_action"
+                  parent="purchase.menu_purchase_root"
+                  sequence="99"/>
+
+    </data>
+</odoo>

@@ -40,6 +40,18 @@ class AccountMove(models.Model):
         help='Technical field: User has authority to post/validate invoices'
     )
     
+    three_way_match_status = fields.Selection([
+        ('not_applicable', 'N/A'),
+        ('matched', 'Matched'),
+        ('blocked', 'Blocked - Mismatch'),
+        ('override_approved', 'Override Approved'),
+    ], string='3-Way Match Status', compute='_compute_three_way_match_status', store=True)
+    three_way_match_issues = fields.Text('Match Issues', compute='_compute_three_way_match_status', store=True)
+    three_way_match_override_approved = fields.Boolean(string='Override Approved', default=False, copy=False)
+    three_way_match_override_by = fields.Many2one('res.users', string='Override Approved By', copy=False)
+    three_way_match_override_date = fields.Datetime(string='Override Approved Date', copy=False)
+    three_way_match_override_reason = fields.Text(string='Override Reason', copy=False)
+    
     # ========================================================================
     # COMPUTE METHODS
     # ========================================================================
@@ -60,6 +72,46 @@ class AccountMove(models.Model):
                 # Check persona authority using the helper method
                 record.can_user_validate_invoices = self.env.user.has_ops_authority('can_validate_invoices')
     
+    @api.depends('invoice_line_ids', 'invoice_line_ids.purchase_line_id')
+    def _compute_three_way_match_status(self):
+        for move in self:
+            if move.move_type != 'in_invoice' or not move.company_id.enable_three_way_match:
+                move.three_way_match_status = 'not_applicable'
+                move.three_way_match_issues = False
+                continue
+           
+            issues = []
+            has_blocked = False
+           
+            po_lines = move.invoice_line_ids.filtered('purchase_line_id')
+            if not po_lines:
+                move.three_way_match_status = 'not_applicable'
+                move.three_way_match_issues = False
+                continue
+
+            for line in po_lines:
+                match = self.env['ops.three.way.match'].search([
+                    ('purchase_line_id', '=', line.purchase_line_id.id)
+                ], limit=1)
+               
+                if not match:
+                    match = self.env['ops.three.way.match'].create({
+                        'purchase_order_id': line.purchase_line_id.order_id.id,
+                        'purchase_line_id': line.purchase_line_id.id,
+                        'ordered_qty': line.purchase_line_id.product_qty,
+                    })
+               
+                if match.is_blocked:
+                    has_blocked = True
+                    issues.append(f"Line {line.name or 'N/A'}: {match.blocking_reason}")
+           
+            if has_blocked:
+                move.three_way_match_status = 'blocked'
+                move.three_way_match_issues = '\n'.join(issues)
+            else:
+                move.three_way_match_status = 'matched'
+                move.three_way_match_issues = False
+
     @api.depends('ops_branch_id', 'ops_business_unit_id')
     def _compute_analytic_summary(self):
         """Compute human-readable summary of matrix dimensions."""
@@ -217,7 +269,14 @@ class AccountMove(models.Model):
     # ========================================================================
     
     def action_post(self):
-        """Override post action to validate matrix dimensions before posting."""
+        """Override post action to validate matrix dimensions and three-way match before posting."""
+        for move in self:
+            if move.three_way_match_status == 'blocked' and not move.three_way_match_override_approved and move.company_id.three_way_match_block_validation:
+                raise UserError(
+                    _("Cannot validate this invoice due to three-way match issues:\n\n%s\n\nPlease verify quantities with your Purchase Manager or request an override approval.") 
+                    % move.three_way_match_issues
+                )
+
         # Validate dimensions for invoices
         invoice_moves = self.filtered(lambda m: m.is_invoice(include_receipts=True))
         for move in invoice_moves:
@@ -240,6 +299,31 @@ class AccountMove(models.Model):
                         line.analytic_distribution = distribution
         
         return super().action_post()
+
+    def action_request_three_way_override(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Request Three-Way Match Override'),
+            'res_model': 'three.way.match.override.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_invoice_id': self.id,
+            }
+        }
+
+    def action_approve_three_way_override(self, reason):
+        self.write({
+            'three_way_match_override_approved': True,
+            'three_way_match_override_by': self.env.user.id,
+            'three_way_match_override_date': fields.Datetime.now(),
+            'three_way_match_override_reason': reason,
+            'three_way_match_status': 'override_approved',
+        })
+        self.message_post(
+            body=_("Three-way match has been manually overridden by %s. Reason: %s") % (self.env.user.name, reason)
+        )
     
     def action_recompute_analytic_distribution(self):
         """Manual action to recompute analytic distribution for selected moves."""

@@ -114,6 +114,21 @@
                         </form>
                     </field>
                 </page>
+                <page string="Three-Way Match" name="three_way_match">
+                    <group>
+                        <group>
+                            <field name="enable_three_way_match"/>
+                            <field name="three_way_match_block_validation"/>
+                        </group>
+                        <group>
+                            <label for="three_way_match_tolerance"/>
+                            <div class="o_row">
+                                <field name="three_way_match_tolerance"/>
+                                <span>%%</span>
+                            </div>
+                        </group>
+                    </group>
+                </page>
             </xpath>
             
         </field>

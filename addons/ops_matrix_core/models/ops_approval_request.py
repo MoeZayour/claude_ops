@@ -1,5 +1,6 @@
 from odoo import models, fields, api, Command, _
 from typing import List, Dict, Any
+from datetime import timedelta
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -173,8 +174,42 @@ class OpsApprovalRequest(models.Model):
     violation_summary = fields.Char(string='Violation Summary',
                                    compute='_compute_violation_summary', store=True)
     
+    # --- ESCALATION TRACKING ---
+    escalation_level = fields.Integer('Current Escalation Level', default=0, tracking=True)
+    escalation_date = fields.Datetime('Last Escalation Date', readonly=True, tracking=True)
+    escalation_history = fields.Text('Escalation History', readonly=True)
+    is_overdue = fields.Boolean('Overdue', compute='_compute_is_overdue', store=True)
+    hours_pending = fields.Float('Hours Pending', compute='_compute_hours_pending', store=True)
+    next_escalation_date = fields.Datetime('Next Escalation Date', compute='_compute_next_escalation_date', store=True)
+
     # --- COMPUTED METHODS ---
-    
+
+    @api.depends('requested_date', 'escalation_date', 'state')
+    def _compute_hours_pending(self):
+        for request in self:
+            if request.state == 'pending':
+                last_event_date = request.escalation_date or request.requested_date
+                request.hours_pending = (fields.Datetime.now() - last_event_date).total_seconds() / 3600
+            else:
+                request.hours_pending = 0
+
+    @api.depends('hours_pending', 'rule_id.escalation_timeout_hours')
+    def _compute_is_overdue(self):
+        for request in self:
+            if request.state == 'pending' and request.rule_id and request.rule_id.enable_escalation:
+                request.is_overdue = request.hours_pending > request.rule_id.escalation_timeout_hours
+            else:
+                request.is_overdue = False
+
+    @api.depends('escalation_date', 'rule_id.escalation_timeout_hours')
+    def _compute_next_escalation_date(self):
+        for request in self:
+            if request.state == 'pending' and request.rule_id and request.rule_id.enable_escalation:
+                last_event_date = request.escalation_date or request.requested_date
+                request.next_escalation_date = last_event_date + timedelta(hours=request.rule_id.escalation_timeout_hours)
+            else:
+                request.next_escalation_date = False
+
     @api.depends('record_ref')
     def _compute_matrix_dimensions(self):
         """Extract matrix dimensions from referenced record."""
@@ -455,6 +490,69 @@ class OpsApprovalRequest(models.Model):
         )
         
         return True
+
+    def action_escalate(self):
+        for request in self.filtered(lambda r: r.state == 'pending' and r.is_overdue):
+            next_level = request.escalation_level + 1
+            next_approver_persona = getattr(request.rule_id, f'escalation_level_{next_level}_persona_id', None)
+
+            if next_approver_persona and next_approver_persona.user_id:
+                original_approver = request.approver_ids
+                new_approver = next_approver_persona.user_id
+
+                history_entry = _("Escalated from level %s to %s on %s.") % (request.escalation_level, next_level, fields.Datetime.now())
+
+                request.write({
+                    'escalation_level': next_level,
+                    'escalation_date': fields.Datetime.now(),
+                    'approver_ids': [Command.set(new_approver.ids)],
+                    'escalation_history': (request.escalation_history or '') + history_entry + '\n'
+                })
+
+                request._send_escalation_notifications(original_approver, new_approver, next_level)
+
+                request.message_post(
+                    body=_("Approval request escalated to level %s: %s") % (next_level, new_approver.name)
+                )
+            else:
+                # Final escalation level reached, no further automatic action
+                request.message_post(
+                    body=_("Final escalation level reached, but no further approver is defined. Manual intervention required.")
+                )
+
+    @api.model
+    def _cron_escalate_overdue_approvals(self):
+        overdue_requests = self.search([
+            ('state', '=', 'pending'),
+            ('is_overdue', '=', True),
+        ])
+        _logger.info(f"Found {len(overdue_requests)} overdue approval requests to escalate.")
+        for request in overdue_requests:
+            try:
+                request.action_escalate()
+            except Exception as e:
+                _logger.error(f"Failed to escalate approval request {request.name}: {e}")
+
+    def _send_escalation_notifications(self, original_approver, new_approver, escalation_level):
+        self.ensure_one()
+        # Email to original (reminder)
+        reminder_template = self.env.ref('ops_matrix_core.email_template_escalation_reminder', raise_if_not_found=False)
+        if reminder_template:
+            for user in original_approver:
+                reminder_template.with_context(object=self, user=user).send_mail(self.id, force_send=True)
+
+        # Email to new approver
+        new_approver_template = self.env.ref('ops_matrix_core.email_template_escalation_new_approver', raise_if_not_found=False)
+        if new_approver_template:
+            new_approver_template.with_context(object=self, user=new_approver).send_mail(self.id, force_send=True)
+
+        # System notifications
+        self.activity_schedule(
+            'mail.mail_activity_data_todo',
+            summary=_('Approval Escalated: %s') % self.res_name,
+            note=_('The approval request for %s has been escalated to you.') % self.res_name,
+            user_id=new_approver.id,
+        )
 
     def action_reject(self):
         """Open wizard to reject with reason."""

@@ -270,6 +270,12 @@ class OpsGovernanceRule(models.Model):
     global_max_price_variance = fields.Float(string='Global Max Price Variance %', default=0.0)
     
     # --- APPROVAL CONFIGURATION ---
+    enable_escalation = fields.Boolean('Enable Auto-Escalation', default=True)
+    escalation_timeout_hours = fields.Float('Escalation Timeout (Hours)', default=24.0)
+    escalation_level_1_persona_id = fields.Many2one('ops.persona', 'Level 1 Escalation Persona')
+    escalation_level_2_persona_id = fields.Many2one('ops.persona', 'Level 2 Escalation Persona')
+    escalation_level_3_persona_id = fields.Many2one('ops.persona', 'Level 3 Escalation Persona (Final)')
+
     require_approval = fields.Boolean(
         string='Require Approval',
         help='When enabled, violations trigger approval workflow instead of blocking. '

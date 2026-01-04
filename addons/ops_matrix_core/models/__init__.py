@@ -38,6 +38,7 @@ from . import ops_governance_limits      # NEW: Related limit models
 from . import ops_approval_request
 from . import ops_approval_dashboard
 from . import ops_archive_policy
+from . import ops_three_way_match
 
 # 5. SLA Engine
 from . import ops_sla_mixin
@@ -63,9 +64,12 @@ from . import stock_picking
 from . import stock_move
 from . import stock_quant
 from . import mail_message
+from . import ops_report_template
+from . import ops_report_template_line
 
 # 7. Product Requests
 from . import ops_product_request
 
 # 8. Wizards (Located in models folder currently)
 from . import sale_order_import_wizard
+from . import account_report

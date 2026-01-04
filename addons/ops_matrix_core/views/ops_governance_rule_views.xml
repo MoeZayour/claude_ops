@@ -219,6 +219,27 @@
                                 </group>
                             </group>
                         </page>
+                        
+                        <!-- TAB 7: ESCALATION -->
+                        <page string="Escalation" name="escalation">
+                            <group>
+                                <group string="Escalation Policy">
+                                    <field name="enable_escalation"/>
+                                    <field name="escalation_timeout_hours"/>
+                                </group>
+                                <group string="Escalation Path">
+                                    <field name="escalation_level_1_persona_id" options="{'no_create': True}"/>
+                                    <field name="escalation_level_2_persona_id" options="{'no_create': True}"/>
+                                    <field name="escalation_level_3_persona_id" options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                            <div class="alert alert-info" role="alert">
+                                <strong>How Escalation Works:</strong><br/>
+                                • If an approval request is not processed within the <strong>Timeout</strong> period, it is automatically escalated.<br/>
+                                • The request will be reassigned to the next <strong>Escalation Persona</strong> in the defined path.<br/>
+                                • Notifications will be sent to the new approver.
+                            </div>
+                        </page>
                     </notebook>
                 </sheet>
                 

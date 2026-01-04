@@ -24,6 +24,12 @@
                 </header>
                 
                 <sheet>
+                    <div class="alert alert-danger" role="alert" invisible="not is_overdue">
+                        <strong>Overdue:</strong> This request has exceeded its response time and requires immediate attention.
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="escalation_level == 0">
+                        <strong>Escalated:</strong> This request has been escalated to level <field name="escalation_level" readonly="1"/>.
+                    </div>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_source_record" 
                                 type="object" 
@@ -126,6 +132,18 @@
                                 </group>
                             </group>
                         </page>
+                        <page string="Escalation" name="escalation">
+                            <group>
+                                <group string="Escalation Status">
+                                    <field name="is_overdue"/>
+                                    <field name="hours_pending"/>
+                                    <field name="next_escalation_date"/>
+                                </group>
+                                <group string="Escalation History">
+                                    <field name="escalation_history" nolabel="1" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
                 
@@ -174,6 +192,9 @@
                 <separator/>
                 <filter string="My Requests" name="my_requests" domain="[('requested_by', '=', uid)]"/>
                 <filter string="I Can Approve" name="i_can_approve" domain="[('approver_ids', 'in', uid)]"/>
+                <separator/>
+                <filter string="Overdue" name="overdue" domain="[('is_overdue', '=', True)]"/>
+                <filter string="Escalated" name="escalated" domain="[('escalation_level', '>', 0)]"/>
                 <separator/>
                 <filter string="Governance Violations" name="governance" domain="[('is_governance_violation', '=', True)]"/>
                 <separator/>

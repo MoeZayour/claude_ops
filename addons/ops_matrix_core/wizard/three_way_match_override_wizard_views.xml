@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="three_way_match_override_wizard_form_view" model="ir.ui.view">
+            <field name="name">three.way.match.override.wizard.form</field>
+            <field name="model">three.way.match.override.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Request Three-Way Match Override">
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Warning!</strong> You are requesting an override for a blocked invoice. Please provide a clear justification.
+                    </div>
+                    <group>
+                        <field name="invoice_id"/>
+                        <field name="match_issues"/>
+                        <field name="override_reason"/>
+                        <field name="approver_id"/>
+                    </group>
+                    <footer>
+                        <button name="action_request_override" string="Request Override" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -53,3 +53,7 @@ access_ops_api_key_admin,ops.api.key.admin,model_ops_api_key,group_ops_admin,1,1
 access_ops_api_key_system,ops.api.key.system,model_ops_api_key,base.group_system,1,1,1,1
 access_ops_audit_log_admin,ops.audit.log.admin,model_ops_audit_log,group_ops_admin,1,0,0,0
 access_ops_audit_log_system,ops.audit.log.system,model_ops_audit_log,base.group_system,1,0,0,0
+access_ops_three_way_match_user,ops.three.way.match.user,model_ops_three_way_match,purchase.group_purchase_user,1,1,1,0
+access_ops_three_way_match_manager,ops.three.way.match.manager,model_ops_three_way_match,purchase.group_purchase_manager,1,1,1,1
+access_ops_report_template,ops.report.template,model_ops_report_template,base.group_user,1,1,1,1
+access_ops_report_template_line,ops.report.template.line,model_ops_report_template_line,base.group_user,1,1,1,1
