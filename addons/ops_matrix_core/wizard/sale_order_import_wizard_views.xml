@@ -59,7 +59,7 @@
             <field name="arch" type="xml">
                 <form string="Import Success">
                     <div class="alert alert-success" role="alert">
-                        <h4>✅ Validation Successful!</h4>
+                        <h4>✅ Import Successful!</h4>
                     </div>
                     <group>
                         <field name="lines_imported" readonly="1"/>
@@ -67,7 +67,7 @@
                                widget="text" options="{'style': 'white-space: pre-wrap;'}"/>
                     </group>
                     <div class="alert alert-info" role="alert">
-                        Note: Import functionality will be added in Session 3.
+                        Lines have been added to your sales order. You can review them in the Order Lines tab.
                     </div>
                     <footer>
                         <button string="Close" class="btn-primary" special="cancel"/>

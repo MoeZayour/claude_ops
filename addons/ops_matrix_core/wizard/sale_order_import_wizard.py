@@ -201,8 +201,14 @@ class SaleOrderImportWizard(models.TransientModel):
         }
 
     def _show_success_wizard(self, count):
-        # Group by section for summary
+        """Show success wizard and create lines."""
+        # Parse validated data
         validated_data = json.loads(self.validated_rows)
+        
+        # CREATE THE LINES (this is new!)
+        total_imported = self._create_order_lines(validated_data)
+        
+        # Group by section for summary
         sections = {}
         for row in validated_data:
             section = row['section']
@@ -213,7 +219,8 @@ class SaleOrderImportWizard(models.TransientModel):
         
         self.write({
             'import_result': 'success',
-            'success_message': f'Successfully validated {count} lines:\n\n{summary}\n\nReady to import. (Import will be implemented in Session 3)',
+            'success_message': f'Successfully imported {total_imported} lines:\n\n{summary}\n\nLines have been added to your sales order.',
+            'lines_imported': total_imported,
         })
         
         return {
@@ -224,3 +231,80 @@ class SaleOrderImportWizard(models.TransientModel):
             'target': 'new',
             'context': {'form_view_initial_mode': 'edit'},
         }
+
+    def _create_order_lines(self, validated_rows):
+        """Create sale order lines from validated data.
+        
+        Process:
+        1. Get the sale order from context
+        2. Group rows by section
+        3. For each section:
+           - Create section header (display_type='line_section')
+           - Create product lines under that section
+        4. Post message to sale order chatter
+        """
+        # Get sale order from context
+        sale_order_id = self.env.context.get('active_id')
+        if not sale_order_id:
+            raise UserError('No sale order found. Please open this wizard from a sale order.')
+        
+        sale_order = self.env['sale.order'].browse(sale_order_id)
+        
+        # Group by section (maintain order)
+        sections = {}
+        section_order = []
+        for row in validated_rows:
+            section = row['section']
+            if section not in sections:
+                sections[section] = []
+                section_order.append(section)
+            sections[section].append(row)
+        
+        # Track statistics
+        total_lines = 0
+        
+        # Create lines for each section
+        for section_name in section_order:
+            section_rows = sections[section_name]
+            
+            # Create section header
+            sale_order.order_line.create({
+                'order_id': sale_order.id,
+                'display_type': 'line_section',
+                'name': section_name.upper(),
+                'sequence': 10000,  # Append to end
+            })
+            
+            # Create product lines
+            for row in section_rows:
+                # Find product (we already validated it exists)
+                product = self.env['product.product'].search([
+                    '|',
+                    ('name', '=ilike', row['model']),
+                    ('default_code', '=ilike', row['model'])
+                ], limit=1)
+                
+                if product:
+                    # Create sale order line
+                    sale_order.order_line.create({
+                        'order_id': sale_order.id,
+                        'product_id': product.id,
+                        'product_uom_qty': float(row['quantity']),
+                        'sequence': 10000,  # Append to end
+                    })
+                    total_lines += 1
+        
+        # Post to chatter
+        sale_order.message_post(
+            body=_(
+                '<p><strong>Excel Import Completed</strong></p>'
+                '<ul>'
+                '<li>Total lines imported: <strong>%s</strong></li>'
+                '<li>Sections: <strong>%s</strong></li>'
+                '</ul>'
+            ) % (total_lines, ', '.join(section_order)),
+            message_type='notification',
+            subtype_xmlid='mail.mt_note'
+        )
+        
+        return total_lines
