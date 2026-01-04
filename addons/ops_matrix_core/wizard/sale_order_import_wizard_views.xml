@@ -26,8 +26,51 @@
                         <button name="action_validate_and_import" 
                                 type="object" 
                                 string="Validate &amp; Import" 
-                                class="btn-primary"/>
+                                class="btn-primary"
+                                attrs="{'invisible': [('import_file', '=', False)]}"/>
                         <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_sale_order_import_error_form" model="ir.ui.view">
+            <field name="name">sale.order.import.wizard.error.form</field>
+            <field name="model">sale.order.import.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Import Errors">
+                    <div class="alert alert-danger" role="alert">
+                        <h4>⚠️ Import Failed - Please Fix Errors</h4>
+                    </div>
+                    <group>
+                        <field name="error_message" nolabel="1" readonly="1" 
+                               widget="text" options="{'style': 'white-space: pre-wrap;'}"/>
+                    </group>
+                    <footer>
+                        <button string="Close" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_sale_order_import_success_form" model="ir.ui.view">
+            <field name="name">sale.order.import.wizard.success.form</field>
+            <field name="model">sale.order.import.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Import Success">
+                    <div class="alert alert-success" role="alert">
+                        <h4>✅ Validation Successful!</h4>
+                    </div>
+                    <group>
+                        <field name="lines_imported" readonly="1"/>
+                        <field name="success_message" nolabel="1" readonly="1"
+                               widget="text" options="{'style': 'white-space: pre-wrap;'}"/>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        Note: Import functionality will be added in Session 3.
+                    </div>
+                    <footer>
+                        <button string="Close" class="btn-primary" special="cancel"/>
                     </footer>
                 </form>
             </field>
