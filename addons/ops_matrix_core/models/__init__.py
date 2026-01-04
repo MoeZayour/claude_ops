@@ -37,6 +37,7 @@ from . import ops_governance_rule
 from . import ops_governance_limits      # NEW: Related limit models
 from . import ops_approval_request
 from . import ops_approval_dashboard
+from . import ops_governance_violation_report
 from . import ops_archive_policy
 from . import ops_three_way_match
 

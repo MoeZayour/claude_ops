@@ -45,8 +45,8 @@ class ResCompany(models.Model):
         readonly=True,
         tracking=True,
         help="Auto-generated analytic account for company-level financial tracking and reporting. "
-            "Used for consolidated P&L reports across all operational branches. "
-            "Automatically created when the company is saved."
+             "Used for consolidated P&L reports across all operational branches. "
+             "Automatically created when the company is saved."
     )
 
     # ---------------------------------------------------------

@@ -7,7 +7,7 @@
             <field name="name">ops.three.way.match.tree</field>
             <field name="model">ops.three.way.match</field>
             <field name="arch" type="xml">
-                <tree string="Three-Way Match" decoration-danger="is_blocked == True" decoration-warning="match_state == 'under_billed'">
+                <list string="Three-Way Match" decoration-danger="is_blocked == True" decoration-warning="match_state == 'under_billed'">
                     <field name="purchase_order_id"/>
                     <field name="purchase_line_id"/>
                     <field name="ordered_qty"/>
@@ -17,7 +17,7 @@
                     <field name="qty_variance_percent"/>
                     <field name="match_state"/>
                     <field name="is_blocked"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -31,7 +31,7 @@
                         <field name="match_state" widget="statusbar" statusbar_visible="matched,under_billed,over_billed,no_receipt,partial_receipt"/>
                     </header>
                     <sheet>
-                        <div class="alert alert-danger" role="alert" attrs="{'invisible': [('is_blocked', '=', False)]}">
+                        <div class="alert alert-danger" role="alert" invisible="not is_blocked">
                             <strong>Blocked:</strong> <field name="blocking_reason"/>
                         </div>
                         <group>
@@ -59,14 +59,14 @@
             <field name="name">ops.three.way.match.search</field>
             <field name="model">ops.three.way.match</field>
             <field name="arch" type="xml">
-                <search string="Three-Way Match Search">
+                <search>
                     <field name="purchase_order_id"/>
                     <field name="purchase_line_id"/>
                     <filter string="Blocked" name="blocked" domain="[ ('is_blocked', '=', True)]"/>
                     <filter string="Over Billed" name="over_billed" domain="[('match_state', '=', 'over_billed')]"/>
                     <filter string="No Receipt" name="no_receipt" domain="[('match_state', '=', 'no_receipt')]"/>
                     <filter string="Matched" name="matched" domain="[('match_state', '=', 'matched')]"/>
-                    <group expand="0" string="Group By">
+                    <group>
                         <filter string="Purchase Order" name="groupby_po" context="{'group_by': 'purchase_order_id'}"/>
                         <filter string="Match Status" name="groupby_match_state" context="{'group_by': 'match_state'}"/>
                     </group>

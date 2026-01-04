@@ -7,13 +7,13 @@
             <field name="name">ops.report.template.tree</field>
             <field name="model">ops.report.template</field>
             <field name="arch" type="xml">
-                <tree string="Report Templates">
+                <list string="Report Templates">
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
                     <field name="report_type"/>
                     <field name="company_id" groups="base.group_multi_company"/>
                     <field name="active"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -41,14 +41,14 @@
                         <notebook>
                             <page string="Template Lines" name="template_lines">
                                 <field name="template_line_ids">
-                                    <tree editable="bottom">
+                                    <list editable="bottom">
                                         <field name="sequence" widget="handle"/>
                                         <field name="section_name"/>
                                         <field name="account_type"/>
                                         <field name="account_code_pattern"/>
                                         <field name="show_subtotal"/>
                                         <field name="is_section_header"/>
-                                    </tree>
+                                    </list>
                                 </field>
                             </page>
                         </notebook>

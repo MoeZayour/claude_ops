@@ -270,6 +270,7 @@ class OpsGovernanceRule(models.Model):
     global_max_price_variance = fields.Float(string='Global Max Price Variance %', default=0.0)
     
     # --- APPROVAL CONFIGURATION ---
+    required_approver_persona_id = fields.Many2one('ops.persona', string='Required Approver Persona')
     enable_escalation = fields.Boolean('Enable Auto-Escalation', default=True)
     escalation_timeout_hours = fields.Float('Escalation Timeout (Hours)', default=24.0)
     escalation_level_1_persona_id = fields.Many2one('ops.persona', 'Level 1 Escalation Persona')

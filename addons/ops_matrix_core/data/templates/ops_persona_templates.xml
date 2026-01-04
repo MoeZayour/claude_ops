@@ -17,4 +17,10 @@
         <field name="description">BU leader with cross-branch visibility.</field>
         <field name="active">False</field>
     </record>
+
+    <record id="ops_persona_purchase_manager" model="ops.persona">
+        <field name="name">Purchase Manager</field>
+        <field name="description">Manages procurement and vendor relationships.</field>
+        <field name="active">False</field>
+    </record>
 </odoo>

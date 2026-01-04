@@ -231,6 +231,7 @@
                                     <field name="escalation_level_1_persona_id" options="{'no_create': True}"/>
                                     <field name="escalation_level_2_persona_id" options="{'no_create': True}"/>
                                     <field name="escalation_level_3_persona_id" options="{'no_create': True}"/>
+                                    <field name="required_approver_persona_id" options="{'no_create': True}"/>
                                 </group>
                             </group>
                             <div class="alert alert-info" role="alert">
