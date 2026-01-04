@@ -29,6 +29,8 @@
         # Security
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
+        # Data
+        'data/dashboard_data.xml',
         # Views
         'views/ops_sales_analysis_views.xml',
         'views/ops_financial_analysis_views.xml',

@@ -33,6 +33,7 @@
 
         # Data
         "data/ops_asset_data.xml",
+        "data/templates/ops_budget_templates.xml",
 
         # Views
         "views/ops_asset_category_views.xml",
@@ -40,12 +41,20 @@
         "views/ops_asset_depreciation_views.xml",
         "views/ops_budget_views.xml",
         "views/ops_pdc_views.xml",
+        "views/ops_financial_report_wizard_views.xml",
+        "views/ops_general_ledger_wizard_enhanced_views.xml",
+        "views/ops_general_ledger_wizard_views.xml",
 
         # Wizards
         "wizard/ops_asset_depreciation_wizard_views.xml",
+        "wizard/ops_asset_disposal_wizard_views.xml",
+        "wizard/ops_asset_report_wizard.xml",
 
         # Reports
         "report/ops_asset_report_templates.xml",
+        "report/ops_consolidated_report_templates.xml",
+        "report/ops_financial_report_template.xml",
+        "report/ops_general_ledger_template.xml",
 
         # Menus
         "views/accounting_menus.xml",
