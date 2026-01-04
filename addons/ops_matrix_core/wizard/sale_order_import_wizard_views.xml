@@ -1,0 +1,44 @@
+<odoo>
+    <data>
+
+        <record id="view_sale_order_import_wizard_form" model="ir.ui.view">
+            <field name="name">sale.order.import.wizard.form</field>
+            <field name="model">sale.order.import.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Import Sale Order Lines">
+                    <group>
+                        <div class="alert alert-info" role="alert">
+                            <strong>How to use:</strong>
+                            <ul>
+                                <li>Download the template below or use your own Excel file</li>
+                                <li>Fill in: Section, Model (product name), Quantity</li>
+                                <li>Upload the completed file</li>
+                            </ul>
+                        </div>
+                        <button name="action_download_template" 
+                                type="object" 
+                                string="📥 Download Template" 
+                                class="btn-primary"/>
+                        <field name="import_file" filename="import_filename"/>
+                        <field name="import_filename" invisible="1"/>
+                    </group>
+                    <footer>
+                        <button name="action_validate_and_import" 
+                                type="object" 
+                                string="Validate &amp; Import" 
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sale_order_import_wizard" model="ir.actions.act_window">
+            <field name="name">Import Sale Order Lines</field>
+            <field name="res_model">sale.order.import.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>
