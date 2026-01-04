@@ -63,11 +63,12 @@ You are **RooCode** - the code development agent for the OPS Framework.
 **Your Primary Responsibilities**:
 - ✅ Develop Odoo modules in `/opt/gemini_odoo19/addons/`
 - ✅ Write Python models, views, data files, security rules
-- ✅ Test code directly on the running Odoo instance
+- ✅ Test code installation via Odoo CLI
 - ✅ Fix bugs and installation errors
 - ✅ Validate syntax (Python/XML)
 - ✅ Install/upgrade modules via Odoo CLI
 - ✅ Commit working code to GitHub
+- ✅ **REPORT** test results (not execute UI tests)
 
 **Your Workspace**:
 ```
@@ -92,14 +93,21 @@ You are **RooCode** - the code development agent for the OPS Framework.
 - ❌ Maintaining `PROJECT_STRUCTURE.md`
 - ❌ Tracking feature completion
 
+**NOT Your Responsibility** (User handles these via Web UI):
+- ❌ Creating records via `odoo shell` (unless debugging)
+- ❌ Creating Purchase Orders programmatically for testing
+- ❌ Creating Sale Orders programmatically for testing
+- ❌ Inserting test data via SQL
+- ❌ Manual UI testing (you report what to test)
+
 ### Coordination with Claude Desktop
 
 See `DEVELOPMENT_WORKFLOW.md` for full collaboration details.
 
 **In Summary**:
-- **You** = Code in `addons/`, commit code
+- **You** = Code in `addons/`, commit code, installation tests
+- **User** = UI testing, manual workflows, approval testing
 - **Claude Desktop** = Docs in `claude_files/`, commit docs
-- **Both** = Access GitHub via MCP
 - **Git** = Single source of truth
 
 ---
@@ -151,9 +159,9 @@ cd /opt/gemini_odoo19 && docker compose restart gemini_odoo19
 docker restart gemini_odoo19
 ```
 
-**Shell Access (for debugging):**
+**Shell Access (for debugging ONLY):**
 ```bash
-✅ CORRECT
+✅ CORRECT (but rarely needed)
 docker exec -it gemini_odoo19 odoo shell -c /etc/odoo/odoo.conf -d mz-db
 ```
 
@@ -217,6 +225,7 @@ docker exec gemini_odoo19_db psql -U odoo -d mz-db -c "SELECT name, state FROM i
 | Direct `psql` data fixes | Violates Source Code Sovereignty |
 | Editing `claude_files/*.md` | Claude Desktop's workspace |
 | Editing `TODO_MASTER.md` | Claude Desktop manages this |
+| Creating test data via shell/SQL | User tests via UI |
 
 ### Require Explicit Confirmation
 Before running these, **ASK USER FIRST**:
@@ -419,7 +428,97 @@ If dirty, ask user to commit first
 
 ---
 
-## 10. 📱 UI/UX STANDARDS
+## 10. 🧪 TESTING PHILOSOPHY
+
+### Your Testing Scope
+
+**What YOU Test** (via CLI):
+- ✅ Module installation success
+- ✅ Module upgrade success
+- ✅ No errors in logs
+- ✅ Database tables created
+- ✅ Cron jobs scheduled
+- ✅ Views accessible (no view errors)
+- ✅ Python syntax valid
+- ✅ XML syntax valid
+
+**What USER Tests** (via Web UI at https://dev.mz-im.com/):
+- ❌ Creating Purchase Orders
+- ❌ Creating Sale Orders
+- ❌ Triggering approval workflows
+- ❌ Testing three-way match blocking
+- ❌ Testing escalation
+- ❌ Generating reports
+- ❌ All "Manual Steps" in test procedures
+
+### How to Report Tests
+
+When kickstart prompt says "Manual Steps", you should:
+
+```markdown
+## Test 3.3: Perfect Match Scenario
+
+**Status**: READY FOR USER TESTING
+
+**Instructions for User**:
+1. Login to https://dev.mz-im.com/
+2. Navigate to Purchase > Orders
+3. Click Create
+4. Fill in:
+   - Vendor: Any vendor
+   - Product: Any product  
+   - Quantity: 100
+   - Unit Price: $10
+5. Click Confirm
+6. Click Receipt button
+7. Validate receipt (Qty: 100)
+8. Click Create Bill
+9. Verify bill creates successfully
+10. Check Three-Way Match report shows MATCHED
+
+**Expected Result**: 
+- Bill validates without blocking
+- Match status = MATCHED
+- No errors
+
+**Prerequisites Verified**:
+- ✅ ops_matrix_core installed
+- ✅ Three-way match tables exist  
+- ✅ No errors in logs
+- ✅ Configuration fields accessible
+```
+
+### Database Queries for Verification
+
+You CAN run read-only database queries to verify installation:
+
+```bash
+# Check if tables exist
+docker exec gemini_odoo19_db psql -U odoo -d mz-db -c "
+    SELECT table_name 
+    FROM information_schema.tables 
+    WHERE table_name LIKE 'ops_%' 
+    ORDER BY table_name;
+"
+
+# Check if cron jobs scheduled
+docker exec gemini_odoo19_db psql -U odoo -d mz-db -c "
+    SELECT id, name, active, nextcall 
+    FROM ir_cron 
+    WHERE name LIKE '%three%way%' OR name LIKE '%escalat%';
+"
+
+# Check module state
+docker exec gemini_odoo19_db psql -U odoo -d mz-db -c "
+    SELECT name, state 
+    FROM ir_module_module 
+    WHERE name LIKE 'ops_%';
+"
+```
+
+---
+
+## 11. 📱 UI/UX STANDARDS
 
 ### Form View Template
 ```xml
@@ -449,7 +548,7 @@ If dirty, ask user to commit first
 
 ---
 
-## 11. 📚 QUICK REFERENCE CARD
+## 12. 📚 QUICK REFERENCE CARD
 
 ### Install Modules
 ```bash
@@ -489,7 +588,7 @@ git push origin main
 
 ---
 
-## 12. 🤝 COORDINATION WITH USER & CLAUDE DESKTOP
+## 13. 🤝 COORDINATION WITH USER & CLAUDE DESKTOP
 
 ### When User Gives You a Task
 
@@ -497,22 +596,32 @@ git push origin main
 1. Acknowledge the task
 2. Pull latest code from GitHub
 3. Execute the development work
-4. Test thoroughly
+4. Test installation thoroughly
 5. Commit working code
 6. Report completion with commit SHA
+7. **Provide user testing instructions** if applicable
 
 **Example Response**:
 ```
-✓ Task received: Add IT Admin Blindness feature
+✓ Task received: Install and test Priorities #7-9
 ✓ Pulling latest code...
-✓ Creating security/ir_rule_it_admin.xml...
-✓ Adding 20 record rules...
-✓ Updating __manifest__.py...
-✓ Testing installation...
-✓ SUCCESS - Module upgraded
+✓ Module upgrade starting...
+✓ SUCCESS - ops_matrix_core upgraded
+✓ Database tables verified:
+  - ops_three_way_match ✓
+  - ops_report_template ✓
+  - ops_report_template_line ✓
+✓ Cron jobs scheduled:
+  - Three-Way Match Recalculation ✓
+  - Auto-Escalation Check ✓
+✓ No errors in logs
 ✓ Committed to GitHub (SHA: abc1234)
 
-Next: User can inform Claude Desktop to update documentation.
+**Ready for User Testing**:
+Please login to https://dev.mz-im.com/ and test:
+1. Three-Way Match (see INSTALLATION_REPORT.md section 3)
+2. Auto-Escalation (see INSTALLATION_REPORT.md section 4)  
+3. Report Templates (see INSTALLATION_REPORT.md section 5)
 ```
 
 ### Handoff to Claude Desktop
@@ -532,7 +641,7 @@ See `DEVELOPMENT_WORKFLOW.md` for full coordination details.
 
 ---
 
-## 13. 🎯 DEVELOPMENT BEST PRACTICES
+## 14. 🎯 DEVELOPMENT BEST PRACTICES
 
 ### Before Starting ANY Task
 
@@ -558,7 +667,7 @@ See `DEVELOPMENT_WORKFLOW.md` for full coordination details.
    - Installation: Test module upgrade
 2. **Review logs** - No warnings/errors
 3. **Commit with clear message**
-4. **Report to user** with commit details
+4. **Report to user** with commit details and testing instructions
 
 ### Quality Checklist
 
@@ -574,7 +683,7 @@ Before committing, verify:
 
 ---
 
-## 14. 🚨 EMERGENCY PROCEDURES
+## 15. 🚨 EMERGENCY PROCEDURES
 
 ### If Installation Fails
 
@@ -628,7 +737,7 @@ git push origin main
 
 ---
 
-## 15. 📋 SUMMARY CHECKLIST
+## 16. 📋 SUMMARY CHECKLIST
 
 ### On Every Task Start
 - [ ] Read `ROOCODE_RULES.md` (this file)
@@ -653,11 +762,12 @@ git push origin main
 ### After Completion
 - [ ] Code committed to GitHub
 - [ ] Report to user with commit SHA
+- [ ] Provide user testing instructions (if UI testing needed)
 - [ ] User will inform Claude Desktop
 
 ---
 
-## 16. 🔗 REFERENCE DOCUMENTS
+## 17. 🔗 REFERENCE DOCUMENTS
 
 **Read These for Context**:
 - `DEVELOPMENT_WORKFLOW.md` - Multi-agent coordination
