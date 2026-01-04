@@ -61,8 +61,8 @@ def seed_test_data(env):
     
     # 7. Governance Rules - SKIPPED (rules not available)
     _logger.info("\n[7/12] Activating Governance Rules... SKIPPED")
-    
-        # 8. Sales Orders (for Excel import & approval testing)
+
+    # 8. Sales Orders (for Excel import & approval testing)
     _logger.info("\n[8/12] Creating Sales Orders...")
     sales_orders = setup_sales_orders(env, branch_dubai, branch_abudhabi, customers, products, users)
     
