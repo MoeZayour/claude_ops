@@ -99,6 +99,9 @@ def seed_test_data(env):
     _logger.info("\nReady for UAT at: https://dev.mz-im.com/")
     _logger.info("=" * 80)
 
+    # Commit all changes
+    env.cr.commit()
+
 
 def setup_company(env):
     """Setup main company"""
@@ -347,50 +350,58 @@ def setup_users(env, company, branch_dubai, branch_abudhabi):
     
     users = {}
     
+    # Helper function to find or create user
+    def get_or_create_user(name, login, email, company):
+        existing = User.search([('login', '=', login)], limit=1)
+        if existing:
+            return existing
+        return User.create({
+            'name': name,
+            'login': login,
+            'email': email,
+            'company_id': company.id,
+            'company_ids': [Command.set([company.id])],
+        })
+    
     # Sales Manager - Dubai
-    users['sales_mgr_dubai'] = User.create({
-        'name': 'Ahmed Al Mansouri',
-        'login': 'ahmed.sales@testtrading.ae',
-        'email': 'ahmed.sales@testtrading.ae',
-        'company_id': company.id,
-        'company_ids': [Command.set([company.id])],
-    })
+    users['sales_mgr_dubai'] = get_or_create_user(
+        'Ahmed Al Mansouri',
+        'ahmed.sales@testtrading.ae',
+        'ahmed.sales@testtrading.ae',
+        company
+    )
     
     # Purchase Manager - Dubai
-    users['purchase_mgr'] = User.create({
-        'name': 'Mohammed Hassan',
-        'login': 'mohammed.purchase@testtrading.ae',
-        'email': 'mohammed.purchase@testtrading.ae',
-        'company_id': company.id,
-        'company_ids': [Command.set([company.id])],
-    })
+    users['purchase_mgr'] = get_or_create_user(
+        'Mohammed Hassan',
+        'mohammed.purchase@testtrading.ae',
+        'mohammed.purchase@testtrading.ae',
+        company
+    )
     
     # Sales Rep - Dubai
-    users['sales_rep_dubai'] = User.create({
-        'name': 'Fatima Ali',
-        'login': 'fatima.sales@testtrading.ae',
-        'email': 'fatima.sales@testtrading.ae',
-        'company_id': company.id,
-        'company_ids': [Command.set([company.id])],
-    })
+    users['sales_rep_dubai'] = get_or_create_user(
+        'Fatima Ali',
+        'fatima.sales@testtrading.ae',
+        'fatima.sales@testtrading.ae',
+        company
+    )
     
     # Warehouse Manager
-    users['warehouse_mgr'] = User.create({
-        'name': 'Khalid Ibrahim',
-        'login': 'khalid.warehouse@testtrading.ae',
-        'email': 'khalid.warehouse@testtrading.ae',
-        'company_id': company.id,
-        'company_ids': [Command.set([company.id])],
-    })
+    users['warehouse_mgr'] = get_or_create_user(
+        'Khalid Ibrahim',
+        'khalid.warehouse@testtrading.ae',
+        'khalid.warehouse@testtrading.ae',
+        company
+    )
     
     # Finance Manager
-    users['finance_mgr'] = User.create({
-        'name': 'Sara Abdullah',
-        'login': 'sara.finance@testtrading.ae',
-        'email': 'sara.finance@testtrading.ae',
-        'company_id': company.id,
-        'company_ids': [Command.set([company.id])],
-    })
+    users['finance_mgr'] = get_or_create_user(
+        'Sara Abdullah',
+        'sara.finance@testtrading.ae',
+        'sara.finance@testtrading.ae',
+        company
+    )
     
     return users
 

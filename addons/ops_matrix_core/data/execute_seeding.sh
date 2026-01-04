@@ -12,7 +12,7 @@ echo "========================================="
 echo "Starting seeding process..."
 
 # Execute the seeding script inside the Odoo container
-docker exec -i gemini_odoo19 odoo shell --no-http -d postgres << 'EOF'
+docker exec -i gemini_odoo19 odoo shell --no-http -d mz-db << 'EOF'
 # Execute the seeding code directly
 exec(open('/mnt/extra-addons/ops_matrix_core/data/ops_seed_test_data.py').read())
 seed_test_data(env)
