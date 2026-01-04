@@ -1,35 +1,24 @@
 #!/bin/bash
-# Wrapper script to execute the test data seeding
 
-docker exec gemini_odoo19 /usr/bin/python3 << 'PYTHON_SCRIPT'
-import odoo
-from odoo import api, SUPERUSER_ID
-import logging
+# OPS Matrix Framework - UAT Data Seeding Script
+# ================================================
+# This script executes the test data seeding process inside the running Odoo container.
 
-logging.basicConfig(level=logging.INFO)
-_logger = logging.getLogger(__name__)
+set -e  # Exit on any error
 
-# Configure Odoo
-odoo.tools.config.parse_config(['-c', '/etc/odoo/odoo.conf', '-d', 'mz-db'])
+echo "========================================="
+echo "OPS Matrix UAT Data Seeding"
+echo "========================================="
+echo "Starting seeding process..."
 
-# Get registry
-registry = odoo.registry('mz-db')
+# Execute the seeding script inside the Odoo container
+docker exec -i gemini_odoo19 odoo shell --no-http -d postgres << 'EOF'
+# Execute the seeding code directly
+exec(open('/mnt/extra-addons/ops_matrix_core/data/ops_seed_test_data.py').read())
+seed_test_data(env)
+EOF
 
-# Execute in transaction
-with registry.cursor() as cr:
-    env = api.Environment(cr, SUPERUSER_ID, {})
-    
-    _logger.info("Executing seeding script...")
-    
-    # Read and execute the seeding script
-    with open('/mnt/extra-addons/ops_matrix_core/data/ops_seed_test_data.py', 'r') as f:
-        script_content = f.read()
-    
-    # Execute with env in context
-    exec(script_content, {'env': env, '_logger': _logger})
-    
-    # Commit
-    cr.commit()
-    _logger.info("✅ Transaction committed successfully")
-
-PYTHON_SCRIPT
+echo "========================================="
+echo "Seeding script execution completed."
+echo "Check container logs for seeding results."
+echo "========================================="
