@@ -13,7 +13,7 @@
 
 - Old files (`OPS_FRAMEWORK_TODO.md`, `OPS_FRAMEWORK_TODO_v1_1.md`) are ARCHIVED
 - This file is continuously updated (no version suffix)
-- Status uses ASCII characters only: `[DONE]`, `[TODO]`, `[IN PROGRESS]`, `[BLOCKED]`
+- Status uses ASCII characters only: `[DONE]`, `[TODO]`, `[IN PROGRESS]`, `[BLOCKED]`, `[READY FOR UAT]`
 
 ---
 
@@ -22,7 +22,7 @@
 **Date**: January 4, 2026  
 **Phase**: Phase 1 - Foundation & Security  
 **Current Version**: 19.0.1.3  
-**Next Version**: 19.0.1.4 (after Priority #7 complete)
+**Next Version**: 19.0.1.4 (after UAT of #7-9)
 
 ### What Was Completed Today (Jan 4, 2026)
 
@@ -38,12 +38,19 @@
    - Session 3: Line creation + chatter audit trail
    - Feature is PRODUCTION READY
 
+3. [READY FOR UAT] Priority #7-9: Installation Complete (commit 7a7cb3f)
+   - Fixed XML syntax errors (escaped ampersands)
+   - Fixed view references and dependencies
+   - Module installs successfully
+   - All tables and cron jobs created
+   - **Ready for user acceptance testing**
+
 ### What's Next (Immediate Priority)
 
-**Priority #7**: Three-Way Match Enforcement
-- File: Purchase order, receipt, bill models
-- Requirements: PO <-> Receipt <-> Bill validation
-- Estimated effort: 2 sessions
+**User Testing Required**: Priorities #7-9 via Web UI (https://dev.mz-im.com/)
+- Priority #7: Three-Way Match Enforcement
+- Priority #8: Auto-Escalation
+- Priority #9: Auto-List Accounts in Reports
 
 ---
 
@@ -53,7 +60,8 @@
 - `[HIGH]` - Core functionality
 - `[MEDIUM]` - Important features
 - `[LOW]` - Nice to have
-- `[DONE]` - Completed
+- `[DONE]` - Completed and tested
+- `[READY FOR UAT]` - Code complete, needs user testing
 - `[IN PROGRESS]` - Currently working on
 - `[BLOCKED]` - Cannot proceed (waiting on something)
 - `[TODO]` - Not started
@@ -253,7 +261,7 @@
 | Status | Priority | Task | Notes |
 |--------|----------|------|-------|
 | [TODO] | [MEDIUM] | Excel Import for PO lines | Same as SO format |
-| [IN PROGRESS] | [HIGH] | Three-way match | **PRIORITY #7** PO <-> Receipt <-> Bill |
+| [READY FOR UAT] | [HIGH] | Three-way match | **PRIORITY #7** - Code installed, needs UAT |
 
 ### 8. Inventory Enhancements
 | Status | Priority | Task | Notes |
@@ -294,9 +302,9 @@
 ### 12. Escalation & Automation
 | Status | Priority | Task | Notes |
 |--------|----------|------|-------|
-| [TODO] | [HIGH] | Auto-escalate after X hours | Configurable |
-| [TODO] | [HIGH] | Multi-level escalation | L1 -> L2 -> CFO |
-| [TODO] | [MEDIUM] | Escalation notifications | Email + system |
+| [READY FOR UAT] | [HIGH] | Auto-escalate after X hours | **PRIORITY #8** - Code installed, needs UAT |
+| [READY FOR UAT] | [HIGH] | Multi-level escalation | **PRIORITY #8** - L1 -> L2 -> CFO |
+| [READY FOR UAT] | [MEDIUM] | Escalation notifications | **PRIORITY #8** - Email + system |
 | [TODO] | [HIGH] | Report scheduler | Select, frequency, recipients |
 | [TODO] | [HIGH] | Email delivery | PDF attachment |
 | [TODO] | [MEDIUM] | Report subscription | Users subscribe |
@@ -308,7 +316,7 @@
 ### 13. Report Configuration
 | Status | Priority | Task | Notes |
 |--------|----------|------|-------|
-| [TODO] | [HIGH] | Auto-list accounts | Based on type |
+| [READY FOR UAT] | [HIGH] | Auto-list accounts | **PRIORITY #9** - Code installed, needs UAT |
 | [TODO] | [HIGH] | Branch comparison | Side-by-side |
 | [TODO] | [HIGH] | Profit center analysis | P&L by BU/Branch |
 | [TODO] | [MEDIUM] | Custom dashboard widgets | Drag-drop KPIs |
@@ -394,6 +402,7 @@
 | [DONE] | [HIGH] | Development Workflow | Complete Jan 4 |
 | [DONE] | [HIGH] | RooCode Rules | Complete Jan 4 |
 | [DONE] | [HIGH] | Priority #6 Specifications | Complete Jan 4 |
+| [DONE] | [HIGH] | Installation Fixes Report | Complete Jan 4 (commit 7a7cb3f) |
 | [TODO] | [HIGH] | Security Groups Reference | Complete mapping |
 | [TODO] | [HIGH] | Record Rules Reference | All rules documented |
 | [TODO] | [MEDIUM] | API Reference | Endpoint docs |
@@ -403,24 +412,27 @@
 
 ## IMMEDIATE NEXT ACTIONS
 
-**Priority Order** (Work on these in sequence):
+**User Acceptance Testing Required** (https://dev.mz-im.com/):
 
-1. [HIGH] **#7 - Three-Way Match Enforcement**
-   - Files: Purchase order, receipt, bill models
-   - Requirements: PO <-> Receipt <-> Bill validation
-   - Block invoice if qty > received qty
-   - Block payment if invoice not matched to PO
-   - Estimated effort: 2 sessions
+1. [READY FOR UAT] **#7 - Three-Way Match Enforcement**
+   - Test: Create PO → Receive goods → Create vendor bill
+   - Verify: Bill blocks if quantities mismatch
+   - Verify: Override wizard available for authorized users
+   - See: INSTALLATION_FIXES_REPORT.md
 
-2. [HIGH] **#8 - Auto-Escalation**
-   - Files: Governance rule, approval request
-   - Requirements: Configurable hours, multi-level
-   - Estimated effort: 1-2 sessions
+2. [READY FOR UAT] **#8 - Auto-Escalation**
+   - Test: Create approval request → Wait for timeout
+   - Verify: Escalation to next approver
+   - Verify: Email notifications sent
+   - See: INSTALLATION_FIXES_REPORT.md
 
-3. [HIGH] **#9 - Auto-List Accounts in Reports**
-   - Files: Financial report templates
-   - Requirements: Based on report type
-   - Estimated effort: 1 session
+3. [READY FOR UAT] **#9 - Auto-List Accounts in Reports**
+   - Test: Accounting > Reporting > Report Templates
+   - Verify: Templates visible and functional
+   - Verify: Accounts auto-populate
+   - See: INSTALLATION_FIXES_REPORT.md
+
+**After UAT Passes**:
 
 4. [HIGH] **#10 - Segregation of Duties**
    - Files: Governance engine, approval system
@@ -461,8 +473,17 @@
   - Session 2: Validation logic (all-or-nothing)
   - Session 3: Line creation + chatter audit trail
   - Production ready, fully tested
+- [x] **Priority #7-9: Installation & Fixes** (commit 7a7cb3f)
+  - Fixed XML syntax errors (escaped ampersands)
+  - Fixed view inheritance references
+  - Added account_reports dependency
+  - Fixed manifest load order
+  - Module installs successfully
+  - All tables created: ops_three_way_match, ops_report_template, ops_report_template_line
+  - Cron jobs scheduled: Escalation, Three-Way Match
+  - Ready for user acceptance testing
 
-**Total Completed**: 50+ tasks
+**Total Completed**: 55+ tasks
 
 ---
 
@@ -470,10 +491,9 @@
 
 See: `ISSUES_LOG.md` for detailed issue tracking
 
-**Current Issues**:
-- Minor: Missing `_logger` import in `ops_approval_reject_wizard.py` (non-blocking)
+**Current Issues**: NONE
 
-**Current Blockers**: NONE
+**Current Blockers**: NONE - Awaiting UAT for Priorities #7-9
 
 ---
 
@@ -499,6 +519,7 @@ See: `ISSUES_LOG.md` for detailed issue tracking
 | 2026-01-03 | 2.0 | Consolidated to MASTER, ASCII only | Claude (PM) |
 | 2026-01-04 | 2.1 | Priority #5 complete, updated next actions | Claude (PM) |
 | 2026-01-04 | 2.2 | Priority #6 complete (3 sessions), Excel Import ready | Claude (PM) |
+| 2026-01-04 | 2.3 | Priority #7-9 installation complete, ready for UAT | Claude (PM) |
 
 ---
 
