@@ -119,7 +119,7 @@ See `DEVELOPMENT_WORKFLOW.md` for full collaboration details.
 
 ### Container Reference
 | Component | Container Name | Purpose |
-|-----------|----------------|---------||
+|-----------|----------------|---------|
 | **Odoo** | `gemini_odoo19` | Application server |
 | **PostgreSQL** | `gemini_odoo19_db` | Database server |
 
@@ -174,7 +174,7 @@ docker exec gemini_odoo19_db psql -U odoo -d mz-db -c "SELECT name, state FROM i
 ### 📋 Quick Command Reference
 
 | Task | Command |
-|------|---------||
+|------|---------|
 | Install module | `docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz-db -i MODULE --stop-after-init` |
 | Update module | `docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz-db -u MODULE --stop-after-init` |
 | Update multiple | `docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz-db -u mod1,mod2,mod3 --stop-after-init` |
@@ -191,7 +191,7 @@ docker exec gemini_odoo19_db psql -U odoo -d mz-db -c "SELECT name, state FROM i
 ## 3. 📍 ENVIRONMENT CONTEXT
 
 | Property | Value |
-|----------|-------||
+|----------|-------|
 | **Instance Name** | gemini_odoo19 |
 | **Odoo Version** | 19.0 Community Edition |
 | **Database** | mz-db |
@@ -217,7 +217,7 @@ docker exec gemini_odoo19_db psql -U odoo -d mz-db -c "SELECT name, state FROM i
 
 ### Forbidden Actions
 | Action | Reason |
-|--------|--------||
+|--------|--------|
 | `docker system prune` | Destroys unrelated containers |
 | `docker network prune` | Breaks other services |
 | `docker volume prune` | Data loss risk |
@@ -282,7 +282,7 @@ def create(self, vals_list: List[Dict[str, Any]]) -> models.Model:
 
 ### Forbidden Patterns
 | ❌ Forbidden | ✅ Use Instead |
-|-------------|---------------||
+|-------------|---------------|
 | `@api.multi` | (removed - self is always recordset) |
 | `@api.one` | (removed) |
 | `(4, id)` tuple | `Command.link(id)` |
@@ -293,6 +293,51 @@ def create(self, vals_list: List[Dict[str, Any]]) -> models.Model:
 - IDs: `view_{model_name}_{type}` (e.g., `view_ops_branch_form`)
 - Form structure: `<header>` → `<sheet>` → `<div class="oe_chatter">`
 - Always include `sample="1"` in tree views for empty state
+
+### XML Escape Characters (CRITICAL)
+
+**ALWAYS escape these characters in XML attribute values and text content:**
+
+| Character | Must Escape As | Example | Common Error |
+|-----------|---------------|---------|--------------|
+| `&` | `&amp;` | `Profit &amp; Loss` | ❌ `Profit & Loss` |
+| `<` | `&lt;` | `value &lt; 100` | ❌ `value < 100` |
+| `>` | `&gt;` | `value &gt; 50` | ❌ `value > 50` |
+| `"` | `&quot;` | `name="&quot;test&quot;"` | ❌ `name=""test""` |
+| `'` | `&apos;` | `name='&apos;test&apos;'` | ❌ `name=''test''` |
+
+**Common XML Syntax Errors:**
+
+```xml
+❌ WRONG - Will fail with "EntityRef: expecting ';'"
+<field name="name" string="Profit & Loss Report"/>
+<field name="description" string="Sales < $1000"/>
+
+✅ CORRECT - Properly escaped
+<field name="name" string="Profit &amp; Loss Report"/>
+<field name="description" string="Sales &lt; $1000"/>
+```
+
+**How to Fix Existing Files:**
+
+```bash
+# Find unescaped ampersands
+grep -n "& " /path/to/file.xml
+
+# Fix ampersands automatically
+sed -i 's/& /\&amp; /g' /path/to/file.xml
+sed -i 's/&L/\&amp;L/g' /path/to/file.xml  # For "P&L"
+sed -i 's/&S/\&amp;S/g' /path/to/file.xml  # For "B&S"
+
+# Verify XML is valid after fix
+python3 -c "import xml.etree.ElementTree as ET; ET.parse('/path/to/file.xml'); print('✓ XML is valid')"
+```
+
+**When You See These Errors:**
+
+- `EntityRef: expecting ';'` → Unescaped `&` character
+- `ParseError: not well-formed` → Unescaped `<` or `>` character  
+- `XMLSyntaxError: ... line X, column Y` → Check that line for special characters
 
 ### Manifest Requirements
 ```python
@@ -330,7 +375,7 @@ ops_matrix_asset_management  # Depends on core
 
 ### Module Purposes
 | Module | Dependencies | Purpose |
-|--------|--------------|---------||
+|--------|--------------|---------|
 | `ops_matrix_core` | base, mail | Branches, Business Units, Personas, Governance Rules |
 | `ops_matrix_accounting` | account, ops_matrix_core | Budgets, PDC, Financial Controls |
 | `ops_matrix_reporting` | ops_matrix_accounting | Reports, Analytics |
