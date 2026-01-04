@@ -12,7 +12,7 @@
                         string="Import from Excel" 
                         icon="fa-file-excel-o"
                         class="btn-secondary"
-                        attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
+                        invisible="[('state', 'not in', ['draft', 'sent'])]"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_approvals"

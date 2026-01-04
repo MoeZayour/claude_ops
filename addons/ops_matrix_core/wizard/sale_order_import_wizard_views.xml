@@ -27,7 +27,7 @@
                                 type="object" 
                                 string="Validate &amp; Import" 
                                 class="btn-primary"
-                                attrs="{'invisible': [('import_file', '=', False)]}"/>
+                                invisible="[('import_file', '=', False)]"/>
                         <button string="Cancel" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>

@@ -75,6 +75,7 @@
         
         'views/ops_dashboard_config_views.xml',
         
+        'wizard/sale_order_import_wizard_views.xml',
         # Views - Standard Model Extensions
         'views/product_views.xml',
         'views/partner_views.xml',
@@ -109,7 +110,6 @@
         'wizard/ops_approval_recall_wizard_views.xml',
         'wizard/ops_approval_reject_wizard_views.xml',
         'wizard/three_way_match_override_wizard_views.xml',
-        'wizard/sale_order_import_wizard_views.xml',
         'wizard/apply_report_template_wizard_views.xml',
     ],
     'demo': [
