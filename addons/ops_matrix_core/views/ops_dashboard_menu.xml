@@ -16,26 +16,46 @@
         sequence="10"
         groups="base.group_user"/>
 
-    <menuitem id="menu_ops_executive_dashboard"
-              name="Executive Dashboard"
-              parent="menu_ops_dashboards"
-              action="action_ops_executive_dashboard"
-              sequence="10"
-              groups="base.group_system,ops_matrix_core.group_ops_manager"/>
+    <!-- Executive Dashboard - OR Logic for multiple personas -->
+    <record id="menu_ops_executive_dashboard" model="ir.ui.menu">
+        <field name="name">Executive Dashboard</field>
+        <field name="parent_id" ref="menu_ops_dashboards"/>
+        <field name="action" ref="action_ops_executive_dashboard"/>
+        <field name="groups_id" eval="[
+            (4, ref('base.group_system')),
+            (4, ref('ops_matrix_core.group_ops_executive')),
+            (4, ref('ops_matrix_core.group_ops_cfo')),
+            (4, ref('ops_matrix_core.group_ops_bu_leader'))
+        ]"/>
+        <field name="sequence">10</field>
+    </record>
 
-    <menuitem id="menu_ops_branch_manager_dashboard"
-              name="Branch Performance"
-              parent="menu_ops_dashboards"
-              action="action_ops_branch_manager_dashboard"
-              sequence="20"
-              groups="ops_matrix_core.group_ops_manager"/>
+    <!-- Branch Manager Dashboard - OR Logic -->
+    <record id="menu_ops_branch_manager_dashboard" model="ir.ui.menu">
+        <field name="name">Branch Performance</field>
+        <field name="parent_id" ref="menu_ops_dashboards"/>
+        <field name="action" ref="action_ops_branch_manager_dashboard"/>
+        <field name="groups_id" eval="[
+            (4, ref('ops_matrix_core.group_ops_branch_manager')),
+            (4, ref('ops_matrix_core.group_ops_bu_leader')),
+            (4, ref('base.group_system'))
+        ]"/>
+        <field name="sequence">20</field>
+    </record>
 
-    <menuitem id="menu_ops_bu_leader_dashboard"
-                name="BU Performance"
-                parent="menu_ops_dashboards"
-                action="action_ops_bu_leader_dashboard"
-                sequence="30"
-                groups="ops_matrix_core.group_ops_manager"/>
+    <!-- BU Leader Dashboard - OR Logic -->
+    <record id="menu_ops_bu_leader_dashboard" model="ir.ui.menu">
+        <field name="name">BU Performance</field>
+        <field name="parent_id" ref="menu_ops_dashboards"/>
+        <field name="action" ref="action_ops_bu_leader_dashboard"/>
+        <field name="groups_id" eval="[
+            (4, ref('ops_matrix_core.group_ops_bu_leader')),
+            (4, ref('ops_matrix_core.group_ops_executive')),
+            (4, ref('ops_matrix_core.group_ops_cfo')),
+            (4, ref('base.group_system'))
+        ]"/>
+        <field name="sequence">30</field>
+    </record>
 
     <menuitem id="menu_ops_sales_dashboard"
                 name="Sales Performance"
@@ -51,12 +71,18 @@
               sequence="20"
               groups="base.group_system,ops_matrix_core.group_ops_manager"/>
 
-    <menuitem id="menu_ops_approval_dashboard"
-              name="Approvals Dashboard"
-              parent="menu_ops_governance_root"
-              action="action_ops_approval_dashboard"
-              sequence="5"
-              groups="base.group_user"/>
+    <!-- Approvals Dashboard - OR Logic -->
+    <record id="menu_ops_approval_dashboard" model="ir.ui.menu">
+        <field name="name">Approvals Dashboard</field>
+        <field name="parent_id" ref="menu_ops_governance_root"/>
+        <field name="action" ref="action_ops_approval_dashboard"/>
+        <field name="groups_id" eval="[
+            (4, ref('ops_matrix_core.group_ops_manager')),
+            (4, ref('ops_matrix_core.group_ops_branch_manager')),
+            (4, ref('base.group_system'))
+        ]"/>
+        <field name="sequence">5</field>
+    </record>
 
     <menuitem id="menu_ops_governance_rules"
               name="Rules"

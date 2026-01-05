@@ -32,7 +32,7 @@
         <field name="name">ops.segregation.of.duties.tree</field>
         <field name="model">ops.segregation.of.duties</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="model_name"/>
                 <field name="action_1"/>
@@ -42,7 +42,7 @@
                 <field name="block_violation" widget="boolean"/>
                 <field name="company_id"/>
                 <field name="violation_count"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -51,7 +51,7 @@
         <field name="name">ops.segregation.of.duties.log.tree</field>
         <field name="model">ops.segregation.of.duties.log</field>
         <field name="arch" type="xml">
-            <tree decoration-danger="blocked==True">
+            <list decoration-danger="blocked==True">
                 <field name="timestamp"/>
                 <field name="rule_id"/>
                 <field name="user_id"/>
@@ -60,7 +60,7 @@
                 <field name="document_reference"/>
                 <field name="blocked" widget="boolean"/>
                 <field name="company_id"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -73,8 +73,8 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_enable_rule" type="object" string="✓ Enable Rule" class="btn-success" attrs="{'invisible': [('active', '=', True)]}"/>
-                    <button name="action_disable_rule" type="object" string="✗ Disable Rule" class="btn-warning" attrs="{'invisible': [('active', '=', False)]}"/>
+                    <button name="action_enable_rule" type="object" string="✓ Enable Rule" class="btn-success" invisible="active == True"/>
+                    <button name="action_disable_rule" type="object" string="✗ Disable Rule" class="btn-warning" invisible="active == False"/>
                 </header>
                 
                 <sheet>
@@ -89,7 +89,7 @@
                             <field name="is_system_rule" widget="boolean"/>
                         </group>
                         <group>
-                            <field name="company_id" attrs="{'readonly': [('is_system_rule', '=', True)]}"/>
+                            <field name="company_id" readonly="is_system_rule == True"/>
                             <field name="violation_count" widget="integer"/>
                         </group>
                     </group>
@@ -107,7 +107,7 @@
                     
                     <group string="Enforcement" colspan="4">
                         <field name="block_violation" widget="boolean"/>
-                        <div class="alert alert-warning" attrs="{'invisible': [('block_violation', '=', True)]}">
+                        <div class="alert alert-warning" invisible="block_violation == True">
                             <strong>Note:</strong> This rule will only be logged, not enforced. User can perform the action.
                         </div>
                     </group>
@@ -135,11 +135,11 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <div class="alert alert-danger" role="alert" attrs="{'invisible': [('blocked', '=', False)]}">
+                    <div class="alert alert-danger" role="alert" invisible="blocked == False">
                         <strong>⚠️ VIOLATION BLOCKED:</strong> This segregation of duties violation was blocked and prevented from execution.
                     </div>
                     
-                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('blocked', '=', True)]}">
+                    <div class="alert alert-warning" role="alert" invisible="blocked == True">
                         <strong>ℹ️ VIOLATION LOGGED:</strong> This segregation of duties violation was detected and logged but not blocked.
                     </div>
                     

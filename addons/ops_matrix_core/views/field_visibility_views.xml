@@ -9,14 +9,14 @@
             <field name="name">Field Visibility Rule - Tree</field>
             <field name="model">ops.field.visibility.rule</field>
             <field name="arch" type="xml">
-                <tree string="Field Visibility Rules" edit="False">
+                <list string="Field Visibility Rules" edit="0">
                     <field name="model_name"/>
                     <field name="field_name"/>
                     <field name="security_group_id"/>
                     <field name="visibility_mode"/>
                     <field name="is_active"/>
                     <field name="created_date"/>
-                </tree>
+                </list>
             </field>
         </record>
         
