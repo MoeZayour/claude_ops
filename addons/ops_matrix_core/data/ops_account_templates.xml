@@ -58,7 +58,6 @@
             <field name="code">1001</field>
             <field name="account_type">asset_cash</field>
             <field name="reconcile" eval="True"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -67,7 +66,6 @@
             <field name="code">1002</field>
             <field name="account_type">asset_cash</field>
             <field name="reconcile" eval="True"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -77,7 +75,6 @@
             <field name="code">1101</field>
             <field name="account_type">asset_receivable</field>
             <field name="reconcile" eval="True"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -87,7 +84,6 @@
             <field name="code">1201</field>
             <field name="account_type">asset_current</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -97,7 +93,6 @@
             <field name="code">1202</field>
             <field name="account_type">asset_current</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -107,7 +102,6 @@
             <field name="code">1203</field>
             <field name="account_type">asset_current</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -117,7 +111,6 @@
             <field name="code">1204</field>
             <field name="account_type">asset_current</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -127,7 +120,6 @@
             <field name="code">2001</field>
             <field name="account_type">asset_fixed</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_fixed_assets"/>
         </record>
         
@@ -137,7 +129,6 @@
             <field name="code">3001</field>
             <field name="account_type">liability_payable</field>
             <field name="reconcile" eval="True"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_current_liabilities"/>
         </record>
         
@@ -147,7 +138,6 @@
             <field name="code">3101</field>
             <field name="account_type">liability_current</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_current_liabilities"/>
         </record>
         
@@ -156,7 +146,6 @@
             <field name="code">1103</field>
             <field name="account_type">asset_current</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -166,7 +155,6 @@
             <field name="code">4001</field>
             <field name="account_type">equity</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_equity"/>
         </record>
         
@@ -175,7 +163,6 @@
             <field name="code">4002</field>
             <field name="account_type">equity_unaffected</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_equity"/>
         </record>
         
@@ -185,7 +172,6 @@
             <field name="code">5001</field>
             <field name="account_type">income</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_revenue"/>
         </record>
         
@@ -194,7 +180,6 @@
             <field name="code">5002</field>
             <field name="account_type">income</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_revenue"/>
         </record>
         
@@ -203,7 +188,6 @@
             <field name="code">5003</field>
             <field name="account_type">income</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_revenue"/>
         </record>
         
@@ -212,7 +196,6 @@
             <field name="code">5004</field>
             <field name="account_type">income</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_revenue"/>
         </record>
         
@@ -222,7 +205,6 @@
             <field name="code">6001</field>
             <field name="account_type">expense_direct_cost</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_cost_of_sales"/>
         </record>
         
@@ -231,7 +213,6 @@
             <field name="code">6002</field>
             <field name="account_type">expense_direct_cost</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_cost_of_sales"/>
         </record>
         
@@ -241,7 +222,6 @@
             <field name="code">7001</field>
             <field name="account_type">expense</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_expenses"/>
         </record>
         
@@ -250,7 +230,6 @@
             <field name="code">7002</field>
             <field name="account_type">expense</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_expenses"/>
         </record>
         
@@ -259,7 +238,6 @@
             <field name="code">7003</field>
             <field name="account_type">expense</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_expenses"/>
         </record>
         
@@ -268,7 +246,6 @@
             <field name="code">7004</field>
             <field name="account_type">expense</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_qatar"/>
             <field name="group_id" ref="account_group_expenses"/>
         </record>
         
@@ -282,7 +259,6 @@
             <field name="code">1001</field>
             <field name="account_type">asset_cash</field>
             <field name="reconcile" eval="True"/>
-            <field name="company_id" ref="company_uae"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -291,7 +267,6 @@
             <field name="code">1002</field>
             <field name="account_type">asset_cash</field>
             <field name="reconcile" eval="True"/>
-            <field name="company_id" ref="company_uae"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -301,7 +276,6 @@
             <field name="code">1101</field>
             <field name="account_type">asset_receivable</field>
             <field name="reconcile" eval="True"/>
-            <field name="company_id" ref="company_uae"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -311,7 +285,6 @@
             <field name="code">1201</field>
             <field name="account_type">asset_current</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_uae"/>
             <field name="group_id" ref="account_group_current_assets"/>
         </record>
         
@@ -321,7 +294,6 @@
             <field name="code">3001</field>
             <field name="account_type">liability_payable</field>
             <field name="reconcile" eval="True"/>
-            <field name="company_id" ref="company_uae"/>
             <field name="group_id" ref="account_group_current_liabilities"/>
         </record>
         
@@ -331,7 +303,6 @@
             <field name="code">3101</field>
             <field name="account_type">liability_current</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_uae"/>
             <field name="group_id" ref="account_group_current_liabilities"/>
         </record>
         
@@ -341,7 +312,6 @@
             <field name="code">5001</field>
             <field name="account_type">income</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_uae"/>
             <field name="group_id" ref="account_group_revenue"/>
         </record>
         
@@ -350,7 +320,6 @@
             <field name="code">5004</field>
             <field name="account_type">income</field>
             <field name="reconcile" eval="False"/>
-            <field name="company_id" ref="company_uae"/>
             <field name="group_id" ref="account_group_revenue"/>
         </record>
         
@@ -364,7 +333,6 @@
             <field name="amount">5.0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">sale</field>
-            <field name="company_id" ref="company_qatar"/>
         </record>
         
         <!-- VAT 5% for Qatar (Purchase) -->
@@ -373,7 +341,6 @@
             <field name="amount">5.0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
-            <field name="company_id" ref="company_qatar"/>
         </record>
         
         <!-- VAT 5% for UAE (Sales) -->
@@ -382,7 +349,6 @@
             <field name="amount">5.0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">sale</field>
-            <field name="company_id" ref="company_uae"/>
         </record>
         
         <!-- VAT 5% for UAE (Purchase) -->
@@ -391,7 +357,6 @@
             <field name="amount">5.0</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
-            <field name="company_id" ref="company_uae"/>
         </record>
         
         <!-- =================================================== -->
@@ -403,7 +368,6 @@
             <field name="name">Sales Journal</field>
             <field name="code">SAL</field>
             <field name="type">sale</field>
-            <field name="company_id" ref="company_qatar"/>
             <field name="show_on_dashboard" eval="True"/>
         </record>
         
@@ -412,7 +376,6 @@
             <field name="name">Sales Journal</field>
             <field name="code">SAL</field>
             <field name="type">sale</field>
-            <field name="company_id" ref="company_uae"/>
             <field name="show_on_dashboard" eval="True"/>
         </record>
         
@@ -421,7 +384,6 @@
             <field name="name">Purchase Journal</field>
             <field name="code">PUR</field>
             <field name="type">purchase</field>
-            <field name="company_id" ref="company_qatar"/>
             <field name="show_on_dashboard" eval="True"/>
         </record>
         
@@ -430,7 +392,6 @@
             <field name="name">Cash Journal</field>
             <field name="code">CSH</field>
             <field name="type">cash</field>
-            <field name="company_id" ref="company_qatar"/>
             <field name="default_account_id" ref="account_cash_qatar"/>
         </record>
         
@@ -439,7 +400,6 @@
             <field name="name">Bank Journal</field>
             <field name="code">BNK</field>
             <field name="type">bank</field>
-            <field name="company_id" ref="company_qatar"/>
             <field name="default_account_id" ref="account_bank_qatar"/>
             <field name="show_on_dashboard" eval="True"/>
         </record>
@@ -449,7 +409,6 @@
             <field name="name">Bank Journal</field>
             <field name="code">BNK</field>
             <field name="type">bank</field>
-            <field name="company_id" ref="company_uae"/>
             <field name="default_account_id" ref="account_bank_uae"/>
             <field name="show_on_dashboard" eval="True"/>
         </record>
@@ -508,7 +467,6 @@
         
         <record id="fiscal_position_qatar" model="account.fiscal.position">
             <field name="name">Qatar Domestic</field>
-            <field name="company_id" ref="company_qatar"/>
             <field name="country_id" ref="base.qa"/>
             <field name="auto_apply" eval="True"/>
             <field name="note">Fiscal position for domestic Qatar transactions</field>
@@ -516,7 +474,6 @@
         
         <record id="fiscal_position_uae" model="account.fiscal.position">
             <field name="name">UAE Domestic</field>
-            <field name="company_id" ref="company_uae"/>
             <field name="country_id" ref="base.ae"/>
             <field name="auto_apply" eval="True"/>
             <field name="note">Fiscal position for domestic UAE transactions</field>
