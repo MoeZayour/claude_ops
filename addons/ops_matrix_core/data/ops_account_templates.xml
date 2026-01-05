@@ -254,74 +254,18 @@
         <!-- =================================================== -->
         
         <!-- Cash Accounts -->
-        <record id="account_cash_uae" model="account.account">
-            <field name="name">Cash in Hand - UAE</field>
-            <field name="code">2001</field>
-            <field name="account_type">asset_cash</field>
-            <field name="reconcile" eval="True"/>
-            <field name="group_id" ref="account_group_current_assets"/>
-        </record>
         
-        <record id="account_bank_uae" model="account.account">
-            <field name="name">Bank Account - Emirates NBD</field>
-            <field name="code">2002</field>
-            <field name="account_type">asset_cash</field>
-            <field name="reconcile" eval="True"/>
-            <field name="group_id" ref="account_group_current_assets"/>
-        </record>
         
         <!-- Receivables -->
-        <record id="account_receivable_uae" model="account.account">
-            <field name="name">Trade Receivables</field>
-            <field name="code">2101</field>
-            <field name="account_type">asset_receivable</field>
-            <field name="reconcile" eval="True"/>
-            <field name="group_id" ref="account_group_current_assets"/>
-        </record>
         
         <!-- Inventory -->
-        <record id="account_inventory_uae" model="account.account">
-            <field name="name">Inventory</field>
-            <field name="code">2201</field>
-            <field name="account_type">asset_current</field>
-            <field name="reconcile" eval="False"/>
-            <field name="group_id" ref="account_group_current_assets"/>
-        </record>
         
         <!-- Payables -->
-        <record id="account_payable_uae" model="account.account">
-            <field name="name">Trade Payables</field>
-            <field name="code">3501</field>
-            <field name="account_type">liability_payable</field>
-            <field name="reconcile" eval="True"/>
-            <field name="group_id" ref="account_group_current_liabilities"/>
-        </record>
         
         <!-- Tax Accounts -->
-        <record id="account_tax_collected_uae" model="account.account">
-            <field name="name">VAT Collected</field>
-            <field name="code">3601</field>
-            <field name="account_type">liability_current</field>
-            <field name="reconcile" eval="False"/>
-            <field name="group_id" ref="account_group_current_liabilities"/>
-        </record>
         
         <!-- Revenue Accounts -->
-        <record id="account_sales_retail_uae" model="account.account">
-            <field name="name">Retail Sales Revenue</field>
-            <field name="code">5501</field>
-            <field name="account_type">income</field>
-            <field name="reconcile" eval="False"/>
-            <field name="group_id" ref="account_group_revenue"/>
-        </record>
         
-        <record id="account_sales_services_uae" model="account.account">
-            <field name="name">Services Revenue</field>
-            <field name="code">5504</field>
-            <field name="account_type">income</field>
-            <field name="reconcile" eval="False"/>
-            <field name="group_id" ref="account_group_revenue"/>
-        </record>
         
         <!-- =================================================== -->
         <!-- DEMO TAXES -->
