@@ -250,25 +250,6 @@
         </record>
         
         <!-- =================================================== -->
-        <!-- DEMO ACCOUNTS FOR UAE COMPANY -->
-        <!-- =================================================== -->
-        
-        <!-- Cash Accounts -->
-        
-        
-        <!-- Receivables -->
-        
-        <!-- Inventory -->
-        
-        <!-- Payables -->
-        
-        <!-- Tax Accounts -->
-        
-        <!-- Revenue Accounts -->
-        
-        
-        <!-- =================================================== -->
-        <!-- DEMO TAXES -->
         <!-- =================================================== -->
         
         <!-- VAT 5% for Qatar (Sales) -->
@@ -287,36 +268,12 @@
             <field name="type_tax_use">purchase</field>
         </record>
         
-        <!-- VAT 5% for UAE (Sales) -->
-        <record id="tax_vat_5_sales_uae" model="account.tax">
-            <field name="name">VAT 5% (Sales)</field>
-            <field name="amount">5.0</field>
-            <field name="amount_type">percent</field>
-            <field name="type_tax_use">sale</field>
-        </record>
-        
-        <!-- VAT 5% for UAE (Purchase) -->
-        <record id="tax_vat_5_purchase_uae" model="account.tax">
-            <field name="name">VAT 5% (Purchase)</field>
-            <field name="amount">5.0</field>
-            <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
-        </record>
-        
         <!-- =================================================== -->
         <!-- DEMO JOURNALS -->
         <!-- =================================================== -->
         
         <!-- Sales Journal - Qatar -->
         <record id="journal_sales_qatar" model="account.journal">
-            <field name="name">Sales Journal</field>
-            <field name="code">SAL</field>
-            <field name="type">sale</field>
-            <field name="show_on_dashboard" eval="True"/>
-        </record>
-        
-        <!-- Sales Journal - UAE -->
-        <record id="journal_sales_uae" model="account.journal">
             <field name="name">Sales Journal</field>
             <field name="code">SAL</field>
             <field name="type">sale</field>
@@ -345,15 +302,6 @@
             <field name="code">BNK</field>
             <field name="type">bank</field>
             <field name="default_account_id" ref="account_bank_qatar"/>
-            <field name="show_on_dashboard" eval="True"/>
-        </record>
-        
-        <!-- Bank Journal - UAE -->
-        <record id="journal_bank_uae" model="account.journal">
-            <field name="name">Bank Journal</field>
-            <field name="code">BNK</field>
-            <field name="type">bank</field>
-            <field name="default_account_id" ref="account_bank_uae"/>
             <field name="show_on_dashboard" eval="True"/>
         </record>
         
@@ -414,13 +362,6 @@
             <field name="country_id" ref="base.qa"/>
             <field name="auto_apply" eval="True"/>
             <field name="note">Fiscal position for domestic Qatar transactions</field>
-        </record>
-        
-        <record id="fiscal_position_uae" model="account.fiscal.position">
-            <field name="name">UAE Domestic</field>
-            <field name="country_id" ref="base.ae"/>
-            <field name="auto_apply" eval="True"/>
-            <field name="note">Fiscal position for domestic UAE transactions</field>
         </record>
         
     </data>
