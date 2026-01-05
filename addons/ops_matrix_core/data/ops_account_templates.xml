@@ -250,29 +250,6 @@
         </record>
         
         <!-- =================================================== -->
-        <!-- =================================================== -->
-        
-        <!-- VAT 5% for Qatar (Sales) -->
-        <record id="tax_vat_5_sales_qatar" model="account.tax">
-            <field name="name">VAT 5% (Sales)</field>
-            <field name="amount">5.0</field>
-            <field name="amount_type">percent</field>
-            <field name="type_tax_use">sale</field>
-        </record>
-        
-        <!-- VAT 5% for Qatar (Purchase) -->
-        <record id="tax_vat_5_purchase_qatar" model="account.tax">
-            <field name="name">VAT 5% (Purchase)</field>
-            <field name="amount">5.0</field>
-            <field name="amount_type">percent</field>
-            <field name="type_tax_use">purchase</field>
-        </record>
-        
-        <!-- =================================================== -->
-
-        <!-- =================================================== -->
-        <!-- DEMO JOURNALS -->
-        <!-- =================================================== -->
         <!-- DEMO JOURNALS -->
         <!-- =================================================== -->
         
