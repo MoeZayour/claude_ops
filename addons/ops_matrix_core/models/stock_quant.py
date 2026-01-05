@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from odoo.api import Environment
 
 class StockQuant(models.Model):
-    _inherit = 'stock.quant'
+    _inherit = ['stock.quant', 'ops.field.visibility.mixin']
     
     # ========================================================================
     # BUSINESS UNIT SEGMENTATION

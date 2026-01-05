@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- ========================================================== -->
+        <!-- Field Visibility Rule - Tree View                         -->
+        <!-- ========================================================== -->
+        <record id="view_ops_field_visibility_rule_tree" model="ir.ui.view">
+            <field name="name">Field Visibility Rule - Tree</field>
+            <field name="model">ops.field.visibility.rule</field>
+            <field name="arch" type="xml">
+                <tree string="Field Visibility Rules" edit="False">
+                    <field name="model_name"/>
+                    <field name="field_name"/>
+                    <field name="security_group_id"/>
+                    <field name="visibility_mode"/>
+                    <field name="is_active"/>
+                    <field name="created_date"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- ========================================================== -->
+        <!-- Field Visibility Rule - Form View                         -->
+        <!-- ========================================================== -->
+        <record id="view_ops_field_visibility_rule_form" model="ir.ui.view">
+            <field name="name">Field Visibility Rule - Form</field>
+            <field name="model">ops.field.visibility.rule</field>
+            <field name="arch" type="xml">
+                <form string="Field Visibility Rule">
+                    <header>
+                        <button name="%(action_field_visibility_rule_duplicate)d" 
+                                string="Duplicate Rule"
+                                type="action"
+                                class="btn-default"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="True"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group string="Rule Definition">
+                                <field name="model_name" required="True"/>
+                                <field name="field_name" required="True"/>
+                                <field name="field_label"/>
+                            </group>
+                            <group string="Access Control">
+                                <field name="security_group_id" required="True"/>
+                                <field name="visibility_mode" required="True"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Settings">
+                            <field name="is_active"/>
+                        </group>
+                        
+                        <group string="Description">
+                            <field name="description" nolabel="True"/>
+                        </group>
+                        
+                        <group string="Audit Trail">
+                            <field name="created_date" readonly="True"/>
+                            <field name="modified_date" readonly="True"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <!-- ========================================================== -->
+        <!-- Field Visibility Rule - Search View                       -->
+        <!-- ========================================================== -->
+        <record id="view_ops_field_visibility_rule_search" model="ir.ui.view">
+            <field name="name">Field Visibility Rule - Search</field>
+            <field name="model">ops.field.visibility.rule</field>
+            <field name="arch" type="xml">
+                <search string="Search Field Visibility Rules">
+                    <field name="model_name" string="Model"/>
+                    <field name="field_name" string="Field"/>
+                    <field name="security_group_id" string="Security Group"/>
+                    
+                    <separator/>
+                    
+                    <filter name="active" 
+                            string="Active" 
+                            domain="[('is_active', '=', True)]"/>
+                    <filter name="inactive" 
+                            string="Inactive" 
+                            domain="[('is_active', '=', False)]"/>
+                    
+                    <separator/>
+                    
+                    <filter name="hidden_mode"
+                            string="Completely Hidden"
+                            domain="[('visibility_mode', '=', 'hidden')]"/>
+                    <filter name="readonly_mode"
+                            string="Read-Only"
+                            domain="[('visibility_mode', '=', 'readonly')]"/>
+                    
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_model"
+                                string="Model"
+                                context="{'group_by': 'model_name'}"/>
+                        <filter name="group_by_group"
+                                string="Security Group"
+                                context="{'group_by': 'security_group_id'}"/>
+                        <filter name="group_by_mode"
+                                string="Visibility Mode"
+                                context="{'group_by': 'visibility_mode'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <!-- ========================================================== -->
+        <!-- Field Visibility Rule - Action                            -->
+        <!-- ========================================================== -->
+        <record id="action_ops_field_visibility_rule" model="ir.actions.act_window">
+            <field name="name">Field Visibility Rules</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ops.field.visibility.rule</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_ops_field_visibility_rule_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new field visibility rule
+                </p>
+                <p>
+                    Field visibility rules control which fields are visible to different security groups.
+                    Fields can be completely hidden from the schema or made read-only.
+                </p>
+            </field>
+        </record>
+        
+        <!-- ========================================================== -->
+        <!-- Menu Item for Field Visibility Rules                      -->
+        <!-- ========================================================== -->
+        <menuitem id="menu_ops_field_visibility_rules"
+                  name="Field Visibility"
+                  parent="ops_matrix_core.menu_ops_settings_security"
+                  action="action_ops_field_visibility_rule"
+                  sequence="40"/>
+        
+    </data>
+</odoo>

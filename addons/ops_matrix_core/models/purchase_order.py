@@ -131,7 +131,7 @@ class PurchaseOrder(models.Model):
 
 class PurchaseOrderLine(models.Model):
     """Extend purchase.order.line with Matrix Mixin for dimension propagation."""
-    _inherit = ['purchase.order.line', 'ops.matrix.mixin']
+    _inherit = ['purchase.order.line', 'ops.matrix.mixin', 'ops.field.visibility.mixin']
     _name = 'purchase.order.line'
     
     # These fields are inherited from ops.matrix.mixin:

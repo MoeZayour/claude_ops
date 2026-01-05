@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 
 class StockMove(models.Model):
-    _inherit = 'stock.move'
+    _inherit = ['stock.move', 'ops.field.visibility.mixin']
 
     branch_id = fields.Many2one(
         'res.company',

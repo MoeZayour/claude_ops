@@ -393,7 +393,7 @@ class SaleOrder(models.Model):
 
 class SaleOrderLine(models.Model):
     """Extend sale.order.line with Matrix Mixin for dimension propagation."""
-    _inherit = ['sale.order.line', 'ops.matrix.mixin']
+    _inherit = ['sale.order.line', 'ops.matrix.mixin', 'ops.field.visibility.mixin']
     _name = 'sale.order.line'
     
     # These fields are inherited from ops.matrix.mixin:

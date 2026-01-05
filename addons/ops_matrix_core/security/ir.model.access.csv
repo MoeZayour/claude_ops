@@ -63,3 +63,6 @@ access_ops_sod_rule_user,ops.segregation.of.duties.user,model_ops_segregation_of
 access_ops_sod_log_admin,ops.segregation.of.duties.log.admin,model_ops_segregation_of_duties_log,group_ops_admin,1,0,0,0
 access_ops_sod_log_manager,ops.segregation.of.duties.log.manager,model_ops_segregation_of_duties_log,group_ops_manager,1,0,0,0
 access_ops_sod_log_user,ops.segregation.of.duties.log.user,model_ops_segregation_of_duties_log,group_ops_user,1,0,0,0
+access_ops_field_visibility_rule_admin,ops.field.visibility.rule.admin,model_ops_field_visibility_rule,group_ops_admin,1,1,1,1
+access_ops_field_visibility_rule_manager,ops.field.visibility.rule.manager,model_ops_field_visibility_rule,group_ops_manager,1,1,1,0
+access_ops_field_visibility_rule_user,ops.field.visibility.rule.user,model_ops_field_visibility_rule,group_ops_user,1,0,0,0

@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from odoo.api import Environment
 
 class ProductTemplate(models.Model):
-    _inherit = 'product.template'
+    _inherit = ['product.template', 'ops.field.visibility.mixin']
 
     # Matrix Integration: Link to Business Unit for Product Silo
     business_unit_id = fields.Many2one(
@@ -147,7 +147,7 @@ class ProductTemplate(models.Model):
 
 
 class ProductProduct(models.Model):
-    _inherit = 'product.product'
+    _inherit = ['product.product', 'ops.field.visibility.mixin']
     
     @api.model
     def search(self, domain, offset=0, limit=None, order=None, count=False):
