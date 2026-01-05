@@ -140,8 +140,9 @@
         <!-- ========================================================== -->
         <menuitem id="menu_ops_field_visibility_rules"
                   name="Field Visibility"
-                  parent="ops_matrix_core.menu_ops_settings_security"
+                  parent="ops_matrix_core.menu_ops_configuration"
                   action="action_ops_field_visibility_rule"
+                  groups="base.group_system,ops_matrix_core.group_ops_admin"
                   sequence="40"/>
         
     </data>

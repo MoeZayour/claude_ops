@@ -69,6 +69,7 @@
                   name="Report Templates"
                   action="action_ops_report_template"
                   parent="account.menu_finance_reports"
+                  groups="account.group_account_manager"
                   sequence="100"/>
 
     </data>

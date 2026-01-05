@@ -92,6 +92,7 @@
                   name="Three-Way Match Report"
                   action="ops_three_way_match_action"
                   parent="purchase.menu_purchase_root"
+                  groups="purchase.group_purchase_manager"
                   sequence="99"/>
 
     </data>

@@ -68,10 +68,18 @@
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost')), (4, ref('ops_matrix_core.group_ops_see_margin')), (4, ref('ops_matrix_core.group_ops_see_valuation'))]"/>
     </record>
 
+    <!-- Branch Manager (P05) - Single Branch Operations -->
+    <record id="group_ops_branch_manager" model="res.groups">
+        <field name="name">OPS Branch Manager</field>
+        <field name="comment">Branch Manager - Manages single branch operations, sees only own branch data. Cannot see cross-branch information.</field>
+        <field name="implied_ids" eval="[(4, ref('group_ops_user'))]"/>
+    </record>
+
+    <!-- BU Leader (P04) - Multi-Branch within BU -->
     <record id="group_ops_bu_leader" model="res.groups">
         <field name="name">Business Unit Leader</field>
-        <field name="comment">Cross-branch visibility within assigned business unit. Can oversee multiple branches under their BU.</field>
-        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_margin'))]"/>
+        <field name="comment">Business Unit Leader - Manages multiple branches within BU, sees all BU data. Cross-branch visibility within their business unit.</field>
+        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_branch_manager')), (4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_margin'))]"/>
     </record>
 
     <record id="group_ops_cross_branch_bu_leader" model="res.groups">
@@ -84,19 +92,19 @@
     <record id="group_ops_sales_manager" model="res.groups">
         <field name="name">Sales Manager</field>
         <field name="comment">Manage sales operations, approve discounts, view costs and margins for their branch.</field>
-        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost')), (4, ref('ops_matrix_core.group_ops_see_margin'))]"/>
+        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_branch_manager')), (4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost')), (4, ref('ops_matrix_core.group_ops_see_margin'))]"/>
     </record>
 
     <record id="group_ops_purchase_manager" model="res.groups">
         <field name="name">Purchase Manager</field>
         <field name="comment">Manage purchase operations, approve purchase orders, view product costs.</field>
-        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_branch_manager')), (4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
     </record>
 
     <record id="group_ops_inventory_manager" model="res.groups">
         <field name="name">Inventory Manager</field>
         <field name="comment">Manage inventory operations, approve adjustments, view stock valuation.</field>
-        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_valuation'))]"/>
+        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_branch_manager')), (4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_valuation'))]"/>
     </record>
 
     <record id="group_ops_finance_manager" model="res.groups">
