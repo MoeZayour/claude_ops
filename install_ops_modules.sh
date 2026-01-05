@@ -47,7 +47,7 @@ try:
             'odoo',
             '-c', '/etc/odoo/odoo.conf',
             '-d', 'mz-db',
-            '-u', module,
+            '-i', module,
             '--stop-after-init',
             '--no-http'
         ], capture_output=True, text=True, timeout=120)

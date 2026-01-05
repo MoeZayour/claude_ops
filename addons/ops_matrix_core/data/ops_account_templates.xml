@@ -256,7 +256,7 @@
         <!-- Cash Accounts -->
         <record id="account_cash_uae" model="account.account">
             <field name="name">Cash in Hand - UAE</field>
-            <field name="code">1001</field>
+            <field name="code">2001</field>
             <field name="account_type">asset_cash</field>
             <field name="reconcile" eval="True"/>
             <field name="group_id" ref="account_group_current_assets"/>
@@ -264,7 +264,7 @@
         
         <record id="account_bank_uae" model="account.account">
             <field name="name">Bank Account - Emirates NBD</field>
-            <field name="code">1002</field>
+            <field name="code">2002</field>
             <field name="account_type">asset_cash</field>
             <field name="reconcile" eval="True"/>
             <field name="group_id" ref="account_group_current_assets"/>
@@ -273,7 +273,7 @@
         <!-- Receivables -->
         <record id="account_receivable_uae" model="account.account">
             <field name="name">Trade Receivables</field>
-            <field name="code">1101</field>
+            <field name="code">2101</field>
             <field name="account_type">asset_receivable</field>
             <field name="reconcile" eval="True"/>
             <field name="group_id" ref="account_group_current_assets"/>
@@ -282,7 +282,7 @@
         <!-- Inventory -->
         <record id="account_inventory_uae" model="account.account">
             <field name="name">Inventory</field>
-            <field name="code">1201</field>
+            <field name="code">2201</field>
             <field name="account_type">asset_current</field>
             <field name="reconcile" eval="False"/>
             <field name="group_id" ref="account_group_current_assets"/>
@@ -291,7 +291,7 @@
         <!-- Payables -->
         <record id="account_payable_uae" model="account.account">
             <field name="name">Trade Payables</field>
-            <field name="code">3001</field>
+            <field name="code">3501</field>
             <field name="account_type">liability_payable</field>
             <field name="reconcile" eval="True"/>
             <field name="group_id" ref="account_group_current_liabilities"/>
@@ -300,7 +300,7 @@
         <!-- Tax Accounts -->
         <record id="account_tax_collected_uae" model="account.account">
             <field name="name">VAT Collected</field>
-            <field name="code">3101</field>
+            <field name="code">3601</field>
             <field name="account_type">liability_current</field>
             <field name="reconcile" eval="False"/>
             <field name="group_id" ref="account_group_current_liabilities"/>
@@ -309,7 +309,7 @@
         <!-- Revenue Accounts -->
         <record id="account_sales_retail_uae" model="account.account">
             <field name="name">Retail Sales Revenue</field>
-            <field name="code">5001</field>
+            <field name="code">5501</field>
             <field name="account_type">income</field>
             <field name="reconcile" eval="False"/>
             <field name="group_id" ref="account_group_revenue"/>
@@ -317,7 +317,7 @@
         
         <record id="account_sales_services_uae" model="account.account">
             <field name="name">Services Revenue</field>
-            <field name="code">5004</field>
+            <field name="code">5504</field>
             <field name="account_type">income</field>
             <field name="reconcile" eval="False"/>
             <field name="group_id" ref="account_group_revenue"/>
