@@ -16,7 +16,7 @@ except ImportError:
 
 class SaleOrder(models.Model):
     _name = 'sale.order'
-    _inherit = ['sale.order', 'ops.governance.mixin', 'ops.matrix.mixin', 'ops.approval.mixin']
+    _inherit = ['sale.order', 'ops.governance.mixin', 'ops.matrix.mixin', 'ops.approval.mixin', 'ops.segregation.of.duties.mixin']
     
     # Note: ops_branch_id and ops_business_unit_id are inherited from ops.matrix.mixin
     # Additional sale order specific fields
@@ -153,9 +153,10 @@ class SaleOrder(models.Model):
         Override action_confirm to enforce credit firewall and governance rules.
         
         This ensures that:
-        1. Governance rules (margins, discounts, approvals) are enforced
-        2. Credit firewall checks pass
-        3. All validations happen before state changes to 'sale'
+        1. Segregation of Duties (SoD) rules are enforced
+        2. Governance rules (margins, discounts, approvals) are enforced
+        3. Credit firewall checks pass
+        4. All validations happen before state changes to 'sale'
         """
         for order in self:
             _logger.info("OPS Governance: Checking SO %s for confirmation rules", order.name)
@@ -173,6 +174,9 @@ class SaleOrder(models.Model):
                 except Exception as e:
                     _logger.warning("Failed to log admin override: %s", str(e))
             else:
+                # Check Segregation of Duties (SoD) rules BEFORE governance rules
+                order._check_sod_violation('confirm')
+                
                 # Explicitly trigger Governance check for 'on_write' triggers
                 # This catches rules like:
                 # - "Discounts > 20% require approval"

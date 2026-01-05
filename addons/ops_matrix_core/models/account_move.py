@@ -5,7 +5,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class AccountMove(models.Model):
-    _inherit = ['account.move', 'ops.matrix.mixin', 'ops.approval.mixin']
+    _inherit = ['account.move', 'ops.matrix.mixin', 'ops.approval.mixin', 'ops.segregation.of.duties.mixin']
     _name = 'account.move'
     
     # The following fields are inherited from ops.matrix.mixin:
@@ -269,11 +269,21 @@ class AccountMove(models.Model):
     # ========================================================================
     
     def action_post(self):
-        """Override post action to validate matrix dimensions and three-way match before posting."""
+        """
+        Override post action to validate SoD, matrix dimensions, and three-way match before posting.
+        
+        This ensures that:
+        1. Segregation of Duties (SoD) rules are enforced
+        2. Matrix dimensions are properly assigned
+        3. Three-way match validations pass
+        """
         for move in self:
+            # Check Segregation of Duties (SoD) rules BEFORE posting
+            move._check_sod_violation('post')
+            
             if move.three_way_match_status == 'blocked' and not move.three_way_match_override_approved and move.company_id.three_way_match_block_validation:
                 raise UserError(
-                    _("Cannot validate this invoice due to three-way match issues:\n\n%s\n\nPlease verify quantities with your Purchase Manager or request an override approval.") 
+                    _("Cannot validate this invoice due to three-way match issues:\n\n%s\n\nPlease verify quantities with your Purchase Manager or request an override approval.")
                     % move.three_way_match_issues
                 )
 

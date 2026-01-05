@@ -57,3 +57,9 @@ access_ops_three_way_match_user,ops.three.way.match.user,model_ops_three_way_mat
 access_ops_three_way_match_manager,ops.three.way.match.manager,model_ops_three_way_match,purchase.group_purchase_manager,1,1,1,1
 access_ops_report_template,ops.report.template,model_ops_report_template,base.group_user,1,1,1,1
 access_ops_report_template_line,ops.report.template.line,model_ops_report_template_line,base.group_user,1,1,1,1
+access_ops_sod_rule_admin,ops.segregation.of.duties.admin,model_ops_segregation_of_duties,group_ops_admin,1,1,1,1
+access_ops_sod_rule_manager,ops.segregation.of.duties.manager,model_ops_segregation_of_duties,group_ops_manager,1,1,1,0
+access_ops_sod_rule_user,ops.segregation.of.duties.user,model_ops_segregation_of_duties,group_ops_user,1,0,0,0
+access_ops_sod_log_admin,ops.segregation.of.duties.log.admin,model_ops_segregation_of_duties_log,group_ops_admin,1,0,0,0
+access_ops_sod_log_manager,ops.segregation.of.duties.log.manager,model_ops_segregation_of_duties_log,group_ops_manager,1,0,0,0
+access_ops_sod_log_user,ops.segregation.of.duties.log.user,model_ops_segregation_of_duties_log,group_ops_user,1,0,0,0

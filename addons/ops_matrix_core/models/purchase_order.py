@@ -6,7 +6,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class PurchaseOrder(models.Model):
-    _inherit = ['purchase.order', 'ops.governance.mixin', 'ops.approval.mixin']
+    _inherit = ['purchase.order', 'ops.governance.mixin', 'ops.approval.mixin', 'ops.segregation.of.duties.mixin']
     
     # OPS Matrix Fields
     ops_branch_id = fields.Many2one(
@@ -31,10 +31,12 @@ class PurchaseOrder(models.Model):
     
     def button_confirm(self):
         """
-        Override button_confirm to enforce governance rules before confirmation.
+        Override button_confirm to enforce segregation of duties and governance rules.
         
-        This ensures that governance rules are checked even if standard write()
-        is bypassed, providing a hard gate for purchase order confirmation.
+        This ensures that:
+        1. Segregation of Duties (SoD) rules are enforced
+        2. Governance rules are checked even if standard write() is bypassed
+        3. Hard gate for purchase order confirmation
         """
         for order in self:
             _logger.info("OPS Governance: Checking PO %s for confirmation rules", order.name)
@@ -52,6 +54,9 @@ class PurchaseOrder(models.Model):
                 except Exception as e:
                     _logger.warning("Failed to log admin override: %s", str(e))
                 continue
+            
+            # Check Segregation of Duties (SoD) rules BEFORE governance rules
+            order._check_sod_violation('confirm')
             
             # Explicitly trigger Governance check for 'on_write' trigger
             # This catches rules like "Purchase orders over $10K require approval"

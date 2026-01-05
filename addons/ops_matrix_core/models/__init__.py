@@ -11,6 +11,8 @@ from . import ops_matrix_config     # Fourth: Configuration model
 from . import ops_mixin             # Fifth: Mixin (depends on branch/BU)
 from . import ops_matrix_mixin      # Sixth: Matrix dimension propagation mixin
 from . import ops_approval_mixin    # Approval locking mixin
+from . import ops_segregation_of_duties  # SoD rule management
+from . import ops_segregation_of_duties_mixin  # SoD enforcement mixin
 from . import ops_analytic_mixin    # Analytic Mixin for financial models
 from . import ops_analytic_setup    # Analytic accounting setup wizard
 from . import ops_performance_indexes  # Performance optimization indexes
