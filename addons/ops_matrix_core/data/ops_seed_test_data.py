@@ -26,12 +26,73 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+def check_and_clean_existing_data(env):
+    """Clean any existing test data before re-seeding"""
+    _logger.info("Checking for existing test data...")
+
+    # Delete existing test transactions
+    existing_sales = env['sale.order'].search([('create_date', '>', '2026-01-01')])
+    if existing_sales:
+        _logger.info(f"Deleting {len(existing_sales)} existing sales orders...")
+        existing_sales.unlink()
+
+    existing_pos = env['purchase.order'].search([('create_date', '>', '2026-01-01')])
+    if existing_pos:
+        _logger.info(f"Deleting {len(existing_pos)} existing purchase orders...")
+        existing_pos.unlink()
+
+    # Delete test products by internal reference
+    test_products = env['product.product'].search([
+        ('default_code', 'in', ['LAP-BUS-001', 'MSE-WRL-001', 'CBL-USC-002', 'MON-27K-001', 'KBD-MEC-RGB'])
+    ])
+    if test_products:
+        _logger.info(f"Deleting {len(test_products)} test products...")
+        test_products.unlink()
+
+    # Delete test customers and vendors by name
+    test_partners = env['res.partner'].search([
+        ('name', 'in', [
+            'Emirates Electronics LLC',
+            'Gulf Retail Trading',
+            'Abu Dhabi Wholesalers',
+            'Global Tech Supplies',
+            'Regional Electronics Distributor'
+        ])
+    ])
+    if test_partners:
+        _logger.info(f"Deleting {len(test_partners)} test partners...")
+        test_partners.unlink()
+
+    # Delete test users
+    test_users = env['res.users'].search([('login', 'like', '%testtrading.ae')])
+    if test_users:
+        _logger.info(f"Deleting {len(test_users)} test users...")
+        test_users.unlink()
+
+    # Delete test branches
+    test_branches = env['ops.branch'].search([('code', 'in', ['DXB-01', 'AUH-01'])])
+    if test_branches:
+        _logger.info(f"Deleting {len(test_branches)} test branches...")
+        test_branches.unlink()
+
+    # Delete test business units
+    test_bus = env['ops.business.unit'].search([('code', 'in', ['RET', 'WHO'])])
+    if test_bus:
+        _logger.info(f"Deleting {len(test_bus)} test business units...")
+        test_bus.unlink()
+
+    _logger.info("Cleanup complete - ready for fresh seeding")
+
+
 def seed_test_data(env):
     """Main seeding function"""
-    
+
     _logger.info("=" * 80)
     _logger.info("STARTING TEST DATA SEEDING")
     _logger.info("=" * 80)
+
+    # Clean any existing test data first
+    check_and_clean_existing_data(env)
     
     # 1. Company Setup
     _logger.info("\n[1/12] Setting up Company...")
