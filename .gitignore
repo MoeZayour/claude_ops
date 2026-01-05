@@ -32,3 +32,4 @@ _backup/
 documentations/
 logs/oca_reporting_engine/
 addons/oca_reporting_engine/
+.roo/
