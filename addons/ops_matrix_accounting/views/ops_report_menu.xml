@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Financial Reports Wizard Action -->
+    <record id="action_ops_financial_reports_wizard" model="ir.actions.act_window">
+        <field name="name">Financial Reports</field>
+        <field name="res_model">ops.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+    
+    <!-- Menu Item under Accounting > Reporting -->
+    <menuitem id="menu_ops_financial_reports"
+              name="Financial Reports"
+              parent="account.menu_finance_reports"
+              action="action_ops_financial_reports_wizard"
+              sequence="5"
+              groups="account.group_account_manager"/>
+    
+    <!-- Report Templates Menu -->
+    <record id="action_ops_report_template" model="ir.actions.act_window">
+        <field name="name">Report Templates</field>
+        <field name="res_model">ops.report.template</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    <menuitem id="menu_ops_report_templates"
+              name="Report Templates"
+              parent="account.menu_finance_reports"
+              action="action_ops_report_template"
+              sequence="90"
+              groups="account.group_account_manager"/>
+    
+    <!-- Excel Export Wizard -->
+    <record id="action_ops_excel_export" model="ir.actions.act_window">
+        <field name="name">Excel Export</field>
+        <field name="res_model">ops.excel.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    
+    <menuitem id="menu_ops_excel_export"
+              name="Excel Export"
+              parent="account.menu_finance_reports"
+              action="action_ops_excel_export"
+              sequence="95"
+              groups="account.group_account_user"/>
+</odoo>

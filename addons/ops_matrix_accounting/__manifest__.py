@@ -58,6 +58,7 @@
 
         # Menus
         "views/accounting_menus.xml",
+        "views/ops_report_menu.xml",
     ],
     "demo": [
         "demo/ops_asset_demo.xml",

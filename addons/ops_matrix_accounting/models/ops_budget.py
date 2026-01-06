@@ -13,11 +13,19 @@ class OpsBudget(models.Model):
     
     # Matrix Dimensions (Required)
     ops_branch_id = fields.Many2one(
-        'res.company',
+        'ops.branch',
         string='Branch',
         required=True,
         tracking=True,
         help="Branch this budget applies to"
+    )
+    
+    company_id = fields.Many2one(
+        'res.company',
+        string='Company',
+        related='ops_branch_id.company_id',
+        store=True,
+        readonly=True
     )
     ops_business_unit_id = fields.Many2one(
         'ops.business.unit',

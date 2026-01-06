@@ -71,6 +71,7 @@
         'views/ops_dashboard_config_views.xml',
         'wizard/sale_order_import_wizard_views.xml',
         'views/product_views.xml',
+        'views/product_category_views.xml',
         'views/partner_views.xml',
         'views/sale_order_views.xml',
         'views/account_move_views.xml',
