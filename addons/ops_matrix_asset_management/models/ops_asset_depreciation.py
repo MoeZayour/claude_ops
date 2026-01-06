@@ -14,3 +14,19 @@ class OpsAssetDepreciation(models.Model):
         ('posted', 'Posted'),
         ('cancelled', 'Cancelled'),
     ], string='Status', default='draft')
+    
+    # Add after existing fields
+    move_id = fields.Many2one(
+        'account.move',
+        string='Journal Entry',
+        readonly=True,
+        copy=False,
+        help="Accounting entry for this depreciation"
+    )
+    
+    move_posted = fields.Boolean(
+        related='move_id.posted',
+        string='Posted',
+        store=True,
+        help="Whether the journal entry has been posted"
+    )

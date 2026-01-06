@@ -193,6 +193,34 @@ class OpsFieldVisibilityRule(models.Model):
                 })
         except Exception as e:
             _logger.debug(f"Could not create audit log: {e}")
+    
+    @api.model
+    def check_field_visibility(self, model_name, field_name):
+        """Check if field should be visible for current user"""
+        # System Admin bypass - ALWAYS has access
+        if self.env.user.has_group('base.group_system'):
+            return True
+        
+        # Find applicable visibility rules
+        rules = self.search([
+            ('model_name', '=', model_name),
+            ('field_name', '=', field_name),
+            ('is_active', '=', True)
+        ])
+        
+        # No rules = field is visible
+        if not rules:
+            return True
+        
+        # Check if current user is in any restricted group
+        user_groups = self.env.user.groups_id
+        for rule in rules:
+            restricted_groups = rule.security_group_id
+            if restricted_groups in user_groups:
+                return False  # User is in a restricted group
+        
+        # User not in any restricted groups = visible
+        return True
 
 
 class OpsFieldVisibilityMixin(models.AbstractModel):

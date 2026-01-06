@@ -220,18 +220,27 @@ class OpsBudgetLine(models.Model):
             amount = sum(self.env['account.move.line'].search(domain).mapped('debit'))
             line.practical_amount = amount
 
+    @api.depends('general_account_id', 'budget_id.date_from', 'budget_id.date_to')
     def _compute_committed_amount(self):
-        """Compute committed amount from purchase orders."""
+        """Compute committed amount from purchase orders"""
         for line in self:
+            if not line.general_account_id or not line.budget_id:
+                line.committed_amount = 0.0
+                continue
+            
+            # Get PO lines where product's expense account matches our account
             domain = [
-                ('account_id', '=', line.general_account_id.id),
-                ('order_id.ops_branch_id', '=', line.budget_id.ops_branch_id.id),
-                ('order_id.ops_business_unit_id', '=', line.budget_id.ops_business_unit_id.id),
-                ('order_id.date_order', '>=', line.budget_id.date_from),
-                ('order_id.date_order', '<=', line.budget_id.date_to),
                 ('order_id.state', 'in', ['purchase', 'done']),
-                ('invoice_status', '!=', 'invoiced')
+                ('date_planned', '>=', line.budget_id.date_from),
+                ('date_planned', '<=', line.budget_id.date_to),
             ]
             
-            amount = sum(self.env['purchase.order.line'].search(domain).mapped('price_total'))
-            line.committed_amount = amount
+            # Find PO lines with matching expense account
+            po_lines = self.env['purchase.order.line'].search(domain)
+            
+            # Filter by account matching
+            matching_lines = po_lines.filtered(
+                lambda l: l.product_id.categ_id.property_account_expense_categ_id == line.general_account_id
+            )
+            
+            line.committed_amount = sum(matching_lines.mapped('price_subtotal'))

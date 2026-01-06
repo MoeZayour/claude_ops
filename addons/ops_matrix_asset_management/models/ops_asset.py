@@ -25,6 +25,19 @@ class OpsAsset(models.Model):
     value = fields.Float(string='Gross Value', required=True, tracking=True)
     salvage_value = fields.Float(string='Salvage Value', tracking=True)
     value_residual = fields.Float(string='Residual Value', compute='_compute_value_residual', store=True)
+    
+    # Additional computed fields
+    acquisition_value = fields.Float(string='Acquisition Value', related='value', store=True)
+    depreciated_value = fields.Float(string='Depreciated Value', compute='_compute_depreciated_value', store=True)
+    book_value = fields.Monetary(
+        string='Book Value',
+        compute='_compute_book_value',
+        store=True,
+        currency_field='currency_id',
+        help="Current book value (Acquisition Value - Depreciated Value)"
+    )
+    currency_id = fields.Many2one('res.currency', string='Currency', 
+                                   default=lambda self: self.env.company.currency_id)
 
     journal_id = fields.Many2one('account.journal', string='Journal', required=True)
     account_asset_id = fields.Many2one('account.account', string='Asset Account', required=True)
@@ -44,3 +57,13 @@ class OpsAsset(models.Model):
         for asset in self:
             total_depreciation = sum(line.amount for line in asset.depreciation_line_ids if line.state == 'posted')
             asset.value_residual = asset.value - asset.salvage_value - total_depreciation
+    
+    @api.depends('depreciation_line_ids.amount', 'depreciation_line_ids.state')
+    def _compute_depreciated_value(self):
+        for asset in self:
+            asset.depreciated_value = sum(line.amount for line in asset.depreciation_line_ids if line.state == 'posted')
+    
+    @api.depends('acquisition_value', 'depreciated_value')
+    def _compute_book_value(self):
+        for asset in self:
+            asset.book_value = asset.acquisition_value - asset.depreciated_value

@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- OPS Asset Tree View -->
     <record id="view_ops_asset_tree" model="ir.ui.view">
-        <field name="name">ops.asset.list</field>
+        <field name="name">ops.asset.tree</field>
         <field name="model">ops.asset</field>
         <field name="arch" type="xml">
-            <list string="Assets" sample="1">
+            <tree decoration-danger="state == 'cancelled'"
+                  decoration-warning="state == 'disposed'"
+                  decoration-success="state == 'close'"
+                  decoration-muted="state == 'sold'">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="category_id"/>
-                <field name="model_id"/>
-                <field name="state"/>
-            </list>
+                <field name="purchase_date"/>
+                <field name="purchase_value" sum="Total Value"/>
+                <field name="book_value" sum="Book Value"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('running', 'close')"
+                       decoration-warning="state == 'disposed'"
+                       decoration-danger="state == 'cancelled'"
+                       decoration-info="state == 'draft'"/>
+            </tree>
         </field>
     </record>
 
@@ -78,10 +88,12 @@
         </field>
     </record>
 
+    <!-- Update action to reference tree view -->
     <record id="action_ops_asset" model="ir.actions.act_window">
         <field name="name">Assets</field>
         <field name="res_model">ops.asset</field>
         <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_ops_asset_tree"/>
     </record>
 
     <menuitem id="menu_ops_asset" name="Assets" parent="ops_matrix_accounting.menu_ops_accounting_root" action="action_ops_asset" sequence="10"/>
