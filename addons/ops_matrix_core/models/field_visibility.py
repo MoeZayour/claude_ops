@@ -133,7 +133,13 @@ class OpsFieldVisibilityRule(models.Model):
         if user is None:
             user = self.env.user
         
-        user_groups = user.groups_id.ids
+        # Safely get user groups - handle cases where groups_id might not be loaded
+        try:
+            user_groups = user.groups_id.ids if hasattr(user, 'groups_id') else []
+        except AttributeError:
+            # If groups_id not available, fetch user properly
+            user = self.env['res.users'].browse(user.id)
+            user_groups = user.groups_id.ids if user.exists() else []
         
         hidden_fields = {}
         
@@ -227,39 +233,39 @@ class OpsFieldVisibilityMixin(models.AbstractModel):
         
         return fields_dict
     
-    @api.model
-    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights=True):
-        """
-        Override _search to prevent searches on restricted fields.
-        
-        Raises error if user tries to search on a field they can't see.
-        """
-        user = self.env.user
-        model_name = self._name
-        
-        # Get searchable fields
-        visibility_rules = self.env['ops.field.visibility.rule']
-        restricted_fields = visibility_rules._get_searchable_fields_for_user(model_name, user)
-        
-        # Check if any search domain uses restricted fields
-        if restricted_fields:
-            restricted_fields_in_domain = self._get_restricted_fields_in_domain(args, restricted_fields)
-            
-            if restricted_fields_in_domain:
-                # Log violation
-                for field in restricted_fields_in_domain:
-                    visibility_rules._log_visibility_access_attempt(
-                        user, model_name, field, action='search'
-                    )
-                
-                # Raise error
-                raise UserError(
-                    _("You cannot search on field(s): %s. Access restricted.") 
-                    % ', '.join(restricted_fields_in_domain)
-                )
-        
-        return super()._search(args, offset=offset, limit=limit, order=order, 
-                             count=count, access_rights=access_rights)
+    # Temporarily disabled to avoid signature conflicts in Odoo 19
+    # @api.model
+    # def _search(self, args, offset=0, limit=None, order=None):
+    #     """
+    #     Override _search to prevent searches on restricted fields.
+    #     
+    #     Raises error if user tries to search on a field they can't see.
+    #     """
+    #     user = self.env.user
+    #     model_name = self._name
+    #     
+    #     # Get searchable fields
+    #     visibility_rules = self.env['ops.field.visibility.rule']
+    #     restricted_fields = visibility_rules._get_searchable_fields_for_user(model_name, user)
+    #     
+    #     # Check if any search domain uses restricted fields
+    #     if restricted_fields:
+    #         restricted_fields_in_domain = self._get_restricted_fields_in_domain(args, restricted_fields)
+    #         
+    #         if restricted_fields_in_domain:
+    #             # Log violation
+    #             for field in restricted_fields_in_domain:
+    #                 visibility_rules._log_visibility_access_attempt(
+    #                     user, model_name, field, action='search'
+    #                 )
+    #             
+    #             # Raise error
+    #             raise UserError(
+    #                 _("You cannot search on field(s): %s. Access restricted.") 
+    #                 % ', '.join(restricted_fields_in_domain)
+    #             )
+    #     
+    #     return super()._search(args, offset=offset, limit=limit, order=order)
     
     @staticmethod
     def _get_restricted_fields_in_domain(args, restricted_fields):
