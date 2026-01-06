@@ -635,71 +635,9 @@
         </record>
         
         <!-- ============================================================ -->
-        <!-- 19. IT ADMIN BLIND RULES - Cannot See Business Data         -->
+        <!-- 19. IT ADMIN BLIND RULES - REMOVED                           -->
+        <!-- NOTE: group_ops_it_admin does not exist in this codebase     -->
         <!-- ============================================================ -->
-        
-        <!-- Block IT Admin from Personas -->
-        <record id="rule_persona_it_admin_blind" model="ir.rule">
-            <field name="name">IT Admin: Cannot See Persona Data</field>
-            <field name="model_id" ref="model_ops_persona"/>
-            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
-            <field name="domain_force">[('id', '=', False)]</field>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
-        
-        <!-- Block IT Admin from Sales Orders -->
-        <record id="rule_sale_order_it_admin_blind" model="ir.rule">
-            <field name="name">IT Admin: Cannot See Sales Orders</field>
-            <field name="model_id" ref="sale.model_sale_order"/>
-            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
-            <field name="domain_force">[('id', '=', False)]</field>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
-        
-        <!-- Block IT Admin from Purchase Orders -->
-        <record id="rule_purchase_order_it_admin_blind" model="ir.rule">
-            <field name="name">IT Admin: Cannot See Purchase Orders</field>
-            <field name="model_id" ref="purchase.model_purchase_order"/>
-            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
-            <field name="domain_force">[('id', '=', False)]</field>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
-        
-        <!-- Block IT Admin from Invoices -->
-        <record id="rule_invoice_it_admin_blind" model="ir.rule">
-            <field name="name">IT Admin: Cannot See Invoices</field>
-            <field name="model_id" ref="account.model_account_move"/>
-            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
-            <field name="domain_force">[('id', '=', False)]</field>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
-        
-        <!-- Block IT Admin from Customers/Vendors -->
-        <record id="rule_partner_it_admin_blind" model="ir.rule">
-            <field name="name">IT Admin: Cannot See Customers/Vendors</field>
-            <field name="model_id" ref="base.model_res_partner"/>
-            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
-            <field name="domain_force">[
-                ('customer_rank', '=', 0),
-                ('supplier_rank', '=', 0)
-            ]</field>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
         
         <!-- ============================================================ -->
         <!-- 20. BRANCH MANAGER & BU LEADER ISOLATION RULES               -->
