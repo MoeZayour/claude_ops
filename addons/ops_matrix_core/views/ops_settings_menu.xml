@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- OPS Framework Section in Settings -->
+    <menuitem id="menu_ops_settings_root"
+              name="OPS Framework"
+              parent="base.menu_administration"
+              sequence="100"
+              groups="base.group_system"/>
+    
+    <!-- ========================================= -->
+    <!-- COMPANY STRUCTURE                         -->
+    <!-- ========================================= -->
+    <menuitem id="menu_ops_company_structure"
+              name="Company Structure"
+              parent="menu_ops_settings_root"
+              sequence="10"/>
+    
+    <menuitem id="menu_ops_business_unit"
+              name="Business Units"
+              parent="menu_ops_company_structure"
+              action="action_ops_business_unit"
+              sequence="10"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+    
+    <menuitem id="menu_ops_branch"
+              name="Branches"
+              parent="menu_ops_company_structure"
+              action="action_ops_branch"
+              sequence="20"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+    
+    <menuitem id="menu_ops_companies"
+              name="Companies"
+              parent="menu_ops_company_structure"
+              action="base.action_res_company_form"
+              sequence="30"
+              groups="base.group_system"/>
+    
+    <!-- ========================================= -->
+    <!-- SECURITY &amp; GOVERNANCE                     -->
+    <!-- ========================================= -->
+    <menuitem id="menu_ops_security_governance"
+              name="Security &amp; Governance"
+              parent="menu_ops_settings_root"
+              sequence="20"/>
+    
+    <!-- Personas -->
+    <menuitem id="menu_ops_persona"
+              name="Personas"
+              parent="menu_ops_security_governance"
+              action="action_ops_persona"
+              sequence="10"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+    
+    <!-- Delegations -->
+    <menuitem id="menu_ops_persona_delegation"
+              name="Delegations"
+              parent="menu_ops_security_governance"
+              action="action_ops_persona_delegation"
+              sequence="20"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+    
+    <!-- SoD Rules -->
+    <menuitem id="menu_ops_sod_root"
+              name="SoD Rules"
+              parent="menu_ops_security_governance"
+              action="action_ops_sod_rules"
+              sequence="30"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+    
+    <!-- Field Visibility Rules -->
+    <menuitem id="menu_ops_field_visibility_rules"
+              name="Field Visibility Rules"
+              parent="menu_ops_security_governance"
+              action="action_ops_field_visibility_rule"
+              sequence="40"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+    
+    <!-- Governance Rules -->
+    <menuitem id="menu_ops_governance_rules"
+              name="Governance Rules"
+              parent="menu_ops_security_governance"
+              action="action_ops_governance_rule"
+              sequence="50"
+              groups="base.group_system,ops_matrix_core.group_ops_manager"/>
+    
+    <!-- Archive Policies -->
+    <menuitem id="menu_ops_archive_policy"
+              name="Archive Policies"
+              parent="menu_ops_security_governance"
+              action="action_ops_archive_policy"
+              sequence="60"
+              groups="base.group_system"/>
+    
+    <!-- ========================================= -->
+    <!-- WORKFLOW CONFIGURATION                    -->
+    <!-- ========================================= -->
+    <menuitem id="menu_ops_workflow_config"
+              name="Workflow Configuration"
+              parent="menu_ops_settings_root"
+              sequence="30"/>
+    
+    <!-- SLA Templates -->
+    <menuitem id="menu_ops_sla_template"
+              name="SLA Templates"
+              parent="menu_ops_workflow_config"
+              action="action_ops_sla_template"
+              sequence="10"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+    
+    <!-- Dashboard Widgets -->
+    <menuitem id="menu_ops_dashboard_widget"
+              name="Dashboard Widgets"
+              parent="menu_ops_workflow_config"
+              action="action_ops_dashboard_widget_management"
+              sequence="20"
+              groups="base.group_system"/>
+</odoo>

@@ -84,7 +84,12 @@
         'views/ops_audit_log_views.xml',
         'views/ops_sod_views.xml',
         'views/field_visibility_views.xml',
-        'views/ops_dashboard_menu.xml',
+        
+        # Menus - Load in specific order
+        'views/ops_settings_menu.xml',
+        'views/ops_approvals_menu.xml',
+        'views/ops_dashboards_menu.xml',
+        'views/ops_dashboard_menu.xml',  # Contains disables - must load last
         'data/ir_cron_data.xml',
         'data/ir_cron_archiver.xml',
         'data/sale_order_actions.xml',

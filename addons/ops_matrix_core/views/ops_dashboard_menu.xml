@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- OPS Matrix Root Menu -->
+    <!-- OPS Matrix Root Menu - DISABLED (reorganized to Approvals/Settings/Dashboards) -->
     <menuitem
         id="menu_ops_matrix_root"
         name="OPS Matrix"
         web_icon="ops_matrix_core,static/description/icon.png"
         sequence="1"
+        active="False"
         groups="base.group_user"/>
 
     <!-- Dashboards Menu -->
@@ -140,10 +141,12 @@
               groups="base.group_system,ops_matrix_core.group_ops_admin"
               sequence="80"/>
 
+    <!-- API Integration menus - DISABLED (not priority) -->
     <menuitem id="menu_ops_api_root"
               name="API Integration"
               parent="menu_ops_governance_root"
               sequence="100"
+              active="False"
               groups="base.group_system,ops_matrix_core.group_ops_admin"/>
 
     <menuitem id="menu_ops_api_keys"
@@ -151,6 +154,7 @@
               parent="menu_ops_api_root"
               action="action_ops_api_key"
               sequence="10"
+              active="False"
               groups="base.group_system,ops_matrix_core.group_ops_admin"/>
 
     <menuitem id="menu_ops_audit_logs"
@@ -158,6 +162,7 @@
               parent="menu_ops_api_root"
               action="action_ops_audit_log"
               sequence="20"
+              active="False"
               groups="base.group_system,ops_matrix_core.group_ops_admin"/>
 
     <menuitem id="menu_ops_api_analytics"
@@ -165,6 +170,7 @@
               parent="menu_ops_api_root"
               action="action_ops_api_analytics"
               sequence="30"
+              active="False"
               groups="base.group_system,ops_matrix_core.group_ops_admin"/>
 
     <!-- Configuration Menu -->

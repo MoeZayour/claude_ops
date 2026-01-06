@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Approvals Root Menu -->
+    <menuitem id="menu_ops_approvals_root"
+              name="Approvals"
+              sequence="45"
+              groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_branch_manager"/>
+    
+    <!-- My Approvals Dashboard -->
+    <menuitem id="menu_ops_my_approvals_dashboard"
+              name="My Approvals"
+              parent="menu_ops_approvals_root"
+              action="action_ops_approval_dashboard"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_manager"/>
+    
+    <!-- Pending Approvals List -->
+    <record id="action_ops_pending_approvals" model="ir.actions.act_window">
+        <field name="name">Pending Approvals</field>
+        <field name="res_model">ops.approval.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'pending'), ('approver_id', '=', uid)]</field>
+        <field name="context">{'default_state': 'pending'}</field>
+    </record>
+    
+    <menuitem id="menu_ops_pending_approvals"
+              name="Pending Approvals"
+              parent="menu_ops_approvals_root"
+              action="action_ops_pending_approvals"
+              sequence="20"/>
+    
+    <!-- Approval History -->
+    <menuitem id="menu_ops_approval_history"
+              name="Approval History"
+              parent="menu_ops_approvals_root"
+              action="action_ops_approval_request"
+              sequence="30"/>
+    
+    <!-- SLA Tracking -->
+    <menuitem id="menu_ops_sla_tracking"
+              name="SLA Tracking"
+              parent="menu_ops_approvals_root"
+              action="action_ops_sla_instance"
+              sequence="40"
+              groups="ops_matrix_core.group_ops_manager"/>
+    
+    <!-- Violations and Alerts -->
+    <menuitem id="menu_ops_violations"
+              name="Violations &amp; Alerts"
+              parent="menu_ops_approvals_root"
+              action="action_ops_sod_violations"
+              sequence="50"
+              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+</odoo>

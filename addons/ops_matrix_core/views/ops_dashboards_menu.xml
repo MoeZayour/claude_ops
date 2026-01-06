@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Move OPS Dashboards under native Dashboards app -->
+    
+    <!-- Executive Dashboard -->
+    <menuitem id="menu_ops_executive_dashboard"
+              name="Executive Dashboard"
+              parent="board.menu_board_root"
+              action="action_ops_executive_dashboard"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_cfo,base.group_system"/>
+    
+    <!-- Branch Performance Dashboard -->
+    <menuitem id="menu_ops_branch_dashboard"
+              name="Branch Performance"
+              parent="board.menu_board_root"
+              action="action_ops_branch_manager_dashboard"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_branch_manager,ops_matrix_core.group_ops_bu_leader,base.group_system"/>
+    
+    <!-- BU Performance Dashboard -->
+    <menuitem id="menu_ops_bu_dashboard"
+              name="BU Performance"
+              parent="board.menu_board_root"
+              action="action_ops_bu_leader_dashboard"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_executive,base.group_system"/>
+    
+    <!-- Sales Performance Dashboard -->
+    <menuitem id="menu_ops_sales_dashboard"
+              name="Sales Performance"
+              parent="board.menu_board_root"
+              action="action_ops_sales_dashboard"
+              sequence="40"
+              groups="sales_team.group_sale_manager,base.group_system"/>
+</odoo>
