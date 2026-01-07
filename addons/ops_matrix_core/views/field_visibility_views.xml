@@ -29,10 +29,11 @@
             <field name="arch" type="xml">
                 <form string="Field Visibility Rule">
                     <header>
-                        <button name="%(action_field_visibility_rule_duplicate)d" 
+                        <!-- Duplicate button commented out - action not yet implemented -->
+                        <!-- <button name="%(action_field_visibility_rule_duplicate)d" 
                                 string="Duplicate Rule"
                                 type="action"
-                                class="btn-default"/>
+                                class="btn-default"/> -->
                     </header>
                     <sheet>
                         <div class="oe_title">
@@ -100,7 +101,7 @@
                             string="Read-Only"
                             domain="[('visibility_mode', '=', 'readonly')]"/>
                     
-                    <group expand="0" string="Group By">
+                    <group>
                         <filter name="group_by_model"
                                 string="Model"
                                 context="{'group_by': 'model_name'}"/>
