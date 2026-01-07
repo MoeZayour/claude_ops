@@ -209,7 +209,7 @@
                 <filter name="filter_blocking" string="Blocking Rules" domain="[('block_violation', '=', True)]"/>
                 <filter name="filter_logging" string="Logging Only" domain="[('block_violation', '=', False)]"/>
                 
-                <group expand="0" string="Group By">
+                <group string="Group By">
                     <filter name="groupby_model" string="Document Type" context="{'group_by': 'model_name'}"/>
                     <filter name="groupby_active" string="Active Status" context="{'group_by': 'active'}"/>
                     <filter name="groupby_company" string="Company" context="{'group_by': 'company_id'}"/>
@@ -241,7 +241,7 @@
                 <filter name="filter_week" string="This Week" domain="[('timestamp', '&gt;=', (context_today() - timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
                 <filter name="filter_month" string="This Month" domain="[('timestamp', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
                 
-                <group expand="0" string="Group By">
+                <group string="Group By">
                     <filter name="groupby_user" string="Violating User" context="{'group_by': 'user_id'}"/>
                     <filter name="groupby_rule" string="Rule" context="{'group_by': 'rule_id'}"/>
                     <filter name="groupby_blocked" string="Blocked Status" context="{'group_by': 'blocked'}"/>
