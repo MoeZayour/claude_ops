@@ -191,7 +191,18 @@ class OpsSoDRule(models.Model):
                     return approved_requests[0].approver_id
         
         return None
-
+    
+    def action_enable_rule(self):
+            """Enable SoD rule - called from tree view button"""
+            for rule in self:
+                rule.write({'active': True})
+            return True
+        
+    def action_disable_rule(self):
+        """Disable SoD rule - called from tree view button"""
+        for rule in self:
+            rule.write({'active': False})
+        return True
 
 class OpsSoDLog(models.Model):
     """
