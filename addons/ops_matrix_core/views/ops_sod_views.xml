@@ -235,12 +235,6 @@
                 <filter name="filter_blocked" string="Blocked Violations" domain="[('blocked', '=', True)]"/>
                 <filter name="filter_logged" string="Logged Only" domain="[('blocked', '=', False)]"/>
                 
-                <separator/>
-                
-                <filter name="filter_today" string="Today" domain="[('timestamp', '&gt;=', context_today().strftime('%Y-%m-%d')), ('timestamp', '&lt;', (context_today() + timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
-                <filter name="filter_week" string="This Week" domain="[('timestamp', '&gt;=', (context_today() - timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
-                <filter name="filter_month" string="This Month" domain="[('timestamp', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
-                
                 <group>
                     <filter name="groupby_user" string="Violating User" context="{'group_by': 'user_id'}"/>
                     <filter name="groupby_rule" string="Rule" context="{'group_by': 'rule_id'}"/>
