@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 class OpsAssetDepreciation(models.Model):
     _name = 'ops.asset.depreciation'
@@ -25,8 +25,13 @@ class OpsAssetDepreciation(models.Model):
     )
     
     move_posted = fields.Boolean(
-        related='move_id.posted',
         string='Posted',
+        compute='_compute_move_posted',
         store=True,
         help="Whether the journal entry has been posted"
     )
+    
+    @api.depends('move_id.state')
+    def _compute_move_posted(self):
+        for line in self:
+            line.move_posted = line.move_id.state == 'posted' if line.move_id else False
