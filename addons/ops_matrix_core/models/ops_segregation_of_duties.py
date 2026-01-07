@@ -19,6 +19,7 @@ class OpsSoDRule(models.Model):
     critical actions on the same document (e.g., creating and confirming).
     """
     _name = 'ops.segregation.of.duties'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Segregation of Duties Rules'
     _order = 'name'
     
