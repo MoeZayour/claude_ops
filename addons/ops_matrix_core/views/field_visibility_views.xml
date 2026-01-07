@@ -117,6 +117,17 @@
         </record>
         
         <!-- ========================================================== -->
+        <!-- Field Visibility Rule - Duplicate Action (Stub)           -->
+        <!-- ========================================================== -->
+        <record id="action_field_visibility_rule_duplicate" model="ir.actions.act_window">
+            <field name="name">Duplicate Visibility Rule</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ops.field.visibility.rule</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+        <!-- ========================================================== -->
         <!-- Field Visibility Rule - Action                            -->
         <!-- ========================================================== -->
         <record id="action_ops_field_visibility_rule" model="ir.actions.act_window">
