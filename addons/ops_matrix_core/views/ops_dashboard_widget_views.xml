@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action for Dashboard Widget Management -->
+    <record id="action_ops_dashboard_widget_management" model="ir.actions.act_window">
+        <field name="name">Dashboard Widgets</field>
+        <field name="res_model">ops.dashboard.widget</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_ops_dashboard_widget_list" model="ir.ui.view">
+        <field name="name">ops.dashboard.widget.list</field>
+        <field name="model">ops.dashboard.widget</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="widget_type"/>
+                <field name="model_name"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_ops_dashboard_widget_form" model="ir.ui.view">
+        <field name="name">ops.dashboard.widget.form</field>
+        <field name="model">ops.dashboard.widget</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg="bg-danger" decoration-danger="not active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Widget Name"/>
+                        </h1>
+                        <h3>
+                            <field name="code" placeholder="WIDGET_CODE"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="widget_type"/>
+                            <field name="model_name"/>
+                            <field name="domain"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="icon"/>
+                            <field name="color"/>
+                            <field name="height"/>
+                            <field name="width"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Data Configuration">
+                            <group>
+                                <field name="measure_field"/>
+                                <field name="dimension_field"/>
+                                <field name="group_by_fields"/>
+                                <field name="sort_by"/>
+                                <field name="limit"/>
+                            </group>
+                        </page>
+                        <page string="Security">
+                            <group>
+                                <field name="group_ids" widget="many2many_tags"/>
+                                <field name="company_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+                        <page string="Description">
+                            <field name="description" placeholder="Describe this widget..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

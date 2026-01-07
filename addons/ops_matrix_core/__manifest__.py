@@ -84,6 +84,7 @@
         'views/ops_audit_log_views.xml',
         'views/ops_sod_views.xml',
         'views/field_visibility_views.xml',
+        'views/ops_dashboard_widget_views.xml',
         
         # Menus - Load in specific order
         'views/ops_settings_menu.xml',
