@@ -8,7 +8,7 @@
                 <form string="Dispose Asset">
                     <group>
                         <field name="asset_id" readonly="1" force_save="1"/>
-                        <field name="date"/>
+                        <field name="disposal_date"/>
                         <field name="reason"/>
                     </group>
                     <footer>

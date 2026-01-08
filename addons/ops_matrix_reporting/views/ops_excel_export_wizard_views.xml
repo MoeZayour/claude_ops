@@ -64,11 +64,11 @@
         <field name="binding_view_types">list</field>
     </record>
     
-    <!-- Menu item for Excel Export -->
+    <!-- Menu item for Excel Export - Under Accounting → Reporting -->
     <menuitem id="menu_ops_excel_export"
-              name="Export to Excel"
-              parent="ops_matrix_core.menu_ops_governance_root"
+              name="Excel Export"
+              parent="account.menu_finance_reports"
               action="action_ops_excel_export"
-              sequence="130"
-              groups="base.group_user"/>
+              sequence="95"
+              groups="account.group_account_user"/>
 </odoo>

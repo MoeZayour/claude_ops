@@ -67,3 +67,16 @@ class OpsAsset(models.Model):
     def _compute_book_value(self):
         for asset in self:
             asset.book_value = asset.acquisition_value - asset.depreciated_value
+    
+    fully_depreciated = fields.Boolean(
+        string='Fully Depreciated',
+        compute='_compute_fully_depreciated',
+        store=True,
+        help="Check if the asset is fully depreciated"
+    )
+
+    @api.depends('acquisition_value', 'depreciated_value', 'salvage_value')
+    def _compute_fully_depreciated(self):
+        for asset in self:
+            depreciable = asset.acquisition_value - asset.salvage_value
+            asset.fully_depreciated = asset.depreciated_value >= depreciable if depreciable > 0 else False

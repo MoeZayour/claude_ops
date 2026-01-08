@@ -5,7 +5,7 @@
         <field name="name">ops.asset.tree</field>
         <field name="model">ops.asset</field>
         <field name="arch" type="xml">
-            <tree decoration-danger="state == 'cancelled'"
+            <list decoration-danger="state == 'cancelled'"
                   decoration-warning="state == 'disposed'"
                   decoration-success="state == 'close'"
                   decoration-muted="state == 'sold'">
@@ -20,7 +20,7 @@
                        decoration-warning="state == 'disposed'"
                        decoration-danger="state == 'cancelled'"
                        decoration-info="state == 'draft'"/>
-            </tree>
+            </list>
         </field>
     </record>
 

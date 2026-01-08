@@ -48,7 +48,7 @@
         # Wizards
         "wizard/ops_asset_depreciation_wizard_views.xml",
         "wizard/ops_asset_disposal_wizard_views.xml",
-        "wizard/ops_asset_report_wizard.xml",
+        # "wizard/ops_asset_report_wizard.xml",  # Disabled - references AbstractModel
 
         # Reports
         "report/ops_asset_report_templates.xml",
@@ -58,7 +58,7 @@
 
         # Menus
         "views/accounting_menus.xml",
-        "views/ops_report_menu.xml",
+        # "views/ops_report_menu.xml",  # Disabled - references missing model
     ],
     "demo": [
         "demo/ops_asset_demo.xml",

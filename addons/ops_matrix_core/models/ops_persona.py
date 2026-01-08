@@ -391,6 +391,7 @@ class OpsPersona(models.Model):
         string='Active Delegation',
         compute='_compute_active_delegation',
         store=False,
+        compute_sudo=True,
         help='Currently active delegation record, if any'
     )
     
@@ -400,25 +401,29 @@ class OpsPersona(models.Model):
         string='Current Delegate',
         compute='_compute_active_delegation',
         store=False,
+        compute_sudo=True,
         help='User temporarily acting as this persona'
     )
     
     delegation_start = fields.Datetime(
         string='Delegation Start',
         compute='_compute_active_delegation',
-        store=False
+        store=False,
+        compute_sudo=True
     )
     
     delegation_end = fields.Datetime(
         string='Delegation End',
         compute='_compute_active_delegation',
-        store=False
+        store=False,
+        compute_sudo=True
     )
     
     is_delegated = fields.Boolean(
         string='Is Delegated',
         compute='_compute_active_delegation',
-        store=True,
+        store=False,
+        compute_sudo=True,
         help='Active delegation is in effect'
     )
     

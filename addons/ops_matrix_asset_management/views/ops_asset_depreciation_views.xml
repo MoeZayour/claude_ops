@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <list string="Depreciation Lines" sample="1">
                 <field name="name"/>
+                <field name="asset_id"/>
                 <field name="depreciation_date"/>
                 <field name="amount"/>
                 <field name="state"/>
@@ -29,5 +30,13 @@
                 </sheet>
             </form>
         </field>
+    </record>
+
+    <!-- Missing Action for Depreciation Lines Menu -->
+    <record id="action_ops_asset_depreciation" model="ir.actions.act_window">
+        <field name="name">Depreciation Lines</field>
+        <field name="res_model">ops.asset.depreciation</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_ops_asset_depreciation_list"/>
     </record>
 </odoo>
