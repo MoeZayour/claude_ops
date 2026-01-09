@@ -103,6 +103,7 @@
         'wizard/ops_approval_reject_wizard_views.xml',
         'wizard/three_way_match_override_wizard_views.xml',
         'wizard/apply_report_template_wizard_views.xml',
+        'wizard/ops_sale_order_import_wizard_views.xml',
         'views/sale_order_import_wizard_views.xml',
     ],
     'demo': [

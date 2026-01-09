@@ -6,14 +6,7 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//form/header" position="inside">
-                <button name="%(ops_matrix_core.action_sale_order_import_wizard)d" 
-                        type="action" 
-                        string="Import from Excel" 
-                        icon="fa-file-excel-o"
-                        class="btn-secondary"
-                        invisible="[('state', 'not in', ['draft', 'sent'])]"/>
-            </xpath>
+            <!-- Import button will be added via separate inheritance after wizard action is loaded -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_approvals"
                         type="object"
