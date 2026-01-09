@@ -33,6 +33,10 @@ class OpsFinancialReportParser(models.AbstractModel):
             return self._process_gl_data(wizard, domain)
         elif wizard.report_type == 'aged':
             return self._process_aged_data(wizard, domain)
+        elif wizard.report_type == 'tb':
+            return self._process_tb_data(wizard, domain)
+        elif wizard.report_type == 'cf':
+            return self._process_cf_data(wizard, domain)
         return {}
 
     def _process_gl_data(self, wizard, domain):
@@ -208,4 +212,85 @@ class OpsFinancialReportParser(models.AbstractModel):
             'target_move': dict(wizard._fields['target_move'].selection).get(wizard.target_move),
             'headers': ['Partner', 'Debit', 'Credit', 'Balance'],
             'lines': lines,
+        }
+
+    def _process_tb_data(self, wizard, domain):
+        MoveLine = self.env['account.move.line']
+        grouped_data = MoveLine._read_group(
+            domain=domain,
+            groupby=['account_id'],
+            aggregates=['debit:sum', 'credit:sum', 'balance:sum']
+        )
+        lines = []
+        total_debit = 0.0
+        total_credit = 0.0
+        for result in grouped_data:
+            account = result[0] if result else None
+            debit_sum = result[1] if len(result) > 1 else 0.0
+            credit_sum = result[2] if len(result) > 2 else 0.0
+            balance_sum = result[3] if len(result) > 3 else 0.0
+            if not account:
+                continue
+            lines.append({
+                'account': f"{account.code} - {account.name}",
+                'debit': debit_sum or 0.0,
+                'credit': credit_sum or 0.0,
+                'balance': balance_sum or 0.0,
+            })
+            total_debit += debit_sum or 0.0
+            total_credit += credit_sum or 0.0
+        return {
+            'title': 'Trial Balance',
+            'date_from': wizard.date_from,
+            'date_to': wizard.date_to,
+            'branch': wizard.branch_id.name if wizard.branch_id else 'All Branches',
+            'company': wizard.company_id.name,
+            'user': self.env.user.name,
+            'target_move': dict(wizard._fields['target_move'].selection).get(wizard.target_move),
+            'headers': ['Account', 'Debit', 'Credit', 'Balance'],
+            'lines': lines,
+            'total_debit': total_debit,
+            'total_credit': total_credit,
+        }
+
+    def _process_cf_data(self, wizard, domain):
+        # Simplified Cash Flow: Filter by liquidity accounts
+        cf_domain = domain + [('account_id.account_type', '=', 'asset_cash')]
+        MoveLine = self.env['account.move.line']
+        grouped_data = MoveLine._read_group(
+            domain=cf_domain,
+            groupby=['account_id'],
+            aggregates=['debit:sum', 'credit:sum', 'balance:sum']
+        )
+        lines = []
+        total_inflow = 0.0
+        total_outflow = 0.0
+        for result in grouped_data:
+            account = result[0] if result else None
+            debit_sum = result[1] if len(result) > 1 else 0.0
+            credit_sum = result[2] if len(result) > 2 else 0.0
+            balance_sum = result[3] if len(result) > 3 else 0.0
+            if not account:
+                continue
+            lines.append({
+                'account': f"{account.code} - {account.name}",
+                'inflow': debit_sum or 0.0,
+                'outflow': credit_sum or 0.0,
+                'net': balance_sum or 0.0,
+            })
+            total_inflow += debit_sum or 0.0
+            total_outflow += credit_sum or 0.0
+        return {
+            'title': 'Cash Flow Statement',
+            'date_from': wizard.date_from,
+            'date_to': wizard.date_to,
+            'branch': wizard.branch_id.name if wizard.branch_id else 'All Branches',
+            'company': wizard.company_id.name,
+            'user': self.env.user.name,
+            'target_move': dict(wizard._fields['target_move'].selection).get(wizard.target_move),
+            'headers': ['Account', 'Inflow', 'Outflow', 'Net'],
+            'lines': lines,
+            'total_inflow': total_inflow,
+            'total_outflow': total_outflow,
+            'net_cash_flow': total_inflow - total_outflow,
         }

@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <record id="view_apply_report_template_wizard" model="ir.ui.view">
+        <field name="name">apply.report.template.wizard.form</field>
+        <field name="model">apply.report.template.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Apply Report Template">
+                <group>
+                    <field name="template_id"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="branch_id"/>
+                    <field name="business_unit_id"/>
+                </group>
+                <footer>
+                    <button name="action_apply_template" type="object" 
+                            string="Apply Template" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 
-        <record id="apply_report_template_wizard_form_view" model="ir.ui.view">
-            <field name="name">apply.report.template.wizard.form</field>
-            <field name="model">apply.report.template.wizard</field>
-            <field name="arch" type="xml">
-                <form string="Apply Report Template">
-                    <group>
-                        <field name="template_id"/>
-                        <field name="date_from"/>
-                        <field name="date_to"/>
-                        <field name="branch_id" options="{'no_create': True}"/>
-                        <field name="business_unit_id" options="{'no_create': True}"/>
-                    </group>
-                    <footer>
-                        <button name="action_apply_template" string="Apply Template" type="object" class="btn-primary"/>
-                        <button string="Cancel" class="btn-secondary" special="cancel"/>
-                    </footer>
-                </form>
-            </field>
-        </record>
-
-    </data>
+    <record id="action_apply_report_template_wizard" model="ir.actions.act_window">
+        <field name="name">Apply Report Template</field>
+        <field name="res_model">apply.report.template.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 </odoo>

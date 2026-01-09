@@ -56,4 +56,35 @@
               action="action_ops_inventory_analysis"
               sequence="10"/>
 
+    <!-- ==================== DASHBOARDS ==================== -->
+    <menuitem id="menu_ops_dashboards_root"
+              name="OPS Dashboards"
+              parent="ops_matrix_core.menu_ops_matrix_root"
+              sequence="10"
+              active="True"/>
+
+    <menuitem id="menu_dashboard_executive"
+              name="Executive Dashboard"
+              parent="menu_ops_dashboards_root"
+              action="action_dashboard_executive"
+              sequence="10"/>
+
+    <menuitem id="menu_dashboard_branch"
+              name="Branch Performance"
+              parent="menu_ops_dashboards_root"
+              action="action_dashboard_branch"
+              sequence="20"/>
+
+    <menuitem id="menu_dashboard_bu"
+              name="BU Performance"
+              parent="menu_ops_dashboards_root"
+              action="action_dashboard_bu"
+              sequence="30"/>
+
+    <menuitem id="menu_dashboard_sales"
+              name="Sales Performance"
+              parent="menu_ops_dashboards_root"
+              action="action_dashboard_sales"
+              sequence="40"/>
+
 </odoo>

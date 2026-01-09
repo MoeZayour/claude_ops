@@ -6,7 +6,7 @@
         name="OPS Matrix"
         web_icon="ops_matrix_core,static/description/icon.png"
         sequence="1"
-        active="False"
+        active="True"
         groups="base.group_user"/>
 
     <!-- Dashboards Menu -->

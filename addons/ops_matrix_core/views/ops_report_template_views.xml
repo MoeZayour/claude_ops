@@ -1,76 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <!-- Tree View -->
+    <record id="view_report_template_tree" model="ir.ui.view">
+        <field name="name">ops.report.template.tree</field>
+        <field name="model">ops.report.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="report_type"/>
+                <field name="is_system_template"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
 
-        <!-- Report Template Tree View -->
-        <record id="ops_report_template_tree_view" model="ir.ui.view">
-            <field name="name">ops.report.template.tree</field>
-            <field name="model">ops.report.template</field>
-            <field name="arch" type="xml">
-                <list string="Report Templates">
-                    <field name="sequence" widget="handle"/>
-                    <field name="name"/>
-                    <field name="report_type"/>
-                    <field name="company_id" groups="base.group_multi_company"/>
-                    <field name="active"/>
-                </list>
-            </field>
-        </record>
-
-        <!-- Report Template Form View -->
-        <record id="ops_report_template_form_view" model="ir.ui.view">
-            <field name="name">ops.report.template.form</field>
-            <field name="model">ops.report.template</field>
-            <field name="arch" type="xml">
-                <form string="Report Template">
-                    <sheet>
-                        <div class="oe_title">
-                            <h1><field name="name" placeholder="e.g., Standard P&amp;L"/></h1>
-                        </div>
+    <!-- Form View -->
+    <record id="view_report_template_form" model="ir.ui.view">
+        <field name="name">ops.report.template.form</field>
+        <field name="model">ops.report.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
                         <group>
-                            <group>
-                                <field name="report_type"/>
-                                <field name="company_id" groups="base.group_multi_company"/>
-                            </group>
-                            <group>
-                                <field name="sequence"/>
-                                <field name="active"/>
-                                <field name="is_system_template"/>
-                            </group>
+                            <field name="name"/>
+                            <field name="report_type"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
                         </group>
-                        <notebook>
-                            <page string="Template Lines" name="template_lines">
-                                <field name="template_line_ids">
-                                    <list editable="bottom">
-                                        <field name="sequence" widget="handle"/>
-                                        <field name="section_name"/>
-                                        <field name="account_type"/>
-                                        <field name="account_code_pattern"/>
-                                        <field name="show_subtotal"/>
-                                        <field name="is_section_header"/>
-                                    </list>
-                                </field>
-                            </page>
-                        </notebook>
-                    </sheet>
-                </form>
-            </field>
-        </record>
+                        <group>
+                            <field name="active"/>
+                            <field name="sequence"/>
+                            <field name="is_system_template" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page name="template_lines" string="Template Lines">
+                            <field name="template_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="section_name"/>
+                                    <field name="account_type"/>
+                                    <field name="account_code_pattern"/>
+                                    <field name="sort_by"/>
+                                    <field name="is_section_header" widget="boolean_toggle"/>
+                                    <field name="show_subtotal" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
-        <!-- Report Template Action -->
-        <record id="action_ops_report_template" model="ir.actions.act_window">
-            <field name="name">Report Templates</field>
-            <field name="res_model">ops.report.template</field>
-            <field name="view_mode">tree,form</field>
-        </record>
+    <!-- Action -->
+    <record id="action_report_template" model="ir.actions.act_window">
+        <field name="name">Report Templates</field>
+        <field name="res_model">ops.report.template</field>
+        <field name="view_mode">list,form</field>
+    </record>
 
-        <!-- Menu Item -->
-        <menuitem id="menu_ops_report_template"
-                  name="Report Templates"
-                  action="action_ops_report_template"
-                  parent="account.menu_finance_reports"
-                  groups="account.group_account_manager"
-                  sequence="100"/>
-
-    </data>
+    <!-- Menu Item -->
+    <menuitem id="menu_report_template"
+              name="Report Templates"
+              parent="ops_matrix_core.menu_ops_reporting"
+              action="action_report_template"
+              sequence="90"/>
 </odoo>

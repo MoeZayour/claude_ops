@@ -16,7 +16,9 @@ class OpsApprovalDashboard(models.Model):
         ('warning', 'Warning'),
         ('critical', 'Critical'),
         ('violated', 'Violated'),
-        ('completed', 'Completed')
+        ('completed', 'Completed'),
+        ('escalated', 'Escalated'),
+        ('failed', 'Failed')
     ], string='SLA Status', readonly=True)
     time_to_breach = fields.Float(string='Time to Breach (Hours)', readonly=True)
     required_persona_id = fields.Many2one('ops.persona', string='Required Persona', readonly=True)
@@ -45,7 +47,7 @@ class OpsApprovalDashboard(models.Model):
                     req.name AS name,
                     req.requested_by AS requester_id,
                     req.create_date AS date_request,
-                    sla.status AS sla_status,
+                    COALESCE(sla.state, 'running') AS sla_status,
                     EXTRACT(EPOCH FROM (sla.deadline - NOW())) / 3600 AS time_to_breach,
                     p.id AS required_persona_id
                 FROM

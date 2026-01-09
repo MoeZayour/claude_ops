@@ -5,17 +5,20 @@
         <field name="model">ops.sla.instance</field>
         <field name="arch" type="xml">
             <list string="SLA Instances" create="0" edit="0">
+                <field name="name"/>
                 <field name="template_id"/>
-                <field name="res_model"/>
+                <field name="model_name"/>
                 <field name="res_id"/>
-                <field name="start_datetime"/>
+                <field name="start_date"/>
                 <field name="deadline"/>
                 <field name="progress" widget="progressbar"/>
-                <field name="status" widget="badge" 
-                       decoration-info="status == 'running'"
-                       decoration-warning="status == 'warning'"
-                       decoration-danger="status in ('critical', 'violated')"
-                       decoration-success="status == 'completed'"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state == 'running'"
+                       decoration-warning="state == 'escalated'"
+                       decoration-danger="state == 'failed'"
+                       decoration-success="state == 'completed'"/>
+                <field name="escalation_level"/>
+                <field name="current_approver_id"/>
             </list>
         </field>
     </record>
@@ -26,23 +29,46 @@
         <field name="arch" type="xml">
             <form string="SLA Instance" create="0" edit="0">
                 <header>
-                    <button name="action_complete" string="Mark Completed" type="object" class="oe_highlight" invisible="status == 'completed'"/>
-                    <field name="status" widget="statusbar" statusbar_visible="running,warning,critical,violated,completed"/>
+                    <button name="action_complete" string="Mark Completed" type="object" class="oe_highlight" invisible="state == 'completed'"/>
+                    <button name="action_escalate" string="Force Escalate" type="object" invisible="state != 'running'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="running,escalated,completed,failed"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
                     <group>
                         <group>
                             <field name="template_id"/>
-                            <field name="res_model"/>
+                            <field name="model_name"/>
                             <field name="res_id"/>
+                            <field name="current_approver_id"/>
                         </group>
                         <group>
-                            <field name="start_datetime"/>
+                            <field name="start_date"/>
                             <field name="deadline"/>
+                            <field name="completion_date" invisible="state != 'completed'"/>
                             <field name="progress" widget="progressbar"/>
                         </group>
                     </group>
+                    <group string="Escalation Info">
+                        <group>
+                            <field name="escalation_level"/>
+                            <field name="is_overdue"/>
+                        </group>
+                        <group>
+                            <field name="elapsed_hours" widget="float_time"/>
+                            <field name="remaining_hours" widget="float_time"/>
+                        </group>
+                    </group>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -52,6 +78,4 @@
         <field name="res_model">ops.sla.instance</field>
         <field name="view_mode">list,form</field>
     </record>
-
-    
 </odoo>

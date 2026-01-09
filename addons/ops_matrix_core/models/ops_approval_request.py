@@ -175,6 +175,7 @@ class OpsApprovalRequest(models.Model):
                                    compute='_compute_violation_summary', store=True)
     
     # --- ESCALATION TRACKING ---
+    original_sla_id = fields.Many2one('ops.sla.instance', string='Original SLA', help='The SLA instance that triggered this escalation.')
     escalation_level = fields.Integer('Current Escalation Level', default=0, tracking=True)
     escalation_date = fields.Datetime('Last Escalation Date', readonly=True, tracking=True)
     escalation_history = fields.Text('Escalation History', readonly=True)

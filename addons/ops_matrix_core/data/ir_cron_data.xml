@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="ir_cron_sla_monitor" model="ir.cron">
-        <field name="name">OPS: Monitor SLA Instances</field>
+        <field name="name">OPS: Check SLA Escalations</field>
         <field name="model_id" ref="ops_matrix_core.model_ops_sla_instance"/>
         <field name="state">code</field>
-        <field name="code">model.cron_check_sla_breaches()</field>
-        <field name="interval_number">1</field>
-        <field name="interval_type">hours</field>
+        <field name="code">model._cron_check_escalations()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
         <field name="active">True</field>
     </record>
 

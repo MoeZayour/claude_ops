@@ -16,7 +16,9 @@ class OpsFinancialReportWizard(models.TransientModel):
         ('pl', 'P&L'),
         ('bs', 'Balance Sheet'),
         ('gl', 'General Ledger'),
-        ('aged', 'Aged Partner')
+        ('aged', 'Aged Partner'),
+        ('tb', 'Trial Balance'),
+        ('cf', 'Cash Flow')
     ], string='Report Type', required=True, default='gl')
     
     date_from = fields.Date(string='Date From', required=True)
@@ -122,6 +124,20 @@ class OpsFinancialReportWizard(models.TransientModel):
                 'pivot_column_groupby': [],
                 'pivot_measures': ['debit', 'credit', 'balance'],
             })
+        elif self.report_type == 'tb':
+            # Trial Balance: Group by account
+            context.update({
+                'pivot_row_groupby': ['account_id'],
+                'pivot_column_groupby': [],
+                'pivot_measures': ['debit', 'credit', 'balance'],
+            })
+        elif self.report_type == 'cf':
+            # Cash Flow: Group by account (Liquidity)
+            context.update({
+                'pivot_row_groupby': ['account_id', 'date'],
+                'pivot_column_groupby': [],
+                'pivot_measures': ['debit', 'credit', 'balance'],
+            })
         
         return context
 
@@ -151,6 +167,10 @@ class OpsFinancialReportWizard(models.TransientModel):
         self.ensure_one()
         return self.env.ref('ops_matrix_accounting.action_report_ops_financial').report_action(self)
 
+    def action_export_pdf(self):
+        """Alias for action_print_pdf to satisfy Priority #15 requirements."""
+        return self.action_print_pdf()
+
     def action_export_xlsx(self):
         """Export to Excel using in-memory generation."""
         self.ensure_one()
@@ -164,7 +184,7 @@ class OpsFinancialReportWizard(models.TransientModel):
             import xlsxwriter
             output = io.BytesIO()
             workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-            worksheet = workbook.add_worksheet(report_data['title'])
+            worksheet = workbook.add_worksheet(report_data['title'][:31]) # Excel sheet name limit
             
             # Formats
             header_format = workbook.add_format({
@@ -183,9 +203,33 @@ class OpsFinancialReportWizard(models.TransientModel):
             row = 1
             for line in report_data['lines']:
                 col = 0
-                for value in line.values():
-                    worksheet.write(row, col, value)
-                    col += 1
+                # Ensure we only write values that exist in headers
+                # For P&L and BS, lines are simple dicts with 'account' and 'amount'
+                if self.report_type in ['pl', 'bs', 'tb']:
+                    worksheet.write(row, 0, line.get('account', ''))
+                    worksheet.write(row, 1, line.get('amount', line.get('debit', 0)))
+                    if self.report_type == 'tb':
+                        worksheet.write(row, 2, line.get('credit', 0))
+                        worksheet.write(row, 3, line.get('balance', 0))
+                elif self.report_type == 'gl':
+                    worksheet.write(row, 0, str(line.get('date', '')))
+                    worksheet.write(row, 1, line.get('move_name', ''))
+                    worksheet.write(row, 2, line.get('account', ''))
+                    worksheet.write(row, 3, line.get('partner', ''))
+                    worksheet.write(row, 4, line.get('label', ''))
+                    worksheet.write(row, 5, line.get('debit', 0))
+                    worksheet.write(row, 6, line.get('credit', 0))
+                    worksheet.write(row, 7, line.get('balance', 0))
+                elif self.report_type == 'aged':
+                    worksheet.write(row, 0, line.get('partner', ''))
+                    worksheet.write(row, 1, line.get('debit', 0))
+                    worksheet.write(row, 2, line.get('credit', 0))
+                    worksheet.write(row, 3, line.get('balance', 0))
+                elif self.report_type == 'cf':
+                    worksheet.write(row, 0, line.get('account', ''))
+                    worksheet.write(row, 1, line.get('inflow', 0))
+                    worksheet.write(row, 2, line.get('outflow', 0))
+                    worksheet.write(row, 3, line.get('net', 0))
                 row += 1
             
             workbook.close()

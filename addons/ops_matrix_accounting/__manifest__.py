@@ -44,6 +44,7 @@
         "views/ops_financial_report_wizard_views.xml",
         "views/ops_general_ledger_wizard_enhanced_views.xml",
         "views/ops_general_ledger_wizard_views.xml",
+        "views/ops_report_menu.xml",
 
         # Wizards
         "wizard/ops_asset_depreciation_wizard_views.xml",
