@@ -29,18 +29,22 @@
         # Security
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
-        # Data
-        # 'data/dashboard_data.xml',  # Disabled - Enterprise spreadsheet.dashboard not available
         # Views
         'views/ops_sales_analysis_views.xml',
         'views/ops_financial_analysis_views.xml',
         'views/ops_inventory_analysis_views.xml',
         'views/ops_excel_export_wizard_views.xml',
         'views/reporting_menu.xml',
+        'views/ops_dashboard_views.xml',
+        # Data
+        'data/ops_dashboard_data.xml',
+        # 'data/dashboard_data.xml',  # Disabled - Enterprise spreadsheet.dashboard not available
     ],
     'assets': {
         'web.assets_backend': [
             'ops_matrix_reporting/static/src/css/reporting.css',
+            'ops_matrix_reporting/static/src/js/ops_dashboard.js',
+            'ops_matrix_reporting/static/src/xml/ops_dashboard_templates.xml',
         ],
     },
     'external_dependencies': {

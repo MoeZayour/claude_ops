@@ -149,45 +149,54 @@
 
 /* Dashboard Styles */
 .ops-dashboard-container {
-    padding: 2rem;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    min-height: 100vh;
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100%;
+}
+
+.ops-dashboard-title {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 0;
 }
 
 .ops-dashboard-card {
     background-color: #ffffff;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
 }
 
-.ops-dashboard-card-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #333333;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #0066cc;
-    padding-bottom: 0.5rem;
+.ops-dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
-.ops-dashboard-metric {
+.ops-dashboard-card-body {
+    padding: 20px;
+}
+
+.ops-dashboard-icon-box {
+    width: 50px;
+    height: 50px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #e9ecef;
+    justify-content: center;
+    background-color: #eef2ff;
+    border-radius: 12px;
 }
 
-.ops-dashboard-metric-label {
-    font-weight: 500;
-    color: #666666;
+.ops-dashboard-kpi-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1e293b;
 }
 
-.ops-dashboard-metric-value {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #0066cc;
+.ops-dashboard-footer {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 10px;
 }
 
 /* Spreadsheet Dashboard Styles */

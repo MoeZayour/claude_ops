@@ -13,3 +13,9 @@ access_ops_inventory_analysis_admin,ops.inventory.analysis.admin,model_ops_inven
 access_ops_excel_export_wizard_user,ops.excel.export.wizard.user,model_ops_excel_export_wizard,ops_matrix_core.group_ops_user,1,1,1,1
 access_ops_excel_export_wizard_manager,ops.excel.export.wizard.manager,model_ops_excel_export_wizard,ops_matrix_core.group_ops_manager,1,1,1,1
 access_ops_excel_export_wizard_admin,ops.excel.export.wizard.admin,model_ops_excel_export_wizard,ops_matrix_core.group_ops_admin,1,1,1,1
+access_ops_dashboard_user,ops.dashboard.user,model_ops_dashboard,ops_matrix_core.group_ops_user,1,0,0,0
+access_ops_dashboard_manager,ops.dashboard.manager,model_ops_dashboard,ops_matrix_core.group_ops_manager,1,1,1,1
+access_ops_dashboard_admin,ops.dashboard.admin,model_ops_dashboard,ops_matrix_core.group_ops_admin,1,1,1,1
+access_ops_dashboard_widget_user,ops.dashboard.widget.user,model_ops_dashboard_widget,ops_matrix_core.group_ops_user,1,0,0,0
+access_ops_dashboard_widget_manager,ops.dashboard.widget.manager,model_ops_dashboard_widget,ops_matrix_core.group_ops_manager,1,1,1,1
+access_ops_dashboard_widget_admin,ops.dashboard.widget.admin,model_ops_dashboard_widget,ops_matrix_core.group_ops_admin,1,1,1,1

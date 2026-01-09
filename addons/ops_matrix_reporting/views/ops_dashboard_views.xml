@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dashboard Widget Views -->
+    <record id="view_ops_dashboard_widget_list" model="ir.ui.view">
+        <field name="name">ops.dashboard.widget.list</field>
+        <field name="model">ops.dashboard.widget</field>
+        <field name="arch" type="xml">
+            <list string="Dashboard Widgets">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="dashboard_id"/>
+                <field name="widget_type"/>
+                <field name="data_source_model"/>
+                <field name="col_span"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_dashboard_widget_form" model="ir.ui.view">
+        <field name="name">ops.dashboard.widget.form</field>
+        <field name="model">ops.dashboard.widget</field>
+        <field name="arch" type="xml">
+            <form string="Dashboard Widget">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="dashboard_id"/>
+                            <field name="widget_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="data_source_model"/>
+                            <field name="data_source_method"/>
+                            <field name="icon"/>
+                        </group>
+                    </group>
+                    <group string="Layout">
+                        <group>
+                            <field name="col_span"/>
+                            <field name="row_span"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Data Configuration">
+                            <group>
+                                <field name="domain"/>
+                                <field name="context"/>
+                                <field name="config"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Dashboard Views -->
+    <record id="view_ops_dashboard_list" model="ir.ui.view">
+        <field name="name">ops.dashboard.list</field>
+        <field name="model">ops.dashboard</field>
+        <field name="arch" type="xml">
+            <list string="Dashboards">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_dashboard_form" model="ir.ui.view">
+        <field name="name">ops.dashboard.form</field>
+        <field name="model">ops.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Dashboard">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Dashboard Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Widgets">
+                            <field name="widget_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="widget_type"/>
+                                    <field name="data_source_model"/>
+                                    <field name="col_span"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Client Action for Dashboard Rendering -->
+    <record id="action_ops_dashboard_view" model="ir.actions.client">
+        <field name="name">Dashboard</field>
+        <field name="tag">ops_dashboard_tag</field>
+        <field name="context">{'dashboard_id': active_id}</field>
+    </record>
+
+    <!-- Action for Dashboard Management -->
+    <record id="action_ops_dashboard_config" model="ir.actions.act_window">
+        <field name="name">Dashboards Configuration</field>
+        <field name="res_model">ops.dashboard</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first dashboard!
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_ops_dashboards_root"
+              name="Dashboards"
+              parent="ops_matrix_reporting.menu_ops_reporting_tools"
+              sequence="10"/>
+
+    <menuitem id="menu_ops_dashboard_config"
+              name="Configuration"
+              parent="menu_ops_dashboards_root"
+              action="action_ops_dashboard_config"
+              sequence="100"/>
+</odoo>
