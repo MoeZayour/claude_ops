@@ -394,3 +394,8 @@ class OpsAuditLog(models.Model):
             'view_mode': 'form',
             'target': 'current'
         }
+
+    @api.model
+    def cron_cleanup_old_logs(self, days=90):
+        """Alias for cleanup_old_logs for compatibility."""
+        return self.cleanup_old_logs(days=days)

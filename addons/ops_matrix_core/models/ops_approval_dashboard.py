@@ -27,7 +27,13 @@ class OpsApprovalDashboard(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         
         # Check if all required tables exist
-        required_tables = ['ops_approval_request', 'ops_governance_rule', 'ops_persona', 'ops_sla_instance']
+        required_tables = [
+            'ops_approval_request', 
+            'ops_governance_rule', 
+            'ops_persona', 
+            'ops_sla_instance',
+            'rule_approval_persona_rel'
+        ]
         for table in required_tables:
             self.env.cr.execute("""
                 SELECT EXISTS (
@@ -47,7 +53,7 @@ class OpsApprovalDashboard(models.Model):
                     req.name AS name,
                     req.requested_by AS requester_id,
                     req.create_date AS date_request,
-                    COALESCE(sla.state, 'running') AS sla_status,
+                    COALESCE(sla.status, 'running') AS sla_status,
                     EXTRACT(EPOCH FROM (sla.deadline - NOW())) / 3600 AS time_to_breach,
                     p.id AS required_persona_id
                 FROM
@@ -59,7 +65,7 @@ class OpsApprovalDashboard(models.Model):
                 LEFT JOIN
                     ops_persona p ON rel.persona_id = p.id
                 LEFT JOIN
-                    ops_sla_instance sla ON sla.res_model = req.model_name AND sla.res_id = req.res_id
+                    ops_sla_instance sla ON sla.model_name = req.model_name AND sla.res_id = req.res_id
                 WHERE
                     req.state = 'pending'
             )

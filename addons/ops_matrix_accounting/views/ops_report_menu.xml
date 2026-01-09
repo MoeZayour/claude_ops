@@ -3,7 +3,7 @@
     <!-- Financial Reports Wizard Action -->
     <record id="action_ops_financial_reports_wizard" model="ir.actions.act_window">
         <field name="name">Financial Reports</field>
-        <field name="res_model">ops.report.wizard</field>
+        <field name="res_model">ops.financial.report.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="context">{}</field>

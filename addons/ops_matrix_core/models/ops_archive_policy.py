@@ -42,3 +42,7 @@ class OpsArchivePolicy(models.Model):
             records = model.search(domain, limit=1000)
             if records:
                 records.unlink()
+
+    def cron_execute_archive_policies(self):
+        """Alias for _cron_archive_records for compatibility."""
+        return self._cron_archive_records()

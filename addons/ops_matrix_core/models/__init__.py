@@ -77,26 +77,4 @@ from . import ops_product_request
 # 8. Wizards (Located in models folder currently)
 from . import sale_order_import_wizard
 from . import account_report
-
 # Core OPS models
-from . import ops_business_unit
-from . import ops_branch
-from . import ops_persona
-
-# Security models
-from . import ops_segregation_of_duties
-from . import ops_segregation_of_duties_mixin
-from . import field_visibility
-
-# Approval workflow
-from . import ops_approval_mixin
-
-# Extended models
-from . import sale_order
-from . import purchase_order
-from . import account_move
-from . import account_payment
-from . import stock_picking
-from . import product
-from . import stock_move
-from . import stock_quant

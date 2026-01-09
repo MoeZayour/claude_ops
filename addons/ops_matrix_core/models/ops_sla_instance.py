@@ -315,3 +315,7 @@ class OpsSLAInstance(models.Model):
                 body=f"⚠️ Completed {overtime:.1f} hours over SLA",
                 subject="SLA Missed"
             )
+
+    def cron_check_sla_breaches(self):
+        """Alias for _cron_check_escalations for compatibility."""
+        return self._cron_check_escalations()

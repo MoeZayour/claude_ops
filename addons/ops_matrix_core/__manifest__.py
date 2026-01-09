@@ -26,6 +26,7 @@
     'data': [
         'data/ir_module_category.xml',
         'data/res_groups.xml',
+        'views/ops_menus.xml',
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
         'data/ir_sequence_data.xml',

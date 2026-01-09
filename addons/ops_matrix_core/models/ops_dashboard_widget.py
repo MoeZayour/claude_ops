@@ -298,3 +298,12 @@ class OpsDashboardWidget(models.Model):
             raise UserError(
                 _('System widgets cannot be deleted.')
             )
+
+    def cron_refresh_dashboard_data(self):
+        """Refresh data for all active widgets."""
+        widgets = self.search([('active', '=', True)])
+        for widget in widgets:
+            try:
+                widget.get_widget_data()
+            except Exception as e:
+                _logger.error(f"Error refreshing widget {widget.name}: {e}")

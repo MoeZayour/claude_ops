@@ -41,6 +41,7 @@
         "views/ops_asset_depreciation_views.xml",
         "views/ops_budget_views.xml",
         "views/ops_pdc_views.xml",
+        "views/accounting_menus.xml",
         "views/ops_financial_report_wizard_views.xml",
         "views/ops_general_ledger_wizard_enhanced_views.xml",
         "views/ops_general_ledger_wizard_views.xml",
@@ -58,7 +59,6 @@
         "report/ops_general_ledger_template.xml",
 
         # Menus
-        "views/accounting_menus.xml",
         # "views/ops_report_menu.xml",  # Disabled - references missing model
     ],
     "demo": [
