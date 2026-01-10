@@ -1,6 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_ops_pdc_user,ops.pdc.user,model_ops_pdc,ops_matrix_core.group_ops_user,1,1,1,0
-access_ops_pdc_manager,ops.pdc.manager,model_ops_pdc,ops_matrix_core.group_ops_manager,1,1,1,1
+access_ops_pdc_receivable_user,access_ops_pdc_receivable_user,model_ops_pdc_receivable,base.group_user,1,1,1,0
+access_ops_pdc_receivable_manager,access_ops_pdc_receivable_manager,model_ops_pdc_receivable,account.group_account_manager,1,1,1,1
+access_ops_pdc_payable_user,access_ops_pdc_payable_user,model_ops_pdc_payable,base.group_user,1,1,1,0
+access_ops_pdc_payable_manager,access_ops_pdc_payable_manager,model_ops_pdc_payable,account.group_account_manager,1,1,1,1
 access_ops_budget_user,ops.budget.user,model_ops_budget,ops_matrix_core.group_ops_user,1,0,0,0
 access_ops_budget_manager,ops.budget.manager,model_ops_budget,ops_matrix_core.group_ops_manager,1,1,1,1
 access_ops_budget_line_user,ops.budget.line.user,model_ops_budget_line,ops_matrix_core.group_ops_user,1,0,0,0

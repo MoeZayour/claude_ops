@@ -65,7 +65,11 @@ class OpsApprovalDashboard(models.Model):
                 LEFT JOIN
                     ops_persona p ON rel.persona_id = p.id
                 LEFT JOIN
-                    ops_sla_instance sla ON sla.model_name = req.model_name AND sla.res_id = req.res_id
+                    ops_sla_instance sla ON sla.res_id = req.res_id
+                LEFT JOIN
+                    ops_sla_template tmpl ON sla.template_id = tmpl.id
+                LEFT JOIN
+                    ir_model m ON tmpl.model_id = m.id AND m.model = req.model_name
                 WHERE
                     req.state = 'pending'
             )

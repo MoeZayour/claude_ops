@@ -20,6 +20,7 @@
     "depends": [
         "account",
         "ops_matrix_core",
+        "ops_matrix_reporting",
         "report_xlsx",
         "analytic",
     ],
@@ -33,6 +34,7 @@
 
         # Data
         "data/ops_asset_data.xml",
+        "data/pdc_sequence.xml",
         "data/templates/ops_budget_templates.xml",
 
         # Views
