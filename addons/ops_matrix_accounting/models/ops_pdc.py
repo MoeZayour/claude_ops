@@ -36,11 +36,12 @@ class OpsPDCReceivable(models.Model):
     
     notes = fields.Text('Notes')
     
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('ops.pdc.receivable') or _('New')
-        return super(OpsPDCReceivable, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('ops.pdc.receivable') or _('New')
+        return super(OpsPDCReceivable, self).create(vals_list)
     
     @api.constrains('amount')
     def _check_amount(self):
@@ -107,11 +108,12 @@ class OpsPDCPayable(models.Model):
     
     notes = fields.Text('Notes')
     
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('ops.pdc.payable') or _('New')
-        return super(OpsPDCPayable, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('ops.pdc.payable') or _('New')
+        return super(OpsPDCPayable, self).create(vals_list)
     
     @api.constrains('amount')
     def _check_amount(self):
