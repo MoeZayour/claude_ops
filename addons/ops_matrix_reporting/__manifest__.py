@@ -29,15 +29,16 @@
         # Security
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
-        # Views
+        # Base Structure
+        'views/base_menus.xml',
+        # Views & Data
+        'views/ops_dashboard_views.xml',
+        'data/ops_dashboard_data.xml',
         'views/ops_sales_analysis_views.xml',
         'views/ops_financial_analysis_views.xml',
         'views/ops_inventory_analysis_views.xml',
         'views/ops_excel_export_wizard_views.xml',
         'views/reporting_menu.xml',
-        'views/ops_dashboard_views.xml',
-        # Data
-        'data/ops_dashboard_data.xml',
         # 'data/dashboard_data.xml',  # Disabled - Enterprise spreadsheet.dashboard not available
     ],
     'assets': {

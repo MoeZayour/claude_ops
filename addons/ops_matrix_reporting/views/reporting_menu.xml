@@ -10,10 +10,7 @@
 
     <!-- ==================== SETTINGS: TOOLS ==================== -->
     <!-- Extends the core settings menu -->
-    <menuitem id="menu_ops_reporting_tools"
-              name="Reporting Tools"
-                             parent="ops_matrix_core.menu_ops_configuration"
-              sequence="60"/>
+
 
 
 
@@ -57,11 +54,7 @@
               sequence="10"/>
 
     <!-- ==================== DASHBOARDS ==================== -->
-    <menuitem id="menu_ops_dashboards_root"
-              name="OPS Dashboards"
-              parent="ops_matrix_core.menu_ops_matrix_root"
-              sequence="10"
-              active="True"/>
+
 
     <menuitem id="menu_dashboard_executive"
               name="Executive Dashboard"

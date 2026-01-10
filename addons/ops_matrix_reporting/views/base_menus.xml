@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Base Menu Structure to break circular dependencies -->
+    
+    <!-- Reporting Tools Root (under Core Configuration) -->
+    <menuitem id="menu_ops_reporting_tools"
+              name="Reporting Tools"
+              parent="ops_matrix_core.menu_ops_configuration"
+              sequence="60"/>
+
+    <!-- Dashboards Root (under Matrix Root) -->
+    <menuitem id="menu_ops_dashboards_root"
+              name="OPS Dashboards"
+              parent="ops_matrix_core.menu_ops_matrix_root"
+              sequence="10"
+              active="True"/>
+
+</odoo>
