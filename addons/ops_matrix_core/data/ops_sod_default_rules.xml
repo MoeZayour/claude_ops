@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ===============================================================
+             Segregation of Duties (SoD) Default Rules
+             
+             These rules enforce the principle that a single user cannot
+             perform multiple critical actions on the same document.
+             
+             All default rules are DISABLED (active=False) - administrators
+             must explicitly enable them after reviewing company policy.
+             =============================================================== -->
+        
+        <!-- Rule 1: Sales Order - Create + Confirm Separation
+             
+             Prevents: Same user creating and confirming sales orders
+             Applies to: Orders >= $5,000
+             Purpose: Ensure independent review of large customer commitments
+             Compliance: Addresses segregation of duties in sales workflow
+        -->
+        <record id="sod_rule_sale_order_create_confirm" model="ops.segregation.of.duties">
+            <field name="name">Sales Order: Create + Confirm Separation</field>
+            <field name="model_name">sale.order</field>
+            <field name="action_1">create</field>
+            <field name="action_2">confirm</field>
+            <field name="threshold_amount">5000.0</field>
+            <field name="active">False</field>
+            <field name="block_violation">True</field>
+            <field name="is_system_rule">True</field>
+            <field name="description">Segregation of Duties: Sales order creator cannot confirm the order if amount >= $5,000. A different user must review and confirm to ensure independent verification of sales commitments.</field>
+        </record>
+        
+        <!-- Rule 2: Purchase Order - Create + Confirm Separation
+             
+             Prevents: Same user creating and confirming purchase orders
+             Applies to: Orders >= $5,000
+             Purpose: Ensure independent verification of supplier commitments
+             Compliance: Prevents single user from initiating and authorizing purchases
+        -->
+        <record id="sod_rule_purchase_order_create_confirm" model="ops.segregation.of.duties">
+            <field name="name">Purchase Order: Create + Confirm Separation</field>
+            <field name="model_name">purchase.order</field>
+            <field name="action_1">create</field>
+            <field name="action_2">confirm</field>
+            <field name="threshold_amount">5000.0</field>
+            <field name="active">False</field>
+            <field name="block_violation">True</field>
+            <field name="is_system_rule">True</field>
+            <field name="description">Segregation of Duties: Purchase order creator cannot confirm the order if amount >= $5,000. A different user must approve to ensure proper authorization controls and prevent unauthorized procurement.</field>
+        </record>
+        
+        <!-- Rule 3: Invoice - Create + Post Separation
+             
+             Prevents: Same user creating and posting invoices
+             Applies to: ALL invoices (threshold=0)
+             Purpose: Prevent unauthorized financial recording
+             Compliance: Critical for accounts payable/receivable controls
+        -->
+        <record id="sod_rule_invoice_create_post" model="ops.segregation.of.duties">
+            <field name="name">Invoice: Create + Post Separation</field>
+            <field name="model_name">account.move</field>
+            <field name="action_1">create</field>
+            <field name="action_2">post</field>
+            <field name="threshold_amount">0.0</field>
+            <field name="active">False</field>
+            <field name="block_violation">True</field>
+            <field name="is_system_rule">True</field>
+            <field name="description">Segregation of Duties: Invoice creator cannot post/validate the invoice. A different user must post to ensure independent verification and prevent unauthorized financial transactions.</field>
+        </record>
+        
+        <!-- Rule 4: Payment - Create + Post Separation
+             
+             Prevents: Same user creating and posting payments
+             Applies to: Payments >= $2,000
+             Purpose: Prevent unauthorized cash disbursement
+             Compliance: Core anti-fraud control for payment workflows
+        -->
+        <record id="sod_rule_payment_create_post" model="ops.segregation.of.duties">
+            <field name="name">Payment: Create + Post Separation</field>
+            <field name="model_name">account.payment</field>
+            <field name="action_1">create</field>
+            <field name="action_2">post</field>
+            <field name="threshold_amount">2000.0</field>
+            <field name="active">False</field>
+            <field name="block_violation">True</field>
+            <field name="is_system_rule">True</field>
+            <field name="description">Segregation of Duties: Payment creator cannot post the payment if amount >= $2,000. A different user must authorize and post to ensure dual control over cash disbursements.</field>
+        </record>
+        
+    </data>
+</odoo>

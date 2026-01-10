@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        
+        <!-- ========================================================== -->
+        <!-- SALES REPRESENTATIVE - HIDE COST/MARGIN FIELDS            -->
+        <!-- ========================================================== -->
+        
+        <!-- Product: Hide cost_price from Sales Reps -->
+        <record id="field_visibility_rule_product_cost_price_sales" model="ops.field.visibility.rule">
+            <field name="model_name">product.template</field>
+            <field name="field_name">standard_price</field>
+            <field name="field_label">Cost Price</field>
+            <field name="security_group_id" ref="sales_team.group_sale_salesman"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Sales representatives cannot see cost price</field>
+        </record>
+        
+        <!-- Product Variant: Hide cost_price from Sales Reps -->
+        <record id="field_visibility_rule_product_variant_cost_price_sales" model="ops.field.visibility.rule">
+            <field name="model_name">product.product</field>
+            <field name="field_name">standard_price</field>
+            <field name="field_label">Cost Price</field>
+            <field name="security_group_id" ref="sales_team.group_sale_salesman"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Sales representatives cannot see cost price on variants</field>
+        </record>
+        
+        <!-- Sale Order Line: Hide purchase_price from Sales Reps -->
+        <record id="field_visibility_rule_sale_line_purchase_price_sales" model="ops.field.visibility.rule">
+            <field name="model_name">sale.order.line</field>
+            <field name="field_name">purchase_price</field>
+            <field name="field_label">Purchase Price</field>
+            <field name="security_group_id" ref="sales_team.group_sale_salesman"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Sales representatives cannot see purchase price on orders</field>
+        </record>
+        
+        <!-- Sale Order Line: Hide margin from Sales Reps -->
+        <record id="field_visibility_rule_sale_line_margin_sales" model="ops.field.visibility.rule">
+            <field name="model_name">sale.order.line</field>
+            <field name="field_name">margin</field>
+            <field name="field_label">Margin</field>
+            <field name="security_group_id" ref="sales_team.group_sale_salesman"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Sales representatives cannot see margin calculations</field>
+        </record>
+        
+        <!-- Sale Order Line: Hide margin_percent from Sales Reps -->
+        <record id="field_visibility_rule_sale_line_margin_percent_sales" model="ops.field.visibility.rule">
+            <field name="model_name">sale.order.line</field>
+            <field name="field_name">margin_percent</field>
+            <field name="field_label">Margin %</field>
+            <field name="security_group_id" ref="sales_team.group_sale_salesman"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Sales representatives cannot see margin percentage</field>
+        </record>
+        
+        <!-- ========================================================== -->
+        <!-- PURCHASE OFFICER - HIDE CUSTOMER/SALE FIELDS               -->
+        <!-- ========================================================== -->
+        
+        <!-- Purchase Order: Hide customer field from Purchase Officers -->
+        <record id="field_visibility_rule_purchase_customer_purchase" model="ops.field.visibility.rule">
+            <field name="model_name">purchase.order</field>
+            <field name="field_name">customer_id</field>
+            <field name="field_label">Customer</field>
+            <field name="security_group_id" ref="purchase.group_purchase_user"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Purchase officers cannot see customer information</field>
+        </record>
+        
+        <!-- Purchase Order Line: Hide sale_price from Purchase Officers -->
+        <record id="field_visibility_rule_purchase_line_sale_price" model="ops.field.visibility.rule">
+            <field name="model_name">purchase.order.line</field>
+            <field name="field_name">sale_price</field>
+            <field name="field_label">Sale Price</field>
+            <field name="security_group_id" ref="purchase.group_purchase_user"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Purchase officers cannot see selling prices</field>
+        </record>
+        
+        <!-- Purchase Order Line: Hide margin from Purchase Officers -->
+        <record id="field_visibility_rule_purchase_line_margin" model="ops.field.visibility.rule">
+            <field name="model_name">purchase.order.line</field>
+            <field name="field_name">margin</field>
+            <field name="field_label">Margin</field>
+            <field name="security_group_id" ref="purchase.group_purchase_user"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Purchase officers cannot see margin calculations</field>
+        </record>
+        
+        <!-- Purchase Order Line: Hide margin_percent from Purchase Officers -->
+        <record id="field_visibility_rule_purchase_line_margin_percent" model="ops.field.visibility.rule">
+            <field name="model_name">purchase.order.line</field>
+            <field name="field_name">margin_percent</field>
+            <field name="field_label">Margin %</field>
+            <field name="security_group_id" ref="purchase.group_purchase_user"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Purchase officers cannot see margin percentage</field>
+        </record>
+        
+        <!-- ========================================================== -->
+        <!-- WAREHOUSE STAFF - HIDE COST/VALUATION FIELDS               -->
+        <!-- ========================================================== -->
+        
+        <!-- Stock Move: Hide cost from Warehouse Staff -->
+        <record id="field_visibility_rule_stock_move_cost_warehouse" model="ops.field.visibility.rule">
+            <field name="model_name">stock.move</field>
+            <field name="field_name">cost</field>
+            <field name="field_label">Cost</field>
+            <field name="security_group_id" ref="stock.group_stock_user"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Warehouse staff cannot see item cost</field>
+        </record>
+        
+        <!-- Stock Move: Hide value from Warehouse Staff -->
+        <record id="field_visibility_rule_stock_move_value_warehouse" model="ops.field.visibility.rule">
+            <field name="model_name">stock.move</field>
+            <field name="field_name">value</field>
+            <field name="field_label">Valuation</field>
+            <field name="security_group_id" ref="stock.group_stock_user"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Warehouse staff cannot see inventory valuation</field>
+        </record>
+        
+        <!-- Stock Quant: Hide cost from Warehouse Staff -->
+        <record id="field_visibility_rule_stock_quant_cost_warehouse" model="ops.field.visibility.rule">
+            <field name="model_name">stock.quant</field>
+            <field name="field_name">cost</field>
+            <field name="field_label">Cost</field>
+            <field name="security_group_id" ref="stock.group_stock_user"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Warehouse staff cannot see quant cost</field>
+        </record>
+        
+        <!-- Stock Quant: Hide value from Warehouse Staff -->
+        <record id="field_visibility_rule_stock_quant_value_warehouse" model="ops.field.visibility.rule">
+            <field name="model_name">stock.quant</field>
+            <field name="field_name">value</field>
+            <field name="field_label">Total Value</field>
+            <field name="security_group_id" ref="stock.group_stock_user"/>
+            <field name="visibility_mode">hidden</field>
+            <field name="is_active">True</field>
+            <field name="description">Warehouse staff cannot see total value of inventory</field>
+        </record>
+        
+    </data>
+</odoo>

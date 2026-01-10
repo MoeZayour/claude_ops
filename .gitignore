@@ -1,35 +1,59 @@
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.so
-*.egg-info/
-.eggs/
+.Python
 
 # Odoo
 *.pyc
-filestore/
-sessions/
+*.pyo
+*~
+*.swp
+*.swo
+.DS_Store
+*.log
+*.pot
 
-# IDE
+# Development
 .vscode/
 .idea/
+*.sublime-project
+*.sublime-workspace
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Archives (keep in repo but don't track changes)
+_archive/
 
 # Logs
+logs/
 *.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Docker volumes (data persists in volumes)
+postgres-data/
+odoo-data/
 
 # Environment
 .env
-*.env
+.env.local
 
-# Docker volumes data (if any)
-data/
-postgres_data/
+# Screenshots (archive only)
+screenshots/*.png
+screenshots/*.jpg
 
-# OS files
-.DS_Store
-Thumbs.db
-_backup/
-documentations/
-logs/oca_reporting_engine/
-addons/oca_reporting_engine/
-.roo/
+# Test results (archive only)
+*_test.json
+*_results.json
+
+# Keep archive directory structure
+!_archive/
+!_archive/*/

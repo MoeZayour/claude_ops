@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <record id="seq_ops_pdc_receivable" model="ir.sequence">
+            <field name="name">PDC Receivable Sequence</field>
+            <field name="code">ops.pdc.receivable</field>
+            <field name="prefix">PDCR/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <record id="seq_ops_pdc_payable" model="ir.sequence">
+            <field name="name">PDC Payable Sequence</field>
+            <field name="code">ops.pdc.payable</field>
+            <field name="prefix">PDCP/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+    </data>
+</odoo>
