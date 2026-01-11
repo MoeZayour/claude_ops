@@ -26,10 +26,12 @@
     'data': [
         'data/ir_module_category.xml',
         'data/res_groups.xml',
-        'views/ops_menus.xml',
+        # 'security/technical_menu_restrictions.xml',
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
+        'views/ops_menus.xml',
         'data/ir_sequence_data.xml',
+        'data/product_request_sequence.xml',
         'data/ops_account_templates.xml',
         # Temporarily disabled - require personas to be created first
         # 'data/ops_default_data.xml',
@@ -100,6 +102,8 @@
         'data/ops_report_templates.xml',
         'data/ops_archive_templates.xml',
         'reports/ops_products_availability_report.xml',
+        'reports/sale_order_documentation_report.xml',
+        'reports/sale_order_availability_report.xml',
         'wizard/ops_approval_recall_wizard_views.xml',
         'wizard/ops_approval_reject_wizard_views.xml',
         'wizard/three_way_match_override_wizard_views.xml',

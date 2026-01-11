@@ -301,7 +301,7 @@ class OpsApiKey(models.Model):
             'name': _('Audit Logs - %s') % self.name,
             'type': 'ir.actions.act_window',
             'res_model': 'ops.audit.log',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('api_key_id', '=', self.id)],
             'context': {'default_api_key_id': self.id}
         }

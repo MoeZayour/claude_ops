@@ -20,14 +20,14 @@
               parent="menu_ops_company_structure"
               action="action_ops_business_unit"
               sequence="10"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"/>
     
     <menuitem id="menu_ops_branch"
               name="Branches"
               parent="menu_ops_company_structure"
               action="action_ops_branch"
               sequence="20"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"/>
     
     <menuitem id="menu_ops_companies"
               name="Companies"
@@ -50,7 +50,7 @@
               parent="menu_ops_security_governance"
               action="action_ops_persona"
               sequence="10"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"/>
     
     <!-- Delegations -->
     <menuitem id="menu_ops_persona_delegation"
@@ -58,7 +58,7 @@
               parent="menu_ops_security_governance"
               action="action_ops_persona_delegation"
               sequence="20"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"/>
     
     <!-- SoD Rules -->
     <menuitem id="menu_ops_sod_root"
@@ -66,7 +66,7 @@
               parent="menu_ops_security_governance"
               action="action_ops_sod_rules"
               sequence="30"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"/>
     
     <!-- Field Visibility Rules -->
     <menuitem id="menu_ops_field_visibility_rules"
@@ -74,7 +74,7 @@
               parent="menu_ops_security_governance"
               action="action_ops_field_visibility_rule"
               sequence="40"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"/>
     
     <!-- Governance Rules -->
     <menuitem id="menu_ops_governance_rules"
@@ -106,7 +106,7 @@
               parent="menu_ops_workflow_config"
               action="action_ops_sla_template"
               sequence="10"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"/>
     
     <!-- Dashboard Widgets -->
     <menuitem id="menu_ops_dashboard_widget"

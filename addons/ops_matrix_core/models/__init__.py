@@ -21,6 +21,7 @@ from . import ops_performance_indexes  # Performance optimization indexes
 # 2. Security Engine (depends on user model)
 from . import ops_security_rules    # Security rule engine
 from . import ops_security_audit    # Security audit logging
+from . import ir_exports_override    # Restrict native exports
 
 # 2a. API Authentication & Audit Logging
 from . import ops_api_key           # API key management

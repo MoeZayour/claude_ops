@@ -1042,7 +1042,7 @@ class OpsPersona(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Delegations'),
             'res_model': 'ops.persona.delegation',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('persona_id', '=', self.id)],
             'context': {
                 'default_persona_id': self.id,
@@ -1133,7 +1133,7 @@ class OpsPersona(models.Model):
             'name': _('Assigned Branches'),
             'type': 'ir.actions.act_window',
             'res_model': 'ops.branch',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.branch_ids.ids)],
             'context': {
                 'search_default_active': 1,
@@ -1148,7 +1148,7 @@ class OpsPersona(models.Model):
             'name': _('Assigned Business Units'),
             'type': 'ir.actions.act_window',
             'res_model': 'ops.business.unit',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.business_unit_ids.ids)],
             'context': {
                 'search_default_active': 1,

@@ -105,10 +105,10 @@ class OpsBranch(models.Model):
     address = fields.Text(
         string='Physical Address',
         help='Complete physical address of this branch location. '
-             'Include: Street, City, State/Province, ZIP/Postal Code, Country. '
+             'Include: Slistt, City, State/Province, ZIP/Postal Code, Country. '
              'Used in: Customer-facing documents (invoices, delivery notes), shipping labels, branch reports. '
              'Format: Use line breaks for readability. '
-             'Example: "123 Main Street\\nSuite 400\\nSeattle, WA 98101\\nUnited States". '
+             'Example: "123 Main Slistt\\nSuite 400\\nSeattle, WA 98101\\nUnited States". '
              'Best Practice: Keep updated for accurate shipping and legal compliance.'
     )
     phone = fields.Char(

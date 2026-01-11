@@ -251,21 +251,21 @@
     <menuitem id="menu_ops_sod_root" 
               name="Segregation of Duties"
               parent="ops_matrix_core.menu_ops_configuration"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"
               sequence="50"/>
     
     <menuitem id="menu_ops_sod_rules"
               name="SoD Rules"
               action="action_ops_sod_rules"
               parent="menu_ops_sod_root"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"
               sequence="10"/>
     
     <menuitem id="menu_ops_sod_violations"
               name="Violation Log"
               action="action_ops_sod_violations"
               parent="menu_ops_sod_root"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"
               sequence="20"/>
     
 </odoo>

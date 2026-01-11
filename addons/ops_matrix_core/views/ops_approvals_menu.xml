@@ -50,5 +50,5 @@
               parent="menu_ops_approvals_root"
               action="action_ops_sod_violations"
               sequence="50"
-              groups="base.group_system,ops_matrix_core.group_ops_admin"/>
+              groups="base.group_system,ops_matrix_core.group_ops_admin_power"/>
 </odoo>

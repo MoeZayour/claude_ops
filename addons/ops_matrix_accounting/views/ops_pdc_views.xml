@@ -152,22 +152,4 @@
         <field name="view_mode">list,form</field>
     </record>
     
-    <!-- Menus -->
-    <menuitem id="menu_ops_pdc_root"
-              name="PDC Management"
-              parent="account.menu_finance"
-              sequence="50"/>
-    
-    <menuitem id="menu_ops_pdc_receivable"
-              name="PDC Receivable"
-              parent="menu_ops_pdc_root"
-              action="action_ops_pdc_receivable"
-              sequence="10"/>
-    
-    <menuitem id="menu_ops_pdc_payable"
-              name="PDC Payable"
-              parent="menu_ops_pdc_root"
-              action="action_ops_pdc_payable"
-              sequence="20"/>
-    
 </odoo>

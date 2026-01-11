@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Hide Technical menu from non-IT users -->
+    <record id="base.menu_administration" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('ops_matrix_core.group_ops_it_admin'), ref('base.group_system')])]"/>
+    </record>
+    
+    <!-- Restrict debug mode -->
+    <record id="base.group_no_one" model="res.groups">
+        <field name="name">Technical Features (Restricted)</field>
+        <field name="comment">Only IT Admin and System Admin can access</field>
+    </record>
+    
+</odoo>

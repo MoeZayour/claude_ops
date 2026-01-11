@@ -95,6 +95,27 @@ class SaleOrder(models.Model):
         
         return availability_data
 
+    @api.model
+    def _get_unique_product_documents(self):
+        """Get unique documents from all order lines, removing duplicates"""
+        documents = {}
+        
+        for line in self.order_line:
+            # Check for product documents - if the field exists (Odoo 18+ feature or custom)
+            # In Odoo 19, product documents are standard.
+            if line.product_id and hasattr(line.product_id, 'product_document_ids'):
+                for doc in line.product_id.product_document_ids:
+                    # In Odoo 19, product.document has 'show_in_quotation'
+                    if (not hasattr(doc, 'show_in_quotation') or doc.show_in_quotation) and doc.id not in documents:
+                        documents[doc.id] = {
+                            'name': doc.name,
+                            'product_ids': [line.product_id]
+                        }
+                    elif doc.id in documents:
+                        documents[doc.id]['product_ids'].append(line.product_id)
+        
+        return list(documents.values())
+
     def _check_partner_credit_firewall(self) -> Tuple[bool, str]:
         """
         Credit Firewall: Check if partner can have this order confirmed.

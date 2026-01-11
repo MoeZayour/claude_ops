@@ -182,7 +182,7 @@ def setup_company(env):
 
     company.write({
         'name': 'Test Trading LLC',
-        'street': 'Sheikh Zayed Road',
+        'slistt': 'Sheikh Zayed Road',
         'city': 'Dubai',
         'zip': '00000',
         'phone': '+971-4-1234567',

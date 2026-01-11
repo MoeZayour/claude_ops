@@ -76,7 +76,7 @@ class OpsAssetCategory(models.Model):
         self.ensure_one()
         return {
             'name': _('Assets'),
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'res_model': 'ops.asset',
             'type': 'ir.actions.act_window',
             'domain': [('category_id', '=', self.id)],

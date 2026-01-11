@@ -868,7 +868,7 @@ class ResUsers(models.Model):
             'name': _('Allowed Business Units'),
             'type': 'ir.actions.act_window',
             'res_model': 'ops.business.unit',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.ops_allowed_business_unit_ids.ids)],
             'context': {
                 'search_default_active': 1,

@@ -83,7 +83,7 @@ class OpsAssetDepreciationWizard(models.TransientModel):
             'name': _('Generated Depreciation Entries'),
             'type': 'ir.actions.act_window',
             'res_model': 'ops.asset.depreciation',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', created_depreciations.ids)],
             'context': {'default_state': 'draft'},
         }
@@ -108,7 +108,7 @@ class OpsAssetDepreciationWizard(models.TransientModel):
                 'name': _('Posted Depreciation Entries'),
                 'type': 'ir.actions.act_window',
                 'res_model': 'ops.asset.depreciation',
-                'view_mode': 'tree,form',
+                'view_mode': 'list,form',
                 'domain': [('id', 'in', posted_lines.ids)],
             }
         

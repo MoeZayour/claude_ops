@@ -77,7 +77,7 @@
                             class="btn-link"
                             icon="fa-undo"
                             invisible="state not in ('cancelled', 'confirmed')" 
-                            groups="ops_matrix_core.group_ops_admin"/>
+                            groups="ops_matrix_core.group_ops_admin_power"/>
                     
                     <field name="state" widget="statusbar" 
                            statusbar_visible="draft,confirmed,in_transit,received"/>

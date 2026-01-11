@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- PDC Reports Action -->
+    <record id="action_ops_pdc_reports" model="ir.actions.act_window">
+        <field name="name">PDC Reports</field>
+        <field name="res_model">ops.pdc.receivable</field>
+        <field name="view_mode">tree,pivot,graph</field>
+        <field name="domain">[('state', '!=', 'cancelled')]</field>
+        <field name="context">{'search_default_group_by_state': 1}</field>
+    </record>
+    
+    <!-- Menu under Accounting → Reporting -->
+    <menuitem id="menu_ops_pdc_reports"
+              name="PDC Reports"
+              parent="account.menu_finance_reports"
+              action="action_ops_pdc_reports"
+              sequence="90"/>
+    
+</odoo>

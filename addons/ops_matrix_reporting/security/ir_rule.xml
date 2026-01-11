@@ -39,7 +39,7 @@
         <record id="rule_ops_sales_analysis_admin_full" model="ir.rule">
             <field name="name">Sales Analysis: Admin Full Access</field>
             <field name="model_id" ref="model_ops_sales_analysis"/>
-            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin'))]"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin_power'))]"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -84,7 +84,7 @@
         <record id="rule_ops_financial_analysis_admin_full" model="ir.rule">
             <field name="name">Financial Analysis: Admin Full Access</field>
             <field name="model_id" ref="model_ops_financial_analysis"/>
-            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin'))]"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin_power'))]"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -134,7 +134,7 @@
         <record id="rule_ops_inventory_analysis_admin_full" model="ir.rule">
             <field name="name">Inventory Analysis: Admin Full Access</field>
             <field name="model_id" ref="model_ops_inventory_analysis"/>
-            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin'))]"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin_power'))]"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>

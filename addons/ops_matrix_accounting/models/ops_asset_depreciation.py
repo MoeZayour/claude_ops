@@ -88,7 +88,7 @@ class OpsAssetDepreciation(models.Model):
 
         return {
             'name': _('Created Journal Entries'),
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'res_model': 'account.move',
             'type': 'ir.actions.act_window',
             'domain': [('id', 'in', created_moves.ids)],

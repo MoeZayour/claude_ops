@@ -143,7 +143,7 @@ class OpsFinancialReportWizard(models.TransientModel):
 
     def action_view_data(self):
         """
-        Open account.move.line in pivot/tree view with filters applied.
+        Open account.move.line in pivot/list view with filters applied.
         NO intermediate records created - Zero DB Bloat approach.
         """
         self.ensure_one()
@@ -155,8 +155,8 @@ class OpsFinancialReportWizard(models.TransientModel):
             'name': _('%s - On-Screen Analysis') % dict(self._fields['report_type'].selection).get(self.report_type),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move.line',
-            'view_mode': 'pivot,tree',
-            'views': [(False, 'pivot'), (False, 'tree')],
+            'view_mode': 'pivot,list',
+            'views': [(False, 'pivot'), (False, 'list')],
             'domain': domain,
             'context': context,
             'target': 'current',

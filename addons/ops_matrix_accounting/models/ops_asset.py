@@ -197,7 +197,7 @@ class OpsAsset(models.Model):
         self.ensure_one()
         return {
             'name': _('Depreciation Lines'),
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'res_model': 'ops.asset.depreciation',
             'type': 'ir.actions.act_window',
             'domain': [('asset_id', '=', self.id)],

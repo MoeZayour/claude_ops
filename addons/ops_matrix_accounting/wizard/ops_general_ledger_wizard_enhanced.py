@@ -730,7 +730,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         }
     
     def action_view_transactions(self):
-        """Open filtered journal entries in tree view."""
+        """Open filtered journal entries in list view."""
         self.ensure_one()
         
         domain = self._build_domain()
@@ -751,7 +751,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             'name': _('Journal Entries'),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', move_ids)],
             'context': {
                 'search_default_group_by_date': 1 if self.group_by_date != 'none' else 0,
@@ -773,7 +773,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             'name': _('Account Moves'),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move.line',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': domain,
         }
     

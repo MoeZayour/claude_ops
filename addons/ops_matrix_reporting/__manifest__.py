@@ -38,6 +38,7 @@
         'views/ops_financial_analysis_views.xml',
         'views/ops_inventory_analysis_views.xml',
         'views/ops_excel_export_wizard_views.xml',
+        'views/secure_excel_export_wizard_views.xml',
         'views/reporting_menu.xml',
         # 'data/dashboard_data.xml',  # Disabled - Enterprise spreadsheet.dashboard not available
     ],

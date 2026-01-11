@@ -240,12 +240,12 @@ class OpsGovernanceViolationReport(models.TransientModel):
         
         violations = self._get_violations()
         
-        # Return tree view of filtered approval requests
+        # Return list view of filtered approval requests
         return {
             'type': 'ir.actions.act_window',
             'name': _('Governance Violations Report: %s to %s') % (self.date_from, self.date_to),
             'res_model': 'ops.approval.request',
-            'view_mode': 'tree,form,pivot,graph',
+            'view_mode': 'list,form,pivot,graph',
             'domain': self._get_base_domain(),
             'context': {
                 'search_default_group_by_violation_type': 1 if self.group_by == 'type' else 0,
@@ -322,7 +322,7 @@ class OpsGovernanceViolationReport(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': _('Governance Violations'),
             'res_model': 'ops.approval.request',
-            'view_mode': 'tree,form,pivot,graph',
+            'view_mode': 'list,form,pivot,graph',
             'domain': self._get_base_domain(),
             'context': {
                 'search_default_pending': 1 if self.approval_status == 'pending' else 0,

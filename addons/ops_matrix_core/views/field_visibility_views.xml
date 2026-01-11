@@ -155,7 +155,7 @@
                   name="Field Visibility"
                   parent="ops_matrix_core.menu_ops_configuration"
                   action="action_ops_field_visibility_rule"
-                  groups="base.group_system,ops_matrix_core.group_ops_admin"
+                  groups="base.group_system,ops_matrix_core.group_ops_admin_power"
                   sequence="40"/>
         
     </data>
