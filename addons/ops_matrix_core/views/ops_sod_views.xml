@@ -11,7 +11,7 @@
     <record id="action_ops_sod_rules" model="ir.actions.act_window">
         <field name="name">Segregation of Duties Rules</field>
         <field name="res_model">ops.segregation.of.duties</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="type">ir.actions.act_window</field>
         <field name="help">Define Segregation of Duties rules to prevent same user from creating and confirming transactions. Rules are disabled by default - enable as needed.</field>
     </record>
@@ -20,7 +20,7 @@
     <record id="action_ops_sod_violations" model="ir.actions.act_window">
         <field name="name">SoD Violation Log</field>
         <field name="res_model">ops.segregation.of.duties.log</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="type">ir.actions.act_window</field>
         <field name="help">Audit trail of all segregation of duties violations detected. Use for compliance reporting.</field>
     </record>

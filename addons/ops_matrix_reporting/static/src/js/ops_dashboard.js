@@ -6,7 +6,7 @@ import { Component, onWillStart, useState } from "@odoo/owl";
 
 export class OpsDashboard extends Component {
     setup() {
-        this.rpc = useService("rpc");
+        this.orm = useService("orm");
         this.action = useService("action");
         this.state = useState({
             dashboardData: {},
@@ -21,12 +21,7 @@ export class OpsDashboard extends Component {
     async loadDashboardData() {
         const dashboardId = this.props.action.context.dashboard_id || this.props.action.params.dashboard_id;
         if (dashboardId) {
-            this.state.dashboardData = await this.rpc("/web/dataset/call_kw/ops.dashboard/get_dashboard_data", {
-                model: "ops.dashboard",
-                method: "get_dashboard_data",
-                args: [dashboardId],
-                kwargs: {},
-            });
+            this.state.dashboardData = await this.orm.call("ops.dashboard", "get_dashboard_data", [dashboardId]);
             this.state.loading = false;
         }
     }

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- IT Admin Blindness Rules (P01) -->
+        <!-- These rules are global and use a domain that is always True for non-IT-admins, 
+             but False for IT-admins on sensitive models. -->
+
+        <!-- Sale Orders -->
+        <record id="rule_it_admin_blind_sale_order" model="ir.rule">
+            <field name="name">IT Admin Blind: Sale Order</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <!-- Purchase Orders -->
+        <record id="rule_it_admin_blind_purchase_order" model="ir.rule">
+            <field name="name">IT Admin Blind: Purchase Order</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <!-- Invoices / Account Moves -->
+        <record id="rule_it_admin_blind_account_move" model="ir.rule">
+            <field name="name">IT Admin Blind: Account Move</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <!-- Account Payments -->
+        <record id="rule_it_admin_blind_account_payment" model="ir.rule">
+            <field name="name">IT Admin Blind: Account Payment</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <!-- Bank Statements -->
+        <record id="rule_it_admin_blind_account_bank_statement" model="ir.rule">
+            <field name="name">IT Admin Blind: Bank Statement</field>
+            <field name="model_id" ref="account.model_account_bank_statement"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <!-- Stock Valuation (Quants) -->
+        <record id="rule_it_admin_blind_stock_quant" model="ir.rule">
+            <field name="name">IT Admin Blind: Stock Quant (Valuation)</field>
+            <field name="model_id" ref="stock.model_stock_quant"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <!-- Add more as needed to reach ~20 -->
+        <record id="rule_it_admin_blind_sale_order_line" model="ir.rule">
+            <field name="name">IT Admin Blind: Sale Order Line</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <record id="rule_it_admin_blind_purchase_order_line" model="ir.rule">
+            <field name="name">IT Admin Blind: Purchase Order Line</field>
+            <field name="model_id" ref="purchase.model_purchase_order_line"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <record id="rule_it_admin_blind_account_move_line" model="ir.rule">
+            <field name="name">IT Admin Blind: Account Move Line</field>
+            <field name="model_id" ref="account.model_account_move_line"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <record id="rule_it_admin_blind_stock_picking" model="ir.rule">
+            <field name="name">IT Admin Blind: Stock Picking</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <record id="rule_it_admin_blind_stock_move" model="ir.rule">
+            <field name="name">IT Admin Blind: Stock Move</field>
+            <field name="model_id" ref="stock.model_stock_move"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+        <record id="rule_it_admin_blind_stock_valuation_layer" model="ir.rule">
+            <field name="name">IT Admin Blind: Stock Valuation Layer</field>
+            <field name="model_id" ref="stock.model_stock_valuation_layer"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[(user.has_group('ops_matrix_core.group_ops_it_admin'), '=', False)]</field>
+        </record>
+
+    </data>
+</odoo>

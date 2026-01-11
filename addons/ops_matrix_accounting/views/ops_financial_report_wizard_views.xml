@@ -50,10 +50,67 @@
         <field name="target">new</field>
     </record>
 
-    <!-- Menu Item -->
+    <!-- Specific Report Actions -->
+    <record id="action_ops_financial_report_pl" model="ir.actions.act_window">
+        <field name="name">Profit and Loss</field>
+        <field name="res_model">ops.financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'pl'}</field>
+    </record>
+
+    <record id="action_ops_financial_report_bs" model="ir.actions.act_window">
+        <field name="name">Balance Sheet</field>
+        <field name="res_model">ops.financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'bs'}</field>
+    </record>
+
+    <record id="action_ops_financial_report_tb" model="ir.actions.act_window">
+        <field name="name">Trial Balance</field>
+        <field name="res_model">ops.financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'tb'}</field>
+    </record>
+
+    <record id="action_ops_financial_report_cf" model="ir.actions.act_window">
+        <field name="name">Cash Flow Statement</field>
+        <field name="res_model">ops.financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'cf'}</field>
+    </record>
+
+    <!-- Specific Menus -->
+    <menuitem id="menu_ops_financial_report_pl"
+              name="Profit and Loss"
+              parent="menu_ops_accounting_reports"
+              action="action_ops_financial_report_pl"
+              sequence="10"/>
+
+    <menuitem id="menu_ops_financial_report_bs"
+              name="Balance Sheet"
+              parent="menu_ops_accounting_reports"
+              action="action_ops_financial_report_bs"
+              sequence="20"/>
+
+    <menuitem id="menu_ops_financial_report_tb"
+              name="Trial Balance"
+              parent="menu_ops_accounting_reports"
+              action="action_ops_financial_report_tb"
+              sequence="30"/>
+
+    <menuitem id="menu_ops_financial_report_cf"
+              name="Cash Flow Statement"
+              parent="menu_ops_accounting_reports"
+              action="action_ops_financial_report_cf"
+              sequence="40"/>
+
     <menuitem id="menu_ops_financial_report_wizard"
-              name="Financial Reports"
+              name="All Financial Reports"
               parent="menu_ops_accounting_reports"
               action="action_ops_financial_report_wizard"
-              sequence="10"/>
+              sequence="100"/>
 </odoo>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Matrix Core',
-    'version': '19.0.1.3',
+    'version': '1.4.0',
     'category': 'Operations',
     'summary': 'Core module for OPS Matrix Framework',
     'description': """

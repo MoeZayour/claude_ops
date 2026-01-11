@@ -3,15 +3,43 @@
     <!-- Root Menus -->
     <menuitem id="menu_ops_matrix_root"
               name="OPS Matrix"
-              web_icon="ops_matrix_core,static/description/icon.png"
-              sequence="1"
-              active="True"
-              groups="base.group_user"/>
+              active="False"/>
 
+    <!-- 1. Approvals App (Seq 10) -->
     <menuitem id="menu_ops_approvals_root"
               name="Approvals"
-              sequence="45"
-              groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_branch_manager"/>
+              web_icon="ops_matrix_core,static/description/approvals_icon.png"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_user"/>
+
+    <!-- 2. Standard Apps Sequencing -->
+    <record id="sale.menu_sale_root" model="ir.ui.menu">
+        <field name="sequence">20</field>
+    </record>
+    <record id="purchase.menu_purchase_root" model="ir.ui.menu">
+        <field name="sequence">30</field>
+    </record>
+    <record id="stock.menu_stock_root" model="ir.ui.menu">
+        <field name="sequence">40</field>
+    </record>
+    <record id="account.menu_finance" model="ir.ui.menu">
+        <field name="sequence">50</field>
+    </record>
+
+    <!-- 3. Reporting App (Seq 60) -->
+    <menuitem id="menu_ops_reporting_root"
+              name="Reporting"
+              web_icon="ops_matrix_core,static/description/reporting_icon.png"
+              sequence="60"
+              groups="ops_matrix_core.group_ops_user"/>
+
+    <!-- 4. Other Standard Apps -->
+    <record id="hr.menu_hr_root" model="ir.ui.menu">
+        <field name="sequence">70</field>
+    </record>
+    <record id="base.menu_administration" model="ir.ui.menu">
+        <field name="sequence">80</field>
+    </record>
 
     <menuitem id="menu_ops_settings_root"
               name="OPS Framework"
@@ -20,26 +48,22 @@
               groups="base.group_system"/>
 
     <!-- Parent Menus -->
+    <!-- Parents under Reporting app -->
     <menuitem id="menu_ops_dashboards"
               name="Dashboards"
-              parent="menu_ops_matrix_root"
-              sequence="10"
-              groups="base.group_user"/>
+              parent="menu_ops_reporting_root"
+              sequence="10"/>
 
     <menuitem id="menu_ops_governance_root"
               name="Governance"
-              parent="menu_ops_matrix_root"
+              parent="menu_ops_reporting_root"
               sequence="20"
               groups="base.group_system,ops_matrix_core.group_ops_manager"/>
 
-    <menuitem id="menu_ops_reporting"
-              name="Reporting"
-              parent="menu_ops_settings_root"
-              sequence="40"/>
-
+    <!-- Configuration moved to Settings -->
     <menuitem id="menu_ops_configuration"
-              name="Configuration"
-              parent="menu_ops_matrix_root"
-              sequence="100"
+              name="OPS Matrix Configuration"
+              parent="base.menu_administration"
+              sequence="50"
               groups="base.group_system"/>
 </odoo>

@@ -17,12 +17,11 @@
 
     <!-- =================== OPS MATRIX SUB-MENUS =================== -->
 
-    <!-- Main OPS Accounting Root Menu -->
+    <!-- Main OPS Accounting Root Menu Deactivated -->
     <menuitem
         id="menu_ops_accounting_root"
         name="OPS Matrix"
-        parent="account.menu_finance"
-        sequence="100"/>
+        active="False"/>
 
     <!-- =================== ASSET MANAGEMENT =================== -->
 
@@ -30,8 +29,8 @@
     <menuitem
         id="menu_ops_asset_management"
         name="Asset Management"
-        parent="menu_ops_accounting_root"
-        sequence="10"/>
+        parent="account.menu_finance"
+        sequence="20"/>
 
     <!-- Menu for Assets -->
     <menuitem
@@ -66,11 +65,11 @@
 
     <!-- =================== FINANCIAL REPORTS =================== -->
 
-    <!-- Reporting Main Menu -->
+    <!-- Reporting Main Menu moved to Reporting App -->
     <menuitem
         id="menu_ops_accounting_reports"
-        name="Financial Reports"
-        parent="menu_ops_accounting_root"
+        name="Financial Analysis"
+        parent="ops_matrix_core.menu_ops_reporting_root"
         sequence="20"/>
 
 </odoo>

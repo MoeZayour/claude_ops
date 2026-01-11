@@ -168,7 +168,7 @@
     <!-- Menu Item -->
     <menuitem id="menu_ops_budget"
               name="Budget Control"
-              parent="account.menu_finance_reports"
+              parent="account.menu_finance"
               action="action_ops_budget"
-              sequence="15"/>
+              sequence="25"/>
 </odoo>
