@@ -7,6 +7,7 @@ class SaleOrder(models.Model):
         'ops.branch',
         string='Branch',
         required=False,
+        index=True,
         default=lambda self: self._get_default_branch(),
         help="Branch responsible for this sale"
     )
@@ -14,6 +15,7 @@ class SaleOrder(models.Model):
         'ops.business.unit',
         string='Business Unit',
         required=False,
+        index=True,
         default=lambda self: self._get_default_business_unit(),
         help="Business unit this sale belongs to"
     )
@@ -45,6 +47,7 @@ class PurchaseOrder(models.Model):
         'ops.branch',
         string='Branch',
         required=False,
+        index=True,
         default=lambda self: self._get_default_branch(),
         help="Branch responsible for this purchase"
     )
@@ -52,6 +55,7 @@ class PurchaseOrder(models.Model):
         'ops.business.unit',
         string='Business Unit',
         required=False,
+        index=True,
         default=lambda self: self._get_default_business_unit(),
         help="Business unit this purchase belongs to"
     )
@@ -83,6 +87,7 @@ class StockPicking(models.Model):
         'ops.branch',
         string='Branch',
         required=False,
+        index=True,
         default=lambda self: self._get_default_branch(),
         help="Branch responsible for this transfer"
     )
@@ -90,6 +95,7 @@ class StockPicking(models.Model):
         'ops.business.unit',
         string='Business Unit',
         required=False,
+        index=True,
         default=lambda self: self._get_default_business_unit(),
         help="Business unit this transfer belongs to"
     )
@@ -135,6 +141,7 @@ class AccountMove(models.Model):
         'ops.branch',
         string='Branch',
         required=False,
+        index=True,
         default=lambda self: self._get_default_branch(),
         help="Branch responsible for this entry"
     )
@@ -142,6 +149,7 @@ class AccountMove(models.Model):
         'ops.business.unit',
         string='Business Unit',
         required=False,
+        index=True,
         default=lambda self: self._get_default_business_unit(),
         help="Business unit this entry belongs to"
     )
@@ -177,6 +185,7 @@ class AccountMoveLine(models.Model):
         'ops.branch',
         string='Branch',
         required=False,
+        index=True,
         default=lambda self: self._get_default_branch(),
         help="Branch for this journal item"
     )
@@ -184,6 +193,7 @@ class AccountMoveLine(models.Model):
         'ops.business.unit',
         string='Business Unit',
         required=False,
+        index=True,
         default=lambda self: self._get_default_business_unit(),
         help="Business unit for this journal item"
     )
