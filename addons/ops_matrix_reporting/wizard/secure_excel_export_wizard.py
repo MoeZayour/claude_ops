@@ -119,13 +119,14 @@ class SecureExcelExportWizard(models.TransientModel):
             'state': 'done'
         })
         
-        # Log export activity
-        self.env['ops.export.log'].create({
-            'user_id': self.env.user.id,
-            'model_id': self.model_id.id,
-            'record_count': len(records),
-            'export_date': fields.Datetime.now()
-        })
+        # Log export activity with comprehensive audit trail
+        self.env['ops.export.log'].log_export(
+            model_name=self.model_name,
+            records=records,
+            domain=domain,
+            export_format='xlsx',
+            notes=f"Secure Excel Export Wizard: {self.model_id.name}"
+        )
         
         return {
             'type': 'ir.actions.act_window',
@@ -161,14 +162,3 @@ class SecureExcelExportWizard(models.TransientModel):
                 return value or ''
         except:
             return ''
-
-# Export log model
-class OpsExportLog(models.Model):
-    _name = 'ops.export.log'
-    _description = 'Export Activity Log'
-    _order = 'export_date desc'
-    
-    user_id = fields.Many2one('res.users', 'User', required=True)
-    model_id = fields.Many2one('ir.model', 'Model', required=True, ondelete='cascade')
-    record_count = fields.Integer('Records Exported')
-    export_date = fields.Datetime('Export Date', required=True)
