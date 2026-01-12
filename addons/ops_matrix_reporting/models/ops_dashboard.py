@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
+from odoo.tools.safe_eval import safe_eval
 import json
 
 class OpsDashboard(models.Model):
@@ -78,8 +79,8 @@ class OpsDashboardWidget(models.Model):
                 # Call method
                 data['value'] = method()
             else:
-                # Default behavior: count
-                domain = eval(self.domain or '[]')
+                # Default behavior: count - use safe_eval to prevent code injection
+                domain = safe_eval(self.domain or '[]')
                 data['value'] = model.search_count(domain)
         except Exception as e:
             data['error'] = str(e)

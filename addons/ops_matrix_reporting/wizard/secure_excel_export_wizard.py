@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+from odoo.tools.safe_eval import safe_eval
 import base64
 import io
 try:
@@ -52,10 +53,19 @@ class SecureExcelExportWizard(models.TransientModel):
         
         # Get records with security filtering
         Model = self.env[self.model_name]
+
+        # Parse domain safely - CRITICAL: Use safe_eval to prevent code injection
         try:
-            domain = eval(self.domain) if self.domain else []
-        except:
-            raise ValidationError(_('Invalid domain filter. Please use Python list format, e.g. [("state", "=", "sale")]'))
+            domain = safe_eval(self.domain) if self.domain else []
+            # Validate domain is a list
+            if not isinstance(domain, list):
+                raise ValueError("Domain must be a list")
+        except (ValueError, SyntaxError, NameError, TypeError) as e:
+            raise ValidationError(_(
+                'Invalid domain filter. Please use Python list format.\n'
+                'Example: [("state", "=", "draft"), ("amount", ">", 100)]\n'
+                'Error: %s'
+            ) % str(e))
         
         # Apply automatic branch filtering if model has branch_id
         # Check for ops_branch_id or branch_id
