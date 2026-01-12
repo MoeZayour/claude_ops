@@ -146,7 +146,7 @@ class OpsCompanyConsolidation(models.TransientModel):
         income_domain = domain + [
             ('account_id.account_type', 'in', ['income', 'income_other'])
         ]
-        MoveLine._read_group(
+        income_data = MoveLine._read_group(
             domain=income_domain,
             groupby=[],
             aggregates=['credit:sum', 'debit:sum']
@@ -157,7 +157,7 @@ class OpsCompanyConsolidation(models.TransientModel):
         expense_domain = domain + [
             ('account_id.account_type', 'in', ['expense', 'expense_depreciation', 'expense_direct_cost'])
         ]
-        MoveLine._read_group(
+        expense_data = MoveLine._read_group(
             domain=expense_domain,
             groupby=[],
             aggregates=['debit:sum', 'credit:sum']
@@ -168,7 +168,7 @@ class OpsCompanyConsolidation(models.TransientModel):
         cogs_domain = domain + [
             ('account_id.account_type', '=', 'expense_direct_cost')
         ]
-        MoveLine._read_group(
+        cogs_data = MoveLine._read_group(
             domain=cogs_domain,
             groupby=[],
             aggregates=['debit:sum', 'credit:sum']
@@ -180,7 +180,7 @@ class OpsCompanyConsolidation(models.TransientModel):
         operating_domain = domain + [
             ('account_id.account_type', 'in', ['expense', 'expense_depreciation'])
         ]
-        MoveLine._read_group(
+        operating_data = MoveLine._read_group(
             domain=operating_domain,
             groupby=[],
             aggregates=['debit:sum', 'credit:sum']
@@ -218,18 +218,18 @@ class OpsCompanyConsolidation(models.TransientModel):
             income_domain = branch_domain + [
                 ('account_id.account_type', 'in', ['income', 'income_other'])
             ]
-            MoveLine._read_group(
+            income_result = MoveLine._read_group(
                 domain=income_domain,
                 groupby=[],
                 aggregates=['credit:sum', 'debit:sum']
             )
             branch_income = income_result[0].get('credit', 0) - income_result[0].get('debit', 0) if income_result else 0
-            
+
             # Get expense for branch
             expense_domain = branch_domain + [
                 ('account_id.account_type', 'in', ['expense', 'expense_depreciation', 'expense_direct_cost'])
             ]
-            MoveLine._read_group(
+            expense_result = MoveLine._read_group(
                 domain=expense_domain,
                 groupby=[],
                 aggregates=['debit:sum', 'credit:sum']
@@ -283,7 +283,7 @@ class OpsCompanyConsolidation(models.TransientModel):
             income_domain = bu_domain + [
                 ('account_id.account_type', 'in', ['income', 'income_other'])
             ]
-            MoveLine._read_group(
+            income_result = MoveLine._read_group(
                 domain=income_domain,
                 groupby=[],
                 aggregates=['credit:sum', 'debit:sum']
@@ -294,7 +294,7 @@ class OpsCompanyConsolidation(models.TransientModel):
             expense_domain = bu_domain + [
                 ('account_id.account_type', 'in', ['expense', 'expense_depreciation', 'expense_direct_cost'])
             ]
-            MoveLine._read_group(
+            expense_result = MoveLine._read_group(
                 domain=expense_domain,
                 groupby=[],
                 aggregates=['debit:sum', 'credit:sum']
@@ -348,14 +348,14 @@ class OpsCompanyConsolidation(models.TransientModel):
         account_data = []
         for acc_type, acc_name in account_types:
             type_domain = domain + [('account_id.account_type', '=', acc_type)]
-            
+
             # Get sum for this account type
-            MoveLine._read_group(
+            result = MoveLine._read_group(
                 domain=type_domain,
                 groupby=['account_id'],
                 aggregates=['debit:sum', 'credit:sum', 'balance:sum']
             )
-            
+
             total_debit = sum(item['debit'] for item in result)
             total_credit = sum(item['credit'] for item in result)
             
@@ -408,14 +408,14 @@ class OpsCompanyConsolidation(models.TransientModel):
             previous_domain.append(('ops_branch_id', 'in', self.branch_ids.ids))
         
         # Get previous period totals
-        MoveLine._read_group(
+        income_result = MoveLine._read_group(
             domain=previous_domain + [('account_id.account_type', 'in', ['income', 'income_other'])],
             groupby=[],
             aggregates=['credit:sum', 'debit:sum']
         )
         previous_income = income_result[0]['credit'] - income_result[0]['debit'] if income_result else 0
-        
-        MoveLine._read_group(
+
+        expense_result = MoveLine._read_group(
             domain=previous_domain + [('account_id.account_type', 'in', ['expense', 'expense_depreciation', 'expense_direct_cost'])],
             groupby=[],
             aggregates=['debit:sum', 'credit:sum']
@@ -438,8 +438,8 @@ class OpsCompanyConsolidation(models.TransientModel):
         performance = []
         for branch in branches[:10]:  # Limit to top 10 for summary
             branch_domain = domain + [('ops_branch_id', '=', branch.id)]
-            
-            MoveLine._read_group(
+
+            income_result = MoveLine._read_group(
                 domain=branch_domain + [('account_id.account_type', 'in', ['income', 'income_other'])],
                 groupby=[],
                 aggregates=['credit:sum', 'debit:sum']
@@ -566,17 +566,17 @@ class OpsBranchReport(models.TransientModel):
             
             for bu in bus:
                 bu_domain = base_domain + [('ops_business_unit_id', '=', bu.id)]
-                
+
                 # Income for this BU
-                MoveLine._read_group(
+                income_result = MoveLine._read_group(
                     domain=bu_domain + [('account_id.account_type', 'in', ['income', 'income_other'])],
                     groupby=[],
                     aggregates=['credit:sum', 'debit:sum']
                 )
                 bu_income = income_result[0]['credit'] - income_result[0]['debit'] if income_result else 0
-                
+
                 # Expense for this BU
-                MoveLine._read_group(
+                expense_result = MoveLine._read_group(
                     domain=bu_domain + [('account_id.account_type', 'in', ['expense', 'expense_depreciation', 'expense_direct_cost'])],
                     groupby=[],
                     aggregates=['debit:sum', 'credit:sum']
@@ -595,14 +595,14 @@ class OpsBranchReport(models.TransientModel):
                 }
             
             # Get branch totals
-            MoveLine._read_group(
+            income_result = MoveLine._read_group(
                 domain=base_domain + [('account_id.account_type', 'in', ['income', 'income_other'])],
                 groupby=[],
                 aggregates=['credit:sum', 'debit:sum']
             )
             total_income = income_result[0]['credit'] - income_result[0]['debit'] if income_result else 0
-            
-            MoveLine._read_group(
+
+            expense_result = MoveLine._read_group(
                 domain=base_domain + [('account_id.account_type', 'in', ['expense', 'expense_depreciation', 'expense_direct_cost'])],
                 groupby=[],
                 aggregates=['debit:sum', 'credit:sum']
@@ -733,17 +733,17 @@ class OpsBusinessUnitReport(models.TransientModel):
             if wizard.consolidate_by_branch:
                 for branch in branches:
                     branch_domain = base_domain + [('ops_branch_id', '=', branch.id)]
-                    
+
                     # Income for this branch
-                    MoveLine._read_group(
+                    income_result = MoveLine._read_group(
                         domain=branch_domain + [('account_id.account_type', 'in', ['income', 'income_other'])],
                         groupby=[],
                         aggregates=['credit:sum', 'debit:sum']
                     )
                     branch_income = income_result[0]['credit'] - income_result[0]['debit'] if income_result else 0
-                    
+
                     # Expense for this branch
-                    MoveLine._read_group(
+                    expense_result = MoveLine._read_group(
                         domain=branch_domain + [('account_id.account_type', 'in', ['expense', 'expense_depreciation', 'expense_direct_cost'])],
                         groupby=[],
                         aggregates=['debit:sum', 'credit:sum']
@@ -762,14 +762,14 @@ class OpsBusinessUnitReport(models.TransientModel):
                     }
             
             # Get BU totals
-            MoveLine._read_group(
+            income_result = MoveLine._read_group(
                 domain=base_domain + [('account_id.account_type', 'in', ['income', 'income_other'])],
                 groupby=[],
                 aggregates=['credit:sum', 'debit:sum']
             )
             total_income = income_result[0]['credit'] - income_result[0]['debit'] if income_result else 0
-            
-            MoveLine._read_group(
+
+            expense_result = MoveLine._read_group(
                 domain=base_domain + [('account_id.account_type', 'in', ['expense', 'expense_depreciation', 'expense_direct_cost'])],
                 groupby=[],
                 aggregates=['debit:sum', 'credit:sum']
@@ -828,15 +828,15 @@ class OpsBusinessUnitReport(models.TransientModel):
             
             if self.branch_ids:
                 domain.append(('ops_branch_id', 'in', self.branch_ids.ids))
-            
-            MoveLine._read_group(
+
+            income_result = MoveLine._read_group(
                 domain=domain + [('account_id.account_type', 'in', ['income', 'income_other'])],
                 groupby=[],
                 aggregates=['credit:sum', 'debit:sum']
             )
             month_income = income_result[0]['credit'] - income_result[0]['debit'] if income_result else 0
-            
-            MoveLine._read_group(
+
+            expense_result = MoveLine._read_group(
                 domain=domain + [('account_id.account_type', 'in', ['expense', 'expense_depreciation', 'expense_direct_cost'])],
                 groupby=[],
                 aggregates=['debit:sum', 'credit:sum']
@@ -921,12 +921,12 @@ class OpsConsolidatedBalanceSheet(models.TransientModel):
                 ]
                 
                 # Group by account type
-                MoveLine._read_group(
+                result = MoveLine._read_group(
                     domain=domain,
                     groupby=['account_id'],
                     aggregates=['balance:sum']
                 )
-                
+
                 # Initialize totals
                 assets = liabilities = equity = income = expense = 0
                 
@@ -1009,13 +1009,13 @@ class OpsConsolidatedBalanceSheet(models.TransientModel):
                 ('company_id', 'in', company_ids),
                 ('move_id.state', '=', 'posted'),
             ]
-            
-            MoveLine._read_group(
+
+            result = MoveLine._read_group(
                 domain=domain,
                 groupby=['company_id'],
                 aggregates=['balance:sum']
             )
-            
+
             # Sum balances across companies
             total_balance = sum(item.get('balance', 0) for item in result)
             
@@ -1109,15 +1109,15 @@ class OpsMatrixProfitabilityAnalysis(models.TransientModel):
                         ]
                         
                         # Get income
-                        MoveLine._read_group(
+                        income_result = MoveLine._read_group(
                             domain=domain + [('account_id.account_type', 'in', ['income', 'income_other'])],
                             groupby=[],
                             aggregates=['credit:sum', 'debit:sum']
                         )
                         income = income_result[0]['credit'] - income_result[0]['debit'] if income_result else 0
-                        
+
                         # Get expense
-                        MoveLine._read_group(
+                        expense_result = MoveLine._read_group(
                             domain=domain + [('account_id.account_type', 'in', ['expense', 'expense_depreciation', 'expense_direct_cost'])],
                             groupby=[],
                             aggregates=['debit:sum', 'credit:sum']
