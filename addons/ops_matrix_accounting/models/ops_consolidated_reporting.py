@@ -78,6 +78,26 @@ class OpsCompanyConsolidation(models.TransientModel):
         compute='_compute_report_data',
         store=False
     )
+
+    # Caching Fields
+    cache_key = fields.Char(
+        compute='_compute_cache_key',
+        store=True,
+        help='Unique key for caching based on report parameters'
+    )
+    cached_data = fields.Json(
+        string='Cached Report Data',
+        help='Cached computation results to avoid redundant queries'
+    )
+    cache_timestamp = fields.Datetime(
+        string='Cache Created',
+        help='When cache was last updated'
+    )
+    cache_valid_minutes = fields.Integer(
+        string='Cache TTL (minutes)',
+        default=15,
+        help='Cache validity duration in minutes'
+    )
     
     # Computed Methods
     @api.depends('date_from', 'date_to')
@@ -91,7 +111,111 @@ class OpsCompanyConsolidation(models.TransientModel):
             else:
                 wizard.previous_date_from = False
                 wizard.previous_date_to = False
-    
+
+    @api.depends('company_id', 'date_from', 'date_to', 'branch_ids', 'report_detail_level')
+    def _compute_cache_key(self):
+        """Generate unique cache key from report parameters."""
+        for wizard in self:
+            if not wizard.company_id or not wizard.date_from or not wizard.date_to:
+                wizard.cache_key = ''
+                continue
+
+            parts = [
+                str(wizard.company_id.id),
+                str(wizard.date_from),
+                str(wizard.date_to),
+                ','.join(str(b) for b in sorted(wizard.branch_ids.ids)) if wizard.branch_ids else 'all',
+                wizard.report_detail_level or 'summary',
+            ]
+            wizard.cache_key = '|'.join(parts)
+
+    def _get_cached_or_compute(self, compute_method, *args, **kwargs):
+        """
+        Check cache before expensive computation to avoid redundant queries.
+
+        Usage:
+            result = wizard._get_cached_or_compute(
+                wizard._compute_detailed_report,
+                domain=domain,
+                branches=branches
+            )
+
+        Returns cached data if:
+        - cached_data exists
+        - cache_timestamp is set
+        - Cache age < cache_valid_minutes
+
+        Otherwise computes fresh data and updates cache.
+        """
+        self.ensure_one()
+
+        # Check if cache is valid
+        if self.cached_data and self.cache_timestamp:
+            cache_age_minutes = (
+                (fields.Datetime.now() - self.cache_timestamp).total_seconds() / 60
+            )
+
+            if cache_age_minutes < self.cache_valid_minutes:
+                _logger.info(
+                    f"✓ Using cached report (age: {cache_age_minutes:.1f} min, "
+                    f"key: {self.cache_key[:60]}...)"
+                )
+                return self.cached_data
+
+            _logger.info(
+                f"⊗ Cache expired (age: {cache_age_minutes:.1f} min > TTL: {self.cache_valid_minutes} min)"
+            )
+
+        # Compute fresh data
+        _logger.info(f"⟳ Computing fresh report (key: {self.cache_key[:60]}...)")
+        result = compute_method(*args, **kwargs)
+
+        # Update cache
+        self.write({
+            'cached_data': result,
+            'cache_timestamp': fields.Datetime.now()
+        })
+        _logger.info(f"✓ Cache updated (TTL: {self.cache_valid_minutes} min)")
+
+        return result
+
+    def action_refresh_cache(self):
+        """Force cache refresh (button in UI)."""
+        self.ensure_one()
+        _logger.info(f"🔄 Manual cache refresh requested for key: {self.cache_key[:60]}...")
+        self.write({
+            'cached_data': False,
+            'cache_timestamp': False
+        })
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Cache Cleared'),
+                'message': _('Report cache has been cleared. Next report generation will compute fresh data.'),
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+
+    def action_clear_all_caches(self):
+        """Clear all cached reports (admin action)."""
+        count = self.search([]).filtered(lambda w: w.cached_data).mapped(lambda w: w.write({
+            'cached_data': False,
+            'cache_timestamp': False
+        }))
+        _logger.info(f"🧹 Cleared all report caches")
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('All Caches Cleared'),
+                'message': _('All report caches have been cleared successfully.'),
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+
     @api.depends('company_id', 'date_from', 'date_to', 'branch_ids', 'report_detail_level')
     def _compute_report_data(self):
         """Main method to compute consolidated company P&L."""
@@ -119,23 +243,39 @@ class OpsCompanyConsolidation(models.TransientModel):
             if wizard.branch_ids:
                 base_domain.append(('ops_branch_id', 'in', wizard.branch_ids.ids))
             
-            # Get data based on detail level
+            # Get data based on detail level (with intelligent caching)
             if wizard.report_detail_level == 'summary':
-                data = wizard._get_summary_data(base_domain, branches)
+                data = wizard._get_cached_or_compute(
+                    wizard._get_summary_data,
+                    base_domain,
+                    branches
+                )
             elif wizard.report_detail_level == 'by_branch':
-                data = wizard._get_branch_detail_data(base_domain, branches)
+                data = wizard._get_cached_or_compute(
+                    wizard._get_branch_detail_data,
+                    base_domain,
+                    branches
+                )
             elif wizard.report_detail_level == 'by_bu':
-                data = wizard._get_bu_detail_data(base_domain, branches)
+                data = wizard._get_cached_or_compute(
+                    wizard._get_bu_detail_data,
+                    base_domain,
+                    branches
+                )
             elif wizard.report_detail_level == 'by_account':
-                data = wizard._get_account_detail_data(base_domain, branches)
+                data = wizard._get_cached_or_compute(
+                    wizard._get_account_detail_data,
+                    base_domain,
+                    branches
+                )
             else:
                 data = {}
-            
+
             # Add comparison data if requested
             if wizard.compare_with_previous:
                 comparison_data = wizard._get_comparison_data()
                 data['comparison'] = comparison_data
-            
+
             wizard.report_data = data
     
     def _get_summary_data(self, domain, branches):
@@ -1124,7 +1264,22 @@ class OpsMatrixProfitabilityAnalysis(models.TransientModel):
         compute='_compute_matrix_data',
         store=False
     )
-    
+
+    # Caching Fields
+    cached_data = fields.Json(
+        string='Cached Matrix Data',
+        help='Cached computation results to avoid redundant queries'
+    )
+    cache_timestamp = fields.Datetime(
+        string='Cache Created',
+        help='When cache was last updated'
+    )
+    cache_valid_minutes = fields.Integer(
+        string='Cache TTL (minutes)',
+        default=15,
+        help='Cache validity duration in minutes'
+    )
+
     @api.depends('company_id', 'date_from', 'date_to')
     def _compute_matrix_data(self):
         """
