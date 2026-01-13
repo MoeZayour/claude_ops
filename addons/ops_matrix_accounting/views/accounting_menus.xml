@@ -69,7 +69,7 @@
     <menuitem
         id="menu_ops_accounting_reports"
         name="Financial Analysis"
-        parent="ops_matrix_core.menu_ops_reporting_root"
+        parent="ops_matrix_core.menu_ops_reporting"
         sequence="20"/>
 
 </odoo>

@@ -8,10 +8,10 @@
               parent="ops_matrix_core.menu_ops_configuration"
               sequence="60"/>
 
-    <!-- Dashboards Root (under Matrix Root) -->
+    <!-- Dashboards Root (under new Reporting > Dashboards) -->
     <menuitem id="menu_ops_dashboards_root"
-              name="OPS Dashboards"
-              parent="ops_matrix_core.menu_ops_matrix_root"
+              name="Analytics"
+              parent="ops_matrix_core.menu_ops_dashboards"
               sequence="10"
               active="True"/>
 

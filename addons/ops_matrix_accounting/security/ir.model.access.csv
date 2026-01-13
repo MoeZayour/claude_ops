@@ -45,3 +45,6 @@ access_model_ops_pdc_receivable_ops_admin_full,access_model_ops_pdc_receivable_o
 access_ops_matrix_snapshot_user,ops.matrix.snapshot.user,model_ops_matrix_snapshot,ops_matrix_core.group_ops_user,1,0,0,0
 access_ops_matrix_snapshot_manager,ops.matrix.snapshot.manager,model_ops_matrix_snapshot,ops_matrix_core.group_ops_manager,1,0,0,0
 access_ops_matrix_snapshot_admin,ops.matrix.snapshot.admin,model_ops_matrix_snapshot,ops_matrix_core.group_ops_administrator,1,1,1,1
+access_ops_trend_analysis_user,ops.trend.analysis.user,model_ops_trend_analysis,ops_matrix_core.group_ops_user,1,1,1,1
+access_ops_trend_analysis_manager,ops.trend.analysis.manager,model_ops_trend_analysis,ops_matrix_core.group_ops_manager,1,1,1,1
+access_ops_trend_analysis_admin,ops.trend.analysis.admin,model_ops_trend_analysis,ops_matrix_core.group_ops_admin_power,1,1,1,1

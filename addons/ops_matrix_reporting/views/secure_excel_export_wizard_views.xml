@@ -45,15 +45,10 @@
         <field name="target">new</field>
     </record>
     
-    <!-- Reporting Menu for OPS Matrix if it doesn't exist locally -->
-    <menuitem id="menu_ops_reporting_root"
-              name="Reporting"
-              parent="ops_matrix_core.menu_ops_matrix_root"
-              sequence="50"/>
-
+    <!-- Link to OPS Core Reporting Menu -->
     <menuitem id="menu_ops_export_tools"
               name="Export Tools"
-              parent="menu_ops_reporting_root"
+              parent="ops_matrix_core.menu_ops_reporting"
               sequence="100"/>
     
     <!-- Menu under Reporting → Export Tools -->

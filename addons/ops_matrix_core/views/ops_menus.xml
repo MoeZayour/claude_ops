@@ -3,7 +3,8 @@
     <!-- Root Menus -->
     <menuitem id="menu_ops_matrix_root"
               name="OPS Matrix"
-              active="False"/>
+              active="False"
+              sequence="1000"/>
 
     <!-- 1. Approvals App (Seq 10) -->
     <menuitem id="menu_ops_approvals_root"
@@ -13,33 +14,21 @@
               groups="ops_matrix_core.group_ops_user"/>
 
     <!-- 2. Standard Apps Sequencing -->
-    <record id="sale.menu_sale_root" model="ir.ui.menu">
-        <field name="sequence">20</field>
-    </record>
-    <record id="purchase.menu_purchase_root" model="ir.ui.menu">
-        <field name="sequence">30</field>
-    </record>
-    <record id="stock.menu_stock_root" model="ir.ui.menu">
-        <field name="sequence">40</field>
-    </record>
-    <record id="account.menu_finance" model="ir.ui.menu">
-        <field name="sequence">50</field>
-    </record>
+    <menuitem id="sale.sale_menu_root" sequence="20"/>
+    <menuitem id="purchase.menu_purchase_root" sequence="30"/>
+    <menuitem id="stock.menu_stock_root" sequence="40"/>
+    <menuitem id="account.menu_finance" sequence="50"/>
 
     <!-- 3. Reporting App (Seq 60) -->
-    <menuitem id="menu_ops_reporting_root"
+    <menuitem id="menu_ops_reporting"
               name="Reporting"
               web_icon="ops_matrix_core,static/description/reporting_icon.png"
               sequence="60"
               groups="ops_matrix_core.group_ops_user"/>
 
     <!-- 4. Other Standard Apps -->
-    <record id="hr.menu_hr_root" model="ir.ui.menu">
-        <field name="sequence">70</field>
-    </record>
-    <record id="base.menu_administration" model="ir.ui.menu">
-        <field name="sequence">80</field>
-    </record>
+    <menuitem id="hr.menu_hr_root" sequence="70"/>
+    <menuitem id="base.menu_administration" sequence="80"/>
 
     <menuitem id="menu_ops_settings_root"
               name="OPS Framework"
@@ -51,12 +40,12 @@
     <!-- Parents under Reporting app -->
     <menuitem id="menu_ops_dashboards"
               name="Dashboards"
-              parent="menu_ops_reporting_root"
+              parent="menu_ops_reporting"
               sequence="10"/>
 
     <menuitem id="menu_ops_governance_root"
               name="Governance"
-              parent="menu_ops_reporting_root"
+              parent="menu_ops_reporting"
               sequence="20"
               groups="base.group_system,ops_matrix_core.group_ops_manager"/>
 

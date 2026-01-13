@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Trend Analysis Wizard Form -->
+    <record id="view_ops_trend_analysis_form" model="ir.ui.view">
+        <field name="name">ops.trend.analysis.form</field>
+        <field name="model">ops.trend.analysis</field>
+        <field name="arch" type="xml">
+            <form string="Trend Analysis">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="comparison_type" widget="radio" options="{'horizontal': true}"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Current Period">
+                            <field name="company_id" options="{'no_create': True}"/>
+                            <field name="current_period_start"/>
+                            <field name="current_period_end"/>
+                        </group>
+                        <group string="Comparison Period">
+                            <field name="auto_comparison_start"
+                                   attrs="{'invisible': [('comparison_type', '=', 'custom')]}"
+                                   readonly="1"/>
+                            <field name="auto_comparison_end"
+                                   attrs="{'invisible': [('comparison_type', '=', 'custom')]}"
+                                   readonly="1"/>
+                            <field name="comparison_period_start"
+                                   attrs="{'invisible': [('comparison_type', '!=', 'custom')],
+                                          'required': [('comparison_type', '=', 'custom')]}"/>
+                            <field name="comparison_period_end"
+                                   attrs="{'invisible': [('comparison_type', '!=', 'custom')],
+                                          'required': [('comparison_type', '=', 'custom')]}"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Filters">
+                            <field name="branch_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color', 'no_create': True}"/>
+                            <field name="business_unit_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Grouping">
+                            <field name="group_by" widget="radio"/>
+                        </group>
+                    </group>
+
+                    <group string="Metrics to Display">
+                        <group>
+                            <field name="show_revenue"/>
+                            <field name="show_cogs"/>
+                            <field name="show_gross_profit"/>
+                            <field name="show_operating_expense"/>
+                        </group>
+                        <group>
+                            <field name="show_ebitda"/>
+                            <field name="show_net_income"/>
+                            <field name="show_margins"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Trend Analysis Results">
+                            <group>
+                                <field name="data_source" readonly="1"/>
+                            </group>
+
+                            <group string="Summary" attrs="{'invisible': [('trend_data', '=', False)]}">
+                                <div class="oe_form_box_info oe_text_center">
+                                    <p>
+                                        <strong>Revenue Growth:</strong>
+                                        <field name="trend_data" widget="json" readonly="1"
+                                               attrs="{'invisible': True}"/>
+                                        <span attrs="{'invisible': [('trend_data', '=', False)]}">
+                                            <!-- Summary will be shown via custom widget or report action -->
+                                        </span>
+                                    </p>
+                                    <p class="text-muted">
+                                        View detailed variance analysis below or generate a report.
+                                    </p>
+                                </div>
+                            </group>
+
+                            <separator string="Variance Details"/>
+                            <div class="oe_form_box_info" attrs="{'invisible': [('trend_data', '!=', False)]}">
+                                <p>Click "Generate Report" to compute trend analysis.</p>
+                            </div>
+                        </page>
+
+                        <page string="Help">
+                            <group>
+                                <div class="alert alert-info" role="alert">
+                                    <h4>Trend Analysis Guide</h4>
+                                    <ul>
+                                        <li><strong>MoM (Month-over-Month):</strong> Compare current period with previous month</li>
+                                        <li><strong>QoQ (Quarter-over-Quarter):</strong> Compare current period with previous quarter (3 months)</li>
+                                        <li><strong>YoY (Year-over-Year):</strong> Compare current period with same period last year</li>
+                                        <li><strong>Custom:</strong> Define your own comparison period</li>
+                                    </ul>
+
+                                    <h4>Performance</h4>
+                                    <p>
+                                        This wizard uses <strong>pre-computed snapshots</strong> for instant analysis (100-600× faster).
+                                        If snapshots are unavailable, it falls back to real-time aggregation.
+                                    </p>
+
+                                    <h4>Grouping Options</h4>
+                                    <ul>
+                                        <li><strong>Total Only:</strong> Single aggregated variance</li>
+                                        <li><strong>By Branch:</strong> Variance per branch</li>
+                                        <li><strong>By Business Unit:</strong> Variance per BU</li>
+                                        <li><strong>By Branch × BU:</strong> Full matrix detail (may be slow without snapshots)</li>
+                                    </ul>
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <footer>
+                    <button name="action_generate_report" string="Generate Report"
+                            type="object" class="btn-primary"/>
+                    <button name="action_export_excel" string="Export to Excel"
+                            type="object" class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Trend Analysis Action -->
+    <record id="action_ops_trend_analysis" model="ir.actions.act_window">
+        <field name="name">Trend Analysis</field>
+        <field name="res_model">ops.trend.analysis</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_ops_trend_analysis_form"/>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem
+        id="menu_ops_trend_analysis"
+        name="Trend Analysis"
+        parent="ops_matrix_core.menu_ops_reports"
+        action="action_ops_trend_analysis"
+        sequence="15"/>
+
+</odoo>

@@ -52,6 +52,7 @@
         "views/ops_general_ledger_wizard_enhanced_views.xml",
         "views/ops_general_ledger_wizard_views.xml",
         "views/ops_matrix_snapshot_views.xml",
+        "views/ops_trend_analysis_views.xml",
         "views/ops_report_menu.xml",
 
         # Wizards
