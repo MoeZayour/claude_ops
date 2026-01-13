@@ -23,6 +23,12 @@ from . import ops_security_rules    # Security rule engine
 from . import ops_security_audit    # Security audit logging
 from . import ir_exports_override    # Restrict native exports
 
+# 2b. Phase 5: Enterprise Security & Performance
+from . import ops_session_manager   # Session management and tracking
+from . import ops_ip_whitelist      # IP-based access control
+from . import ops_data_archival     # Data archival for scalability
+from . import ops_performance_monitor  # Performance monitoring and alerts
+
 # 2a. API Authentication & Audit Logging
 from . import ops_api_key           # API key management
 from . import ops_audit_log         # API audit logging

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Phase 5: Enterprise Security & Performance Cron Jobs -->
+
+    <!-- Session Cleanup Cron -->
+    <record id="ir_cron_session_cleanup" model="ir.cron">
+        <field name="name">OPS: Cleanup Expired Sessions</field>
+        <field name="model_id" ref="model_ops_session_manager"/>
+        <field name="state">code</field>
+        <field name="code">model.cleanup_expired_sessions()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="active" eval="True"/>
+        <field name="priority">10</field>
+    </record>
+
+    <!-- Session Record Cleanup Cron -->
+    <record id="ir_cron_session_record_cleanup" model="ir.cron">
+        <field name="name">OPS: Cleanup Old Session Records</field>
+        <field name="model_id" ref="model_ops_session_manager"/>
+        <field name="state">code</field>
+        <field name="code">model.cleanup_old_records(days=90)</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=2, minute=0, second=0)"/>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="active" eval="True"/>
+        <field name="priority">20</field>
+    </record>
+
+    <!-- Brute Force Detection Cron -->
+    <record id="ir_cron_brute_force_detection" model="ir.cron">
+        <field name="name">OPS: Detect Brute Force Attacks</field>
+        <field name="model_id" ref="model_ops_security_audit"/>
+        <field name="state">code</field>
+        <field name="code">model.detect_brute_force()</field>
+        <field name="interval_number">10</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="active" eval="True"/>
+        <field name="priority">5</field>
+    </record>
+
+    <!-- Automatic Data Archival Cron -->
+    <record id="ir_cron_automatic_archival" model="ir.cron">
+        <field name="name">OPS: Automatic Data Archival</field>
+        <field name="model_id" ref="model_ops_data_archival"/>
+        <field name="state">code</field>
+        <field name="code">model.run_automatic_archival()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">weeks</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(weeks=1)).replace(hour=1, minute=0, second=0, weekday=6)"/>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="active" eval="False"/><!-- Disabled by default - enable in settings -->
+        <field name="priority">30</field>
+    </record>
+
+    <!-- Performance Monitor Cleanup Cron -->
+    <record id="ir_cron_performance_cleanup" model="ir.cron">
+        <field name="name">OPS: Cleanup Old Performance Records</field>
+        <field name="model_id" ref="model_ops_performance_monitor"/>
+        <field name="state">code</field>
+        <field name="code">model.cleanup_old_records(days=30)</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=3, minute=0, second=0)"/>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="active" eval="True"/>
+        <field name="priority">20</field>
+    </record>
+
+</odoo>

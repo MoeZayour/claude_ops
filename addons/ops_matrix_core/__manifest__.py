@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Matrix Core',
-    'version': '1.4.0',
+    'version': '1.5.0',
     'category': 'Operations',
     'summary': 'Core module for OPS Matrix Framework',
     'description': """
@@ -88,7 +88,14 @@
         'views/ops_sod_views.xml',
         'views/field_visibility_views.xml',
         'views/ops_dashboard_widget_views.xml',
-        
+
+        # Phase 5: Enterprise Security & Performance Views
+        'views/ops_session_manager_views.xml',
+        'views/ops_ip_whitelist_views.xml',
+        'views/ops_security_audit_enhanced_views.xml',
+        'views/ops_data_archival_views.xml',
+        'views/ops_performance_monitor_views.xml',
+
         # Menus - Load in specific order
         'views/ops_settings_menu.xml',
         'views/ops_approvals_menu.xml',
@@ -96,6 +103,7 @@
         'views/ops_dashboard_menu.xml',  # Contains disables - must load last
         'data/ir_cron_data.xml',
         'data/ir_cron_archiver.xml',
+        'data/ir_cron_phase5.xml',
         'data/sale_order_actions.xml',
         'data/ir_cron_escalation.xml',
         'data/email_templates.xml',
