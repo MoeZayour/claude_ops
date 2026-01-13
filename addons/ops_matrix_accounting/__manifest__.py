@@ -35,6 +35,7 @@
         # Data
         "data/ops_asset_data.xml",
         "data/pdc_sequence.xml",
+        "data/cron_snapshot.xml",
         "data/templates/ops_budget_templates.xml",
 
         # Views
@@ -50,6 +51,7 @@
         "views/ops_financial_report_wizard_views.xml",
         "views/ops_general_ledger_wizard_enhanced_views.xml",
         "views/ops_general_ledger_wizard_views.xml",
+        "views/ops_matrix_snapshot_views.xml",
         "views/ops_report_menu.xml",
 
         # Wizards

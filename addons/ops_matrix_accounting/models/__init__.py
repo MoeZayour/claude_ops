@@ -2,6 +2,7 @@ from . import ops_pdc
 from . import ops_budget
 from . import ops_product_category_defaults
 from . import ops_matrix_standard_extensions
+from . import ops_matrix_snapshot
 from . import ops_consolidated_reporting
 from . import ops_asset_category
 from . import ops_asset
