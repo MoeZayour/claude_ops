@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from odoo.tools.safe_eval import safe_eval
 from dateutil.relativedelta import relativedelta
 
 class OpsArchivePolicy(models.Model):
@@ -30,9 +31,11 @@ class OpsArchivePolicy(models.Model):
             model = self.env[policy.model_id.model]
             cutoff_date = fields.Datetime.now() - relativedelta(months=policy.retention_months)
             
-            # Construct domain
+            # Construct domain - use safe_eval to prevent code injection
             try:
-                domain = eval(policy.domain_code or '[]')
+                domain = safe_eval(policy.domain_code or '[]')
+                if not isinstance(domain, list):
+                    domain = []
             except Exception:
                 domain = []
             

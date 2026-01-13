@@ -7,6 +7,7 @@ class SaleOrder(models.Model):
         'ops.branch',
         string='Branch',
         required=False,
+        index=True,
         default=lambda self: self._get_default_branch(),
         help="Branch responsible for this sale"
     )
@@ -14,6 +15,7 @@ class SaleOrder(models.Model):
         'ops.business.unit',
         string='Business Unit',
         required=False,
+        index=True,
         default=lambda self: self._get_default_business_unit(),
         help="Business unit this sale belongs to"
     )
@@ -45,6 +47,7 @@ class PurchaseOrder(models.Model):
         'ops.branch',
         string='Branch',
         required=False,
+        index=True,
         default=lambda self: self._get_default_branch(),
         help="Branch responsible for this purchase"
     )
@@ -52,6 +55,7 @@ class PurchaseOrder(models.Model):
         'ops.business.unit',
         string='Business Unit',
         required=False,
+        index=True,
         default=lambda self: self._get_default_business_unit(),
         help="Business unit this purchase belongs to"
     )
@@ -83,6 +87,7 @@ class StockPicking(models.Model):
         'ops.branch',
         string='Branch',
         required=False,
+        index=True,
         default=lambda self: self._get_default_branch(),
         help="Branch responsible for this transfer"
     )
@@ -90,6 +95,7 @@ class StockPicking(models.Model):
         'ops.business.unit',
         string='Business Unit',
         required=False,
+        index=True,
         default=lambda self: self._get_default_business_unit(),
         help="Business unit this transfer belongs to"
     )
@@ -135,6 +141,7 @@ class AccountMove(models.Model):
         'ops.branch',
         string='Branch',
         required=False,
+        index=True,
         default=lambda self: self._get_default_branch(),
         help="Branch responsible for this entry"
     )
@@ -142,6 +149,7 @@ class AccountMove(models.Model):
         'ops.business.unit',
         string='Business Unit',
         required=False,
+        index=True,
         default=lambda self: self._get_default_business_unit(),
         help="Business unit this entry belongs to"
     )
@@ -167,7 +175,71 @@ class AccountMove(models.Model):
                     line.ops_branch_id = move.ops_branch_id
                 if not line.ops_business_unit_id:
                     line.ops_business_unit_id = move.ops_business_unit_id
+
+        # Invalidate report caches on new financial entries
+        if any(move.state == 'posted' for move in moves):
+            self._invalidate_consolidated_report_cache()
+
         return moves
+
+    def write(self, vals):
+        """Invalidate report caches when financial data changes."""
+        result = super().write(vals)
+
+        # Invalidate if critical fields changed
+        cache_invalidation_fields = [
+            'state',  # Posted/cancelled
+            'amount_total',  # Amount changed
+            'ops_branch_id',  # Dimension changed
+            'ops_business_unit_id',  # Dimension changed
+            'date',  # Period changed
+        ]
+
+        if any(field in vals for field in cache_invalidation_fields):
+            self._invalidate_consolidated_report_cache()
+
+        return result
+
+    def _invalidate_consolidated_report_cache(self):
+        """
+        Clear cached consolidated reports for affected companies.
+
+        Note: Since OpsCompanyConsolidation is a TransientModel, records
+        auto-expire naturally. This method logs the invalidation event
+        and could clear specific caches if persistent caching is added later.
+        """
+        companies = self.mapped('company_id')
+        if companies:
+            _logger.info(
+                f"🧹 Report caches invalidated for companies: {companies.mapped('name')} "
+                f"due to financial data change"
+            )
+
+            # Clear wizard caches for affected companies
+            wizards = self.env['ops.company.consolidation'].search([
+                ('company_id', 'in', companies.ids),
+                ('cached_data', '!=', False)
+            ])
+
+            if wizards:
+                wizards.write({
+                    'cached_data': False,
+                    'cache_timestamp': False
+                })
+                _logger.info(f"   Cleared {len(wizards)} cached report(s)")
+
+            # Also clear matrix wizard caches
+            matrix_wizards = self.env['ops.profitability.matrix.wizard'].search([
+                ('company_id', 'in', companies.ids),
+                ('cached_data', '!=', False)
+            ]) if 'ops.profitability.matrix.wizard' in self.env else self.env['ops.profitability.matrix.wizard'].browse()
+
+            if matrix_wizards:
+                matrix_wizards.write({
+                    'cached_data': False,
+                    'cache_timestamp': False
+                })
+                _logger.info(f"   Cleared {len(matrix_wizards)} cached matrix report(s)")
 
 
 class AccountMoveLine(models.Model):
@@ -177,6 +249,7 @@ class AccountMoveLine(models.Model):
         'ops.branch',
         string='Branch',
         required=False,
+        index=True,
         default=lambda self: self._get_default_branch(),
         help="Branch for this journal item"
     )
@@ -184,6 +257,7 @@ class AccountMoveLine(models.Model):
         'ops.business.unit',
         string='Business Unit',
         required=False,
+        index=True,
         default=lambda self: self._get_default_business_unit(),
         help="Business unit for this journal item"
     )

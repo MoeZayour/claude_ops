@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+from odoo.tools.safe_eval import safe_eval
 import base64
 import io
 try:
@@ -52,10 +53,19 @@ class SecureExcelExportWizard(models.TransientModel):
         
         # Get records with security filtering
         Model = self.env[self.model_name]
+
+        # Parse domain safely - CRITICAL: Use safe_eval to prevent code injection
         try:
-            domain = eval(self.domain) if self.domain else []
-        except:
-            raise ValidationError(_('Invalid domain filter. Please use Python list format, e.g. [("state", "=", "sale")]'))
+            domain = safe_eval(self.domain) if self.domain else []
+            # Validate domain is a list
+            if not isinstance(domain, list):
+                raise ValueError("Domain must be a list")
+        except (ValueError, SyntaxError, NameError, TypeError) as e:
+            raise ValidationError(_(
+                'Invalid domain filter. Please use Python list format.\n'
+                'Example: [("state", "=", "draft"), ("amount", ">", 100)]\n'
+                'Error: %s'
+            ) % str(e))
         
         # Apply automatic branch filtering if model has branch_id
         # Check for ops_branch_id or branch_id
@@ -109,13 +119,14 @@ class SecureExcelExportWizard(models.TransientModel):
             'state': 'done'
         })
         
-        # Log export activity
-        self.env['ops.export.log'].create({
-            'user_id': self.env.user.id,
-            'model_id': self.model_id.id,
-            'record_count': len(records),
-            'export_date': fields.Datetime.now()
-        })
+        # Log export activity with comprehensive audit trail
+        self.env['ops.export.log'].log_export(
+            model_name=self.model_name,
+            records=records,
+            domain=domain,
+            export_format='xlsx',
+            notes=f"Secure Excel Export Wizard: {self.model_id.name}"
+        )
         
         return {
             'type': 'ir.actions.act_window',
@@ -151,14 +162,3 @@ class SecureExcelExportWizard(models.TransientModel):
                 return value or ''
         except:
             return ''
-
-# Export log model
-class OpsExportLog(models.Model):
-    _name = 'ops.export.log'
-    _description = 'Export Activity Log'
-    _order = 'export_date desc'
-    
-    user_id = fields.Many2one('res.users', 'User', required=True)
-    model_id = fields.Many2one('ir.model', 'Model', required=True, ondelete='cascade')
-    record_count = fields.Integer('Records Exported')
-    export_date = fields.Datetime('Export Date', required=True)

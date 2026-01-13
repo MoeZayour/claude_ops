@@ -3,6 +3,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.safe_eval import safe_eval
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -151,8 +152,10 @@ class OpsDashboardWidget(models.Model):
         for widget in self:
             if widget.domain:
                 try:
-                    # Try to evaluate the domain to check syntax
-                    eval(widget.domain)
+                    # Try to evaluate the domain to check syntax - use safe_eval
+                    result = safe_eval(widget.domain)
+                    if not isinstance(result, list):
+                        raise ValidationError(_('Domain must be a list'))
                 except Exception as e:
                     raise ValidationError(
                         _('Invalid domain expression: %s') % str(e)
@@ -168,7 +171,7 @@ class OpsDashboardWidget(models.Model):
         # Apply security filters
         domain = self._get_security_domain(user)
         if self.domain:
-            domain += eval(self.domain)
+            domain += safe_eval(self.domain)
         
         # Get data based on widget type
         data = {}

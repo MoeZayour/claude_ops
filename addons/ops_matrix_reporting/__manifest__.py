@@ -32,6 +32,7 @@
         # Base Structure
         'views/base_menus.xml',
         # Views & Data
+        'views/ops_export_log_views.xml',
         'views/ops_dashboard_views.xml',
         'data/ops_dashboard_data.xml',
         'views/ops_sales_analysis_views.xml',
