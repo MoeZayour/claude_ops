@@ -287,10 +287,8 @@ class OpsBusinessUnit(models.Model):
     # ---------------------------------------------------------
     # Display Name
     # ---------------------------------------------------------
-    def name_get(self):
+    @api.depends('code', 'name')
+    def _compute_display_name(self):
         """Display as '[CODE] Name'."""
-        result = []
         for bu in self:
-            name = f"[{bu.code}] {bu.name}"
-            result.append((bu.id, name))
-        return result
+            bu.display_name = f"[{bu.code}] {bu.name}"

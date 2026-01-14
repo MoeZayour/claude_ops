@@ -20,7 +20,7 @@
                     <field name="matrix_access_summary" widget="text" readonly="1"/>
                     
                     <group>
-                        <group string="Required Fields">
+                        <group>
                             <field name="persona_id" string="OPS Persona"
                                    groups="base.group_system"
                                    options="{'no_create': True}"
@@ -30,7 +30,7 @@
                                    options="{'no_create': True}"
                                    help="Main branch this user belongs to (Auto-populated when Persona is selected, optional for administrators)"/>
                         </group>
-                        <group string="Default Selections (Optional)">
+                        <group>
                             <field name="ops_default_branch_id" string="Default Branch for Transactions"
                                    groups="base.group_system"
                                    options="{'no_create': True}"
@@ -41,14 +41,14 @@
                                    help="Default business unit for new transactions (optional)"/>
                         </group>
                         
-                        <group string="Status &amp; Permissions">
+                        <group>
                             <field name="is_cross_branch_bu_leader" readonly="1"/>
                             <field name="is_matrix_administrator" readonly="1"/>
                         </group>
                     </group>
                     
-                    <group string="Allowed Access (REQUIRED)">
-                        <group string="Branches">
+                    <group>
+                        <group>
                             <field name="ops_allowed_branch_ids"
                                    string="Allowed Branches"
                                    widget="many2many_tags"
@@ -58,7 +58,7 @@
                             <field name="allowed_branch_count" readonly="1"/>
                         </group>
                         
-                        <group string="Business Units">
+                        <group>
                             <field name="ops_allowed_business_unit_ids"
                                    string="Allowed Business Units"
                                    widget="many2many_tags"
@@ -69,7 +69,7 @@
                         </group>
                     </group>
                     
-                    <group string="Persona Management" groups="base.group_system">
+                    <group groups="base.group_system">
                         <group>
                             <field name="persona_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
@@ -79,7 +79,7 @@
                     </group>
                     
                     <!-- Hide all legacy fields (marked with Legacy in field definition) -->
-                    <group string="Compatibility Fields" invisible="1">
+                    <group invisible="1">
                         <field name="branch_id" invisible="1" string="Branch"/>
                         <field name="allowed_branch_ids" invisible="1" string="Allowed Branches"/>
                         <field name="business_unit_ids" invisible="1" string="Business Units"/>

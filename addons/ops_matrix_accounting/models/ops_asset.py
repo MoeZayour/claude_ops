@@ -35,22 +35,23 @@ class OpsAsset(models.Model):
     notes = fields.Text(string='Notes')
     depreciable_value = fields.Float(
         compute='_compute_depreciation_values', string='Depreciable Value',
-        store=True, tracking=True
+        store=True, tracking=True, compute_sudo=True
     )
     book_value = fields.Float(
         compute='_compute_depreciation_values', string='Book Value',
-        store=True, tracking=True
+        store=True, tracking=True, compute_sudo=True
     )
     fully_depreciated = fields.Boolean(
         compute='_compute_depreciation_values',
         string='Fully Depreciated',
         store=True,
         tracking=True,
+        compute_sudo=True,
         help="Indicates the asset has no remaining depreciable value."
     )
     accumulated_depreciation = fields.Float(
         compute='_compute_depreciation_values', string='Accumulated Depreciation',
-        store=True
+        store=True, compute_sudo=True
     )
 
     disposal_date = fields.Date(
@@ -72,7 +73,7 @@ class OpsAsset(models.Model):
         string='Depreciation Lines', readonly=True
     )
     depreciation_count = fields.Integer(
-        compute='_compute_depreciation_values', string='Depreciation Count'
+        compute='_compute_depreciation_count', string='Depreciation Count'
     )
 
     # Analytic Fields are inherited from ops.analytic.mixin
@@ -93,13 +94,17 @@ class OpsAsset(models.Model):
     def _compute_depreciation_values(self):
         for asset in self:
             asset.depreciable_value = asset.purchase_value - asset.salvage_value
-            
+
             accumulated_depreciation = sum(
                 line.amount for line in asset.depreciation_ids if line.state == 'posted'
             )
             asset.accumulated_depreciation = accumulated_depreciation
             asset.book_value = asset.purchase_value - accumulated_depreciation
             asset.fully_depreciated = asset.book_value <= asset.salvage_value
+
+    @api.depends('depreciation_ids')
+    def _compute_depreciation_count(self):
+        for asset in self:
             asset.depreciation_count = len(asset.depreciation_ids)
 
     @api.constrains('purchase_value', 'salvage_value')

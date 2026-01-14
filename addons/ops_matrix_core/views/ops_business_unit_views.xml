@@ -80,12 +80,12 @@
                         <h1><field name="name" id="name" placeholder="e.g. Retail Operations"/></h1>
                     </div>
                     <group col="4">
-                        <group string="Basic Information" colspan="2">
+                        <group colspan="2">
                             <field name="code" readonly="1"/>
                             <field name="leader_id"/>
                             <field name="sequence" groups="base.group_no_one"/>
                         </group>
-                        <group string="Branch Assignment" colspan="2">
+                        <group colspan="2">
                             <field name="branch_ids" widget="many2many_tags" options="{'no_create': True, 'color_field': 'color'}"/>
                             <field name="primary_branch_id" options="{'no_create': True}"/>
                             <field name="company_ids" groups="base.group_multi_company" readonly="1"/>

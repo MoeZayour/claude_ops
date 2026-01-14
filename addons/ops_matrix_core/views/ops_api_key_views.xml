@@ -93,7 +93,7 @@
                             </group>
                         </group>
                         
-                        <group string="API Key Token">
+                        <group>
                             <field name="key" 
                                    password="True" 
                                    readonly="1" 
@@ -105,13 +105,13 @@
                             </div>
                         </group>
                         
-                        <group string="Description">
+                        <group>
                             <field name="description" 
                                    placeholder="Document the purpose of this API key and which system/application uses it..."
                                    nolabel="1"/>
                         </group>
                         
-                        <group string="Usage Statistics">
+                        <group>
                             <group>
                                 <field name="usage_count" readonly="1"/>
                             </group>

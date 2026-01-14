@@ -7,11 +7,11 @@
             <form string="Governance Violations Report">
                 <sheet>
                     <group>
-                        <group string="Date Range">
+                        <group>
                             <field name="date_from"/>
                             <field name="date_to"/>
                         </group>
-                        <group string="Matrix Filters">
+                        <group>
                             <field name="company_id" options="{'no_create': True}"/>
                             <field name="branch_id" options="{'no_create': True}"/>
                             <field name="business_unit_id" options="{'no_create': True}"/>
@@ -19,12 +19,12 @@
                     </group>
                     
                     <group>
-                        <group string="Violation Filters">
+                        <group>
                             <field name="rule_id" options="{'no_create': True}"/>
                             <field name="violation_type"/>
                             <field name="approval_status"/>
                         </group>
-                        <group string="Report Options">
+                        <group>
                             <field name="group_by"/>
                             <field name="include_details"/>
                             <field name="include_resolved"/>
@@ -32,11 +32,11 @@
                     </group>
                     
                     <group>
-                        <group string="Statistics" class="oe_read_only">
+                        <group class="oe_read_only">
                             <field name="violation_count" readonly="1"/>
                             <field name="pending_count" readonly="1"/>
                         </group>
-                        <group string="" class="oe_read_only">
+                        <group class="oe_read_only">
                             <field name="approved_count" readonly="1"/>
                             <field name="rejected_count" readonly="1"/>
                         </group>

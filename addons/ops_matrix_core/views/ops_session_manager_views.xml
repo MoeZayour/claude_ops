@@ -5,7 +5,7 @@
         <field name="name">ops.session.manager.tree</field>
         <field name="model">ops.session.manager</field>
         <field name="arch" type="xml">
-            <tree string="User Sessions" decoration-warning="is_suspicious" decoration-muted="not is_active">
+            <list string="User Sessions" decoration-warning="is_suspicious" decoration-muted="not is_active">
                 <field name="session_id"/>
                 <field name="user_id"/>
                 <field name="ip_address"/>
@@ -16,7 +16,7 @@
                 <field name="is_suspicious"/>
                 <field name="logout_reason"/>
                 <field name="ip_changes"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -28,18 +28,12 @@
             <form string="Session Details" create="false">
                 <header>
                     <button name="action_force_logout" string="Force Logout" type="object"
-                            class="oe_highlight" attrs="{'invisible': [('is_active', '=', False)]}"
+                            class="oe_highlight" invisible="not is_active"
                             groups="base.group_system"/>
                     <field name="is_active" widget="badge" decoration-success="is_active"/>
                 </header>
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="action_view_related_events" type="object" class="oe_stat_button" icon="fa-shield">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">Security Events</span>
-                            </div>
-                        </button>
-                    </div>
+                    <!-- Button box removed - action_view_related_events not implemented -->
                     <group>
                         <group name="session_info">
                             <field name="session_id"/>
@@ -64,10 +58,10 @@
                             <field name="logout_reason"/>
                         </group>
                     </group>
-                    <group string="Suspicious Activity" attrs="{'invisible': [('is_suspicious', '=', False)]}">
+                    <group invisible="not is_suspicious">
                         <field name="suspicious_reason" nolabel="1"/>
                     </group>
-                    <group string="Force Logout Details" attrs="{'invisible': [('forced_by_user_id', '=', False)]}">
+                    <group invisible="not forced_by_user_id">
                         <field name="forced_by_user_id"/>
                     </group>
                 </sheet>
@@ -89,7 +83,7 @@
                 <filter name="suspicious" string="Suspicious" domain="[('is_suspicious', '=', True)]"/>
                 <filter name="today" string="Today" domain="[('login_time', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_user" string="User" context="{'group_by': 'user_id'}"/>
                     <filter name="group_status" string="Status" context="{'group_by': 'is_active'}"/>
                     <filter name="group_logout_reason" string="Logout Reason" context="{'group_by': 'logout_reason'}"/>
@@ -117,7 +111,7 @@
     <!-- Menu Item -->
     <menuitem id="menu_ops_session_manager"
               name="User Sessions"
-              parent="ops_settings_menu"
+              parent="menu_ops_settings_root"
               action="action_ops_session_manager"
               sequence="45"
               groups="base.group_system"/>

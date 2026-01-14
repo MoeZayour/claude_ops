@@ -28,13 +28,13 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="action_assign_to_me" string="Assign to Me" type="object"
-                        class="oe_highlight" attrs="{'invisible': [('status', 'in', ['resolved', 'investigating'])]}"/>
+                        class="oe_highlight" invisible="status in ['resolved', 'investigating'"/>
                 <button name="action_resolve" string="Resolve" type="object"
-                        attrs="{'invisible': [('status', '=', 'resolved')]}"/>
+                        invisible="status == 'resolved'"/>
                 <button name="action_mark_false_positive" string="False Positive" type="object"
-                        attrs="{'invisible': [('status', 'in', ['resolved', 'false_positive'])]}"/>
+                        invisible="('status', 'in', ['resolved', 'false_positive'"/>
             </xpath>
-            <xpath expr="//field[@name='severity']" position="after">
+            <xpath expr="//field[@name='severity'']" position="after">
                 <field name="risk_level" widget="badge"
                        decoration-success="risk_level=='low'"
                        decoration-warning="risk_level=='medium'"
@@ -49,9 +49,9 @@
                     <page string="Investigation">
                         <group>
                             <field name="assigned_to_user_id"/>
-                            <field name="failed_login_count" attrs="{'invisible': [('event_type', '!=', 'brute_force_detected')]}"/>
+                            <field name="failed_login_count" invisible="event_type != 'brute_force_detected'"/>
                         </group>
-                        <group string="Resolution" attrs="{'invisible': [('status', 'not in', ['resolved', 'false_positive'])]}">
+                        <group invisible="status not in ['resolved', 'false_positive'">
                             <field name="resolved_date" readonly="1"/>
                             <field name="resolved_by_user_id" readonly="1"/>
                             <field name="resolution_notes" nolabel="1" readonly="1"/>
@@ -59,12 +59,12 @@
                     </page>
                     <page string="Related Events">
                         <field name="related_audit_ids" nolabel="1">
-                            <tree>
+                            <list>
                                 <field name="timestamp"/>
                                 <field name="event_type"/>
                                 <field name="risk_level"/>
                                 <field name="status"/>
-                            </tree>
+                            </list>
                         </field>
                     </page>
                 </notebook>
@@ -79,7 +79,7 @@
         <field name="inherit_id" ref="ops_matrix_core.view_ops_security_audit_search"/>
         <field name="arch" type="xml">
             <filter name="critical" position="after">
-                <filter name="risk_critical" string="Critical Risk" domain="[('risk_level', '=', 'critical')]"/>
+                <filter name="risk_critical" string="Critical Risk" domain="[('risk_level', '=', 'critical')']"/>
                 <filter name="risk_high" string="High Risk" domain="[('risk_level', '=', 'high')]"/>
                 <separator/>
                 <filter name="status_open" string="Open" domain="[('status', '=', 'open')]"/>
@@ -128,7 +128,7 @@
     <!-- Menu for Security Dashboard -->
     <menuitem id="menu_ops_security_dashboard"
               name="Security Dashboard"
-              parent="ops_settings_menu"
+              parent="menu_ops_settings_root"
               action="action_ops_security_dashboard_enhanced"
               sequence="44"
               groups="base.group_system"/>

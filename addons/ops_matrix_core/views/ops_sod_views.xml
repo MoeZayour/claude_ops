@@ -94,7 +94,7 @@
                         </group>
                     </group>
                     
-                    <group string="Rule Definition" colspan="4">
+                    <group colspan="4">
                         <group>
                             <field name="model_name"/>
                             <field name="threshold_amount" widget="float"/>
@@ -105,18 +105,18 @@
                         </group>
                     </group>
                     
-                    <group string="Enforcement" colspan="4">
+                    <group colspan="4">
                         <field name="block_violation" widget="boolean"/>
                         <div class="alert alert-warning" invisible="block_violation == True">
                             <strong>Note:</strong> This rule will only be logged, not enforced. User can perform the action.
                         </div>
                     </group>
                     
-                    <group string="Description" colspan="4">
+                    <group colspan="4">
                         <field name="description" nolabel="1" colspan="4"/>
                     </group>
                     
-                    <group string="Details" colspan="4">
+                    <group colspan="4">
                         <field name="created_date" readonly="1"/>
                     </group>
                 </sheet>
@@ -155,7 +155,7 @@
                         </group>
                     </group>
                     
-                    <group string="Users Involved" colspan="4">
+                    <group colspan="4">
                         <group>
                             <field name="user_id" readonly="1"/>
                             <field name="action_attempted" readonly="1"/>
@@ -165,14 +165,14 @@
                         </group>
                     </group>
                     
-                    <group string="Document" colspan="4">
+                    <group colspan="4">
                         <group>
                             <field name="model_name" readonly="1"/>
                             <field name="res_id" readonly="1"/>
                         </group>
                     </group>
                     
-                    <group string="Details" colspan="4">
+                    <group colspan="4">
                         <field name="notes" nolabel="1" colspan="4" readonly="1"/>
                     </group>
                 </sheet>

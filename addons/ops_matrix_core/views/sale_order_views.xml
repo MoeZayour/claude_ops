@@ -28,7 +28,7 @@
                 </div>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
-                <group name="matrix_info" string="Matrix Information">
+                <group name="matrix_info">
                     <field name="ops_branch_id" options="{'no_open': True}"/>
                     <field name="ops_business_unit_id" options="{'no_open': True}"/>
                     <field name="approval_locked" invisible="1"/>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Data Archival Tree View -->
+    <record id="view_ops_data_archival_tree" model="ir.ui.view">
+        <field name="name">ops.data.archival.tree</field>
+        <field name="model">ops.data.archival</field>
+        <field name="arch" type="xml">
+            <list string="Archival Jobs" decoration-success="state=='completed'" decoration-danger="state=='failed'" decoration-info="state=='running'">
+                <field name="name"/>
+                <field name="model_name"/>
+                <field name="state" widget="badge" decoration-success="state=='completed'" decoration-danger="state=='failed'" decoration-info="state=='running'"/>
+                <field name="created_date"/>
+                <field name="records_found"/>
+                <field name="records_archived"/>
+                <field name="records_failed"/>
+                <field name="is_automatic" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Data Archival Form View -->
+    <record id="view_ops_data_archival_form" model="ir.ui.view">
+        <field name="name">ops.data.archival.form</field>
+        <field name="model">ops.data.archival</field>
+        <field name="arch" type="xml">
+            <form string="Archival Job">
+                <header>
+                    <button name="action_run_archive" string="Run Archive" type="object"
+                            class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['draft', 'failed'])]}"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state != 'running'"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object"
+                            attrs="{'invisible': [('state', 'not in', ['failed', 'completed'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,running,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_archived_records" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="records_archived" widget="statinfo" string="Archived"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group name="config">
+                            <field name="model_name" readonly="state != 'draft'"/>
+                            <field name="record_age_days" readonly="state != 'draft'"/>
+                            <field name="archive_date" readonly="state != 'draft'"/>
+                        </group>
+                        <group name="options">
+                            <field name="keep_posted_only" attrs="{'invisible': [('model_name', '!=', 'account.move')], 'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                            <field name="is_automatic" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Execution Details" invisible="state == 'draft'">
+                            <group>
+                                <group>
+                                    <field name="start_date" readonly="1"/>
+                                    <field name="end_date" readonly="1"/>
+                                    <field name="records_found" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="records_archived" readonly="1"/>
+                                    <field name="records_failed" readonly="1"/>
+                                    <field name="archive_size_bytes" readonly="1" widget="integer"/>
+                                </group>
+                            </group>
+                            <group string="Error Log" invisible="not error_log">
+                                <field name="error_log" nolabel="1" readonly="1" widget="text"/>
+                            </group>
+                        </page>
+                        <page string="Advanced Filters" invisible="state != 'draft'">
+                            <group>
+                                <field name="additional_filters" widget="text" placeholder="[('field', 'operator', 'value')]"/>
+                            </group>
+                        </page>
+                        <page string="Metadata">
+                            <group>
+                                <field name="created_by_user_id" readonly="1"/>
+                                <field name="created_date" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Data Archival Search View -->
+    <record id="view_ops_data_archival_search" model="ir.ui.view">
+        <field name="name">ops.data.archival.search</field>
+        <field name="model">ops.data.archival</field>
+        <field name="arch" type="xml">
+            <search string="Archival Jobs">
+                <field name="name"/>
+                <field name="model_name"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="running" string="Running" domain="[('state', '=', 'running')]"/>
+                <filter name="completed" string="Completed" domain="[('state', '=', 'completed')]"/>
+                <filter name="failed" string="Failed" domain="[('state', '=', 'failed')]"/>
+                <filter name="automatic" string="Automatic" domain="[('is_automatic', '=', True)]"/>
+                <separator/>
+                <group string="Group By">
+                    <filter name="group_model" string="Model" context="{'group_by': 'model_name'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Data Archival Action -->
+    <record id="action_ops_data_archival" model="ir.actions.act_window">
+        <field name="name">Data Archival</field>
+        <field name="res_model">ops.data.archival</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a data archival job
+            </p>
+            <p>
+                Archive old records to maintain database performance.
+                Archived data is stored separately and can be restored if needed.
+            </p>
+        </field>
+    </record>
+
+    <!-- Archived Record Tree View -->
+    <record id="view_ops_archived_record_tree" model="ir.ui.view">
+        <field name="name">ops.archived.record.tree</field>
+        <field name="model">ops.archived.record</field>
+        <field name="arch" type="xml">
+            <list string="Archived Records" create="false" delete="false">
+                <field name="original_model"/>
+                <field name="original_id"/>
+                <field name="archive_date"/>
+                <field name="archive_job_id"/>
+                <field name="company_id"/>
+                <field name="restored"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Archived Record Form View -->
+    <record id="view_ops_archived_record_form" model="ir.ui.view">
+        <field name="name">ops.archived.record.form</field>
+        <field name="model">ops.archived.record</field>
+        <field name="arch" type="xml">
+            <form string="Archived Record" create="false" delete="false">
+                <header>
+                    <button name="action_view_data" string="View Data" type="object" class="oe_highlight"/>
+                    <button name="action_restore" string="Restore" type="object" invisible="restored"/>
+                    <field name="restored" widget="badge" decoration-success="restored"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="original_model" readonly="1"/>
+                            <field name="original_id" readonly="1"/>
+                            <field name="archive_job_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="archive_date" readonly="1"/>
+                            <field name="restored_date" readonly="1"/>
+                            <field name="company_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Record Data (JSON)">
+                        <field name="record_data" nolabel="1" readonly="1" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Archived Record Action -->
+    <record id="action_ops_archived_record" model="ir.actions.act_window">
+        <field name="name">Archived Records</field>
+        <field name="res_model">ops.archived.record</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_ops_data_archival"
+              name="Data Archival"
+              parent="ops_settings_menu"
+              action="action_ops_data_archival"
+              sequence="47"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_ops_archived_records"
+              name="Archived Records"
+              parent="menu_ops_data_archival"
+              action="action_ops_archived_record"
+              sequence="10"
+              groups="base.group_system"/>
+</odoo>

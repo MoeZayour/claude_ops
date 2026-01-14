@@ -70,12 +70,12 @@
                 <sheet>
                     <div class="alert alert-danger mb-3" role="alert"
                          invisible="not is_over_budget">
-                        <i class="fa fa-exclamation-circle me-2"/>
+                        <i class="fa fa-exclamation-circle me-2" title="Warning"/>
                         <strong>Over Budget:</strong> Actual spending has exceeded the budgeted amount.
                     </div>
                     <div class="alert alert-success mb-3" role="alert"
                          invisible="budget_utilization &lt; 0.9 or is_over_budget">
-                        <i class="fa fa-check me-2"/>
+                        <i class="fa fa-check me-2" title="Success"/>
                         <strong>On Track:</strong> Budget utilization is within acceptable limits.
                     </div>
                     <div class="oe_title">

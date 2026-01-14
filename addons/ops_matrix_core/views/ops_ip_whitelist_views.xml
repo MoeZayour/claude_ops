@@ -5,7 +5,7 @@
         <field name="name">ops.ip.whitelist.tree</field>
         <field name="model">ops.ip.whitelist</field>
         <field name="arch" type="xml">
-            <tree string="IP Access Rules" decoration-danger="rule_type=='deny'" decoration-success="rule_type=='allow'" decoration-muted="not active">
+            <list string="IP Access Rules" decoration-danger="rule_type=='deny'" decoration-success="rule_type=='allow'" decoration-muted="not active">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="rule_type"/>
@@ -15,7 +15,7 @@
                 <field name="blocked_count"/>
                 <field name="allowed_count"/>
                 <field name="last_triggered"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -49,12 +49,12 @@
                             <field name="last_triggered" readonly="1"/>
                         </group>
                     </group>
-                    <group string="Apply To">
+                    <group>
                         <field name="apply_to" widget="radio"/>
-                        <field name="user_ids" widget="many2many_tags" attrs="{'invisible': [('apply_to', '!=', 'users')], 'required': [('apply_to', '=', 'users')]}"/>
-                        <field name="group_ids" widget="many2many_tags" attrs="{'invisible': [('apply_to', '!=', 'groups')], 'required': [('apply_to', '=', 'groups')]}"/>
+                        <field name="user_ids" widget="many2many_tags" invisible="apply_to != 'users'" required="apply_to == 'users'"/>
+                        <field name="group_ids" widget="many2many_tags" invisible="apply_to != 'groups'" required="apply_to == 'groups'"/>
                     </group>
-                    <group string="Description">
+                    <group>
                         <field name="description" nolabel="1" placeholder="Purpose and details of this rule..."/>
                     </group>
                     <group>
@@ -83,7 +83,7 @@
                 <filter name="allow" string="Allow Rules" domain="[('rule_type', '=', 'allow')]"/>
                 <filter name="deny" string="Deny Rules" domain="[('rule_type', '=', 'deny')]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_type" string="Rule Type" context="{'group_by': 'rule_type'}"/>
                     <filter name="group_apply_to" string="Apply To" context="{'group_by': 'apply_to'}"/>
                 </group>
@@ -119,7 +119,7 @@
                     <field name="test_ip" placeholder="e.g., 192.168.1.100"/>
                     <field name="user_id"/>
                 </group>
-                <group string="Result" attrs="{'invisible': [('result', '=', False)]}">
+                <group invisible="not result">
                     <field name="result" nolabel="1" readonly="1" widget="text"/>
                 </group>
                 <footer>
@@ -133,7 +133,7 @@
     <!-- Menu Item -->
     <menuitem id="menu_ops_ip_whitelist"
               name="IP Access Control"
-              parent="ops_settings_menu"
+              parent="menu_ops_settings_root"
               action="action_ops_ip_whitelist"
               sequence="46"
               groups="base.group_system"/>

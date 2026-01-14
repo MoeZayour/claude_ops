@@ -15,4 +15,9 @@
               sequence="10"
               active="True"/>
 
+    <!-- Reporting Root Menu (for reports and analysis tools) -->
+    <menuitem id="menu_ops_reporting_root"
+              name="Reporting"
+              sequence="70"/>
+
 </odoo>

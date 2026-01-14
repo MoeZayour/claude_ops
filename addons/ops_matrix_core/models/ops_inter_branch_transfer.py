@@ -380,18 +380,16 @@ class OpsInterBranchTransfer(models.Model):
     # =========================================================================
     # Business Methods
     # =========================================================================
-    
-    def name_get(self):
+
+    @api.depends('reference', 'source_branch_id.name', 'dest_branch_id.name')
+    def _compute_display_name(self):
         """Custom display name."""
-        result = []
         for record in self:
-            name = '%s: %s → %s' % (
-                record.reference,
-                record.source_branch_id.name,
-                record.dest_branch_id.name
+            record.display_name = '%s: %s → %s' % (
+                record.reference or '',
+                record.source_branch_id.name or '',
+                record.dest_branch_id.name or ''
             )
-            result.append((record.id, name))
-        return result
     
     @api.model
     def get_transfers_for_branch(self, branch_id, direction='both'):

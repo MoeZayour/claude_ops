@@ -62,13 +62,13 @@
                     </div>
                     
                     <group>
-                        <group string="Request Information">
+                        <group>
                             <field name="rule_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                             <field name="requested_by" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                             <field name="requested_date" readonly="1"/>
                             <field name="priority"/>
                         </group>
-                        <group string="Approval Information">
+                        <group>
                             <field name="approved_by" readonly="1" invisible="not approved_by" options="{'no_create': True, 'no_open': True}"/>
                             <field name="approved_date" readonly="1" invisible="not approved_date"/>
                             <field name="violation_type" invisible="not is_governance_violation"/>
@@ -77,13 +77,13 @@
                     </group>
                     
                     <group>
-                        <group string="Matrix Dimensions" invisible="not is_governance_violation">
+                        <group invisible="not is_governance_violation">
                             <field name="ops_company_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                             <field name="ops_branch_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                             <field name="ops_business_unit_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                             <field name="matrix_summary" readonly="1"/>
                         </group>
-                        <group string="Violation Details" invisible="not is_governance_violation">
+                        <group invisible="not is_governance_violation">
                             <field name="discount_percent" readonly="1" invisible="violation_type != 'discount'"/>
                             <field name="margin_percent" readonly="1" invisible="violation_type != 'margin'"/>
                             <field name="price_variance_percent" readonly="1" invisible="violation_type != 'price'"/>
@@ -112,18 +112,18 @@
                         
                         <page string="Technical Details" name="technical_details">
                             <group>
-                                <group string="Record Reference">
+                                <group>
                                     <field name="model_name" readonly="1"/>
                                     <field name="res_id" readonly="1"/>
                                     <field name="record_ref" readonly="1"/>
                                 </group>
-                                <group string="Workflow">
+                                <group>
                                     <field name="workflow_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="is_governance_violation" readonly="1"/>
                                 </group>
                             </group>
                             
-                            <group string="Compatibility">
+                            <group>
                                 <group>
                                     <field name="branch_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                                 </group>
@@ -134,12 +134,12 @@
                         </page>
                         <page string="Escalation" name="escalation">
                             <group>
-                                <group string="Escalation Status">
+                                <group>
                                     <field name="is_overdue"/>
                                     <field name="hours_pending"/>
                                     <field name="next_escalation_date"/>
                                 </group>
-                                <group string="Escalation History">
+                                <group>
                                     <field name="escalation_history" nolabel="1" readonly="1"/>
                                 </group>
                             </group>

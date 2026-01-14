@@ -5,7 +5,7 @@
         <field name="name">ops.matrix.snapshot.tree</field>
         <field name="model">ops.matrix.snapshot</field>
         <field name="arch" type="xml">
-            <tree string="Financial Snapshots" create="false" edit="false"
+            <list string="Financial Snapshots" create="false" edit="false"
                   decoration-muted="transaction_count == 0"
                   decoration-success="net_margin_pct &gt; 15"
                   decoration-warning="net_margin_pct &gt; 5 and net_margin_pct &lt;= 15"
@@ -23,7 +23,7 @@
                 <field name="net_margin_pct" avg="Avg NM%" widget="percentage"/>
                 <field name="transaction_count" sum="Total Txn"/>
                 <field name="currency_id" invisible="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -34,18 +34,6 @@
         <field name="arch" type="xml">
             <form string="Financial Snapshot" create="false" edit="false">
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="%(action_ops_matrix_snapshot)d"
-                                type="action"
-                                class="oe_stat_button"
-                                icon="fa-line-chart"
-                                context="{'search_default_branch_id': branch_id, 'search_default_business_unit_id': business_unit_id}">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">View</span>
-                                <span class="o_stat_text">All Periods</span>
-                            </div>
-                        </button>
-                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="snapshot_date"/>
@@ -55,13 +43,13 @@
                         </h2>
                     </div>
                     <group>
-                        <group string="Period Information">
+                        <group>
                             <field name="period_type"/>
                             <field name="period_start"/>
                             <field name="period_end"/>
                             <field name="company_id"/>
                         </group>
-                        <group string="Activity Metrics">
+                        <group>
                             <field name="transaction_count"/>
                             <field name="invoice_count"/>
                             <field name="payment_count"/>
@@ -71,13 +59,13 @@
                     <notebook>
                         <page string="Income Statement" name="income_statement">
                             <group>
-                                <group string="Revenue &amp; COGS">
+                                <group>
                                     <field name="revenue" widget="monetary"/>
                                     <field name="cogs" widget="monetary"/>
                                     <field name="gross_profit" widget="monetary" class="font-weight-bold"/>
                                     <field name="gross_margin_pct" widget="percentage"/>
                                 </group>
-                                <group string="Operating Results">
+                                <group>
                                     <field name="operating_expense" widget="monetary"/>
                                     <field name="ebitda" widget="monetary"/>
                                     <field name="depreciation" widget="monetary"/>
@@ -86,7 +74,7 @@
                                 </group>
                             </group>
                             <group>
-                                <group string="Net Income">
+                                <group>
                                     <field name="interest_expense" widget="monetary"/>
                                     <field name="tax_expense" widget="monetary"/>
                                     <field name="net_income" widget="monetary" class="font-weight-bold text-success"/>
@@ -97,10 +85,10 @@
 
                         <page string="Balance Sheet" name="balance_sheet">
                             <group>
-                                <group string="Assets">
+                                <group>
                                     <field name="total_assets" widget="monetary"/>
                                 </group>
-                                <group string="Liabilities &amp; Equity">
+                                <group>
                                     <field name="total_liabilities" widget="monetary"/>
                                     <field name="total_equity" widget="monetary" class="font-weight-bold"/>
                                 </group>
@@ -159,7 +147,7 @@
                 <filter name="high_margin" string="High Margin (&gt;15%)"
                         domain="[('net_margin_pct', '&gt;', 15)]"/>
 
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_branch" string="Branch"
                             context="{'group_by': 'branch_id'}"/>
                     <filter name="group_bu" string="Business Unit"
@@ -233,29 +221,7 @@
         <field name="model_id" ref="model_ops_matrix_snapshot"/>
         <field name="binding_model_id" ref="model_ops_matrix_snapshot"/>
         <field name="state">code</field>
-        <field name="code">
-from datetime import date, timedelta
-
-date_to = date.today()
-date_from = (date_to.replace(day=1) - timedelta(days=90)).replace(day=1)
-
-count = model.rebuild_snapshots(
-    period_type='monthly',
-    date_from=date_from,
-    date_to=date_to
-)
-
-action = {
-    'type': 'ir.actions.client',
-    'tag': 'display_notification',
-    'params': {
-        'title': 'Snapshots Rebuilt',
-        'message': f'Successfully rebuilt {count} financial snapshots for the last 3 months',
-        'type': 'success',
-        'sticky': False,
-    }
-}
-        </field>
+        <field name="code">action = model.action_rebuild_last_3_months()</field>
     </record>
 
     <!-- Rebuild All Action (Admin Only) -->
@@ -264,30 +230,7 @@ action = {
         <field name="model_id" ref="model_ops_matrix_snapshot"/>
         <field name="binding_model_id" ref="model_ops_matrix_snapshot"/>
         <field name="state">code</field>
-        <field name="code">
-from datetime import date
-from dateutil.relativedelta import relativedelta
-
-date_to = date.today()
-date_from = date_to - relativedelta(years=1)
-
-count = model.rebuild_snapshots(
-    period_type='monthly',
-    date_from=date_from,
-    date_to=date_to
-)
-
-action = {
-    'type': 'ir.actions.client',
-    'tag': 'display_notification',
-    'params': {
-        'title': 'Snapshots Rebuilt',
-        'message': f'Successfully rebuilt {count} financial snapshots for the last year',
-        'type': 'success',
-        'sticky': False,
-    }
-}
-        </field>
+        <field name="code">action = model.action_rebuild_last_year()</field>
     </record>
 
     <!-- Menu -->
@@ -296,5 +239,5 @@ action = {
               parent="ops_matrix_accounting.menu_ops_accounting_root"
               action="action_ops_matrix_snapshot"
               sequence="90"
-              groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_administrator"/>
+              groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_admin_power"/>
 </odoo>

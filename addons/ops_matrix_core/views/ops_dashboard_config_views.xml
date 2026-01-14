@@ -13,18 +13,18 @@
                 <form string="Dashboard Configuration">
                     <sheet>
                         <group>
-                            <group string="User Preferences">
+                            <group>
                                 <field name="user_id" readonly="1"/>
                                 <field name="dashboard_layout"/>
                                 <field name="default_date_range"/>
                             </group>
-                            <group string="Display Options">
+                            <group>
                                 <field name="show_branch_first"/>
                                 <field name="include_inactive_dimensions"/>
                             </group>
                         </group>
                         
-                        <group string="Color Scheme">
+                        <group>
                             <group>
                                 <field name="color_scheme"/>
                             </group>
@@ -36,7 +36,7 @@
                             </group>
                         </group>
                         
-                        <group string="Performance Settings">
+                        <group>
                             <group>
                                 <field name="cache_duration"/>
                                 <field name="auto_refresh"/>
@@ -46,7 +46,7 @@
                             </group>
                         </group>
                         
-                        <group string="Widgets">
+                        <group>
                             <field name="enabled_widgets" widget="many2many_tags"/>
                         </group>
                     </sheet>
@@ -92,13 +92,13 @@
                             <field name="active" widget="boolean_toggle"/>
                         </div>
                         <group>
-                            <group string="Basic Information">
+                            <group>
                                 <field name="name"/>
                                 <field name="code"/>
                                 <field name="widget_type"/>
                                 <field name="is_system" readonly="1"/>
                             </group>
-                            <group string="Display">
+                            <group>
                                 <field name="sequence"/>
                                 <field name="icon"/>
                                 <field name="color" widget="color"/>
@@ -107,7 +107,7 @@
                             </group>
                         </group>
                         
-                        <group string="Data Configuration">
+                        <group>
                             <group>
                                 <field name="model_name"/>
                                 <field name="measure_field"/>
@@ -120,11 +120,11 @@
                             </group>
                         </group>
                         
-                        <group string="Filters">
+                        <group>
                             <field name="domain" widget="domain" options="{'model': 'model_name'}"/>
                         </group>
                         
-                        <group string="Security">
+                        <group>
                             <group>
                                 <field name="group_ids" widget="many2many_tags"/>
                             </group>
@@ -133,7 +133,7 @@
                             </group>
                         </group>
                         
-                        <group string="Description">
+                        <group>
                             <field name="description" nolabel="1"/>
                         </group>
                     </sheet>

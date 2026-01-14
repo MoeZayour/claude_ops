@@ -42,20 +42,20 @@
                         <!-- Tab 1: Period & Company -->
                         <page string="Period &amp; Company" name="page_period">
                             <group>
-                                <group string="Reporting Period">
+                                <group>
                                     <field name="date_from"/>
                                     <field name="date_to"/>
                                     <field name="include_initial_balance"/>
                                 </group>
                                 
-                                <group string="Company &amp; Journals">
+                                <group>
                                     <field name="company_id" options="{'no_create': True}"/>
                                     <field name="journal_ids" widget="many2many_tags" options="{'no_create': True}"/>
                                 </group>
                             </group>
                             
                             <group>
-                                <group string="Transaction Filters">
+                                <group>
                                     <field name="target_move" widget="radio"/>
                                     <field name="reconciled" widget="radio"/>
                                 </group>
@@ -70,11 +70,11 @@
                             </div>
                             
                             <group>
-                                <group string="Branch Selection">
+                                <group>
                                     <field name="branch_ids" widget="many2many_tags" options="{'no_create': True, 'color_field': 'color'}"/>
                                 </group>
                                 
-                                <group string="Business Unit Selection">
+                                <group>
                                     <field name="business_unit_ids" widget="many2many_tags" options="{'no_create': True, 'color_field': 'color'}"/>
                                 </group>
                             </group>
@@ -103,12 +103,12 @@
                         <!-- Tab 3: Accounts -->
                         <page string="Accounts" name="page_accounts">
                             <group>
-                                <group string="Account Selection">
+                                <group>
                                     <field name="account_ids" widget="many2many_tags" options="{'no_create': True}"/>
                                     <field name="account_type_ids"/>
                                 </group>
                                 
-                                <group string="Display Options">
+                                <group>
                                     <field name="display_account" widget="radio"/>
                                 </group>
                             </group>
@@ -123,7 +123,7 @@
                         <!-- Tab 4: Partners -->
                         <page string="Partners" name="page_partners">
                             <group>
-                                <group string="Partner Filter">
+                                <group>
                                     <field name="partner_ids" widget="many2many_tags" options="{'no_create': True}"/>
                                 </group>
                             </group>
@@ -138,12 +138,12 @@
                         <!-- Tab 5: Report Options -->
                         <page string="Report Options" name="page_options">
                             <group>
-                                <group string="Report Format">
+                                <group>
                                     <field name="report_format" widget="radio"/>
                                     <field name="sort_by"/>
                                 </group>
                                 
-                                <group string="Grouping &amp; Consolidation">
+                                <group>
                                     <field name="group_by_date"/>
                                     <separator string="Consolidate By:"/>
                                     <field name="consolidate_by_branch"/>

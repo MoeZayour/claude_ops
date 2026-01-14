@@ -95,7 +95,7 @@
                     </div>
                     
                     <group>
-                        <group string="Transfer Details">
+                        <group>
                             <field name="source_branch_id" 
                                    options="{'no_create': True}"
                                    readonly="state != 'draft'"/>
@@ -106,7 +106,7 @@
                                    options="{'no_create': True}"/>
                         </group>
                         
-                        <group string="Dates">
+                        <group>
                             <field name="transfer_date" 
                                    readonly="state != 'draft'"/>
                             <field name="expected_arrival_date" 

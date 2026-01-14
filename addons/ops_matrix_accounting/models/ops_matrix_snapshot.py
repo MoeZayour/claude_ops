@@ -501,3 +501,85 @@ class OpsMatrixSnapshot(models.Model):
             domain.append(('business_unit_id', 'in', bu_ids))
 
         return self.search(domain, order='snapshot_date, branch_id, business_unit_id')
+
+    @api.model
+    def cron_rebuild_monthly_snapshots(self):
+        """Cron job to rebuild monthly snapshots (last 3 months + current)"""
+        from datetime import date, timedelta
+        
+        date_to = date.today()
+        date_from = (date_to.replace(day=1) - timedelta(days=90)).replace(day=1)
+        
+        return self.rebuild_snapshots(
+            period_type='monthly',
+            date_from=date_from,
+            date_to=date_to
+        )
+
+    @api.model
+    def cron_rebuild_weekly_snapshots(self):
+        """Cron job to rebuild weekly snapshots (last 12 weeks)"""
+        from datetime import date, timedelta
+        
+        date_to = date.today()
+        date_from = date_to - timedelta(weeks=12)
+        
+        return self.rebuild_snapshots(
+            period_type='weekly',
+            date_from=date_from,
+            date_to=date_to
+        )
+
+    @api.model
+    def cron_rebuild_quarterly_snapshots(self):
+        """Cron job to rebuild quarterly snapshots (last 2 years)"""
+        from datetime import date
+        from dateutil.relativedelta import relativedelta
+        
+        date_to = date.today()
+        date_from = date_to - relativedelta(years=2)
+        
+        return self.rebuild_snapshots(
+            period_type='quarterly',
+            date_from=date_from,
+            date_to=date_to
+        )
+
+    def action_rebuild_last_3_months(self):
+        """UI action to rebuild snapshots for last 3 months"""
+        count = self.cron_rebuild_monthly_snapshots()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Snapshots Rebuilt',
+                'message': f'Successfully rebuilt {count} financial snapshots for the last 3 months',
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+
+    def action_rebuild_last_year(self):
+        """UI action to rebuild snapshots for last year"""
+        from datetime import date
+        from dateutil.relativedelta import relativedelta
+        
+        date_to = date.today()
+        date_from = date_to - relativedelta(years=1)
+        
+        count = self.rebuild_snapshots(
+            period_type='monthly',
+            date_from=date_from,
+            date_to=date_to
+        )
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Snapshots Rebuilt',
+                'message': f'Successfully rebuilt {count} financial snapshots for the last year',
+                'type': 'success',
+                'sticky': False,
+            }
+        }

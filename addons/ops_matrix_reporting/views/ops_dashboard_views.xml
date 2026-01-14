@@ -35,7 +35,7 @@
                             <field name="icon"/>
                         </group>
                     </group>
-                    <group string="Layout">
+                    <group>
                         <group>
                             <field name="col_span"/>
                             <field name="row_span"/>
@@ -127,14 +127,9 @@
         </field>
     </record>
 
-    <!-- Menu Items -->
-    <menuitem id="menu_ops_dashboards_root"
-              name="Dashboards"
-              parent="ops_matrix_reporting.menu_ops_reporting_tools"
-              sequence="10"/>
-
+    <!-- Menu Items - Dashboard config uses the menu_ops_dashboards_root from base_menus.xml -->
     <menuitem id="menu_ops_dashboard_config"
-              name="Configuration"
+              name="Dashboard Configuration"
               parent="menu_ops_dashboards_root"
               action="action_ops_dashboard_config"
               sequence="100"/>

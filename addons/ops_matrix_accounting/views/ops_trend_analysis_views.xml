@@ -14,40 +14,38 @@
                     </div>
 
                     <group>
-                        <group string="Current Period">
+                        <group>
                             <field name="company_id" options="{'no_create': True}"/>
                             <field name="current_period_start"/>
                             <field name="current_period_end"/>
                         </group>
-                        <group string="Comparison Period">
+                        <group>
                             <field name="auto_comparison_start"
-                                   attrs="{'invisible': [('comparison_type', '=', 'custom')]}"
+                                   invisible="comparison_type == 'custom'"
                                    readonly="1"/>
                             <field name="auto_comparison_end"
-                                   attrs="{'invisible': [('comparison_type', '=', 'custom')]}"
+                                   invisible="comparison_type == 'custom'"
                                    readonly="1"/>
                             <field name="comparison_period_start"
-                                   attrs="{'invisible': [('comparison_type', '!=', 'custom')],
-                                          'required': [('comparison_type', '=', 'custom')]}"/>
+                                   invisible="comparison_type != 'custom'" required="comparison_type == 'custom'"/>
                             <field name="comparison_period_end"
-                                   attrs="{'invisible': [('comparison_type', '!=', 'custom')],
-                                          'required': [('comparison_type', '=', 'custom')]}"/>
+                                   invisible="comparison_type != 'custom'" required="comparison_type == 'custom'"/>
                         </group>
                     </group>
 
                     <group>
-                        <group string="Filters">
+                        <group>
                             <field name="branch_ids" widget="many2many_tags"
                                    options="{'color_field': 'color', 'no_create': True}"/>
                             <field name="business_unit_ids" widget="many2many_tags"
                                    options="{'no_create': True}"/>
                         </group>
-                        <group string="Grouping">
+                        <group>
                             <field name="group_by" widget="radio"/>
                         </group>
                     </group>
 
-                    <group string="Metrics to Display">
+                    <group>
                         <group>
                             <field name="show_revenue"/>
                             <field name="show_cogs"/>
@@ -67,13 +65,13 @@
                                 <field name="data_source" readonly="1"/>
                             </group>
 
-                            <group string="Summary" attrs="{'invisible': [('trend_data', '=', False)]}">
+                            <group invisible="not trend_data">
                                 <div class="oe_form_box_info oe_text_center">
                                     <p>
                                         <strong>Revenue Growth:</strong>
                                         <field name="trend_data" widget="json" readonly="1"
-                                               attrs="{'invisible': True}"/>
-                                        <span attrs="{'invisible': [('trend_data', '=', False)]}">
+                                               invisible="1"/>
+                                        <span invisible="not trend_data">
                                             <!-- Summary will be shown via custom widget or report action -->
                                         </span>
                                     </p>
@@ -84,7 +82,7 @@
                             </group>
 
                             <separator string="Variance Details"/>
-                            <div class="oe_form_box_info" attrs="{'invisible': [('trend_data', '!=', False)]}">
+                            <div class="oe_form_box_info" invisible="('trend_data', '!=', False)">
                                 <p>Click "Generate Report" to compute trend analysis.</p>
                             </div>
                         </page>
@@ -143,7 +141,7 @@
     <menuitem
         id="menu_ops_trend_analysis"
         name="Trend Analysis"
-        parent="ops_matrix_core.menu_ops_reports"
+        parent="ops_matrix_core.menu_ops_reporting"
         action="action_ops_trend_analysis"
         sequence="15"/>
 

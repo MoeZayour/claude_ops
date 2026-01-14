@@ -296,10 +296,8 @@ class OpsBranch(models.Model):
     # ---------------------------------------------------------
     # Display Name
     # ---------------------------------------------------------
-    def name_get(self):
+    @api.depends('code', 'name')
+    def _compute_display_name(self):
         """Display as '[CODE] Name'."""
-        result = []
         for branch in self:
-            name = f"[{branch.code}] {branch.name}"
-            result.append((branch.id, name))
-        return result
+            branch.display_name = f"[{branch.code}] {branch.name}"

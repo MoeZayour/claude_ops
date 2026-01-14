@@ -5,7 +5,7 @@
         <field name="name">ops.performance.monitor.tree</field>
         <field name="model">ops.performance.monitor</field>
         <field name="arch" type="xml">
-            <tree string="Performance Monitor" decoration-warning="severity=='warning'" decoration-danger="severity=='critical'">
+            <list string="Performance Monitor" decoration-warning="severity=='warning'" decoration-danger="severity=='critical'">
                 <field name="timestamp"/>
                 <field name="operation_type"/>
                 <field name="operation_name"/>
@@ -15,7 +15,7 @@
                 <field name="record_count"/>
                 <field name="severity" widget="badge" decoration-success="severity=='info'" decoration-warning="severity=='warning'" decoration-danger="severity=='critical'"/>
                 <field name="is_slow" invisible="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -49,10 +49,10 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="SQL Query" attrs="{'invisible': [('sql_query', '=', False)]}">
+                        <page string="SQL Query" invisible="not sql_query">
                             <field name="sql_query" nolabel="1" widget="text" readonly="1"/>
                         </page>
-                        <page string="Context Data" attrs="{'invisible': [('context_data', '=', False)]}">
+                        <page string="Context Data" invisible="not context_data">
                             <field name="context_data" nolabel="1" widget="text" readonly="1"/>
                         </page>
                     </notebook>
@@ -76,7 +76,7 @@
                 <filter name="today" string="Today" domain="[('timestamp', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
                 <filter name="this_week" string="This Week" domain="[('timestamp', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_operation_type" string="Operation Type" context="{'group_by': 'operation_type'}"/>
                     <filter name="group_model" string="Model" context="{'group_by': 'model_name'}"/>
                     <filter name="group_user" string="User" context="{'group_by': 'user_id'}"/>
@@ -105,7 +105,7 @@
     <!-- Menu Item -->
     <menuitem id="menu_ops_performance_monitor"
               name="Performance Monitor"
-              parent="ops_settings_menu"
+              parent="menu_ops_settings_root"
               action="action_ops_performance_monitor"
               sequence="48"
               groups="base.group_system"/>

@@ -27,4 +27,12 @@ access_model_ops_inventory_analysis_ops_admin_full,access_model_ops_inventory_an
 access_model_ops_sales_analysis_ops_admin_full,access_model_ops_sales_analysis_ops_admin_full,model_ops_sales_analysis,ops_matrix_core.group_ops_admin_power,1,1,1,1
 access_ops_export_log_user,ops.export.log.user,model_ops_export_log,ops_matrix_core.group_ops_user,1,0,0,0
 access_ops_export_log_manager,ops.export.log.manager,model_ops_export_log,ops_matrix_core.group_ops_manager,1,0,0,0
-access_ops_export_log_admin,ops.export.log.admin,model_ops_export_log,ops_matrix_core.group_ops_administrator,1,1,1,1
+access_ops_export_log_admin,ops.export.log.admin,model_ops_export_log,ops_matrix_core.group_ops_admin_power,1,1,1,1
+access_ops_sales_analysis_system,ops.sales.analysis.system,model_ops_sales_analysis,base.group_system,1,1,1,1
+access_ops_financial_analysis_system,ops.financial.analysis.system,model_ops_financial_analysis,base.group_system,1,1,1,1
+access_ops_inventory_analysis_system,ops.inventory.analysis.system,model_ops_inventory_analysis,base.group_system,1,1,1,1
+access_ops_excel_export_wizard_system,ops.excel.export.wizard.system,model_ops_excel_export_wizard,base.group_system,1,1,1,1
+access_ops_dashboard_system,ops.dashboard.system,model_ops_dashboard,base.group_system,1,1,1,1
+access_ops_export_log_system,ops.export.log.system,model_ops_export_log,base.group_system,1,1,1,1
+access_secure_excel_export_wizard_user,secure.excel.export.wizard.user,model_secure_excel_export_wizard,base.group_user,1,1,1,0
+access_secure_excel_export_wizard_system,secure.excel.export.wizard.system,model_secure_excel_export_wizard,base.group_system,1,1,1,1

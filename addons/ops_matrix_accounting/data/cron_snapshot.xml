@@ -6,23 +6,9 @@
             <field name="name">OPS: Rebuild Monthly Financial Snapshots</field>
             <field name="model_id" ref="model_ops_matrix_snapshot"/>
             <field name="state">code</field>
-            <field name="code">
-from datetime import date, timedelta
-
-# Rebuild last 3 months + current month
-date_to = date.today()
-date_from = (date_to.replace(day=1) - timedelta(days=90)).replace(day=1)
-
-model.rebuild_snapshots(
-    period_type='monthly',
-    date_from=date_from,
-    date_to=date_to
-)
-            </field>
+            <field name="code">model.cron_rebuild_monthly_snapshots()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field name="doall" eval="False"/>
             <field name="active" eval="True"/>
             <field name="priority">5</field>
         </record>
@@ -32,22 +18,9 @@ model.rebuild_snapshots(
             <field name="name">OPS: Rebuild Weekly Financial Snapshots</field>
             <field name="model_id" ref="model_ops_matrix_snapshot"/>
             <field name="state">code</field>
-            <field name="code">
-from datetime import date, timedelta
-
-date_to = date.today()
-date_from = date_to - timedelta(weeks=12)
-
-model.rebuild_snapshots(
-    period_type='weekly',
-    date_from=date_from,
-    date_to=date_to
-)
-            </field>
+            <field name="code">model.cron_rebuild_weekly_snapshots()</field>
             <field name="interval_number">7</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field name="doall" eval="False"/>
             <field name="active" eval="False"/>
             <field name="priority">10</field>
         </record>
@@ -57,23 +30,9 @@ model.rebuild_snapshots(
             <field name="name">OPS: Rebuild Quarterly Financial Snapshots</field>
             <field name="model_id" ref="model_ops_matrix_snapshot"/>
             <field name="state">code</field>
-            <field name="code">
-from datetime import date
-from dateutil.relativedelta import relativedelta
-
-date_to = date.today()
-date_from = date_to - relativedelta(years=2)
-
-model.rebuild_snapshots(
-    period_type='quarterly',
-    date_from=date_from,
-    date_to=date_to
-)
-            </field>
+            <field name="code">model.cron_rebuild_quarterly_snapshots()</field>
             <field name="interval_number">30</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field name="doall" eval="False"/>
             <field name="active" eval="False"/>
             <field name="priority">15</field>
         </record>

@@ -53,7 +53,7 @@
                             <field name="progress" widget="progressbar"/>
                         </group>
                     </group>
-                    <group string="Escalation Info">
+                    <group>
                         <group>
                             <field name="escalation_level"/>
                             <field name="is_overdue"/>

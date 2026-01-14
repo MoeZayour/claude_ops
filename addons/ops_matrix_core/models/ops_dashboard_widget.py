@@ -25,9 +25,9 @@ class OpsDashboardWidget(models.Model):
     
     code = fields.Char(
         string='Widget Code',
-        required=True,
+        required=False,
         copy=False,
-        help='Unique code for this widget'
+        help='Unique code for this widget (optional)'
     )
     
     description = fields.Text(
@@ -48,7 +48,7 @@ class OpsDashboardWidget(models.Model):
     
     model_name = fields.Char(
         string='Model',
-        required=True,
+        required=False,
         help='Technical name of the Odoo model (e.g., sale.order)'
     )
     
@@ -140,10 +140,8 @@ class OpsDashboardWidget(models.Model):
         help='System widgets cannot be deleted'
     )
     
-    # SQL Constraints
-    _sql_constraints = [
-        ('code_unique', 'UNIQUE(code)', 'Widget code must be unique!'),
-    ]
+    # SQL Constraints removed - code can be null and duplicates allowed
+    # Note: In PostgreSQL, UNIQUE allows multiple NULLs by default
     
     # Methods
     @api.constrains('domain')

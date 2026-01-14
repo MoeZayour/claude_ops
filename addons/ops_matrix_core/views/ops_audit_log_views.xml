@@ -63,13 +63,13 @@
                                 invisible="not success"/>
                         
                         <group>
-                            <group string="Request Information">
+                            <group>
                                 <field name="timestamp" readonly="1"/>
                                 <field name="endpoint" readonly="1"/>
                                 <field name="http_method" readonly="1"/>
                                 <field name="date" readonly="1"/>
                             </group>
-                            <group string="Authentication">
+                            <group>
                                 <field name="api_key_id" readonly="1"/>
                                 <field name="persona_id" readonly="1"/>
                                 <field name="company_id" readonly="1" groups="base.group_multi_company"/>
@@ -77,22 +77,22 @@
                         </group>
                         
                         <group>
-                            <group string="Client Information">
+                            <group>
                                 <field name="ip_address" readonly="1"/>
                                 <field name="user_agent" readonly="1" widget="text"/>
                             </group>
-                            <group string="Response Information">
+                            <group>
                                 <field name="status_code" readonly="1"/>
                                 <field name="success" readonly="1"/>
                                 <field name="response_time" readonly="1" widget="float_time"/>
                             </group>
                         </group>
                         
-                        <group string="Error Details" invisible="not error_message">
+                        <group invisible="not error_message">
                             <field name="error_message" readonly="1" nolabel="1" widget="text"/>
                         </group>
                         
-                        <group string="Request Parameters" invisible="not request_params">
+                        <group invisible="not request_params">
                             <field name="request_params" readonly="1" nolabel="1" widget="text"/>
                         </group>
                         

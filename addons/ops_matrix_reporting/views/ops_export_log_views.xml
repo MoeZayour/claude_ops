@@ -5,7 +5,7 @@
         <field name="name">ops.export.log.tree</field>
         <field name="model">ops.export.log</field>
         <field name="arch" type="xml">
-            <tree string="Export Audit Logs"
+            <list string="Export Audit Logs"
                   decoration-info="data_classification == 'internal'"
                   decoration-warning="data_classification == 'confidential'"
                   decoration-danger="data_classification == 'restricted'"
@@ -22,7 +22,7 @@
                        decoration-warning="data_classification == 'confidential'"
                        decoration-danger="data_classification == 'restricted'"/>
                 <field name="ip_address"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -42,25 +42,25 @@
                         </h2>
                     </div>
                     <group>
-                        <group string="Export Details">
+                        <group>
                             <field name="user_id"/>
                             <field name="export_format"/>
                             <field name="record_count"/>
                             <field name="data_classification" widget="badge"/>
                         </group>
-                        <group string="Security Context">
+                        <group>
                             <field name="ip_address"/>
                             <field name="session_id"/>
                             <field name="company_id"/>
                         </group>
                     </group>
                     <group>
-                        <group string="Matrix Dimensions">
+                        <group>
                             <field name="branch_ids" widget="many2many_tags"/>
                             <field name="business_unit_ids" widget="many2many_tags"/>
                         </group>
                     </group>
-                    <group string="Technical Details">
+                    <group>
                         <field name="domain_filter" widget="text"/>
                         <field name="notes" widget="text"/>
                     </group>
@@ -80,21 +80,18 @@
                 <field name="branch_ids"/>
                 <field name="business_unit_ids"/>
                 <field name="export_date"/>
-
                 <filter name="today" string="Today"
                         domain="[('export_day', '=', context_today())]"/>
                 <filter name="this_week" string="This Week"
-                        domain="[('export_day', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                        domain="[('export_day', '&gt;=', (context_today() - relativedelta(days=7)).strftime('%Y-%m-%d'))]"/>
                 <filter name="this_month" string="This Month"
                         domain="[('export_day', '&gt;=', (context_today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
-
                 <separator/>
                 <filter name="confidential" string="Confidential"
                         domain="[('data_classification', '=', 'confidential')]"/>
                 <filter name="restricted" string="Restricted"
                         domain="[('data_classification', '=', 'restricted')]"/>
-
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_user" string="User" context="{'group_by': 'user_id'}"/>
                     <filter name="group_model" string="Model" context="{'group_by': 'model_id'}"/>
                     <filter name="group_day" string="Day" context="{'group_by': 'export_day'}"/>
@@ -127,5 +124,5 @@
               parent="ops_matrix_reporting.menu_ops_reporting_root"
               action="action_ops_export_log"
               sequence="100"
-              groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_administrator"/>
+              groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_admin_power"/>
 </odoo>

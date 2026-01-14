@@ -125,21 +125,21 @@
                         <h1><field name="name" id="name" placeholder="e.g., Doha Office"/></h1>
                     </div>
                     <group col="4">
-                        <group string="Identification" colspan="2">
+                        <group colspan="2">
                             <field name="code" readonly="1"/>
                             <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                             <field name="parent_id" options="{'no_create': True}"/>
                             <field name="sequence" groups="base.group_no_one"/>
                             <field name="color" widget="color_picker" groups="base.group_no_one"/>
                         </group>
-                        <group string="Management" colspan="2">
+                        <group colspan="2">
                             <field name="manager_id" options="{'no_create': True}"/>
                             <field name="phone"/>
                             <field name="email"/>
                             <field name="warehouse_id" options="{'no_create': True}"/>
                         </group>
                     </group>
-                    <group string="Address">
+                    <group>
                         <field name="address" nolabel="1" placeholder="Physical location address"/>
                     </group>
                     <notebook>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Enhanced Security Audit Tree View (Phase 5) -->
+    <record id="view_ops_security_audit_tree_enhanced" model="ir.ui.view">
+        <field name="name">ops.security.audit.tree.enhanced</field>
+        <field name="model">ops.security.audit</field>
+        <field name="inherit_id" ref="ops_matrix_core.view_ops_security_audit_tree"/>
+        <field name="arch" type="xml">
+            <field name="severity" position="after">
+                <field name="risk_level" widget="badge"
+                       decoration-success="risk_level=='low'"
+                       decoration-warning="risk_level=='medium'"
+                       decoration-danger="risk_level in ['high', 'critical']"/>
+                <field name="status" widget="badge"
+                       decoration-success="status=='resolved'"
+                       decoration-info="status=='investigating'"
+                       decoration-warning="status=='open'"/>
+                <field name="assigned_to_user_id"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Enhanced Security Audit Form View (Phase 5) -->
+    <record id="view_ops_security_audit_form_enhanced" model="ir.ui.view">
+        <field name="name">ops.security.audit.form.enhanced</field>
+        <field name="model">ops.security.audit</field>
+        <field name="inherit_id" ref="ops_matrix_core.view_ops_security_audit_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_assign_to_me" string="Assign to Me" type="object"
+                        class="oe_highlight" attrs="{'invisible': [('status', 'in', ['resolved', 'investigating'])]}"/>
+                <button name="action_resolve" string="Resolve" type="object"
+                        attrs="{'invisible': [('status', '=', 'resolved')]}"/>
+                <button name="action_mark_false_positive" string="False Positive" type="object"
+                        attrs="{'invisible': [('status', 'in', ['resolved', 'false_positive'])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='severity']" position="after">
+                <field name="risk_level" widget="badge"
+                       decoration-success="risk_level=='low'"
+                       decoration-warning="risk_level=='medium'"
+                       decoration-danger="risk_level in ['high', 'critical']"/>
+                <field name="status" widget="badge"
+                       decoration-success="status=='resolved'"
+                       decoration-info="status=='investigating'"
+                       decoration-warning="status=='open'"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Investigation">
+                        <group>
+                            <field name="assigned_to_user_id"/>
+                            <field name="failed_login_count" attrs="{'invisible': [('event_type', '!=', 'brute_force_detected')]}"/>
+                        </group>
+                        <group string="Resolution" attrs="{'invisible': [('status', 'not in', ['resolved', 'false_positive'])]}">
+                            <field name="resolved_date" readonly="1"/>
+                            <field name="resolved_by_user_id" readonly="1"/>
+                            <field name="resolution_notes" nolabel="1" readonly="1"/>
+                        </group>
+                    </page>
+                    <page string="Related Events">
+                        <field name="related_audit_ids" nolabel="1">
+                            <list>
+                                <field name="timestamp"/>
+                                <field name="event_type"/>
+                                <field name="risk_level"/>
+                                <field name="status"/>
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Enhanced Search View -->
+    <record id="view_ops_security_audit_search_enhanced" model="ir.ui.view">
+        <field name="name">ops.security.audit.search.enhanced</field>
+        <field name="model">ops.security.audit</field>
+        <field name="inherit_id" ref="ops_matrix_core.view_ops_security_audit_search"/>
+        <field name="arch" type="xml">
+            <filter name="critical" position="after">
+                <filter name="risk_critical" string="Critical Risk" domain="[('risk_level', '=', 'critical')]"/>
+                <filter name="risk_high" string="High Risk" domain="[('risk_level', '=', 'high')]"/>
+                <separator/>
+                <filter name="status_open" string="Open" domain="[('status', '=', 'open')]"/>
+                <filter name="status_investigating" string="Investigating" domain="[('status', '=', 'investigating')]"/>
+                <filter name="status_unresolved" string="Unresolved" domain="[('status', 'in', ['open', 'investigating'])]"/>
+                <separator/>
+                <filter name="brute_force" string="Brute Force" domain="[('event_type', '=', 'brute_force_detected')]"/>
+                <filter name="ip_blocked" string="IP Blocked" domain="[('event_type', '=', 'ip_blocked')]"/>
+                <filter name="suspicious_session" string="Suspicious Session" domain="[('event_type', '=', 'session_suspicious')]"/>
+            </filter>
+            <filter name="group_severity" position="after">
+                <filter name="group_risk_level" string="Risk Level" context="{'group_by': 'risk_level'}"/>
+                <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                <filter name="group_assigned" string="Assigned To" context="{'group_by': 'assigned_to_user_id'}"/>
+            </filter>
+        </field>
+    </record>
+
+    <!-- Security Resolve Wizard Form View -->
+    <record id="view_ops_security_resolve_wizard_form" model="ir.ui.view">
+        <field name="name">ops.security.resolve.wizard.form</field>
+        <field name="model">ops.security.resolve.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Resolve Security Event">
+                <group>
+                    <field name="audit_id" invisible="1"/>
+                    <field name="resolution_notes" widget="text" placeholder="Describe the investigation and resolution..."/>
+                </group>
+                <footer>
+                    <button string="Resolve" name="action_resolve" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Enhanced Security Dashboard Action -->
+    <record id="action_ops_security_dashboard_enhanced" model="ir.actions.act_window">
+        <field name="name">Security Dashboard</field>
+        <field name="res_model">ops.security.audit</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_status_unresolved': 1, 'search_default_this_week': 1}</field>
+        <field name="domain">[('risk_level', 'in', ['high', 'critical'])]</field>
+    </record>
+
+    <!-- Menu for Security Dashboard -->
+    <menuitem id="menu_ops_security_dashboard"
+              name="Security Dashboard"
+              parent="ops_settings_menu"
+              action="action_ops_security_dashboard_enhanced"
+              sequence="44"
+              groups="base.group_system"/>
+</odoo>

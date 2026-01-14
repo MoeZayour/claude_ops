@@ -104,10 +104,10 @@
                                         <field name="active"/>
                                     </group>
                                 </group>
-                                <group string="Address">
+                                <group>
                                     <field name="address" placeholder="Physical location address" nolabel="1"/>
                                 </group>
-                                <group string="Analytic Integration">
+                                <group>
                                     <field name="analytic_account_id" readonly="1" options="{'no_open': True}"/>
                                 </group>
                             </sheet>

@@ -4,8 +4,15 @@
     'category': 'Operations/Assets',
     'summary': 'Asset Management for the OPS Matrix Framework',
     'description': """
-        Manages the lifecycle of company assets, from acquisition to disposal.
-        Integrated with the OPS Matrix for dimensional tracking.
+        DEPRECATED: This module has been superseded by ops_matrix_accounting.
+
+        The ops_matrix_accounting module provides complete asset management with:
+        - Full depreciation schedule generation
+        - Proper workflow states (draft → running → paused → sold/disposed)
+        - Integration with ops.analytic.mixin
+        - Better validation and constraints
+
+        This module is disabled to prevent model conflicts with ops.asset.
     """,
     'author': 'Gemini Agent',
     'website': 'https://github.com/MoeZayour',
@@ -21,7 +28,7 @@
         'views/ops_asset_model_views.xml',
         'views/ops_asset_depreciation_views.xml',
     ],
-    'installable': True,
+    'installable': False,  # DISABLED: Conflicts with ops_matrix_accounting.ops.asset
     'application': True,
     'auto_install': False,
 }

@@ -55,26 +55,26 @@
                         </div>
                         
                         <group>
-                            <group string="Rule Definition">
+                            <group>
                                 <field name="model_name" required="True"/>
                                 <field name="field_name" required="True"/>
                                 <field name="field_label"/>
                             </group>
-                            <group string="Access Control">
+                            <group>
                                 <field name="security_group_id" required="True"/>
                                 <field name="visibility_mode" required="True"/>
                             </group>
                         </group>
                         
-                        <group string="Settings">
+                        <group>
                             <field name="is_active"/>
                         </group>
                         
-                        <group string="Description">
+                        <group>
                             <field name="description" nolabel="True"/>
                         </group>
                         
-                        <group string="Audit Trail">
+                        <group>
                             <field name="created_date" readonly="True"/>
                             <field name="modified_date" readonly="True"/>
                         </group>

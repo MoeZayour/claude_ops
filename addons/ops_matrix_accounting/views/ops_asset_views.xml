@@ -33,13 +33,13 @@
                 <sheet>
                     <div class="alert alert-warning mb-3" role="alert"
                          invisible="state != 'disposed'">
-                        <i class="fa fa-archive me-2"/>
-                        <strong>Disposed:</strong> This asset has been disposed on 
+                        <i class="fa fa-archive me-2" title="Disposed"/>
+                        <strong>Disposed:</strong> This asset has been disposed on
                         <field name="disposal_date" nolabel="1"/>.
                     </div>
                     <div class="alert alert-info mb-3" role="alert"
                          invisible="not (fully_depreciated and state == 'running')">
-                        <i class="fa fa-info-circle me-2"/>
+                        <i class="fa fa-info-circle me-2" title="Information"/>
                         <strong>Fully Depreciated:</strong> This asset has been fully depreciated.
                     </div>
                     <div class="oe_button_box" name="button_box">
@@ -55,12 +55,12 @@
                     <notebook>
                         <page string="General Information" name="general" icon="fa-info-circle">
                             <group>
-                                <group string="Asset Details">
+                                <group>
                                     <field name="category_id"/>
                                     <field name="purchase_date" readonly="[ ('state', '!=', 'draft')]"/>
                                     <field name="purchase_value" readonly="[ ('state', '!=', 'draft')]"/>
                                 </group>
-                                <group string="Values">
+                                <group>
                                     <field name="salvage_value" readonly="[ ('state', '!=', 'draft')]"/>
                                     <field name="depreciable_value" readonly="1"/>
                                     <field name="book_value" readonly="1"/>

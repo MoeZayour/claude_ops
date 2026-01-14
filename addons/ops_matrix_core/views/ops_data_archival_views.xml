@@ -5,7 +5,7 @@
         <field name="name">ops.data.archival.tree</field>
         <field name="model">ops.data.archival</field>
         <field name="arch" type="xml">
-            <tree string="Archival Jobs" decoration-success="state=='completed'" decoration-danger="state=='failed'" decoration-info="state=='running'">
+            <list string="Archival Jobs" decoration-success="state=='completed'" decoration-danger="state=='failed'" decoration-info="state=='running'">
                 <field name="name"/>
                 <field name="model_name"/>
                 <field name="state" widget="badge" decoration-success="state=='completed'" decoration-danger="state=='failed'" decoration-info="state=='running'"/>
@@ -14,7 +14,7 @@
                 <field name="records_archived"/>
                 <field name="records_failed"/>
                 <field name="is_automatic" invisible="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -26,11 +26,11 @@
             <form string="Archival Job">
                 <header>
                     <button name="action_run_archive" string="Run Archive" type="object"
-                            class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['draft', 'failed'])]}"/>
+                            class="oe_highlight" invisible="state not in ['draft', 'failed'"/>
                     <button name="action_cancel" string="Cancel" type="object"
-                            attrs="{'invisible': [('state', '!=', 'running')]}"/>
+                            invisible="state != 'running'"/>
                     <button name="action_reset_to_draft" string="Reset to Draft" type="object"
-                            attrs="{'invisible': [('state', 'not in', ['failed', 'completed'])]}"/>
+                            invisible="('state', 'not in', ['failed', 'completed'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,running,completed"/>
                 </header>
                 <sheet>
@@ -41,18 +41,18 @@
                     </div>
                     <group>
                         <group name="config">
-                            <field name="model_name" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="record_age_days" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="archive_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="model_name" readonly="state != 'draft'"/>
+                            <field name="record_age_days" readonly="state != 'draft'"/>
+                            <field name="archive_date" readonly="state != 'draft'"/>
                         </group>
                         <group name="options">
-                            <field name="keep_posted_only" attrs="{'invisible': [('model_name', '!=', 'account.move')], 'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="company_id" groups="base.group_multi_company" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="keep_posted_only" invisible="model_name != 'account.move'" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
                             <field name="is_automatic" readonly="1"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Execution Details" attrs="{'invisible': [('state', '=', 'draft')]}">
+                        <page string="Execution Details" invisible="state == 'draft'">
                             <group>
                                 <group>
                                     <field name="start_date" readonly="1"/>
@@ -65,13 +65,13 @@
                                     <field name="archive_size_bytes" readonly="1" widget="integer"/>
                                 </group>
                             </group>
-                            <group string="Error Log" attrs="{'invisible': [('error_log', '=', False)]}">
+                            <group invisible="not error_log">
                                 <field name="error_log" nolabel="1" readonly="1" widget="text"/>
                             </group>
                         </page>
-                        <page string="Advanced Filters" attrs="{'invisible': [('state', '!=', 'draft')]}">
+                        <page string="Advanced Filters" invisible="state != 'draft'">
                             <group>
-                                <field name="additional_filters" widget="text" placeholder="[('field', 'operator', 'value')]"/>
+                                <field name="additional_filters" widget="text" placeholder="[('field', 'operator', 'value')']"/>
                             </group>
                         </page>
                         <page string="Metadata">
@@ -100,7 +100,7 @@
                 <filter name="failed" string="Failed" domain="[('state', '=', 'failed')]"/>
                 <filter name="automatic" string="Automatic" domain="[('is_automatic', '=', True)]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter name="group_model" string="Model" context="{'group_by': 'model_name'}"/>
                     <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
                 </group>
@@ -129,14 +129,14 @@
         <field name="name">ops.archived.record.tree</field>
         <field name="model">ops.archived.record</field>
         <field name="arch" type="xml">
-            <tree string="Archived Records" create="false" delete="false">
+            <list string="Archived Records" create="false" delete="false">
                 <field name="original_model"/>
                 <field name="original_id"/>
                 <field name="archive_date"/>
                 <field name="archive_job_id"/>
                 <field name="company_id"/>
                 <field name="restored"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -148,7 +148,7 @@
             <form string="Archived Record" create="false" delete="false">
                 <header>
                     <button name="action_view_data" string="View Data" type="object" class="oe_highlight"/>
-                    <button name="action_restore" string="Restore" type="object" attrs="{'invisible': [('restored', '=', True)]}"/>
+                    <button name="action_restore" string="Restore" type="object" invisible="restored"/>
                     <field name="restored" widget="badge" decoration-success="restored"/>
                 </header>
                 <sheet>
@@ -164,7 +164,7 @@
                             <field name="company_id" readonly="1"/>
                         </group>
                     </group>
-                    <group string="Record Data (JSON)">
+                    <group>
                         <field name="record_data" nolabel="1" readonly="1" widget="text"/>
                     </group>
                 </sheet>
@@ -182,7 +182,7 @@
     <!-- Menu Items -->
     <menuitem id="menu_ops_data_archival"
               name="Data Archival"
-              parent="ops_settings_menu"
+              parent="menu_ops_settings_root"
               action="action_ops_data_archival"
               sequence="47"
               groups="base.group_system"/>

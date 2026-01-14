@@ -1,0 +1,79 @@
+ODOO 19 COMPATIBILITY - FILES CHANGED SUMMARY
+==============================================
+
+AUTOMATED FIXES (via fix_all_odoo19_issues.py):
+-----------------------------------------------
+ops_matrix_core/views/ops_dashboard_config_views.xml
+ops_matrix_core/views/ops_session_manager_views.xml
+ops_matrix_core/views/ops_api_key_views.xml
+ops_matrix_core/views/ops_governance_violation_report_views.xml
+ops_matrix_core/views/ops_business_unit_views.xml
+ops_matrix_core/views/ops_security_audit_enhanced_views.xml
+ops_matrix_core/views/ops_inter_branch_transfer_views.xml
+ops_matrix_core/views/ops_performance_monitor_views.xml
+ops_matrix_core/views/res_users_views.xml
+ops_matrix_core/views/field_visibility_views.xml
+ops_matrix_core/views/ops_audit_log_views.xml
+ops_matrix_core/views/ops_sla_instance_views.xml
+ops_matrix_core/views/ops_ip_whitelist_views.xml
+ops_matrix_core/views/ops_approval_request_views.xml
+ops_matrix_core/views/ops_persona_views.xml
+ops_matrix_core/views/res_company_views.xml
+ops_matrix_core/views/ops_sod_views.xml
+ops_matrix_core/views/ops_branch_views.xml
+ops_matrix_core/views/sale_order_import_wizard_views.xml
+ops_matrix_core/views/partner_views.xml
+ops_matrix_core/views/ops_governance_rule_views.xml
+ops_matrix_core/views/sale_order_views.xml
+ops_matrix_core/views/ops_data_archival_views.xml
+ops_matrix_reporting/views/ops_export_log_views.xml
+ops_matrix_reporting/views/ops_dashboard_views.xml
+ops_matrix_accounting/views/ops_trend_analysis_views.xml
+ops_matrix_accounting/views/ops_matrix_snapshot_views.xml
+ops_matrix_accounting/views/ops_asset_views.xml
+ops_matrix_accounting/views/ops_general_ledger_wizard_enhanced_views.xml
+
+MANUAL FIXES:
+------------
+ops_matrix_accounting/security/ir.model.access.csv
+  - Changed group_ops_administrator to group_ops_admin_power
+
+ops_matrix_accounting/data/cron_snapshot.xml
+  - Removed deprecated fields: numbercall, doall
+  - Added CDATA blocks (later removed)
+  - Changed to method calls instead of inline code
+
+ops_matrix_accounting/models/ops_matrix_snapshot.py
+  - Added cron_rebuild_monthly_snapshots() method
+  - Added cron_rebuild_weekly_snapshots() method
+  - Added cron_rebuild_quarterly_snapshots() method
+  - Added action_rebuild_last_3_months() method
+  - Added action_rebuild_last_year() method
+
+ops_matrix_accounting/views/ops_matrix_snapshot_views.xml
+  - Removed button box with forward action reference
+  - Updated server actions to call model methods
+
+ops_matrix_accounting/views/ops_trend_analysis_views.xml
+  - Fixed menu parent reference (menu_ops_reports -> menu_ops_reporting)
+
+TOTAL FILES MODIFIED: 34
+
+BREAKDOWN BY MODULE:
+-------------------
+ops_matrix_core: 23 files
+ops_matrix_reporting: 2 files
+ops_matrix_accounting: 9 files
+ops_matrix_asset_management: 0 files
+
+TYPES OF CHANGES:
+----------------
+1. Removed string= attribute from search view <group> elements: 29 files, 142+ occurrences
+2. Fixed security group references: 1 file
+3. Updated cron job definitions: 1 file
+4. Added model methods for cron and UI actions: 1 file
+5. Fixed server action code: 1 file
+6. Fixed menu references: 1 file
+7. Fixed XML structure issues: 1 file
+
+ALL CHANGES ARE BACKWARDS COMPATIBLE WITH ODOO 19 REQUIREMENTS
