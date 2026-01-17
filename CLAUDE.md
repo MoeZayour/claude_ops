@@ -14,7 +14,7 @@ Your job is to deliver **fully working Odoo 19 custom modules**.
 ```
 Path: /opt/gemini_odoo19
 Port: 8089
-Database: mz_db
+Database: mz-db
 Container: gemini_odoo19
 Odoo Version: 19.0
 GitHub: https://github.com/MoeZayour/claude_ops
@@ -110,7 +110,7 @@ self.env.cr.execute("INSERT INTO ops_branch ...")
 
 ```bash
 # Test in Odoo shell
-docker exec gemini_odoo19 odoo shell -c /etc/odoo/odoo.conf -d mz_db --no-http << 'PYTHON'
+docker exec gemini_odoo19 odoo shell -c /etc/odoo/odoo.conf -d mz-db --no-http << 'PYTHON'
 # Your test code here
 PYTHON
 ```
@@ -120,7 +120,7 @@ PYTHON
 ```bash
 docker exec gemini_odoo19 odoo \
   -c /etc/odoo/odoo.conf \
-  -d mz_db \
+  -d mz-db \
   -u MODULE_NAME \
   --stop-after-init \
   --no-http
@@ -179,22 +179,22 @@ Always check `OPS_FRAMEWORK_FEATURES_MASTER.md` before development:
 ### Module Management
 ```bash
 # Update single module
-docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz_db -u ops_matrix_core --stop-after-init --no-http
+docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz-db -u ops_matrix_core --stop-after-init --no-http
 
 # Update multiple modules
-docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz_db -u ops_matrix_core,ops_matrix_accounting --stop-after-init --no-http
+docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz-db -u ops_matrix_core,ops_matrix_accounting --stop-after-init --no-http
 ```
 
 ### Debugging
 ```bash
 # Check module states
-docker exec gemini_odoo19 odoo shell -c /etc/odoo/odoo.conf -d mz_db --no-http << 'PYTHON'
+docker exec gemini_odoo19 odoo shell -c /etc/odoo/odoo.conf -d mz-db --no-http << 'PYTHON'
 modules = self.env['ir.module.module'].search([('name', 'like', 'ops_matrix_%')])
 for m in modules: print(f"{m.name}: {m.state}")
 PYTHON
 
 # Interactive shell
-docker exec -it gemini_odoo19 odoo shell -c /etc/odoo/odoo.conf -d mz_db --no-http
+docker exec -it gemini_odoo19 odoo shell -c /etc/odoo/odoo.conf -d mz-db --no-http
 ```
 
 ---
@@ -290,7 +290,7 @@ Generate completion stats:
 
 ## ⚠️ Critical Reminders
 
-> **Database `mz_db` is production.**
+> **Database `mz-db` is production.**
 > All changes via source code only.
 
 > **Deliver complete, working modules.**
