@@ -187,26 +187,32 @@ class OpsDashboardWidget(models.Model):
     def _get_security_domain(self, user):
         """Get security domain based on user's matrix access."""
         domain = []
-        
+
         if not self.model_name:
             return domain
-            
+
+        # Skip restrictions for system admins
+        if user.has_group('base.group_system'):
+            return domain
+
         Model = self.env[self.model_name]
-        
+
         # Company restriction
-        if hasattr(Model, 'company_id') and user.company_ids:
+        if 'company_id' in Model._fields and user.company_ids:
             domain.append(('company_id', 'in', user.company_ids.ids))
-        
+
         # Branch restriction (if model has ops_branch_id)
-        if hasattr(Model, 'ops_branch_id'):
-            if user.allowed_branch_ids:
-                domain.append(('ops_branch_id', 'in', user.allowed_branch_ids.ids))
-        
+        if 'ops_branch_id' in Model._fields:
+            branch_ids = getattr(user, 'ops_allowed_branch_ids', False)
+            if branch_ids:
+                domain.append(('ops_branch_id', 'in', branch_ids.ids))
+
         # BU restriction (if model has ops_business_unit_id)
-        if hasattr(Model, 'ops_business_unit_id'):
-            if user.allowed_business_unit_ids:
-                domain.append(('ops_business_unit_id', 'in', user.allowed_business_unit_ids.ids))
-        
+        if 'ops_business_unit_id' in Model._fields:
+            bu_ids = getattr(user, 'ops_allowed_business_unit_ids', False)
+            if bu_ids:
+                domain.append(('ops_business_unit_id', 'in', bu_ids.ids))
+
         return domain
     
     def _get_kpi_data(self, domain, user, context):
