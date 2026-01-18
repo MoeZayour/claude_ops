@@ -1,0 +1,426 @@
+// ============================================================================
+// OPS ENTERPRISE THEME - LAYOUT OVERRIDES
+// ============================================================================
+// Purpose: Apply "Gilded Admin" visual styling to Odoo 19 backend views
+// Design: Floating white cards with soft shadows on light grey background
+// Dark Mode: Uses CSS variables with fallbacks for compatibility
+// ============================================================================
+
+// -----------------------------------------------------------------------------
+// 🌐 GLOBAL BODY & WEB CLIENT
+// -----------------------------------------------------------------------------
+// Force the main Odoo web client to use our background color
+
+.o_web_client {
+    background-color: var(--o-view-background-color, #f1f5f9) !important;
+}
+
+// Ensure the action manager (main content area) respects the background
+.o_action_manager {
+    background-color: var(--o-view-background-color, #f1f5f9) !important;
+}
+
+// -----------------------------------------------------------------------------
+// 🎨 MAIN NAVBAR (Top Bar)
+// -----------------------------------------------------------------------------
+// Style the top navigation bar with our primary deep navy color
+
+.o_main_navbar {
+    background-color: var(--o-navbar-bg, #0f172a) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+    // Navbar text & icons
+    .o_menu_brand,
+    .o_menu_sections .dropdown-toggle,
+    .o_menu_systray .dropdown-toggle,
+    .nav-link {
+        color: rgba(255, 255, 255, 0.85) !important;
+        
+        &:hover {
+            color: rgba(255, 255, 255, 1) !important;
+        }
+    }
+    
+    // App switcher icon
+    .o_navbar_apps_menu .dropdown-toggle {
+        color: rgba(255, 255, 255, 0.85) !important;
+        
+        &:hover {
+            color: rgba(255, 255, 255, 1) !important;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+    
+    // Search input styling in navbar
+    .o_menu_search_input {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.9);
+        
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        &:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 📋 VIEW CONTAINERS - "Floating Card" Design
+// -----------------------------------------------------------------------------
+// Create white card containers with shadows for all major view types
+
+// Form Views (Detail Pages)
+.o_form_view {
+    background-color: var(--o-view-background-color, #ffffff) !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin: 16px !important;
+    padding: 24px;
+    
+    // Form sheet styling
+    .o_form_sheet_bg {
+        background-color: transparent !important;
+    }
+    
+    .o_form_sheet {
+        background-color: transparent !important;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+    }
+}
+
+// List Views (Table Views)
+.o_list_view {
+    background-color: var(--o-view-background-color, #ffffff) !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin: 16px !important;
+    padding: 16px;
+    
+    // Table styling
+    .o_list_table {
+        background-color: transparent !important;
+        
+        thead {
+            background-color: var(--o-view-background-color, #f8fafc);
+            border-bottom: 2px solid var(--o-border-color, #e2e8f0);
+            
+            th {
+                color: var(--o-main-text-color, #1e293b);
+                font-weight: 600;
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                letter-spacing: 0.025em;
+                padding: 12px 8px;
+            }
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid var(--o-border-color, #e2e8f0);
+            transition: background-color 0.2s ease;
+            
+            &:hover {
+                background-color: var(--o-view-background-color, #f8fafc) !important;
+            }
+            
+            td {
+                padding: 12px 8px;
+            }
+        }
+    }
+}
+
+// Kanban Views (Card Grid)
+.o_kanban_view {
+    background-color: transparent !important;
+    padding: 16px;
+    
+    // Kanban column styling
+    .o_kanban_group {
+        background-color: var(--o-view-background-color, #f8fafc) !important;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 0 8px;
+        
+        .o_kanban_header {
+            background-color: transparent;
+            border-bottom: 2px solid var(--o-border-color, #e2e8f0);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+        }
+    }
+    
+    // Individual kanban cards
+    .o_kanban_record {
+        background-color: var(--o-view-background-color, #ffffff) !important;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--o-border-color, #e2e8f0);
+        margin-bottom: 12px;
+        padding: 16px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    }
+}
+
+// Calendar View
+.o_calendar_view {
+    background-color: var(--o-view-background-color, #ffffff) !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin: 16px !important;
+    padding: 16px;
+}
+
+// Pivot & Graph Views
+.o_pivot_view,
+.o_graph_view {
+    background-color: var(--o-view-background-color, #ffffff) !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin: 16px !important;
+    padding: 24px;
+}
+
+// -----------------------------------------------------------------------------
+// 🎯 CONTROL PANEL (Search Bar & Buttons Area)
+// -----------------------------------------------------------------------------
+// Style the top control panel with filters and buttons
+
+.o_control_panel {
+    background-color: transparent !important;
+    border-bottom: none;
+    padding: 16px 16px 8px 16px;
+    
+    // Search bar container
+    .o_cp_searchview {
+        background-color: var(--o-view-background-color, #ffffff);
+        border-radius: 8px;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--o-border-color, #e2e8f0);
+        
+        .o_searchview_input_container {
+            .o_searchview_input {
+                color: var(--o-main-text-color, #1e293b);
+                
+                &::placeholder {
+                    color: var(--o-main-text-color-muted, #64748b);
+                }
+            }
+        }
+    }
+    
+    // Button styling
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        
+        &.btn-primary {
+            background-color: var(--o-brand-primary, #3b82f6);
+            border-color: var(--o-brand-primary, #3b82f6);
+            
+            &:hover {
+                background-color: var(--o-brand-primary-hover, #2563eb);
+                border-color: var(--o-brand-primary-hover, #2563eb);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+            }
+        }
+        
+        &.btn-secondary {
+            background-color: var(--o-view-background-color, #f8fafc);
+            border-color: var(--o-border-color, #e2e8f0);
+            color: var(--o-main-text-color, #1e293b);
+            
+            &:hover {
+                background-color: var(--o-view-background-color, #f1f5f9);
+                transform: translateY(-1px);
+            }
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 📝 FORM ELEMENTS & INPUTS
+// -----------------------------------------------------------------------------
+// Style form inputs, textareas, and select elements
+
+.o_form_view,
+.modal-body {
+    // Input fields
+    input.o_input,
+    textarea.o_input,
+    select.o_input {
+        border-radius: 8px;
+        border: 1px solid var(--o-border-color, #e2e8f0);
+        background-color: var(--o-view-background-color, #ffffff);
+        color: var(--o-main-text-color, #1e293b);
+        padding: 8px 12px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        
+        &:focus {
+            border-color: var(--o-brand-primary, #3b82f6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+    }
+    
+    // Label styling
+    .o_form_label {
+        color: var(--o-main-text-color, #1e293b);
+        font-weight: 600;
+        font-size: 0.875rem;
+        margin-bottom: 4px;
+    }
+    
+    // Field groups
+    .o_group {
+        .o_inner_group {
+            .o_td_label {
+                color: var(--o-main-text-color, #1e293b);
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 💬 MODAL DIALOGS
+// -----------------------------------------------------------------------------
+// Style popup dialogs and wizards
+
+.modal-content {
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--o-border-color, #e2e8f0);
+    
+    .modal-header {
+        background-color: var(--o-view-background-color, #f8fafc);
+        border-bottom: 1px solid var(--o-border-color, #e2e8f0);
+        border-radius: 12px 12px 0 0;
+        padding: 20px 24px;
+        
+        .modal-title {
+            color: var(--o-main-text-color, #1e293b);
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+    }
+    
+    .modal-body {
+        padding: 24px;
+        background-color: var(--o-view-background-color, #ffffff);
+    }
+    
+    .modal-footer {
+        background-color: var(--o-view-background-color, #f8fafc);
+        border-top: 1px solid var(--o-border-color, #e2e8f0);
+        border-radius: 0 0 12px 12px;
+        padding: 16px 24px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 📱 SIDEBAR & CHATTER
+// -----------------------------------------------------------------------------
+// Style the right sidebar (Chatter area in form views)
+
+.o_form_view .o_form_sheet_bg + .o_FormRenderer_chatterContainer {
+    background-color: transparent;
+    
+    .o-mail-Chatter {
+        background-color: var(--o-view-background-color, #ffffff);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        margin: 16px;
+        padding: 16px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 🎨 STATUSBAR (Form View Top)
+// -----------------------------------------------------------------------------
+// Style the status bar at the top of form views
+
+.o_form_statusbar {
+    background-color: var(--o-view-background-color, #f8fafc) !important;
+    border-bottom: 1px solid var(--o-border-color, #e2e8f0);
+    padding: 12px 24px;
+    
+    .o_statusbar_status {
+        .o_arrow_button {
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            
+            &.btn-primary {
+                background-color: var(--o-brand-primary, #3b82f6);
+                color: white;
+            }
+            
+            &.btn-secondary {
+                background-color: var(--o-view-background-color, #e2e8f0);
+                color: var(--o-main-text-color, #64748b);
+            }
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 🔍 SEARCH PANEL (Left Sidebar Filters)
+// -----------------------------------------------------------------------------
+// Style the left filter panel
+
+.o_search_panel {
+    background-color: var(--o-view-background-color, #ffffff) !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin: 16px 0 16px 16px;
+    padding: 16px;
+    border-right: none;
+    
+    .o_search_panel_section {
+        margin-bottom: 24px;
+        
+        .o_search_panel_section_header {
+            color: var(--o-main-text-color, #1e293b);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            margin-bottom: 8px;
+        }
+        
+        .o_search_panel_category_value,
+        .o_search_panel_filter_value {
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+            
+            &:hover {
+                background-color: var(--o-view-background-color, #f1f5f9);
+            }
+            
+            &.active {
+                background-color: var(--o-brand-primary, #3b82f6);
+                color: white;
+            }
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// ✅ END OF LAYOUT OVERRIDES
+// -----------------------------------------------------------------------------

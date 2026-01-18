@@ -18,6 +18,10 @@ access_ops_inter_branch_transfer_user,ops.inter.branch.transfer.user,model_ops_i
 access_ops_inter_branch_transfer_manager,ops.inter.branch.transfer.manager,model_ops_inter_branch_transfer,group_ops_manager,1,1,1,1
 access_ops_gov_rule_manager,ops.governance.rule.manager,model_ops_governance_rule,group_ops_manager,1,1,1,1
 access_ops_gov_rule_user,ops.governance.rule.user,model_ops_governance_rule,group_ops_user,1,0,0,0
+access_ops_approval_rule_user,ops.approval.rule.user,model_ops_approval_rule,group_ops_user,1,0,0,0
+access_ops_approval_rule_manager,ops.approval.rule.manager,model_ops_approval_rule,group_ops_manager,1,1,1,1
+access_ops_approval_rule_admin,ops.approval.rule.admin,model_ops_approval_rule,group_ops_admin_power,1,1,1,1
+access_ops_approval_rule_system,ops.approval.rule.system,model_ops_approval_rule,base.group_system,1,1,1,1
 access_ops_gov_discount_limit_user,ops.governance.discount.limit.user,model_ops_governance_discount_limit,group_ops_user,1,0,0,0
 access_ops_gov_discount_limit_manager,ops.governance.discount.limit.manager,model_ops_governance_discount_limit,group_ops_manager,1,1,1,1
 access_ops_gov_margin_rule_user,ops.governance.margin.rule.user,model_ops_governance_margin_rule,group_ops_user,1,0,0,0

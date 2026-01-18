@@ -45,6 +45,7 @@ from . import ops_inter_branch_transfer
 from . import ops_governance_mixin
 from . import ops_governance_rule
 from . import ops_governance_limits      # NEW: Related limit models
+from . import ops_approval_rule          # Lightweight approval rule model
 from . import ops_approval_request
 from . import ops_approval_dashboard
 from . import ops_governance_violation_report

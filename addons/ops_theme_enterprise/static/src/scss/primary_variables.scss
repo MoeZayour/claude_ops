@@ -1,0 +1,113 @@
+// ============================================================================
+// OPS ENTERPRISE THEME - PRIMARY VARIABLES
+// ============================================================================
+// Purpose: Override Odoo 19's Bootstrap 5 color variables for branding
+// Design: "Modern Enterprise" with Deep Navy Primary & Vibrant Blue Secondary
+// ============================================================================
+
+// -----------------------------------------------------------------------------
+// 🎨 COLOR PALETTE (Modern Enterprise)
+// -----------------------------------------------------------------------------
+$ops-primary: #0f172a;        // Slate 900 - Deep Navy (Professional)
+$ops-secondary: #3b82f6;      // Blue 500 - Vibrant Blue (Call-to-Action)
+$ops-background: #f1f5f9;     // Slate 100 - Very Light Grey (Body Background)
+$ops-surface: #ffffff;        // White (Cards & Surfaces)
+$ops-text-primary: #1e293b;   // Slate 800 - Dark Text
+$ops-text-secondary: #64748b; // Slate 500 - Muted Text
+
+// -----------------------------------------------------------------------------
+// 🔧 BOOTSTRAP 5 VARIABLE OVERRIDES (Odoo 19 Native)
+// -----------------------------------------------------------------------------
+// These integrate with Odoo's internal Bootstrap 5 SCSS compilation
+
+// Brand Colors (Odoo-specific)
+$o-brand-odoo: $ops-primary !default;
+$o-brand-primary: $ops-secondary !default;
+$o-brand-secondary: $ops-text-secondary !default;
+
+// Bootstrap Primary Palette
+$primary: $ops-secondary !default;
+$secondary: $ops-text-secondary !default;
+$success: #10b981 !default;     // Green 500 (Emerald)
+$info: #06b6d4 !default;        // Cyan 500
+$warning: #f59e0b !default;     // Amber 500
+$danger: #ef4444 !default;      // Red 500
+$light: #f8fafc !default;       // Slate 50
+$dark: $ops-primary !default;
+
+// Body Defaults
+$body-bg: $ops-background !default;
+$body-color: $ops-text-primary !default;
+
+// -----------------------------------------------------------------------------
+// 🌙 DARK MODE COMPATIBILITY
+// -----------------------------------------------------------------------------
+// Note: These variables are only used in light mode. Odoo 19's dark mode
+// system will override them automatically via its own CSS variable layer.
+// We're not forcing values here to prevent breaking dark mode.
+
+// Link Colors
+$link-color: $ops-secondary !default;
+$link-hover-color: darken($ops-secondary, 15%) !default;
+
+// Border & Shadows
+$border-color: #e2e8f0 !default;        // Slate 200
+$border-radius: 0.75rem !default;       // 12px - Generous Rounding
+$border-radius-sm: 0.5rem !default;     // 8px
+$border-radius-lg: 1rem !default;       // 16px
+
+// Shadow System (Tailwind-inspired)
+$box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !default;
+$box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !default;
+$box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !default;
+
+// -----------------------------------------------------------------------------
+// 📝 TYPOGRAPHY SYSTEM
+// -----------------------------------------------------------------------------
+$font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+                         "Helvetica Neue", Arial, sans-serif !default;
+$font-size-base: 0.9375rem !default;    // 15px
+$line-height-base: 1.6 !default;
+
+// Font Weights
+$font-weight-light: 300 !default;
+$font-weight-normal: 400 !default;
+$font-weight-semibold: 600 !default;
+$font-weight-bold: 700 !default;
+
+// Headings
+$headings-font-weight: $font-weight-semibold !default;
+$headings-color: $ops-text-primary !default;
+
+// -----------------------------------------------------------------------------
+// 🎛️ COMPONENT-SPECIFIC OVERRIDES
+// -----------------------------------------------------------------------------
+
+// Cards
+$card-bg: $ops-surface !default;
+$card-border-radius: $border-radius !default;
+$card-border-color: transparent !default;
+$card-box-shadow: $box-shadow !default;
+$card-spacer-y: 1.25rem !default;       // 20px
+$card-spacer-x: 1.5rem !default;        // 24px
+
+// Buttons
+$btn-font-weight: $font-weight-semibold !default;
+$btn-border-radius: $border-radius-sm !default;
+$btn-padding-y: 0.625rem !default;      // 10px
+$btn-padding-x: 1.25rem !default;       // 20px
+
+// Forms
+$input-bg: $ops-surface !default;
+$input-border-color: $border-color !default;
+$input-border-radius: $border-radius-sm !default;
+$input-focus-border-color: $ops-secondary !default;
+
+// Navbar
+$navbar-dark-color: rgba(255, 255, 255, 0.85) !default;
+$navbar-dark-hover-color: rgba(255, 255, 255, 1) !default;
+$navbar-dark-active-color: rgba(255, 255, 255, 1) !default;
+
+// -----------------------------------------------------------------------------
+// ✅ END OF PRIMARY VARIABLES
+// -----------------------------------------------------------------------------

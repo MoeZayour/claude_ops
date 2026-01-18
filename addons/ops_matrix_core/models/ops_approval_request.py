@@ -26,14 +26,21 @@ class OpsApprovalRequest(models.Model):
     )
     rule_id = fields.Many2one(
         'ops.governance.rule',
-        string='Rule',
-        required=True,
+        string='Governance Rule',
+        required=False,  # Made optional - can use approval_rule_id instead
         tracking=True,
         help='The governance rule that triggered this approval request. '
              'The rule defines: validation criteria, approvers, severity, actions. '
              'Click to view rule configuration and understand why approval is needed. '
              'Examples: "Discount Limit Rule", "Margin Protection - Electronics", "High Value Approval". '
              'Related: View rule details to see thresholds and authorized approvers.'
+    )
+    approval_rule_id = fields.Many2one(
+        'ops.approval.rule',
+        string='Approval Rule',
+        required=False,
+        tracking=True,
+        help='The simple approval rule that triggered this request (alternative to governance rule).'
     )
     model_name = fields.Char(string='Model Name', required=True)
     res_id = fields.Integer(string='Record ID', required=True)

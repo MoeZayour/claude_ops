@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Sale Order Form View - Add Matrix Fields -->
+    <!-- Sale Order Form View - Add Matrix Fields and Approval Workflow -->
     <record id="view_order_form_matrix_inherit" model="ir.ui.view">
         <field name="name">sale.order.form.matrix.inherit</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <!-- Import button will be added via separate inheritance after wizard action is loaded -->
+            <!-- Stat buttons for approvals -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_approvals"
                         type="object"
@@ -22,19 +22,50 @@
                         string="Request Approval"
                         invisible="approval_locked or state not in ['draft', 'sent']"/>
             </xpath>
+
+            <!-- Approval workflow banner and buttons -->
             <xpath expr="//sheet" position="before">
+                <!-- Warning banner when locked -->
                 <div class="alert alert-warning" role="alert" invisible="not approval_locked">
                     <strong>Approval Required:</strong> This document is locked pending approval. No changes can be made until approved or rejected.
                 </div>
+                <!-- Waiting approval banner with action buttons -->
+                <div class="alert alert-info" role="alert" invisible="state != 'waiting_approval'">
+                    <div class="d-flex align-items-center">
+                        <span class="me-3">
+                            <strong>Waiting for Approval:</strong> This order is pending approval before it can be confirmed.
+                        </span>
+                        <button name="action_approve"
+                                type="object"
+                                class="btn btn-success btn-sm me-2"
+                                groups="ops_matrix_core.group_ops_manager">
+                            Approve
+                        </button>
+                        <button name="action_reject_approval"
+                                type="object"
+                                class="btn btn-danger btn-sm"
+                                groups="ops_matrix_core.group_ops_manager">
+                            Reject
+                        </button>
+                    </div>
+                </div>
             </xpath>
+
+            <!-- Hide Confirm button when waiting_approval -->
+            <xpath expr="//button[@name='action_confirm']" position="attributes">
+                <attribute name="invisible">state not in ['draft', 'sent'] or state == 'waiting_approval'</attribute>
+            </xpath>
+
+            <!-- Matrix dimension fields -->
             <xpath expr="//field[@name='partner_id']" position="after">
                 <group name="matrix_info">
                     <field name="ops_branch_id" options="{'no_open': True}"/>
                     <field name="ops_business_unit_id" options="{'no_open': True}"/>
                     <field name="approval_locked" invisible="1"/>
+                    <field name="approval_request_id" invisible="1"/>
                 </group>
             </xpath>
-            
+
         </field>
     </record>
 

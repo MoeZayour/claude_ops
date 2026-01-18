@@ -58,6 +58,7 @@
         'views/ops_persona_delegation_views.xml',
         'views/res_users_views.xml',
         'views/ops_approval_request_views.xml',
+        'views/ops_approval_rule_views.xml',
         'views/ops_governance_rule_views.xml',
         'views/ops_approval_dashboard_views.xml',
         'views/ops_governance_violation_report_views.xml',

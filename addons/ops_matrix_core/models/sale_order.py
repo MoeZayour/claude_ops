@@ -17,7 +17,17 @@ except ImportError:
 class SaleOrder(models.Model):
     _name = 'sale.order'
     _inherit = ['sale.order', 'ops.governance.mixin', 'ops.matrix.mixin', 'ops.approval.mixin', 'ops.segregation.of.duties.mixin']
-    
+
+    # ==========================================================================
+    # STATE EXTENSION: Add 'waiting_approval' state for governance workflow
+    # ==========================================================================
+    state = fields.Selection(
+        selection_add=[
+            ('waiting_approval', 'Waiting Approval'),
+        ],
+        ondelete={'waiting_approval': 'set default'}
+    )
+
     # Note: ops_branch_id and ops_business_unit_id are inherited from ops.matrix.mixin
     # Additional sale order specific fields
     ops_credit_check_passed = fields.Boolean(
@@ -31,6 +41,28 @@ class SaleOrder(models.Model):
         readonly=True,
         help='Notes from credit firewall evaluation'
     )
+
+    # Approval request link (computed for convenience)
+    approval_request_ids = fields.One2many(
+        'ops.approval.request',
+        compute='_compute_approval_request_ids',
+        string='Approval Requests'
+    )
+    approval_request_count = fields.Integer(
+        compute='_compute_approval_request_ids',
+        string='Approval Count'
+    )
+
+    def _compute_approval_request_ids(self):
+        """Compute approval requests linked to this sale order."""
+        ApprovalRequest = self.env['ops.approval.request']
+        for order in self:
+            requests = ApprovalRequest.search([
+                ('model_name', '=', 'sale.order'),
+                ('res_id', '=', order.id)
+            ])
+            order.approval_request_ids = requests
+            order.approval_request_count = len(requests)
 
     @api.constrains('order_line')
     def _check_business_unit_silo(self) -> None:
@@ -327,6 +359,158 @@ class SaleOrder(models.Model):
         invoice_vals = super()._prepare_invoice()
         invoice_vals.update(self._prepare_invoice_vals())
         return invoice_vals
+
+    # ==========================================================================
+    # APPROVAL WORKFLOW ACTIONS
+    # ==========================================================================
+
+    def action_request_approval(self):
+        """
+        Request approval for this sale order.
+        Sets state to 'waiting_approval' and creates approval request.
+        """
+        self.ensure_one()
+
+        if self.state not in ['draft', 'sent']:
+            raise UserError(_("Approval can only be requested for draft or sent quotations."))
+
+        # Find applicable approval rules
+        ApprovalRule = self.env['ops.approval.rule']
+        rules = ApprovalRule.search([
+            ('active', '=', True),
+            ('model_name', '=', 'sale.order'),
+            ('company_id', '=', self.company_id.id)
+        ])
+
+        # Also check governance rules that require approval
+        GovernanceRule = self.env['ops.governance.rule']
+        gov_rules = GovernanceRule.search([
+            ('active', '=', True),
+            ('model_id.model', '=', 'sale.order'),
+            ('require_approval', '=', True),
+            ('company_id', '=', self.company_id.id)
+        ])
+
+        approval_request = None
+
+        # Try approval rules first
+        for rule in rules:
+            if rule.check_requires_approval(self):
+                approval_request = rule.create_approval_request(
+                    self,
+                    notes=_("Approval requested for Sale Order %s") % self.name
+                )
+                break
+
+        # If no approval rule matched, try governance rules
+        if not approval_request and gov_rules:
+            for rule in gov_rules:
+                result = rule.validate_record(self, trigger_type='on_write')
+                if result.get('requires_approval'):
+                    approval_request = rule.action_create_approval_request(
+                        self,
+                        'approval_workflow',
+                        '\n'.join(result.get('warnings', []))
+                    )
+                    break
+
+        # If still no request, create a generic one
+        if not approval_request:
+            # Find default approvers (managers)
+            approvers = self.env['res.users'].search([
+                ('groups_id', 'in', self.env.ref('ops_matrix_core.group_ops_manager').id),
+                ('company_ids', 'in', self.company_id.id),
+                ('active', '=', True)
+            ], limit=5)
+
+            if not approvers:
+                raise UserError(_(
+                    "No approvers found. Please configure approval rules or manager users."
+                ))
+
+            approval_request = self.env['ops.approval.request'].create({
+                'name': _("Approval Request: %s") % self.name,
+                'model_name': 'sale.order',
+                'res_id': self.id,
+                'notes': _("Manual approval requested for Sale Order %s") % self.name,
+                'approver_ids': [(6, 0, approvers.ids)],
+                'requested_by': self.env.user.id,
+            })
+
+        # Update state and lock
+        self.write({
+            'state': 'waiting_approval',
+            'approval_locked': True,
+            'approval_request_id': approval_request.id,
+        })
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Approval Requested'),
+                'message': _('Approval request created: %s') % approval_request.name,
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+
+    def action_view_approvals(self):
+        """View approval requests for this sale order."""
+        self.ensure_one()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Approval Requests'),
+            'res_model': 'ops.approval.request',
+            'view_mode': 'tree,form',
+            'domain': [
+                ('model_name', '=', 'sale.order'),
+                ('res_id', '=', self.id)
+            ],
+            'context': {
+                'default_model_name': 'sale.order',
+                'default_res_id': self.id,
+            },
+        }
+
+    def action_approve(self):
+        """Approve the sale order (from waiting_approval state)."""
+        self.ensure_one()
+
+        if self.state != 'waiting_approval':
+            raise UserError(_("Only orders in 'Waiting Approval' state can be approved."))
+
+        # Approve the linked request
+        if self.approval_request_id:
+            self.approval_request_id.action_approve()
+
+        # Unlock and change state back to sent (or draft)
+        self.with_context(approval_unlock=True).write({
+            'state': 'sent',
+            'approval_locked': False,
+        })
+
+        return True
+
+    def action_reject_approval(self):
+        """Reject the approval and return to draft."""
+        self.ensure_one()
+
+        if self.state != 'waiting_approval':
+            raise UserError(_("Only orders in 'Waiting Approval' state can be rejected."))
+
+        # Reject the linked request
+        if self.approval_request_id:
+            self.approval_request_id.action_reject()
+
+        # Unlock and change state back to draft
+        self.with_context(approval_unlock=True).write({
+            'state': 'draft',
+            'approval_locked': False,
+        })
+
+        return True
 
     def action_print_product_bundle(self) -> Dict[str, Any]:
         """
