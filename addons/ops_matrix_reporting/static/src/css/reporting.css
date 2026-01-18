@@ -1,6 +1,6 @@
 /* ==========================================================================
-   OPS Matrix Reporting Module - Enterprise Theme
-   Version: 2.0 - Modern Dashboard Styling
+   OPS Matrix Reporting Module - Enterprise Theme v3
+   Modern Grid-Based Dashboard Layout
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -9,27 +9,27 @@
 :root {
     --ops-bg-primary: #f6f7fa;
     --ops-bg-white: #ffffff;
-    --ops-border-light: #e5e7eb;
-    --ops-border-medium: #d1d5db;
-    --ops-text-primary: #111827;
-    --ops-text-secondary: #4b5563;
-    --ops-text-muted: #9ca3af;
-    --ops-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --ops-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --ops-border-light: #eaecf0;
+    --ops-border-medium: #d0d5dd;
+    --ops-text-primary: #101828;
+    --ops-text-secondary: #667085;
+    --ops-text-muted: #98a2b3;
+    --ops-shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06);
+    --ops-shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+    --ops-shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
     --ops-radius-sm: 6px;
     --ops-radius-md: 8px;
     --ops-radius-lg: 12px;
-    --ops-blue: #0284c7;
-    --ops-blue-bg: #e0f2fe;
-    --ops-green: #16a34a;
-    --ops-green-bg: #dcfce7;
-    --ops-purple: #9333ea;
-    --ops-purple-bg: #f3e8ff;
-    --ops-orange: #ea580c;
-    --ops-orange-bg: #ffedd5;
-    --ops-red: #dc2626;
-    --ops-red-bg: #fee2e2;
+    --ops-blue: #175cd3;
+    --ops-blue-bg: #eff8ff;
+    --ops-green: #027a48;
+    --ops-green-bg: #ecfdf3;
+    --ops-purple: #6941c6;
+    --ops-purple-bg: #f9f5ff;
+    --ops-orange: #dc6803;
+    --ops-orange-bg: #fffaeb;
+    --ops-red: #b42318;
+    --ops-red-bg: #fef3f2;
 }
 
 /* --------------------------------------------------------------------------
@@ -40,12 +40,36 @@
 .ops-reporting-container {
     background-color: var(--ops-bg-primary) !important;
     padding: 24px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
     min-height: 100vh;
 }
 
 /* --------------------------------------------------------------------------
-   DASHBOARD CARDS - Enterprise Style
+   THE GRID CONTAINER - Core Layout Fix
+   -------------------------------------------------------------------------- */
+.dashboard-container,
+.ops-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+/* Fixed column variants */
+.ops-dashboard-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.ops-dashboard-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.ops-dashboard-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* --------------------------------------------------------------------------
+   DASHBOARD CARDS - Enterprise Style with Flex Layout
    -------------------------------------------------------------------------- */
 .dashboard-card,
 .ops-dashboard-card {
@@ -53,48 +77,63 @@
     border: 1px solid var(--ops-border-light);
     border-radius: var(--ops-radius-lg);
     padding: 24px;
-    margin-bottom: 20px;
     box-shadow: var(--ops-shadow-sm);
-    transition: all 0.2s ease-in-out;
-    min-height: 140px;
-    position: relative;
-    overflow: hidden;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 160px;
 }
 
 .dashboard-card:hover,
 .ops-dashboard-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     box-shadow: var(--ops-shadow-lg);
     border-color: var(--ops-border-medium);
 }
 
-/* Card Header */
-.dashboard-card h3,
-.ops-dashboard-card-title {
+/* --------------------------------------------------------------------------
+   CARD HEADER - Title + Icon Layout
+   -------------------------------------------------------------------------- */
+.card-header,
+.ops-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.card-title,
+.ops-dashboard-card-title,
+.dashboard-card h3 {
     color: var(--ops-text-secondary);
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
+    font-size: 14px;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
 }
 
-/* KPI Value - Large Number Display */
-.dashboard-card .value,
-.ops-dashboard-kpi-value {
+/* --------------------------------------------------------------------------
+   KPI VALUES - Large Number Display
+   -------------------------------------------------------------------------- */
+.card-value,
+.ops-dashboard-kpi-value,
+.dashboard-card .value {
     font-size: 36px;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--ops-text-primary);
-    margin-bottom: 8px;
-    line-height: 1.1;
+    line-height: 1.2;
+    margin-top: 8px;
 }
 
-/* Smaller KPI Values */
 .dashboard-card .value-sm {
     font-size: 28px;
 }
 
-/* KPI Trend/Change Indicator */
+/* --------------------------------------------------------------------------
+   TREND INDICATORS
+   -------------------------------------------------------------------------- */
 .dashboard-card .trend,
 .ops-dashboard-trend {
     font-size: 13px;
@@ -102,6 +141,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    margin-top: 8px;
 }
 
 .trend-up {
@@ -115,18 +155,17 @@
 /* --------------------------------------------------------------------------
    ICON WRAPPERS - Colored Backgrounds
    -------------------------------------------------------------------------- */
+.icon-wrapper,
 .dashboard-icon-wrapper,
 .ops-dashboard-icon-box {
-    width: 52px;
-    height: 52px;
-    border-radius: var(--ops-radius-md);
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: absolute;
-    right: 20px;
-    top: 20px;
     font-size: 24px;
+    flex-shrink: 0;
 }
 
 /* Icon Color Variants */
@@ -160,26 +199,9 @@
     color: var(--ops-red);
 }
 
-/* --------------------------------------------------------------------------
-   DASHBOARD GRID LAYOUT
-   -------------------------------------------------------------------------- */
-.ops-dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    margin-bottom: 24px;
-}
-
-.ops-dashboard-grid-4 {
-    grid-template-columns: repeat(4, 1fr);
-}
-
-.ops-dashboard-grid-3 {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-.ops-dashboard-grid-2 {
-    grid-template-columns: repeat(2, 1fr);
+.icon-default {
+    background: #f2f4f7;
+    color: #344054;
 }
 
 /* --------------------------------------------------------------------------
@@ -197,6 +219,31 @@
     padding-bottom: 8px;
     border-bottom: 2px solid var(--ops-blue);
     display: inline-block;
+}
+
+/* --------------------------------------------------------------------------
+   DASHBOARD HEADER
+   -------------------------------------------------------------------------- */
+.ops-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ops-border-light);
+}
+
+.ops-dashboard-title {
+    color: var(--ops-text-primary);
+    font-weight: 700;
+    font-size: 24px;
+    margin: 0;
+}
+
+.ops-dashboard-subtitle {
+    color: var(--ops-text-muted);
+    font-size: 14px;
+    margin-top: 4px;
 }
 
 /* --------------------------------------------------------------------------
@@ -332,31 +379,6 @@
 }
 
 /* --------------------------------------------------------------------------
-   DASHBOARD HEADER
-   -------------------------------------------------------------------------- */
-.ops-dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--ops-border-light);
-}
-
-.ops-dashboard-title {
-    color: var(--ops-text-primary);
-    font-weight: 700;
-    font-size: 24px;
-    margin: 0;
-}
-
-.ops-dashboard-subtitle {
-    color: var(--ops-text-muted);
-    font-size: 14px;
-    margin-top: 4px;
-}
-
-/* --------------------------------------------------------------------------
    QUICK ACTION BUTTONS
    -------------------------------------------------------------------------- */
 .ops-quick-actions {
@@ -380,7 +402,7 @@
 }
 
 .ops-btn-primary:hover {
-    background: #0369a1;
+    background: #1849a9;
 }
 
 .ops-btn-secondary {
@@ -402,84 +424,6 @@
     margin-top: 16px;
     font-size: 12px;
     color: var(--ops-text-muted);
-}
-
-/* --------------------------------------------------------------------------
-   RESPONSIVE DESIGN
-   -------------------------------------------------------------------------- */
-@media (max-width: 1200px) {
-    .ops-dashboard-grid-4 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .o_ops_dashboard,
-    .ops-dashboard-container,
-    .ops-reporting-container {
-        padding: 16px;
-    }
-
-    .ops-dashboard-grid,
-    .ops-dashboard-grid-4,
-    .ops-dashboard-grid-3,
-    .ops-dashboard-grid-2 {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-card,
-    .ops-dashboard-card {
-        padding: 16px;
-    }
-
-    .dashboard-card .value,
-    .ops-dashboard-kpi-value {
-        font-size: 28px;
-    }
-
-    .dashboard-icon-wrapper,
-    .ops-dashboard-icon-box {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-    }
-}
-
-@media (max-width: 480px) {
-    .ops-dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .ops-quick-actions {
-        width: 100%;
-    }
-
-    .ops-btn {
-        flex: 1;
-        text-align: center;
-    }
-}
-
-/* --------------------------------------------------------------------------
-   SPREADSHEET DASHBOARD
-   -------------------------------------------------------------------------- */
-.spreadsheet-dashboard {
-    background-color: var(--ops-bg-white);
-    border-radius: var(--ops-radius-md);
-    box-shadow: var(--ops-shadow-md);
-    overflow: hidden;
-}
-
-.spreadsheet-dashboard-sheet {
-    padding: 16px;
-}
-
-.spreadsheet-dashboard-pivot {
-    margin: 16px 0;
-    border: 1px solid var(--ops-border-light);
-    border-radius: var(--ops-radius-sm);
 }
 
 /* --------------------------------------------------------------------------
@@ -507,6 +451,88 @@
 }
 
 /* --------------------------------------------------------------------------
+   SPREADSHEET DASHBOARD
+   -------------------------------------------------------------------------- */
+.spreadsheet-dashboard {
+    background-color: var(--ops-bg-white);
+    border-radius: var(--ops-radius-md);
+    box-shadow: var(--ops-shadow-md);
+    overflow: hidden;
+}
+
+.spreadsheet-dashboard-sheet {
+    padding: 16px;
+}
+
+.spreadsheet-dashboard-pivot {
+    margin: 16px 0;
+    border: 1px solid var(--ops-border-light);
+    border-radius: var(--ops-radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE DESIGN
+   -------------------------------------------------------------------------- */
+@media (max-width: 1200px) {
+    .ops-dashboard-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .o_ops_dashboard,
+    .ops-dashboard-container,
+    .ops-reporting-container {
+        padding: 16px;
+    }
+
+    .dashboard-container,
+    .ops-dashboard-grid,
+    .ops-dashboard-grid-4,
+    .ops-dashboard-grid-3,
+    .ops-dashboard-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-card,
+    .ops-dashboard-card {
+        padding: 16px;
+        min-height: 120px;
+    }
+
+    .card-value,
+    .ops-dashboard-kpi-value,
+    .dashboard-card .value {
+        font-size: 28px;
+    }
+
+    .icon-wrapper,
+    .dashboard-icon-wrapper,
+    .ops-dashboard-icon-box {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ops-dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .ops-quick-actions {
+        width: 100%;
+    }
+
+    .ops-btn {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+/* --------------------------------------------------------------------------
    ACCESSIBILITY
    -------------------------------------------------------------------------- */
 .ops-reporting-container:focus-within {
@@ -526,6 +552,7 @@
         border-width: 2px;
     }
 
+    .card-value,
     .ops-dashboard-kpi-value {
         color: #000000;
     }

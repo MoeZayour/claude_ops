@@ -216,22 +216,52 @@ class OpsDashboardWidget(models.Model):
         return domain
     
     def _get_kpi_data(self, domain, user, context):
-        """Get KPI data for widget."""
-        if not self.measure_field:
-            return {'value': 0, 'label': self.name}
-        
-        Model = self.env[self.model_name]
-        records = Model.search(domain)
-        
-        # Calculate aggregate
-        value = sum(records.mapped(self.measure_field))
-        
-        return {
-            'value': value,
-            'label': self.name,
-            'icon': self.icon,
-            'color': self.color,
-        }
+        """Get KPI data for widget with robust fallback logic."""
+        if not self.model_name:
+            return {'value': 0, 'label': self.name, 'icon': self.icon, 'color': self.color}
+
+        try:
+            Model = self.env[self.model_name]
+
+            # For sale.order, filter to confirmed orders only
+            if self.model_name == 'sale.order':
+                domain = list(domain) + [('state', 'in', ['sale', 'done'])]
+
+            # For account.move, filter to posted only
+            elif self.model_name == 'account.move':
+                domain = list(domain) + [('state', '=', 'posted')]
+
+            if not self.measure_field:
+                # No measure field - return count
+                count = Model.search_count(domain)
+                return {
+                    'value': count,
+                    'label': self.name,
+                    'icon': self.icon,
+                    'color': self.color,
+                }
+
+            # Check if measure field exists on model
+            if self.measure_field not in Model._fields:
+                _logger.warning(f"Widget {self.name}: Field '{self.measure_field}' not found on model '{self.model_name}'")
+                return {'value': 0, 'label': self.name, 'icon': self.icon, 'color': self.color}
+
+            records = Model.search(domain)
+
+            # Calculate aggregate - handle potential None values
+            values = records.mapped(self.measure_field)
+            value = sum(v for v in values if v is not None)
+
+            return {
+                'value': value,
+                'label': self.name,
+                'icon': self.icon,
+                'color': self.color,
+                'count': len(records),
+            }
+        except Exception as e:
+            _logger.error(f"Widget {self.name} KPI data error: {e}")
+            return {'value': 0, 'label': self.name, 'icon': self.icon, 'color': self.color, 'error': str(e)}
     
     def _get_chart_data(self, domain, user, context):
         """Get chart data for widget."""
