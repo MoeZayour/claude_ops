@@ -1,6 +1,6 @@
 /* ==========================================================================
-   OPS Matrix Reporting Module - Enterprise Theme v3
-   Modern Grid-Based Dashboard Layout
+   OPS Matrix Reporting Module - Enterprise Theme v4
+   Robust Flexbox Layout (Grid-Safe Fallback)
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -14,9 +14,9 @@
     --ops-text-primary: #101828;
     --ops-text-secondary: #667085;
     --ops-text-muted: #98a2b3;
-    --ops-shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06);
-    --ops-shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
-    --ops-shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+    --ops-shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.1);
+    --ops-shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1);
+    --ops-shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08);
     --ops-radius-sm: 6px;
     --ops-radius-md: 8px;
     --ops-radius-lg: 12px;
@@ -39,37 +39,27 @@
 .ops-dashboard-container,
 .ops-reporting-container {
     background-color: var(--ops-bg-primary) !important;
-    padding: 24px;
+    padding: 20px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
     min-height: 100vh;
+    height: 100%;
+    overflow-y: auto;
 }
 
 /* --------------------------------------------------------------------------
-   THE GRID CONTAINER - Core Layout Fix
+   FLEX CONTAINER - Robust Layout (Safer than Grid)
    -------------------------------------------------------------------------- */
 .dashboard-container,
 .ops-dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 24px;
-    margin-top: 20px;
-}
-
-/* Fixed column variants */
-.ops-dashboard-grid-4 {
-    grid-template-columns: repeat(4, 1fr);
-}
-
-.ops-dashboard-grid-3 {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-.ops-dashboard-grid-2 {
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    margin-top: 15px;
 }
 
 /* --------------------------------------------------------------------------
-   DASHBOARD CARDS - Enterprise Style with Flex Layout
+   DASHBOARD CARDS - Flexbox Sizing
    -------------------------------------------------------------------------- */
 .dashboard-card,
 .ops-dashboard-card {
@@ -79,15 +69,21 @@
     padding: 24px;
     box-shadow: var(--ops-shadow-sm);
     transition: all 0.2s ease;
+
+    /* Flex Sizing: Grow, Shrink, Basis */
+    flex: 1 1 280px;
+    min-width: 280px;
+    max-width: calc(25% - 15px); /* 4 per row with gap */
+    min-height: 140px;
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 160px;
 }
 
 .dashboard-card:hover,
 .ops-dashboard-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: var(--ops-shadow-lg);
     border-color: var(--ops-border-medium);
 }
@@ -100,17 +96,17 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 
 .card-title,
 .ops-dashboard-card-title,
 .dashboard-card h3 {
     color: var(--ops-text-secondary);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.5px;
     margin: 0;
 }
 
@@ -120,15 +116,15 @@
 .card-value,
 .ops-dashboard-kpi-value,
 .dashboard-card .value {
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--ops-text-primary);
     line-height: 1.2;
-    margin-top: 8px;
+    margin-top: 5px;
 }
 
 .dashboard-card .value-sm {
-    font-size: 28px;
+    font-size: 24px;
 }
 
 /* --------------------------------------------------------------------------
@@ -158,13 +154,13 @@
 .icon-wrapper,
 .dashboard-icon-wrapper,
 .ops-dashboard-icon-box {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 20px;
     flex-shrink: 0;
 }
 
@@ -471,11 +467,12 @@
 }
 
 /* --------------------------------------------------------------------------
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN - Flexbox Breakpoints
    -------------------------------------------------------------------------- */
 @media (max-width: 1200px) {
-    .ops-dashboard-grid-4 {
-        grid-template-columns: repeat(2, 1fr);
+    .dashboard-card,
+    .ops-dashboard-card {
+        max-width: calc(50% - 10px); /* 2 per row */
     }
 }
 
@@ -486,18 +483,10 @@
         padding: 16px;
     }
 
-    .dashboard-container,
-    .ops-dashboard-grid,
-    .ops-dashboard-grid-4,
-    .ops-dashboard-grid-3,
-    .ops-dashboard-grid-2 {
-        grid-template-columns: 1fr;
-    }
-
     .dashboard-card,
     .ops-dashboard-card {
-        padding: 16px;
-        min-height: 120px;
+        max-width: 100%; /* 1 per row */
+        min-width: 100%;
     }
 
     .card-value,
@@ -509,9 +498,9 @@
     .icon-wrapper,
     .dashboard-icon-wrapper,
     .ops-dashboard-icon-box {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
     }
 }
 
