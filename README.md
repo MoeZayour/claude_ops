@@ -1,8 +1,22 @@
 # OPS Framework - Enterprise ERP System
 
-**Version:** 1.3.0  
-**Status:** Production Ready  
+**Version:** 1.3.1
+**Status:** Production Ready
 **Odoo Version:** 19.0 Community Edition
+
+---
+
+## 🚀 Quick Start (Day 1 Command)
+
+```bash
+# One-command startup (existing installation)
+docker exec gemini_odoo19 odoo -c /etc/odoo/odoo.conf -d mz-db -u ops_matrix_core,ops_matrix_accounting,ops_matrix_reporting,ops_matrix_asset_management --stop-after-init --no-http
+
+# Then access the system
+open http://localhost:8089   # or https://dev.mz-im.com
+```
+
+**Demo User:** `admin` / `admin`
 
 ---
 
@@ -68,16 +82,20 @@ docker-compose logs -f
 
 ## 📚 Documentation
 
+### Day 1 Guides (Start Here!)
+- **Matrix Configuration:** [`docs/admin/01_Matrix_Configuration.md`](docs/admin/01_Matrix_Configuration.md) - How to set up branches, BUs, and users
+- **Reporting Dashboard:** [`docs/user/01_Reporting_Dashboard.md`](docs/user/01_Reporting_Dashboard.md) - Using dashboards and approvals
+
 ### For End Users
-- **Quick Start Guide:** `docs/QUICK_START.md`
-- **User Manual:** `docs/user/USER_MANUAL.md`
+- **Quick Start Guide:** [`docs/QUICK_START.md`](docs/QUICK_START.md)
+- **User Manual:** [`docs/user/USER_MANUAL.md`](docs/user/USER_MANUAL.md)
 
 ### For Administrators
-- **Admin Guide:** `docs/admin/ADMIN_GUIDE.md`
-- **Deployment Guide:** `docs/deployment/DEPLOYMENT_GUIDE.md`
+- **Admin Guide:** [`docs/admin/ADMIN_GUIDE.md`](docs/admin/ADMIN_GUIDE.md)
+- **Deployment Guide:** [`docs/deployment/DEPLOYMENT_GUIDE.md`](docs/deployment/DEPLOYMENT_GUIDE.md)
 
 ### For Developers
-- **Technical Documentation:** `docs/technical/`
+- **Technical Documentation:** [`docs/technical/`](docs/technical/)
 
 ---
 
@@ -153,6 +171,6 @@ This software is provided for use under the terms agreed upon with the developme
 
 ---
 
-**Version:** 1.3.0  
-**Last Updated:** 2026-01-10  
-**Status:** Production Ready ✅
+**Version:** 1.3.1
+**Last Updated:** 2026-01-18
+**Status:** Production Ready
