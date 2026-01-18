@@ -32,11 +32,22 @@
               groups="ops_matrix_core.group_ops_user"/>
 
     <!-- =================== 2-4. STANDARD APPS SEQUENCING =================== -->
-    <!-- Re-sequence standard Odoo apps for corporate hierarchy -->
-    <menuitem id="sale.sale_menu_root" sequence="20"/>
-    <menuitem id="purchase.menu_purchase_root" sequence="30"/>
-    <menuitem id="stock.menu_stock_root" sequence="40"/>
-    <menuitem id="account.menu_finance" sequence="50"/>
+    <!-- Re-sequence standard Odoo apps using record update (preserves names) -->
+    <record id="sale.sale_menu_root" model="ir.ui.menu">
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="purchase.menu_purchase_root" model="ir.ui.menu">
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="stock.menu_stock_root" model="ir.ui.menu">
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="account.menu_finance" model="ir.ui.menu">
+        <field name="sequence">50</field>
+    </record>
 
     <!-- =================== 5. REPORTING APP (Seq 60) =================== -->
     <!-- Root App: Visible to Managers and Executives ONLY -->
@@ -47,8 +58,13 @@
               groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive"/>
 
     <!-- =================== 6-7. MORE STANDARD APPS =================== -->
-    <menuitem id="hr.menu_hr_root" sequence="70"/>
-    <menuitem id="base.menu_administration" sequence="80"/>
+    <record id="hr.menu_hr_root" model="ir.ui.menu">
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="base.menu_administration" model="ir.ui.menu">
+        <field name="sequence">80</field>
+    </record>
 
     <!-- =================== OPS FRAMEWORK UNDER SETTINGS =================== -->
     <!-- OPS Framework configuration consolidated under Settings (Administration) -->

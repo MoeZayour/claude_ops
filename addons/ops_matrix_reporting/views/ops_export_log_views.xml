@@ -121,7 +121,7 @@
     <!-- Menu Item -->
     <menuitem id="menu_ops_export_log"
               name="Export Audit Logs"
-              parent="ops_matrix_reporting.menu_ops_reporting_root"
+              parent="ops_matrix_core.menu_ops_reporting"
               action="action_ops_export_log"
               sequence="100"
               groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_admin_power"/>
