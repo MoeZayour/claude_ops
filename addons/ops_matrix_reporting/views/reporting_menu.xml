@@ -2,58 +2,54 @@
 <odoo>
     <!-- ================================================================
          OPS MATRIX REPORTING - ANALYTICS MENUS
-         
-         This module adds analytics menus to NATIVE Odoo apps.
-         It does NOT depend on ops_matrix_accounting.
-         Uses ops_matrix_core for settings integration.
+
+         This module adds OPS Analytics menus to native Odoo apps.
+         Manager/Executive only visibility enforced.
          ================================================================ -->
 
-    <!-- ==================== SETTINGS: TOOLS ==================== -->
-    <!-- Extends the core settings menu -->
-
-
-
-
     <!-- ==================== ACCOUNTING ANALYTICS ==================== -->
-    <!-- Only appears if account module is installed (via depends) -->
+    <!-- Under Accounting > Reports > OPS Analytics -->
     <menuitem id="menu_ops_accounting_analytics"
               name="OPS Analytics"
               parent="account.menu_finance_reports"
-              sequence="100"/>
+              sequence="100"
+              groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive"/>
 
     <menuitem id="menu_ops_financial_analytics"
               name="Financial Analytics"
               parent="menu_ops_accounting_analytics"
               action="action_ops_financial_analysis"
-              sequence="10"/>
+              sequence="10"
+              groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive"/>
 
     <!-- ==================== SALES ANALYTICS ==================== -->
-    <!-- Only appears if sale module is installed -->
+    <!-- Under Sales > OPS Analytics -->
     <menuitem id="menu_ops_sales_analytics_root"
               name="OPS Analytics"
               parent="sale.sale_menu_root"
               sequence="90"
-              groups="sales_team.group_sale_salesman"/>
+              groups="ops_matrix_core.group_ops_manager,sales_team.group_sale_manager"/>
 
     <menuitem id="menu_ops_sales_analytics"
               name="Sales Analytics"
               parent="menu_ops_sales_analytics_root"
               action="action_ops_sales_analysis"
-              sequence="10"/>
+              sequence="10"
+              groups="ops_matrix_core.group_ops_manager,sales_team.group_sale_manager"/>
 
     <!-- ==================== INVENTORY ANALYTICS ==================== -->
+    <!-- Under Inventory > OPS Analytics -->
     <menuitem id="menu_ops_inventory_analytics_root"
               name="OPS Analytics"
               parent="stock.menu_stock_root"
-              sequence="90"/>
+              sequence="90"
+              groups="ops_matrix_core.group_ops_manager,stock.group_stock_manager"/>
 
     <menuitem id="menu_ops_inventory_analytics"
               name="Inventory Analytics"
               parent="menu_ops_inventory_analytics_root"
               action="action_ops_inventory_analysis"
-              sequence="10"/>
-
-    <!-- ==================== DASHBOARDS ==================== -->
-    <!-- Dashboard menus are defined in data/ops_dashboard_data.xml -->
+              sequence="10"
+              groups="ops_matrix_core.group_ops_manager,stock.group_stock_manager"/>
 
 </odoo>

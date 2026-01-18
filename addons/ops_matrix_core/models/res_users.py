@@ -715,54 +715,153 @@ class ResUsers(models.Model):
                         'company_names': ', '.join(user.company_ids.mapped('name'))
                     })
     
-    # @api.constrains('primary_branch_id', 'ops_allowed_business_unit_ids', 'persona_id')
-    # def _check_user_matrix_requirements(self):
-    #     """
-    #     Ensure user has Primary Branch, at least one Business Unit, and a Persona assigned.
-    #     Exception: Admin (ID 1) and Settings Managers are exempt from this check.
-    #     
-    #     Note: Setting a Persona is the first step - it will trigger auto-population of
-    #     Primary Branch and Business Units if they are empty.
-    #     """
-    #     if self.env.context.get('install_mode'):
-    #         return
+    @api.constrains('primary_branch_id', 'ops_allowed_business_unit_ids', 'ops_persona_ids')
+    def _check_user_matrix_requirements(self):
+        """
+        Ensure non-admin internal users have:
+        1. At least one OPS Persona assigned
+        2. A Primary Branch assigned
+        3. At least one Business Unit assigned
 
-    #     for user in self:
-    #         # Skip admin user
-    #         if user.id == 1:
-    #             continue
-    #         
-    #         # Skip Settings Managers
-    #         if user.has_group('base.group_system'):
-    #             continue
-    #         
-    #         # Skip if user is being created (not yet saved)
-    #         if not user.id:
-    #             continue
-    #         
-    #         # Skip portal/public users
-    #         if user.share:
-    #             continue
-    #         
-    #         # If persona is assigned, allow save even if other fields are empty
-    #         # The onchange will auto-populate them
-    #         if user.persona_id:
-    #             # Persona is set - this satisfies the first requirement
-    #             # The system will auto-populate Primary Branch and BU
-    #             continue
-    #         
-    #         # Validation: Persona required as first step
-    #         if not user.persona_id:
-    #             raise ValidationError(_(
-    #                 "User '%(user_name)s' cannot be saved without an OPS Persona.\n\n"
-    #                 "Please go to the 'OPS Matrix Access' tab and select a Persona first.\n"
-    #                 "The system will then automatically populate Primary Branch and Business Units."
-    #             ) % {'user_name': user.name}))
+        Exemptions:
+        - Admin user (ID 1 or 2)
+        - Users with base.group_system (Settings Managers)
+        - Portal/Public users (share=True)
+        - Module installation context
+        """
+        # Skip during module installation/upgrade
+        if self.env.context.get('install_mode') or self.env.context.get('module'):
+            return
+
+        # Get system admin group for checks
+        system_group = self.env.ref('base.group_system', raise_if_not_found=False)
+
+        for user in self:
+            # Skip XMLID-based system users (admin, public, etc.)
+            if isinstance(user.id, int) and user.id <= 2:
+                continue
+
+            # Skip portal/public users (external users)
+            if user.share:
+                continue
+
+            # Skip Settings Managers / System Administrators
+            # Check group membership directly to avoid issues during create
+            if system_group and system_group in user.group_ids:
+                continue
+
+            # === STRICT GOVERNANCE VALIDATION ===
+            errors = []
+
+            # Check 1: At least one Persona assigned
+            if not user.ops_persona_ids:
+                errors.append(
+                    _("• OPS Persona: At least one persona must be assigned.")
+                )
+
+            # Check 2: Primary Branch assigned
+            if not user.primary_branch_id:
+                errors.append(
+                    _("• Primary Branch: A primary branch must be assigned.")
+                )
+
+            # Check 3: At least one Business Unit assigned
+            if not user.ops_allowed_business_unit_ids:
+                errors.append(
+                    _("• Business Units: At least one business unit must be assigned.")
+                )
+
+            if errors:
+                raise ValidationError(_(
+                    "User '%(user_name)s' cannot be saved due to missing OPS Matrix requirements:\n\n"
+                    "%(errors)s\n\n"
+                    "Please go to the 'OPS Matrix Access' tab and complete the required fields.\n"
+                    "Tip: Assign a Persona first - the system will auto-populate Branch and BU."
+                ) % {
+                    'user_name': user.name,
+                    'errors': '\n'.join(errors)
+                })
     
     # ========================================================================
     # CRUD OVERRIDE
     # ========================================================================
-    
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """
+        Override create to enforce OPS Matrix governance on user creation.
+        Validates that non-admin internal users have Persona, Branch, and BU assigned.
+        """
+        # Skip during module installation/upgrade
+        if self.env.context.get('install_mode') or self.env.context.get('module'):
+            return super().create(vals_list)
+
+        # Get system admin group for checks
+        system_group = self.env.ref('base.group_system', raise_if_not_found=False)
+        system_group_id = system_group.id if system_group else None
+
+        for vals in vals_list:
+            # Check if user will be a system admin
+            group_ids = vals.get('group_ids', [])
+            is_system_admin = False
+            for cmd in group_ids:
+                if isinstance(cmd, (list, tuple)):
+                    if cmd[0] == 4 and cmd[1] == system_group_id:  # (4, id) - link
+                        is_system_admin = True
+                    elif cmd[0] == 6 and system_group_id in (cmd[2] or []):  # (6, _, ids) - replace
+                        is_system_admin = True
+
+            # Skip validation for system admins
+            if is_system_admin:
+                continue
+
+            # Check if user is share/portal user
+            if vals.get('share'):
+                continue
+
+            # === STRICT GOVERNANCE VALIDATION ===
+            errors = []
+
+            # Check 1: At least one Persona assigned
+            ops_persona_ids = vals.get('ops_persona_ids', [])
+            has_persona = False
+            for cmd in ops_persona_ids:
+                if isinstance(cmd, (list, tuple)):
+                    if cmd[0] in (4, 6) and (cmd[1] if cmd[0] == 4 else cmd[2]):
+                        has_persona = True
+                        break
+            if not has_persona:
+                errors.append(_("• OPS Persona: At least one persona must be assigned."))
+
+            # Check 2: Primary Branch assigned
+            if not vals.get('primary_branch_id'):
+                errors.append(_("• Primary Branch: A primary branch must be assigned."))
+
+            # Check 3: At least one Business Unit assigned
+            ops_bu_ids = vals.get('ops_allowed_business_unit_ids', [])
+            has_bu = False
+            for cmd in ops_bu_ids:
+                if isinstance(cmd, (list, tuple)):
+                    if cmd[0] in (4, 6) and (cmd[1] if cmd[0] == 4 else cmd[2]):
+                        has_bu = True
+                        break
+            if not has_bu:
+                errors.append(_("• Business Units: At least one business unit must be assigned."))
+
+            if errors:
+                user_name = vals.get('name', 'New User')
+                raise ValidationError(_(
+                    "User '%(user_name)s' cannot be created due to missing OPS Matrix requirements:\n\n"
+                    "%(errors)s\n\n"
+                    "Please complete the required fields in the 'OPS Matrix Access' tab.\n"
+                    "Tip: Assign a Persona first - the system will auto-populate Branch and BU."
+                ) % {
+                    'user_name': user_name,
+                    'errors': '\n'.join(errors)
+                })
+
+        return super().create(vals_list)
+
     def write(self, vals):
         """
         Override write to handle matrix access changes and persona assignment.

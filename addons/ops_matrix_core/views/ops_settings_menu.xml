@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- OPS Framework Section in Settings -->
-    <menuitem id="menu_ops_settings_root"
-              name="OPS Framework"
-              parent="base.menu_administration"
-              sequence="100"
-              groups="base.group_system"/>
-    
+    <!-- ================================================================
+         OPS FRAMEWORK SETTINGS MENU STRUCTURE
+
+         Root menu (menu_ops_settings_root) is defined in ops_menus.xml.
+         This file defines sub-menus under Settings > OPS Framework.
+         ================================================================ -->
+
     <!-- ========================================= -->
     <!-- COMPANY STRUCTURE                         -->
     <!-- ========================================= -->
