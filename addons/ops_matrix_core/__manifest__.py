@@ -24,32 +24,38 @@
         'hr',
     ],
     'data': [
+        # 1. Base Framework
         'data/ir_module_category.xml',
         'data/res_groups.xml',
-        # 'security/technical_menu_restrictions.xml',
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
         'views/ops_menus.xml',
         'data/ir_sequence_data.xml',
         'data/product_request_sequence.xml',
         'data/ops_account_templates.xml',
-        # Temporarily disabled - require personas to be created first
-        # 'data/ops_default_data.xml',
-        # 'data/ops_default_data_clean.xml',
-        # 'data/ops_governance_rule_templates.xml',
-        # 'data/ops_governance_templates.xml',
-        # 'data/ops_governance_templates_extended.xml',
-        # 'data/ops_persona_templates.xml',
-        # 'data/ops_product_templates.xml',
-        # 'data/ops_sla_templates.xml',
-        # 'data/product_rules.xml',
-        # 'data/ops_sod_default_rules.xml',
-        # 'data/field_visibility_rules.xml',
-        # 'data/templates/ops_persona_templates.xml',
-        # 'data/templates/ops_governance_rule_templates.xml',
-        # 'data/templates/ops_user_templates.xml',
-        # 'data/ops_governance_rule_three_way_match.xml',
-        # 'data/templates/ops_sla_templates.xml',
+
+        # 2. ACTORS (Core Personas - REQUIRED)
+        'data/ops_persona_templates.xml',
+
+        # 3. DEFINITIONS
+        'data/ops_sla_templates.xml',
+        'data/ops_product_templates.xml',
+        'data/ops_sod_default_rules.xml',
+        'data/field_visibility_rules.xml',
+        'data/product_rules.xml',
+
+        # 4. MATRIX STRUCTURE (Base Only)
+        'data/ops_governance_templates.xml',
+        # REMOVED: 'data/ops_governance_templates_extended.xml' - Contains broken demo data with invalid references
+
+        # 5. RULES (Base Only)
+        'data/ops_governance_rule_templates.xml',
+
+        # 6. Default Data
+        'data/ops_default_data_clean.xml',
+
+        # 7. Views & Actions (Standard Load)
+        'data/sale_order_actions.xml',
         'views/ops_business_unit_views.xml',
         'views/ops_branch_views.xml',
         'views/res_company_views.xml',
@@ -73,9 +79,7 @@
         'views/ops_bu_dashboard_views.xml',
         'views/ops_sales_dashboard_views.xml',
         'views/ops_dashboard_config_views.xml',
-        'wizard/sale_order_import_wizard_views.xml',
         'views/product_views.xml',
-        # 'views/product_category_views.xml',  # Removed - incorrect xpath
         'views/partner_views.xml',
         'views/sale_order_views.xml',
         'views/account_move_views.xml',
@@ -90,23 +94,19 @@
         'views/field_visibility_views.xml',
         'views/ops_dashboard_widget_views.xml',
 
-        # Phase 5: Enterprise Security & Performance Views - DISABLED (minor view issues remain)
-        # Note: Phase 5 models ARE loaded, only views disabled. Functionality available via ORM.
+        # STUB VIEWS (Intentionally Excluded - Schema Only, No UI):
         # 'views/ops_session_manager_views.xml',
         # 'views/ops_ip_whitelist_views.xml',
         # 'views/ops_security_audit_enhanced_views.xml',
-        # 'views/ops_data_archival_views.xml',
         # 'views/ops_performance_monitor_views.xml',
 
-        # Menus - Load in specific order
+        # 8. Final Config
         'views/ops_settings_menu.xml',
         'views/ops_approvals_menu.xml',
         'views/ops_dashboards_menu.xml',
-        'views/ops_dashboard_menu.xml',  # Contains disables - must load last
+        'views/ops_dashboard_menu.xml',
         'data/ir_cron_data.xml',
         'data/ir_cron_archiver.xml',
-        # 'data/ir_cron_phase5.xml',  # Disabled - minor cron issues
-        'data/sale_order_actions.xml',
         'data/ir_cron_escalation.xml',
         'data/email_templates.xml',
         'data/ops_report_templates.xml',
@@ -120,7 +120,6 @@
         'wizard/apply_report_template_wizard_views.xml',
         'wizard/ops_sale_order_import_wizard_views.xml',
         'wizard/ops_purchase_order_import_wizard_views.xml',
-        'wizard/apply_report_template_wizard_views.xml',
         'views/sale_order_import_wizard_views.xml',
     ],
     'demo': [

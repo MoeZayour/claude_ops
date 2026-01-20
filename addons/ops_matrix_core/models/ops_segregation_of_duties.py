@@ -76,10 +76,18 @@ class OpsSoDRule(models.Model):
     
     active = fields.Boolean(
         string='Active',
-        default=False,
-        help='Enable/disable this rule without deleting it'
+        default=True,
+        help='Controls visibility in menus. Uncheck to archive/hide the rule.'
     )
-    
+    enabled = fields.Boolean(
+        string='Enabled',
+        default=False,
+        copy=False,
+        help='If checked, this SoD rule is enforced. '
+             'CATALOG MODE: Rules can be visible (active=True) but not enforced (enabled=False). '
+             'This allows administrators to review available SoD rules without activating them.'
+    )
+
     block_violation = fields.Boolean(
         string='Block Violation',
         default=True,
@@ -127,13 +135,13 @@ class OpsSoDRule(models.Model):
     def _check_rule_applies(self, record, action):
         """
         Check if this rule applies to the given record and action.
-        
+
         Returns: Boolean - True if rule should be enforced
         """
         self.ensure_one()
-        
-        # Rule must be active
-        if not self.active:
+
+        # CATALOG MODE: Rule must be enabled to be enforced
+        if not self.enabled:
             return False
         
         # Document type must match

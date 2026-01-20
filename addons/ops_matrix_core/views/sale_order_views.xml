@@ -5,6 +5,7 @@
         <field name="name">sale.order.form.matrix.inherit</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">99</field>
         <field name="arch" type="xml">
             <!-- Stat buttons for approvals -->
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -26,44 +27,91 @@
             <!-- Approval workflow banner and buttons -->
             <xpath expr="//sheet" position="before">
                 <!-- Warning banner when locked -->
-                <div class="alert alert-warning" role="alert" invisible="not approval_locked">
-                    <strong>Approval Required:</strong> This document is locked pending approval. No changes can be made until approved or rejected.
+                <div class="alert alert-warning" role="alert" invisible="not approval_locked or state != 'waiting_approval'">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <strong>Approval Required:</strong> This document is locked pending approval.
+                            No changes can be made until approved, rejected, or recalled.
+                        </div>
+                        <button name="action_recall_approval"
+                                type="object"
+                                class="btn btn-outline-warning btn-sm ms-3"
+                                title="Recall this order to make edits">
+                            Recall
+                        </button>
+                    </div>
                 </div>
-                <!-- Waiting approval banner with action buttons -->
-                <div class="alert alert-info" role="alert" invisible="state != 'waiting_approval'">
+                <!-- Waiting approval banner with action buttons (for managers) -->
+                <div class="alert alert-info" role="alert" invisible="state != 'waiting_approval'"
+                     groups="ops_matrix_core.group_ops_manager">
                     <div class="d-flex align-items-center">
                         <span class="me-3">
-                            <strong>Waiting for Approval:</strong> This order is pending approval before it can be confirmed.
+                            <strong>Manager Action Required:</strong> This order is pending your approval.
                         </span>
                         <button name="action_approve"
                                 type="object"
-                                class="btn btn-success btn-sm me-2"
-                                groups="ops_matrix_core.group_ops_manager">
+                                class="btn btn-success btn-sm me-2">
                             Approve
                         </button>
                         <button name="action_reject_approval"
                                 type="object"
-                                class="btn btn-danger btn-sm"
-                                groups="ops_matrix_core.group_ops_manager">
+                                class="btn btn-danger btn-sm">
                             Reject
                         </button>
                     </div>
                 </div>
             </xpath>
 
-            <!-- Hide Confirm button when waiting_approval -->
+            <!-- STRICT GOVERNANCE: Hide Confirm button absolutely when waiting_approval -->
             <xpath expr="//button[@name='action_confirm']" position="attributes">
                 <attribute name="invisible">state not in ['draft', 'sent'] or state == 'waiting_approval'</attribute>
+            </xpath>
+
+            <!-- STRICT GOVERNANCE: Hide Send by Email button when waiting_approval -->
+            <xpath expr="//button[@name='action_quotation_send']" position="attributes">
+                <attribute name="invisible">state == 'waiting_approval'</attribute>
             </xpath>
 
             <!-- Matrix dimension fields -->
             <xpath expr="//field[@name='partner_id']" position="after">
                 <group name="matrix_info">
-                    <field name="ops_branch_id" options="{'no_open': True}"/>
-                    <field name="ops_business_unit_id" options="{'no_open': True}"/>
+                    <field name="ops_branch_id" options="{'no_open': True}"
+                           readonly="state == 'waiting_approval'"/>
+                    <field name="ops_business_unit_id" options="{'no_open': True}"
+                           readonly="state == 'waiting_approval'"/>
                     <field name="approval_locked" invisible="1"/>
                     <field name="approval_request_id" invisible="1"/>
                 </group>
+            </xpath>
+
+            <!-- STRICT GOVERNANCE: Make partner_id readonly when waiting_approval -->
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="readonly">state == 'waiting_approval'</attribute>
+            </xpath>
+
+            <!-- STRICT GOVERNANCE: Make payment_term_id readonly when waiting_approval -->
+            <xpath expr="//field[@name='payment_term_id']" position="attributes">
+                <attribute name="readonly">state == 'waiting_approval'</attribute>
+            </xpath>
+
+            <!-- STRICT GOVERNANCE: Make pricelist_id readonly when waiting_approval -->
+            <xpath expr="//field[@name='pricelist_id']" position="attributes">
+                <attribute name="readonly">state == 'waiting_approval'</attribute>
+            </xpath>
+
+            <!-- STRICT GOVERNANCE: Make validity_date readonly when waiting_approval -->
+            <xpath expr="//field[@name='validity_date']" position="attributes">
+                <attribute name="readonly">state == 'waiting_approval'</attribute>
+            </xpath>
+
+            <!-- STRICT GOVERNANCE: Make date_order readonly when waiting_approval -->
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="readonly">state == 'waiting_approval'</attribute>
+            </xpath>
+
+            <!-- STRICT GOVERNANCE: Make order_line readonly when waiting_approval -->
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="readonly">state == 'waiting_approval'</attribute>
             </xpath>
 
         </field>

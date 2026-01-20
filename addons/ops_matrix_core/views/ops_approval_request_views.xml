@@ -157,9 +157,10 @@
         <field name="name">ops.approval.request.list</field>
         <field name="model">ops.approval.request</field>
         <field name="arch" type="xml">
-            <list string="Approval Requests" 
-                  decoration-info="state=='pending'" 
-                  decoration-success="state=='approved'" 
+            <list string="Approval Requests"
+                  create="0"
+                  decoration-info="state=='pending'"
+                  decoration-success="state=='approved'"
                   decoration-danger="state=='rejected'">
                 <field name="name"/>
                 <field name="rule_id"/>

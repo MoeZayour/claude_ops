@@ -32,16 +32,17 @@
         <field name="name">ops.segregation.of.duties.tree</field>
         <field name="model">ops.segregation.of.duties</field>
         <field name="arch" type="xml">
-            <list>
+            <list decoration-success="enabled" decoration-muted="not enabled">
+                <field name="enabled" widget="boolean_toggle" string="Enforced"/>
                 <field name="name"/>
                 <field name="model_name"/>
                 <field name="action_1"/>
                 <field name="action_2"/>
                 <field name="threshold_amount"/>
-                <field name="active" widget="boolean"/>
                 <field name="block_violation" widget="boolean"/>
                 <field name="company_id"/>
                 <field name="violation_count"/>
+                <field name="active" widget="boolean_toggle"/>
             </list>
         </field>
     </record>
@@ -73,19 +74,18 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_enable_rule" type="object" string="✓ Enable Rule" class="btn-success" invisible="active == True"/>
-                    <button name="action_disable_rule" type="object" string="✗ Disable Rule" class="btn-warning" invisible="active == False"/>
+                    <field name="enabled" widget="boolean_toggle" nolabel="1"/>
+                    <field name="active" widget="boolean_toggle" options='{"terminology": "archive"}'/>
                 </header>
-                
+
                 <sheet>
                     <div class="alert alert-info" role="alert">
                         <strong>Segregation of Duties:</strong> This rule prevents a single user from performing multiple critical actions on the same document.
                     </div>
-                    
+
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="active" widget="boolean"/>
                             <field name="is_system_rule" widget="boolean"/>
                         </group>
                         <group>
@@ -195,10 +195,15 @@
                 <field name="company_id" string="Company"/>
                 
                 <separator/>
-                
-                <filter name="filter_active" string="Active Rules" domain="[('active', '=', True)]"/>
-                <filter name="filter_inactive" string="Inactive Rules" domain="[('active', '=', False)]"/>
-                
+
+                <filter name="filter_enabled" string="Enabled (Enforced)" domain="[('enabled', '=', True)]"/>
+                <filter name="filter_disabled" string="Disabled (Catalog Only)" domain="[('enabled', '=', False)]"/>
+
+                <separator/>
+
+                <filter name="filter_active" string="Active" domain="[('active', '=', True)]"/>
+                <filter name="filter_inactive" string="Archived" domain="[('active', '=', False)]"/>
+
                 <separator/>
                 
                 <filter name="filter_system_rules" string="System Rules" domain="[('is_system_rule', '=', True)]"/>

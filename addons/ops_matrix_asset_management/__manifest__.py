@@ -28,7 +28,8 @@
         'views/ops_asset_model_views.xml',
         'views/ops_asset_depreciation_views.xml',
     ],
-    'installable': False,  # DISABLED: Conflicts with ops_matrix_accounting.ops.asset
+    # DEPRECATED: Features moved to ops_matrix_accounting
+    'installable': False,
     'application': True,
     'auto_install': False,
 }

@@ -11,7 +11,7 @@
             <field name="name">Matrix Validation: All Transactions</field>
             <field name="code">GR-MATRIX-001</field>
             <field name="model_id" ref="sale.model_sale_order"/>
-            <field name="company_id" ref="company_qatar"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="rule_type">matrix_validation</field>
             <field name="enforce_branch_bu" eval="True"/>
             <field name="branch_required" eval="True"/>
@@ -28,7 +28,7 @@
             <field name="name">Retail Discount Policy</field>
             <field name="code">GR-DISC-001</field>
             <field name="model_id" ref="sale.model_sale_order_line"/>
-            <field name="company_id" ref="company_qatar"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="rule_type">discount_limit</field>
             <field name="enforce_discount_limit" eval="True"/>
             <field name="global_discount_limit">15.0</field>
@@ -46,7 +46,7 @@
             <field name="name">Coffee Division Discount Policy</field>
             <field name="code">GR-DISC-002</field>
             <field name="model_id" ref="sale.model_sale_order_line"/>
-            <field name="company_id" ref="company_qatar"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="rule_type">discount_limit</field>
             <field name="enforce_discount_limit" eval="True"/>
             <field name="global_discount_limit">10.0</field>
@@ -64,7 +64,7 @@
             <field name="name">Wholesale Discount Policy</field>
             <field name="code">GR-DISC-003</field>
             <field name="model_id" ref="sale.model_sale_order_line"/>
-            <field name="company_id" ref="company_qatar"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="rule_type">discount_limit</field>
             <field name="enforce_discount_limit" eval="True"/>
             <field name="global_discount_limit">25.0</field>
@@ -82,7 +82,7 @@
             <field name="name">Retail Margin Protection</field>
             <field name="code">GR-MARGIN-001</field>
             <field name="model_id" ref="sale.model_sale_order_line"/>
-            <field name="company_id" ref="company_qatar"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="rule_type">margin_protection</field>
             <field name="enforce_margin_protection" eval="True"/>
             <field name="global_minimum_margin">20.0</field>
@@ -100,7 +100,7 @@
             <field name="name">Coffee Margin Protection</field>
             <field name="code">GR-MARGIN-002</field>
             <field name="model_id" ref="sale.model_sale_order_line"/>
-            <field name="company_id" ref="company_qatar"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="rule_type">margin_protection</field>
             <field name="enforce_margin_protection" eval="True"/>
             <field name="global_minimum_margin">35.0</field>
@@ -118,7 +118,7 @@
             <field name="name">Price Override Authorization</field>
             <field name="code">GR-PRICE-001</field>
             <field name="model_id" ref="sale.model_sale_order_line"/>
-            <field name="company_id" ref="company_qatar"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="rule_type">price_override</field>
             <field name="enforce_price_override" eval="True"/>
             <field name="global_max_price_variance">10.0</field>
@@ -135,7 +135,7 @@
             <field name="name">Services Price Authorization</field>
             <field name="code">GR-PRICE-002</field>
             <field name="model_id" ref="sale.model_sale_order_line"/>
-            <field name="company_id" ref="company_uae"/>
+            <field name="company_id" ref="base.main_company"/>
             <field name="rule_type">price_override</field>
             <field name="enforce_price_override" eval="True"/>
             <field name="global_max_price_variance">15.0</field>

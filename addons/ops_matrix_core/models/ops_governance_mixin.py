@@ -173,9 +173,11 @@ class OpsGovernanceMixin(models.AbstractModel):
         model_name = self._name
 
         # Try to find governance rules, but gracefully handle ACL errors
+        # CATALOG MODE: Only enforce rules that are both active (visible) AND enabled (enforced)
         try:
             rules = self.env['ops.governance.rule'].search([
                 ('active', '=', True),
+                ('enabled', '=', True),
                 ('model_id.model', '=', model_name),
                 ('trigger_type', '=', trigger_type),
             ])

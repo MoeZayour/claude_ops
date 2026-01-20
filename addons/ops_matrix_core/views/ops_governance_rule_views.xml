@@ -11,6 +11,7 @@
         <field name="arch" type="xml">
             <form string="Governance Rule">
                 <header>
+                    <field name="enabled" widget="boolean_toggle" nolabel="1"/>
                     <button name="action_check_compliance"
                             string="Check Compliance"
                             type="object"
@@ -254,8 +255,9 @@
         <field name="name">ops.governance.rule.list</field>
         <field name="model">ops.governance.rule</field>
         <field name="arch" type="xml">
-            <list string="Governance Rules" default_order="sequence,name">
+            <list string="Governance Rules" default_order="sequence,name" decoration-success="enabled" decoration-muted="not enabled">
                 <field name="sequence" widget="handle"/>
+                <field name="enabled" widget="boolean_toggle" string="Enforced"/>
                 <field name="name"/>
                 <field name="code" optional="show"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show"/>
@@ -278,6 +280,9 @@
                 <field name="model_id"/>
                 <field name="rule_type"/>
                 <field name="company_id"/>
+                <filter string="Enabled (Enforced)" name="enabled" domain="[('enabled', '=', True)]"/>
+                <filter string="Disabled (Catalog Only)" name="disabled" domain="[('enabled', '=', False)]"/>
+                <separator/>
                 <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                 <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
                 <separator/>

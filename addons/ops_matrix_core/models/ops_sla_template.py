@@ -69,6 +69,14 @@ class OpsSlaTemplate(models.Model):
              'Historical SLA data is preserved even when template is deactivated. '
              'Use this instead of deleting templates that have historical tracking data.'
     )
+    enabled = fields.Boolean(
+        string="Enabled",
+        default=False,
+        copy=False,
+        help='If checked, this SLA template is enforced and will actively track deadlines. '
+             'CATALOG MODE: Templates can be visible (active=True) but not enforced (enabled=False). '
+             'This allows administrators to review available SLA templates without activating them.'
+    )
 
     # Some tests/data refer to target_days; provide a stored integer alias for compatibility.
     target_days = fields.Integer(

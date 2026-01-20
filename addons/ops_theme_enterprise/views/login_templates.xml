@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================================================
+         OPS ENTERPRISE THEME - LOGIN PAGE
+         ======================================================================== -->
+    <!-- Modern Split-Screen Login Layout -->
+    
+    <!-- Override the main login layout -->
+    <template id="login_layout" inherit_id="web.login_layout" name="OPS Enterprise Login Layout">
+        
+        <!-- Remove default centered container and replace with split-screen layout -->
+        <xpath expr="//div[hasclass('container')]" position="replace">
+            <div class="ops_login_container d-flex h-100 w-100">
+                
+                <!-- LEFT SIDE: Brand Section (50%) -->
+                <div class="ops_login_left col-lg-6 d-none d-lg-flex flex-column justify-content-center align-items-center p-5">
+                    <!-- Logo -->
+                    <div class="ops_login_logo mb-5">
+                        <img src="/ops_theme_enterprise/static/src/img/ops_logo_white.svg" 
+                             alt="OPS Framework" 
+                             style="max-width: 180px; height: auto;"
+                             onerror="this.style.display='none'"/>
+                    </div>
+                    
+                    <!-- Welcome Message -->
+                    <div class="ops_login_welcome text-center text-white">
+                        <h1 class="display-4 fw-bold mb-3">Welcome to OPS</h1>
+                        <p class="lead mb-0" style="opacity: 0.9; max-width: 400px;">
+                            Enterprise Resource Planning for Modern Organizations
+                        </p>
+                    </div>
+                    
+                    <!-- Decorative Element -->
+                    <div class="ops_login_decoration mt-5">
+                        <svg width="200" height="6" viewBox="0 0 200 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="60" height="6" rx="3" fill="#3b82f6" opacity="0.8"/>
+                            <rect x="70" width="40" height="6" rx="3" fill="#3b82f6" opacity="0.5"/>
+                            <rect x="120" width="30" height="6" rx="3" fill="#3b82f6" opacity="0.3"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- RIGHT SIDE: Login Form (50%) -->
+                <div class="ops_login_right col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center p-4 p-lg-5">
+                    <div class="ops_login_form_container" style="width: 100%; max-width: 420px;">
+                        
+                        <!-- Mobile Logo (visible only on small screens) -->
+                        <div class="text-center mb-4 d-lg-none">
+                            <img src="/ops_theme_enterprise/static/src/img/ops_logo_dark.svg" 
+                                 alt="OPS Framework" 
+                                 style="max-width: 140px; height: auto;"
+                                 onerror="this.style.display='none'"/>
+                        </div>
+                        
+                        <!-- Form Title -->
+                        <div class="mb-4">
+                            <h2 class="h3 fw-bold text-dark mb-2">Sign In</h2>
+                            <p class="text-muted mb-0">Enter your credentials to access your account</p>
+                        </div>
+                        
+                        <!-- Form Content (Odoo's default form will be injected here) -->
+                        <t t-out="0"/>
+                    </div>
+                </div>
+                
+            </div>
+        </xpath>
+        
+    </template>
+
+</odoo>

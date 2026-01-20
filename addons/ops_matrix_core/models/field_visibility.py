@@ -19,7 +19,7 @@ class OpsFieldVisibilityRule(models.Model):
     
     _name = 'ops.field.visibility.rule'
     _description = 'Field Visibility Rule'
-    _order = 'model_name, field_name, security_group'
+    _order = 'model_name, field_name, security_group_id'
     
     # Core Fields
     name = fields.Char(
@@ -66,7 +66,15 @@ class OpsFieldVisibilityRule(models.Model):
     is_active = fields.Boolean(
         string='Active',
         default=True,
-        help='Disable rule without deleting'
+        help='Controls visibility in menus. Uncheck to archive/hide the rule.'
+    )
+    enabled = fields.Boolean(
+        string='Enabled',
+        default=False,
+        copy=False,
+        help='If checked, this visibility rule is enforced. '
+             'CATALOG MODE: Rules can be visible (is_active=True) but not enforced (enabled=False). '
+             'This allows administrators to review available rules without activating them.'
     )
     
     # Metadata
@@ -142,10 +150,11 @@ class OpsFieldVisibilityRule(models.Model):
         
         hidden_fields = {}
         
-        # Find all rules where user is in the restricted group
+        # CATALOG MODE: Find all rules where user is in the restricted group AND rule is enabled
         rules = self.search([
             ('model_name', '=', model_name),
             ('is_active', '=', True),
+            ('enabled', '=', True),
             ('security_group_id', 'in', user_groups)
         ])
         
@@ -200,11 +209,12 @@ class OpsFieldVisibilityRule(models.Model):
         if self.env.user.has_group('base.group_system'):
             return True
         
-        # Find applicable visibility rules
+        # CATALOG MODE: Find applicable visibility rules that are enabled
         rules = self.search([
             ('model_name', '=', model_name),
             ('field_name', '=', field_name),
-            ('is_active', '=', True)
+            ('is_active', '=', True),
+            ('enabled', '=', True)
         ])
         
         # No rules = field is visible

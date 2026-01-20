@@ -9,10 +9,10 @@ class ThreeWayMatchOverrideWizard(models.TransientModel):
     match_issues = fields.Text(string="Match Issues", readonly=True, required=True)
     override_reason = fields.Text(string="Override Reason", required=True)
     approver_id = fields.Many2one(
-        'res.users', 
-        string="Approver", 
+        'res.users',
+        string="Approver",
         required=True,
-        domain=lambda self: [('groups_id', 'in', self.env.ref('purchase.group_purchase_manager').id)]
+        domain="[('active', '=', True)]"
     )
 
     @api.model

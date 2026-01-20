@@ -16,7 +16,8 @@
             <field name="name">Platinum Support - VIP Corporate (Response: 1hr | Resolution: 4hrs)</field>
             <field name="model_id" ref="sale.model_sale_order"/>
             <field name="target_duration">4.0</field>
-            <field name="active" eval="False"/>
+            <field name="active" eval="True"/>
+            <field name="enabled" eval="False"/>
         </record>
         
         <!-- 2. Gold Support: 4-hour response / 24-hour resolution -->
@@ -24,7 +25,8 @@
             <field name="name">Gold Support - Priority Business (Response: 4hrs | Resolution: 24hrs)</field>
             <field name="model_id" ref="sale.model_sale_order"/>
             <field name="target_duration">24.0</field>
-            <field name="active" eval="False"/>
+            <field name="active" eval="True"/>
+            <field name="enabled" eval="False"/>
         </record>
         
         <!-- 3. Internal IT Critical: 2-hour response / 8-hour resolution (System-down scenarios) -->
@@ -32,7 +34,8 @@
             <field name="name">Internal IT Critical - System Down (Response: 2hrs | Resolution: 8hrs)</field>
             <field name="model_id" ref="stock.model_stock_picking"/>
             <field name="target_duration">8.0</field>
-            <field name="active" eval="False"/>
+            <field name="active" eval="True"/>
+            <field name="enabled" eval="False"/>
         </record>
         
         <!-- 4. Standard Sales Inquiry: 24-hour response (For new leads) -->
@@ -40,7 +43,8 @@
             <field name="name">Standard Sales Inquiry - New Leads (Response: 24hrs)</field>
             <field name="model_id" ref="sale.model_sale_order"/>
             <field name="target_duration">24.0</field>
-            <field name="active" eval="False"/>
+            <field name="active" eval="True"/>
+            <field name="enabled" eval="False"/>
         </record>
         
     </data>

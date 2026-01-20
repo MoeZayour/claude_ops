@@ -227,13 +227,17 @@ class OpsApprovalRule(models.Model):
             ])
             approvers |= persona_users
 
-        # Group-based approvers
+        # Group-based approvers (use read() to avoid lazy loading issues)
         if self.approver_group_ids:
-            group_users = self.env['res.users'].search([
-                ('groups_id', 'in', self.approver_group_ids.ids),
-                ('active', '=', True)
-            ])
-            approvers |= group_users
+            for group in self.approver_group_ids:
+                try:
+                    group_data = group.read(['users'])[0] if group else {}
+                    user_ids = group_data.get('users', [])
+                    if user_ids:
+                        group_users = self.env['res.users'].browse(user_ids).filtered(lambda u: u.active)
+                        approvers |= group_users
+                except Exception:
+                    pass  # Skip this group if there's an issue
 
         return approvers
 

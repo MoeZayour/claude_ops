@@ -41,6 +41,14 @@ class OpsGovernanceRule(models.Model):
     code = fields.Char(string='Rule Code', required=True, copy=False, readonly=True,
                       default=lambda self: self.env['ir.sequence'].next_by_code('ops.governance.rule') or 'New')
     active = fields.Boolean(string='Active', default=True, tracking=True)
+    enabled = fields.Boolean(
+        string="Enabled",
+        default=False,
+        copy=False,
+        tracking=True,
+        help="If checked, this rule is active and will be enforced by the governance engine. "
+             "Rules can be visible in the catalog (active=True) but not enforced (enabled=False)."
+    )
     sequence = fields.Integer(
         string='Sequence',
         default=10,
@@ -897,9 +905,9 @@ class OpsGovernanceRule(models.Model):
     def _trigger_approval_if_needed(self, record):
         """Check if record matches this rule and trigger approval workflow if needed."""
         self.ensure_one()
-        
-        # Only process if rule is active
-        if not self.active:
+
+        # CATALOG MODE: Only process if rule is enabled (enforcement flag)
+        if not self.enabled:
             return False
         
         # For new rule types, use validate_record
@@ -965,9 +973,11 @@ class OpsGovernanceRule(models.Model):
         # ADMIN BYPASS: Skip all rule evaluation for Administrator and System Managers
         if self.env.su or self.env.user.has_group('base.group_system'):
             return
-        
+
+        # CATALOG MODE: Only enforce rules that are both active (visible) AND enabled (enforced)
         rules = self.search([
             ('active', '=', True),
+            ('enabled', '=', True),
             ('model_id.model', '=', record._name),
             '|',
             ('trigger_type', '=', trigger_type),

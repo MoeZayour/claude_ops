@@ -1,0 +1,401 @@
+// ============================================================================
+// OPS ENTERPRISE THEME - APP GRID (LAUNCHPAD)
+// ============================================================================
+// Purpose: Transform default text list into modern icon grid home menu
+// Design: Enterprise-style app launchpad with cards
+// Target: Odoo Community Edition app menu
+// ============================================================================
+
+// -----------------------------------------------------------------------------
+// 🏠 MAIN APPS CONTAINER
+// -----------------------------------------------------------------------------
+
+.o_home_menu,
+.o_apps {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 24px !important;
+    padding: 40px !important;
+    justify-content: center;
+    background-color: var(--o-view-background-color, #f1f5f9) !important;
+    min-height: calc(100vh - 60px); // Full viewport minus navbar
+    
+    // Center grid when few apps
+    &:has(.o_app:nth-child(-n+6)) {
+        justify-content: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 🎴 INDIVIDUAL APP CARDS
+// -----------------------------------------------------------------------------
+
+.o_app {
+    // Reset any list styling
+    list-style: none !important;
+    margin: 0 !important;
+    
+    // Card container
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    
+    // Visual styling
+    background-color: var(--o-view-background-color, #ffffff) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+    padding: 24px 16px !important;
+    min-height: 140px;
+    
+    // Smooth transitions
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+    border: 1px solid transparent;
+    
+    // Hover effect - Lift card
+    &:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12) !important;
+        border-color: var(--o-brand-primary, #3b82f6);
+        background-color: var(--o-view-background-color, #ffffff) !important;
+        
+        .o_app_name {
+            color: var(--o-brand-primary, #3b82f6) !important;
+        }
+        
+        .o_app_icon {
+            transform: scale(1.05);
+        }
+    }
+    
+    // Active/Focus state
+    &:active,
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+    }
+}
+
+// Link wrapper inside app card
+.o_app a {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    color: inherit !important;
+    width: 100%;
+    height: 100%;
+}
+
+// -----------------------------------------------------------------------------
+// 🎨 APP ICON STYLING
+// -----------------------------------------------------------------------------
+
+.o_app_icon,
+.o_app img,
+.o_app .oi {
+    // Icon container
+    width: 64px !important;
+    height: 64px !important;
+    margin-bottom: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: transform 0.2s ease !important;
+    
+    // If it's an image
+    &[src] {
+        object-fit: contain;
+        border-radius: 8px;
+    }
+    
+    // If it's a Font Awesome icon
+    &::before {
+        font-size: 48px;
+        color: var(--o-brand-primary, #3b82f6);
+    }
+}
+
+// Handle web_icon format (Odoo's icon system)
+.o_app .o_app_icon {
+    font-size: 48px !important;
+    color: var(--o-brand-primary, #3b82f6) !important;
+    line-height: 1 !important;
+}
+
+// -----------------------------------------------------------------------------
+// 📝 APP NAME STYLING
+// -----------------------------------------------------------------------------
+
+.o_app_name {
+    // Typography
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--o-main-text-color, #1e293b) !important;
+    text-align: center !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0.01em !important;
+    
+    // Layout
+    margin: 0 !important;
+    padding: 0 8px !important;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    
+    // Transition
+    transition: color 0.2s ease !important;
+}
+
+// -----------------------------------------------------------------------------
+// 🔍 APP SEARCH BAR (if present)
+// -----------------------------------------------------------------------------
+
+.o_home_menu_search,
+.o_apps .o_search_input {
+    grid-column: 1 / -1 !important; // Span full width
+    max-width: 500px !important;
+    margin: 0 auto 24px auto !important;
+    
+    input {
+        width: 100% !important;
+        padding: 12px 20px !important;
+        font-size: 15px !important;
+        border-radius: 24px !important;
+        border: 1px solid var(--o-border-color, #e2e8f0) !important;
+        background-color: var(--o-view-background-color, #ffffff) !important;
+        transition: all 0.2s ease !important;
+        
+        &:focus {
+            outline: none;
+            border-color: var(--o-brand-primary, #3b82f6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        &::placeholder {
+            color: var(--o-main-text-color-muted, #64748b);
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 📱 RESPONSIVE DESIGN
+// -----------------------------------------------------------------------------
+
+// Large Desktop (1400px+)
+@media (min-width: 1400px) {
+    .o_home_menu,
+    .o_apps {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+        gap: 32px !important;
+        padding: 60px !important;
+    }
+    
+    .o_app {
+        min-height: 160px;
+        padding: 28px 20px !important;
+    }
+    
+    .o_app_icon,
+    .o_app img {
+        width: 72px !important;
+        height: 72px !important;
+    }
+    
+    .o_app_name {
+        font-size: 15px !important;
+    }
+}
+
+// Tablet (768px - 991px)
+@media (max-width: 991.98px) and (min-width: 768px) {
+    .o_home_menu,
+    .o_apps {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+        gap: 20px !important;
+        padding: 32px !important;
+    }
+    
+    .o_app {
+        min-height: 120px;
+        padding: 20px 12px !important;
+    }
+    
+    .o_app_icon,
+    .o_app img {
+        width: 56px !important;
+        height: 56px !important;
+    }
+    
+    .o_app_name {
+        font-size: 13px !important;
+    }
+}
+
+// Mobile (< 768px)
+@media (max-width: 767.98px) {
+    .o_home_menu,
+    .o_apps {
+        // 2 columns on mobile
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+        padding: 20px !important;
+    }
+    
+    .o_app {
+        min-height: 110px;
+        padding: 16px 8px !important;
+    }
+    
+    .o_app_icon,
+    .o_app img {
+        width: 48px !important;
+        height: 48px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .o_app_name {
+        font-size: 12px !important;
+    }
+}
+
+// Very Small Mobile (< 480px)
+@media (max-width: 479.98px) {
+    .o_home_menu,
+    .o_apps {
+        padding: 16px !important;
+        gap: 12px !important;
+    }
+    
+    .o_app {
+        min-height: 100px;
+        padding: 12px 8px !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 🎨 CATEGORY HEADERS (if using app categories)
+// -----------------------------------------------------------------------------
+
+.o_apps_category,
+.o_home_menu_category {
+    grid-column: 1 / -1 !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: var(--o-main-text-color, #1e293b) !important;
+    margin-top: 32px !important;
+    margin-bottom: 16px !important;
+    padding-left: 8px !important;
+    border-bottom: 2px solid var(--o-border-color, #e2e8f0);
+    padding-bottom: 8px;
+}
+
+// -----------------------------------------------------------------------------
+// 🌈 APP COLOR VARIATIONS (Optional Enhancement)
+// -----------------------------------------------------------------------------
+
+// Add color accents to specific apps (can be customized per installation)
+.o_app {
+    // Sales Apps
+    &[data-menu-xmlid*="sale"],
+    &[data-menu-xmlid*="crm"] {
+        .o_app_icon {
+            color: #10b981 !important; // Green
+        }
+    }
+    
+    // Accounting Apps
+    &[data-menu-xmlid*="account"],
+    &[data-menu-xmlid*="invoice"] {
+        .o_app_icon {
+            color: #f59e0b !important; // Amber
+        }
+    }
+    
+    // Inventory/Stock Apps
+    &[data-menu-xmlid*="stock"],
+    &[data-menu-xmlid*="inventory"] {
+        .o_app_icon {
+            color: #8b5cf6 !important; // Purple
+        }
+    }
+    
+    // HR Apps
+    &[data-menu-xmlid*="hr"] {
+        .o_app_icon {
+            color: #ec4899 !important; // Pink
+        }
+    }
+    
+    // Project/Tasks Apps
+    &[data-menu-xmlid*="project"],
+    &[data-menu-xmlid*="task"] {
+        .o_app_icon {
+            color: #06b6d4 !important; // Cyan
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 🔧 COMPATIBILITY & FALLBACKS
+// -----------------------------------------------------------------------------
+
+// Ensure no Odoo default list styling interferes
+.o_apps,
+.o_home_menu {
+    ul& {
+        list-style: none !important;
+        padding-left: 0 !important;
+    }
+    
+    // Remove any default Odoo app drawer styling
+    &.o_action_manager {
+        background: none !important;
+    }
+}
+
+// Handle edge case: Empty app list
+.o_apps:empty,
+.o_home_menu:empty {
+    &::after {
+        content: 'No apps available';
+        display: block;
+        text-align: center;
+        color: var(--o-main-text-color-muted, #64748b);
+        font-size: 16px;
+        padding: 60px 20px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// ✨ LOADING STATE (Optional)
+// -----------------------------------------------------------------------------
+
+.o_apps.o_loading,
+.o_home_menu.o_loading {
+    .o_app {
+        animation: skeleton-pulse 1.5s ease-in-out infinite;
+        
+        .o_app_icon,
+        .o_app_name {
+            opacity: 0.3;
+        }
+    }
+}
+
+@keyframes skeleton-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// ✅ END OF APP GRID STYLES
+// -----------------------------------------------------------------------------

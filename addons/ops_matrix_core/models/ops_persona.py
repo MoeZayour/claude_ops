@@ -501,6 +501,16 @@ class OpsPersona(models.Model):
         'group_id',
         string='Odoo Security Groups'
     )
+
+    # Generated System Group (from activation)
+    group_id = fields.Many2one(
+        'res.groups',
+        string='System Group',
+        readonly=True,
+        ondelete='set null',
+        help='The Odoo Security Group generated when this persona was activated. '
+             'This group can be assigned to users to grant them the persona\'s permissions.'
+    )
     
     # ============================================
     # STATUS AND VALIDITY
@@ -1112,7 +1122,89 @@ class OpsPersona(models.Model):
     # ============================================
     # BUSINESS METHODS
     # ============================================
-    
+
+    # ---------------------------------------------------------
+    # ACTIVATION LOGIC (Template -> Real Group)
+    # ---------------------------------------------------------
+    def action_activate_persona(self):
+        """
+        Converts this Persona Template into a real Odoo Security Group.
+
+        This creates an `res.groups` record linked to this persona, enabling
+        the persona to be assigned to users via Odoo's standard group mechanism.
+        """
+        for persona in self:
+            if persona.group_id:
+                # Already linked to a group - skip
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'title': _('Already Activated'),
+                        'message': _("Persona '%s' is already linked to group '%s'.") % (
+                            persona.name, persona.group_id.name
+                        ),
+                        'type': 'warning',
+                        'sticky': False,
+                    }
+                }
+
+            # 1. Create the Group Name (e.g., "OPS / Financial Controller")
+            group_name = f"OPS / {persona.name}"
+
+            # 2. Find or Create the "OPS Personas" Category
+            category = self.env['ir.module.category'].search(
+                [('name', '=', 'OPS Personas')], limit=1
+            )
+            if not category:
+                category = self.env['ir.module.category'].create({
+                    'name': 'OPS Personas',
+                    'description': 'Security groups generated from OPS Persona templates',
+                    'sequence': 100,
+                })
+
+            # 3. Create the Real Odoo Group
+            group = self.env['res.groups'].create({
+                'name': group_name,
+                'category_id': category.id,
+                'comment': f"Generated from OPS Persona: {persona.description or persona.name}",
+            })
+
+            # 4. Link it back to the persona
+            persona.write({
+                'group_id': group.id,
+                'active': True,
+            })
+
+            # 5. Add the new group to the persona's access_group_ids
+            persona.access_group_ids = [(4, group.id)]
+
+            # 6. Log the activation
+            persona.message_post(
+                body=_("Persona activated. Security Group '%s' created (ID: %s).") % (
+                    group_name, group.id
+                ),
+                subject=_('Persona Activated')
+            )
+            _logger.info(
+                "Persona %s (ID: %s) activated - created group '%s' (ID: %s)",
+                persona.name, persona.id, group_name, group.id
+            )
+
+            # 7. Notify User
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Persona Activated'),
+                    'message': _("Security Group '%s' created successfully.") % group_name,
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+
+        return True
+
     def action_view_user_access(self):
         """Open view of user's current access."""
         self.ensure_one()

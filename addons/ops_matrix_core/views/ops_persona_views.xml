@@ -7,6 +7,13 @@
         <field name="arch" type="xml">
             <form string="Persona">
                 <header>
+                    <button name="action_activate_persona"
+                            string="Activate &amp; Create Group"
+                            type="object"
+                            icon="fa-magic"
+                            class="oe_highlight"
+                            invisible="group_id"
+                            help="Convert this persona template into a real Odoo security group"/>
                     <button name="action_force_sync"
                             string="Sync to User"
                             type="object"
@@ -231,6 +238,22 @@
                         </page>
                         
                         <page string="Security Groups" name="security_groups">
+                            <group>
+                                <group>
+                                    <field name="group_id" readonly="1"/>
+                                </group>
+                                <group>
+                                    <div invisible="group_id" class="alert alert-info">
+                                        <strong>Not Activated:</strong> Click "Activate &amp; Create Group"
+                                        to generate an Odoo security group from this persona.
+                                    </div>
+                                    <div invisible="not group_id" class="alert alert-success">
+                                        <strong>Activated:</strong> This persona is linked to a security group.
+                                        Users assigned to this group inherit the persona's permissions.
+                                    </div>
+                                </group>
+                            </group>
+                            <separator string="Additional Security Groups"/>
                             <field name="access_group_ids" widget="many2many_tags"/>
                         </page>
                         
@@ -273,13 +296,14 @@
         <field name="name">ops.persona.list</field>
         <field name="model">ops.persona</field>
         <field name="arch" type="xml">
-            <list string="Personas" decoration-muted="not active" decoration-info="is_delegated">
+            <list string="Personas" decoration-muted="not active" decoration-info="is_delegated" decoration-success="group_id">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="code" readonly="1"/>
                 <field name="user_id"/>
                 <field name="company_id"/>
                 <field name="matrix_access_summary"/>
+                <field name="group_id" optional="show" string="System Group"/>
                 <field name="is_active_today" widget="boolean_toggle"/>
                 <field name="is_delegated" widget="boolean_toggle"/>
                 <field name="effective_user_id" optional="show"/>

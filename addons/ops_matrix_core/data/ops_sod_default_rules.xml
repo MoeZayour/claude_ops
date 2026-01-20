@@ -25,7 +25,8 @@
             <field name="action_1">create</field>
             <field name="action_2">confirm</field>
             <field name="threshold_amount">5000.0</field>
-            <field name="active">False</field>
+            <field name="active">True</field>
+            <field name="enabled">False</field>
             <field name="block_violation">True</field>
             <field name="is_system_rule">True</field>
             <field name="description">Segregation of Duties: Sales order creator cannot confirm the order if amount >= $5,000. A different user must review and confirm to ensure independent verification of sales commitments.</field>
@@ -44,7 +45,8 @@
             <field name="action_1">create</field>
             <field name="action_2">confirm</field>
             <field name="threshold_amount">5000.0</field>
-            <field name="active">False</field>
+            <field name="active">True</field>
+            <field name="enabled">False</field>
             <field name="block_violation">True</field>
             <field name="is_system_rule">True</field>
             <field name="description">Segregation of Duties: Purchase order creator cannot confirm the order if amount >= $5,000. A different user must approve to ensure proper authorization controls and prevent unauthorized procurement.</field>
@@ -63,7 +65,8 @@
             <field name="action_1">create</field>
             <field name="action_2">post</field>
             <field name="threshold_amount">0.0</field>
-            <field name="active">False</field>
+            <field name="active">True</field>
+            <field name="enabled">False</field>
             <field name="block_violation">True</field>
             <field name="is_system_rule">True</field>
             <field name="description">Segregation of Duties: Invoice creator cannot post/validate the invoice. A different user must post to ensure independent verification and prevent unauthorized financial transactions.</field>
@@ -82,7 +85,8 @@
             <field name="action_1">create</field>
             <field name="action_2">post</field>
             <field name="threshold_amount">2000.0</field>
-            <field name="active">False</field>
+            <field name="active">True</field>
+            <field name="enabled">False</field>
             <field name="block_violation">True</field>
             <field name="is_system_rule">True</field>
             <field name="description">Segregation of Duties: Payment creator cannot post the payment if amount >= $2,000. A different user must authorize and post to ensure dual control over cash disbursements.</field>

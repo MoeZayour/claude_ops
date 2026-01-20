@@ -260,10 +260,21 @@ class SaleOrder(models.Model):
     def action_quotation_send(self):
         """
         Override email sending to enforce governance rules.
-        
+
         This prevents users from sending quotations/orders by email
         if they violate governance rules or have pending approvals.
+
+        STRICT GOVERNANCE: Orders in 'waiting_approval' state cannot be sent.
         """
+        # HARD BLOCK: Cannot send orders waiting for approval
+        for order in self:
+            if order.state == 'waiting_approval':
+                raise UserError(_(
+                    "🚫 SEND BLOCKED: You cannot send order '%s' while it is waiting for approval.\n\n"
+                    "Orders pending approval cannot be shared externally via email.\n"
+                    "Please wait for approval or use the 'Recall Approval' button to make changes."
+                ) % order.display_name)
+
         # ADMIN BYPASS: Allow administrators to send anything
         if self.env.su or self.env.user.has_group('base.group_system'):
             # Log admin override for audit trail
@@ -277,7 +288,7 @@ class SaleOrder(models.Model):
             except Exception as e:
                 _logger.warning("Failed to log admin override: %s", str(e))
             return super().action_quotation_send()
-        
+
         for order in self:
             _logger.info("OPS Governance: Checking SO %s for email commitment", order.name)
             
@@ -317,7 +328,42 @@ class SaleOrder(models.Model):
         
         # If all checks pass, proceed with email wizard
         return super().action_quotation_send()
-    
+
+    def _get_report_base_filename(self):
+        """
+        Override to block report generation (print) for orders waiting approval.
+
+        STRICT GOVERNANCE: Orders in 'waiting_approval' cannot be printed.
+        This prevents sharing unapproved pricing/terms externally.
+        """
+        self.ensure_one()
+
+        # HARD BLOCK: Cannot print orders waiting for approval (non-admin)
+        if self.state == 'waiting_approval':
+            if not (self.env.su or self.env.user.has_group('base.group_system')):
+                raise UserError(_(
+                    "🚫 PRINT BLOCKED: You cannot print order '%s' while it is waiting for approval.\n\n"
+                    "Orders pending approval cannot be printed or shared externally.\n"
+                    "Please wait for approval or use the 'Recall Approval' button to make changes."
+                ) % self.display_name)
+
+        return super()._get_report_base_filename()
+
+    def action_preview_sale_order(self):
+        """
+        Override preview action to block for orders waiting approval.
+        """
+        for order in self:
+            if order.state == 'waiting_approval':
+                if not (self.env.su or self.env.user.has_group('base.group_system')):
+                    raise UserError(_(
+                        "🚫 PREVIEW BLOCKED: You cannot preview order '%s' while it is waiting for approval.\n\n"
+                        "Orders pending approval cannot be previewed or shared externally.\n"
+                        "Please wait for approval or use the 'Recall Approval' button to make changes."
+                    ) % order.display_name)
+
+        return super().action_preview_sale_order()
+
     @api.model_create_multi
     def create(self, vals_list):
         """Override create to propagate matrix dimensions to lines."""
@@ -344,7 +390,66 @@ class SaleOrder(models.Model):
             if order.order_line:
                 order._propagate_matrix_to_lines('order_line')
         return orders
-    
+
+    def write(self, vals):
+        """
+        Override write to enforce strict governance locking during approval workflow.
+
+        SECURITY: When state is 'waiting_approval', critical fields cannot be modified.
+        This prevents users from changing order details while approval is pending,
+        which could create liability risks.
+
+        Protected fields: order_line, amount_total, payment_term_id, partner_id,
+                         pricelist_id, and any pricing-related fields.
+        """
+        # Allow unlocking via context (used by approve/reject/recall methods)
+        if self._context.get('approval_unlock'):
+            return super().write(vals)
+
+        # Define protected fields that cannot be edited during approval
+        PROTECTED_FIELDS = {
+            'order_line',
+            'partner_id',
+            'partner_invoice_id',
+            'partner_shipping_id',
+            'pricelist_id',
+            'payment_term_id',
+            'fiscal_position_id',
+            'date_order',
+            'validity_date',
+            'currency_id',
+        }
+
+        # Check if any protected field is being modified
+        modified_protected = PROTECTED_FIELDS.intersection(vals.keys())
+
+        for order in self:
+            # ADMIN BYPASS: Administrators can always modify
+            if self.env.su or self.env.user.has_group('base.group_system'):
+                continue
+
+            # STRICT LOCK: Block modifications when waiting_approval
+            if order.state == 'waiting_approval' and modified_protected:
+                raise UserError(_(
+                    "🔒 ORDER LOCKED: This order is waiting for approval.\n\n"
+                    "You cannot modify the following while approval is pending:\n"
+                    "• Order lines (products, quantities, prices)\n"
+                    "• Customer information\n"
+                    "• Payment terms\n"
+                    "• Pricelist or currency\n\n"
+                    "To make changes, use the 'Recall Approval' button first."
+                ))
+
+            # APPROVED/SALE STATE: Log warning for audit trail (future enhancement)
+            # For now, allow standard Odoo behavior for confirmed orders
+            if order.state in ['sale', 'done'] and modified_protected:
+                _logger.warning(
+                    "OPS Governance: Protected fields modified on confirmed SO %s by user %s. Fields: %s",
+                    order.name, self.env.user.name, ', '.join(modified_protected)
+                )
+
+        return super().write(vals)
+
     @api.onchange('ops_branch_id', 'ops_business_unit_id')
     def _onchange_matrix_dimensions(self):
         """Propagate matrix dimensions to order lines when changed."""
@@ -416,12 +521,28 @@ class SaleOrder(models.Model):
 
         # If still no request, create a generic one
         if not approval_request:
-            # Find default approvers (managers)
-            approvers = self.env['res.users'].search([
-                ('groups_id', 'in', self.env.ref('ops_matrix_core.group_ops_manager').id),
-                ('company_ids', 'in', self.company_id.id),
-                ('active', '=', True)
-            ], limit=5)
+            # Find default approvers using robust ORM approach
+            approvers = self.env['res.users']
+
+            try:
+                # Method 1: Get users via group's users field (read to avoid lazy loading issues)
+                manager_group = self.env.ref('ops_matrix_core.group_ops_manager', raise_if_not_found=False)
+                if manager_group:
+                    # Force load the users field via read()
+                    group_data = manager_group.read(['users'])[0] if manager_group else {}
+                    user_ids = group_data.get('users', [])
+                    if user_ids:
+                        approvers = self.env['res.users'].browse(user_ids).filtered(
+                            lambda u: u.active and self.company_id.id in u.company_ids.ids
+                        )[:5]
+            except Exception:
+                pass  # Fall through to next method
+
+            # Method 2: Fallback to admin user
+            if not approvers:
+                admin_user = self.env.ref('base.user_admin', raise_if_not_found=False)
+                if admin_user and admin_user.active:
+                    approvers = admin_user
 
             if not approvers:
                 raise UserError(_(
@@ -458,12 +579,11 @@ class SaleOrder(models.Model):
     def action_view_approvals(self):
         """View approval requests for this sale order."""
         self.ensure_one()
-
         return {
-            'type': 'ir.actions.act_window',
             'name': _('Approval Requests'),
+            'type': 'ir.actions.act_window',
             'res_model': 'ops.approval.request',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [
                 ('model_name', '=', 'sale.order'),
                 ('res_id', '=', self.id)
@@ -471,7 +591,9 @@ class SaleOrder(models.Model):
             'context': {
                 'default_model_name': 'sale.order',
                 'default_res_id': self.id,
+                'create': False,
             },
+            'target': 'current',
         }
 
     def action_approve(self):
@@ -511,6 +633,43 @@ class SaleOrder(models.Model):
         })
 
         return True
+
+    def action_recall_approval(self):
+        """
+        Recall an approval request - allows the salesperson to pull back the
+        request to make edits. Only works when state is 'waiting_approval'.
+        """
+        self.ensure_one()
+
+        if self.state != 'waiting_approval':
+            raise UserError(_("You can only recall orders that are waiting for approval."))
+
+        # Cancel the related approval request
+        if self.approval_request_id:
+            try:
+                self.approval_request_id.write({'state': 'cancelled'})
+            except Exception as e:
+                _logger.warning("Failed to cancel approval request: %s", str(e))
+
+        # Unlock and return to draft state
+        self.with_context(approval_unlock=True).write({
+            'state': 'draft',
+            'approval_locked': False,
+        })
+
+        _logger.info("OPS Governance: SO %s recalled from approval by user %s",
+                     self.name, self.env.user.name)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Approval Recalled'),
+                'message': _('Order %s has been recalled. You can now make edits.') % self.name,
+                'type': 'warning',
+                'sticky': False,
+            }
+        }
 
     def action_print_product_bundle(self) -> Dict[str, Any]:
         """
