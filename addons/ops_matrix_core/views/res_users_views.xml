@@ -18,60 +18,68 @@
                     </div>
                     
                     <field name="matrix_access_summary" widget="text" readonly="1"/>
-                    
-                    <group>
-                        <group>
-                            <field name="persona_id" string="OPS Persona"
-                                   groups="base.group_system"
-                                   options="{'no_create': True}"
-                                   help="User's organizational role (REQUIRED for non-admin users - Set this first, it will auto-populate Primary Branch)"/>
-                            <field name="primary_branch_id" string="Primary Branch"
-                                   groups="base.group_system"
-                                   options="{'no_create': True}"
-                                   help="Main branch this user belongs to (Auto-populated when Persona is selected, optional for administrators)"/>
-                        </group>
-                        <group>
-                            <field name="ops_default_branch_id" string="Default Branch for Transactions"
-                                   groups="base.group_system"
-                                   options="{'no_create': True}"
-                                   help="Default branch for new transactions (optional)"/>
-                            <field name="ops_default_business_unit_id" string="Default Business Unit for Transactions"
-                                   groups="base.group_system"
-                                   options="{'no_create': True}"
-                                   help="Default business unit for new transactions (optional)"/>
-                        </group>
-                        
-                        <group>
-                            <field name="is_cross_branch_bu_leader" readonly="1"/>
-                            <field name="is_matrix_administrator" readonly="1"/>
-                        </group>
-                    </group>
-                    
-                    <group>
+
+                    <!-- STEP 1: Define Allowed Scope (TOP) -->
+                    <group string="Step 1: Define Access Scope">
                         <group>
                             <field name="ops_allowed_branch_ids"
                                    string="Allowed Branches"
                                    widget="many2many_tags"
                                    groups="base.group_system"
                                    options="{'no_create': True, 'color_field': 'color'}"
-                                   help="All branches this user can access"/>
+                                   help="All branches this user can access (define scope first)"/>
                             <field name="allowed_branch_count" readonly="1"/>
                         </group>
-                        
+
                         <group>
                             <field name="ops_allowed_business_unit_ids"
                                    string="Allowed Business Units"
                                    widget="many2many_tags"
                                    groups="base.group_system"
                                    options="{'no_create': True}"
-                                   help="All business units this user can access (REQUIRED for non-admin users - must select at least one)"/>
+                                   help="All business units this user can access (REQUIRED - must select at least one)"/>
                             <field name="allowed_bu_count" readonly="1"/>
                         </group>
                     </group>
-                    
-                    <group groups="base.group_system">
+
+                    <!-- STEP 2: Assign Persona (MIDDLE) -->
+                    <group string="Step 2: Assign Persona">
                         <group>
-                            <field name="persona_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="persona_id" string="OPS Persona"
+                                   groups="base.group_system"
+                                   options="{'no_create': True}"
+                                   help="User's organizational role (REQUIRED - auto-adds to persona list)"/>
+                        </group>
+                        <group>
+                            <field name="is_cross_branch_bu_leader" readonly="1"/>
+                            <field name="is_matrix_administrator" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- STEP 3: Set Defaults (BOTTOM) -->
+                    <group string="Step 3: Set Default Selections">
+                        <group>
+                            <field name="primary_branch_id" string="Primary Branch"
+                                   groups="base.group_system"
+                                   options="{'no_create': True}"
+                                   help="Main branch this user belongs to (auto-populated from allowed branches)"/>
+                            <field name="ops_default_branch_id" string="Default Branch for Transactions"
+                                   groups="base.group_system"
+                                   options="{'no_create': True}"
+                                   help="Default branch for new transactions (optional)"/>
+                        </group>
+                        <group>
+                            <field name="ops_default_business_unit_id" string="Default Business Unit for Transactions"
+                                   groups="base.group_system"
+                                   options="{'no_create': True}"
+                                   help="Default business unit for new transactions (optional)"/>
+                        </group>
+                    </group>
+
+                    <!-- Advanced: Multiple Personas & Delegations -->
+                    <group groups="base.group_system" string="Advanced: Multiple Personas">
+                        <group>
+                            <field name="persona_ids" widget="many2many_tags" options="{'no_create': True}" string="All Assigned Personas"/>
                         </group>
                         <group>
                             <field name="delegated_persona_ids" widget="many2many_tags" options="{'no_create': True}"/>

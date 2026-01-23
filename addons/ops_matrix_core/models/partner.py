@@ -5,8 +5,44 @@ from typing import TYPE_CHECKING, List, Dict, Any, Tuple
 if TYPE_CHECKING:
     from odoo.api import Environment
 
+
 class ResPartner(models.Model):
     _inherit = 'res.partner'
+
+    # ==========================================================================
+    # MASTER DATA GOVERNANCE: Company Registration & Verification
+    # ==========================================================================
+    ops_cr_number = fields.Char(
+        string='CR Number',
+        tracking=True,
+        index=True,
+        copy=False,
+        help='Official Company Registration (CR) number. '
+             'UNIQUE when provided (NULL allowed for leads/individuals). '
+             'Used for: KYC compliance, duplicate customer detection, government reporting. '
+             'Example: CR-123456, REG-2024-00123'
+    )
+
+    ops_master_verified = fields.Boolean(
+        string='Master Verified',
+        default=False,
+        tracking=True,
+        groups='ops_matrix_core.group_ops_manager,base.group_system',
+        help='Indicates this customer has been verified by Master Data Management.\n\n'
+             'SMART GATE LOGIC:\n'
+             '• CREDIT transactions: BLOCKED if not verified\n'
+             '• CASH/Immediate transactions: ALLOWED even if not verified\n\n'
+             'Verification involves: CR number validation, credit assessment, KYC checks.\n'
+             'Only authorized users (Finance/Manager) can toggle this flag.'
+    )
+
+    # SQL Constraint for CR Number uniqueness (NULL allowed for leads/individuals)
+    # Note: PostgreSQL UNIQUE constraint allows multiple NULL values by design
+    _sql_constraints = [
+        ('ops_cr_number_unique',
+         'UNIQUE(ops_cr_number)',
+         'Company Registration Number must be unique! Another customer already has this CR Number.'),
+    ]
 
     # Stewardship State for Partner Governance
     ops_state = fields.Selection([
@@ -94,7 +130,11 @@ class ResPartner(models.Model):
         """Compute any restrictions that would prevent order confirmation"""
         for partner in self:
             restrictions = []
-            
+
+            # Check Master Data Verification - HIGHEST PRIORITY
+            if not partner.ops_master_verified:
+                restrictions.append('⚠️ NOT MASTER VERIFIED - Orders CANNOT be confirmed')
+
             # Check stewardship state
             if partner.ops_state == 'draft':
                 restrictions.append('Partner not yet approved (Draft state)')
@@ -102,15 +142,15 @@ class ResPartner(models.Model):
                 restrictions.append('Partner is blocked from transactions')
             elif partner.ops_state == 'archived':
                 restrictions.append('Partner is archived')
-            
+
             # Check credit limit (optional)
             if partner.ops_credit_limit > 0 and partner.ops_total_outstanding >= partner.ops_credit_limit:
                 restrictions.append(f'Credit limit exceeded ({partner.ops_total_outstanding} >= {partner.ops_credit_limit})')
-            
+
             # Check if partner is active
             if not partner.active:
                 restrictions.append('Partner is inactive')
-            
+
             partner.ops_confirmation_restrictions = '\n'.join(restrictions) if restrictions else ''
     
     def action_approve(self) -> bool:
@@ -149,20 +189,51 @@ class ResPartner(models.Model):
             })
             partner.message_post(body='Partner reset to draft')
         return True
-    
+
+    def action_verify_master(self) -> bool:
+        """Verify customer in Master Data Management (MDM)."""
+        for partner in self:
+            if not partner.ops_cr_number:
+                raise ValidationError(_(
+                    "Cannot verify customer '%s'. Company Registration Number (CR) is required."
+                ) % partner.name)
+
+            partner.write({
+                'ops_master_verified': True,
+            })
+            partner.message_post(
+                body=_('Customer MASTER VERIFIED by %s. Sales Orders can now be confirmed.') % self.env.user.name
+            )
+        return True
+
+    def action_unverify_master(self) -> bool:
+        """Revoke Master Data verification."""
+        for partner in self:
+            partner.write({
+                'ops_master_verified': False,
+            })
+            partner.message_post(
+                body=_('Customer Master Verification REVOKED by %s. Sales Orders can no longer be confirmed.') % self.env.user.name
+            )
+        return True
+
     def can_confirm_orders(self) -> Tuple[bool, str]:
         """Check if partner can have orders confirmed"""
         self.ensure_one()
-        
+
+        # Check Master Data Verification - HARD BLOCK
+        if not self.ops_master_verified:
+            return False, 'Customer is NOT MASTER VERIFIED. Sales Orders cannot be confirmed until verification is complete.'
+
         if self.ops_state not in ['approved', 'approved']:
             return False, f'Partner state is {self.ops_state}'
-        
+
         if not self.active:
             return False, 'Partner is inactive'
-        
+
         if self.ops_credit_limit > 0 and self.ops_total_outstanding >= self.ops_credit_limit:
             return False, f'Credit limit exceeded: {self.ops_total_outstanding} >= {self.ops_credit_limit}'
-        
+
         return True, 'Partner can confirm orders'
      
     @api.onchange('ops_state')

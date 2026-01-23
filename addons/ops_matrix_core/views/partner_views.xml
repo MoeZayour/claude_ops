@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Add CR Number and Master Verified to main partner form (top area) -->
+    <record id="view_res_partner_form_ops_master_data" model="ir.ui.view">
+        <field name="name">res.partner.form.ops.master.data</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <!-- Add Master Data fields after VAT field (or after name) -->
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="ops_cr_number" placeholder="e.g., CR-123456"/>
+            </xpath>
+
+            <!-- Add Master Verified badge in header area -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="ops_master_verified" widget="boolean_toggle"
+                       class="oe_stat_button"
+                       icon="fa-certificate"
+                       groups="ops_matrix_core.group_ops_manager,base.group_system"/>
+            </xpath>
+        </field>
+    </record>
+
     <!-- Inherit Partner Form View to Add Stewardship Tab -->
     <record id="view_res_partner_form_ops_stewardship" model="ir.ui.view">
         <field name="name">res.partner.form.ops.stewardship</field>
@@ -8,45 +30,88 @@
         <field name="arch" type="xml">
             <!-- Add OPS Stewardship Tab -->
             <xpath expr="//notebook" position="inside">
-                <page string="OPS Stewardship" name="ops_stewardship">
-                    <group>
+                <page string="OPS Governance" name="ops_stewardship">
+                    <!-- Master Data Verification Section -->
+                    <group string="Master Data Verification">
                         <group>
-                            <field name="ops_state" widget="radio" />
-                            <field name="active" />
+                            <field name="ops_cr_number" readonly="1"/>
+                            <field name="ops_master_verified" widget="boolean_toggle"
+                                   groups="ops_matrix_core.group_ops_manager,base.group_system"/>
                         </group>
                         <group>
                             <field name="ops_verification_date" readonly="1" />
                             <field name="ops_verified_by_id" readonly="1" />
                         </group>
                     </group>
-                    
+
+                    <!-- Master Verification Actions -->
+                    <div class="alert alert-info" role="alert"
+                         invisible="ops_master_verified">
+                        <strong>⚠️ Not Master Verified</strong><br/>
+                        Credit transactions (orders with payment terms) will be BLOCKED until this customer is verified.
+                        Cash/Immediate transactions are allowed.
+                    </div>
+                    <div class="alert alert-success" role="alert"
+                         invisible="not ops_master_verified">
+                        <strong>✅ Master Verified</strong><br/>
+                        All transaction types (Cash and Credit) are allowed for this customer.
+                    </div>
+
+                    <div class="oe_button_box mb-3">
+                        <button name="action_verify_master" type="object"
+                                string="✓ Verify Customer"
+                                class="btn-success"
+                                invisible="ops_master_verified"
+                                groups="ops_matrix_core.group_ops_manager,base.group_system"/>
+                        <button name="action_unverify_master" type="object"
+                                string="✗ Revoke Verification"
+                                class="btn-warning"
+                                invisible="not ops_master_verified"
+                                groups="ops_matrix_core.group_ops_manager,base.group_system"/>
+                    </div>
+
+                    <separator string="Stewardship State"/>
+                    <group>
+                        <group>
+                            <field name="ops_state" widget="radio" />
+                            <field name="active" />
+                        </group>
+                    </group>
+
+                    <separator string="Credit Management"/>
                     <group>
                         <group>
                             <field name="ops_credit_limit" />
                             <field name="ops_total_outstanding" readonly="1" />
-                            <field name="company_currency_id" readonly="1" />
+                            <field name="company_currency_id" readonly="1" invisible="1"/>
                         </group>
                     </group>
-                    
-                    <group>
-                        <group>
-                            <field name="ops_confirmation_restrictions" readonly="1" nolabel="1" />
-                        </group>
+
+                    <group invisible="not ops_confirmation_restrictions">
+                        <field name="ops_confirmation_restrictions" readonly="1" nolabel="1"
+                               widget="text" class="text-danger"/>
                     </group>
-                    
+
+                    <separator string="Approval Notes"/>
                     <group>
                         <field name="ops_approval_notes" nolabel="1" placeholder="Add notes about partner approval..." />
                     </group>
-                    
-                    <div class="oe_inline">
-                        <button name="action_approve" type="object" string="Approve" 
-                                class="oe_highlight" />
-                        <button name="action_block" type="object" string="Block" 
-                                />
-                        <button name="action_unblock" type="object" string="Unblock" 
-                                />
-                        <button name="action_reset_to_draft" type="object" string="Reset to Draft" 
-                                />
+
+                    <div class="oe_button_box">
+                        <button name="action_approve" type="object" string="Approve"
+                                class="btn-primary"
+                                invisible="ops_state == 'approved'"
+                                groups="ops_matrix_core.group_ops_manager,base.group_system"/>
+                        <button name="action_block" type="object" string="Block"
+                                class="btn-danger"
+                                invisible="ops_state == 'blocked'"
+                                groups="ops_matrix_core.group_ops_manager,base.group_system"/>
+                        <button name="action_unblock" type="object" string="Unblock"
+                                invisible="ops_state != 'blocked'"
+                                groups="ops_matrix_core.group_ops_manager,base.group_system"/>
+                        <button name="action_reset_to_draft" type="object" string="Reset to Draft"
+                                invisible="ops_state == 'draft'"
+                                groups="ops_matrix_core.group_ops_manager,base.group_system"/>
                     </div>
                 </page>
             </xpath>
@@ -60,6 +125,11 @@
         <field name="inherit_id" ref="base.view_partner_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//list" position="inside">
+                <field name="ops_cr_number" string="CR Number" optional="show" />
+                <field name="ops_master_verified" string="Verified" widget="boolean"
+                       decoration-success="ops_master_verified"
+                       decoration-danger="not ops_master_verified"
+                       optional="show" />
                 <field name="ops_state" string="Stewardship" optional="show" />
                 <field name="ops_total_outstanding" string="Outstanding" optional="hide" />
             </xpath>
@@ -115,13 +185,28 @@
         <field name="arch" type="xml">
             <filter name="type_company" position="after">
                 <separator />
+                <filter name="master_verified" string="Master Verified"
+                        domain="[('ops_master_verified', '=', True)]" />
+                <filter name="not_master_verified" string="NOT Verified (Credit Blocked)"
+                        domain="[('ops_master_verified', '=', False)]" />
+                <separator />
+                <filter name="has_cr_number" string="Has CR Number"
+                        domain="[('ops_cr_number', '!=', False)]" />
+                <filter name="no_cr_number" string="No CR Number (Leads)"
+                        domain="[('ops_cr_number', '=', False)]" />
+                <separator />
                 <filter name="stewardship_draft" string="Draft (Not Approved)" domain="[('ops_state', '=', 'draft')]" />
                 <filter name="stewardship_approved" string="Approved" domain="[('ops_state', '=', 'approved')]" />
                 <filter name="stewardship_blocked" string="Blocked" domain="[('ops_state', '=', 'blocked')]" />
                 <filter name="stewardship_archived" string="Archived" domain="[('ops_state', '=', 'archived')]" />
                 <separator />
+                <filter name="group_by_verified" string="Master Verified" context="{'group_by': 'ops_master_verified'}" />
                 <filter name="group_by_state" string="Stewardship State" context="{'group_by': 'ops_state'}" />
             </filter>
+            <!-- Add search field for CR Number -->
+            <field name="name" position="after">
+                <field name="ops_cr_number" string="CR Number" filter_domain="[('ops_cr_number', 'ilike', self)]"/>
+            </field>
         </field>
     </record>
 </odoo>

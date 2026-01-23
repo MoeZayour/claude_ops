@@ -89,7 +89,7 @@
     <record id="action_ops_report_template" model="ir.actions.act_window">
         <field name="name">Report Templates</field>
         <field name="res_model">ops.report.template</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     
     <menuitem id="menu_ops_report_templates"

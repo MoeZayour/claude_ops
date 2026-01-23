@@ -28,7 +28,7 @@
                         Analytic accounts are auto-created for reporting.
                     </div>
                     
-                    <field name="branch_ids" mode="tree,kanban" context="{'default_company_id': id}">
+                    <field name="branch_ids" mode="list,kanban" context="{'default_company_id': id}">
                         <!-- Tree View for Branches -->
                         <list string="Branches" editable="bottom">
                             <field name="sequence" widget="handle"/>

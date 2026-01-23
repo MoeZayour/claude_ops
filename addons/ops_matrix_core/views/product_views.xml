@@ -1,21 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_product_template_form_inherit" model="ir.ui.view">
-        <field name="name">product.template.form.inherit</field>
+        <field name="name">product.template.form.inherit.ops</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="priority">20</field>
         <field name="arch" type="xml">
-            <!-- Add Business Unit field for Product Silo -->
-            <xpath expr="//field[@name='categ_id']" position="after">
-                <field name="business_unit_id" options="{'no_create': True}"/>
-            </xpath>
-            
-            <!-- The Cost Shield: Add computed fields for cost access control -->
-            <xpath expr="//field[@name='categ_id']" position="after">
+            <!-- The Cost Shield: Add computed fields for cost access control (invisible) -->
+            <xpath expr="//field[@name='name']" position="before">
                 <field name="can_user_access_cost_prices" invisible="1"/>
                 <field name="can_user_modify_product_master" invisible="1"/>
             </xpath>
-            
+
+            <!-- OPS MATRIX: Add Business Unit (THE MASTER) at top - Required field -->
+            <xpath expr="//field[@name='categ_id']" position="before">
+                <field name="business_unit_id"
+                       required="1"
+                       options="{'no_create': True, 'no_open': True}"
+                       placeholder="Select Business Unit (Required)"/>
+            </xpath>
+
+            <!-- OPS MATRIX: Add Global Master and Branch Activation in General Info tab -->
+            <xpath expr="//page[@name='general_information']" position="inside">
+                <group string="OPS Matrix - Branch Activation" name="ops_branch_activation">
+                    <group>
+                        <field name="ops_is_global_master"
+                               help="Enable to require explicit branch activation for this product"/>
+                    </group>
+                    <group>
+                        <field name="ops_branch_activation_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True}"
+                               invisible="not ops_is_global_master"
+                               placeholder="Select branches where this product can be sold"/>
+                    </group>
+                    <div class="alert alert-info" role="alert" invisible="not ops_is_global_master">
+                        <strong>Global Master Product:</strong> This product requires explicit branch activation.
+                        Select the branches where this product should be available for sales.
+                        If no branches are selected, the product cannot be sold anywhere.
+                    </div>
+                </group>
+            </xpath>
+
             <!-- The Cost Shield: Hide cost price from unauthorized users -->
             <xpath expr="//field[@name='standard_price']" position="attributes">
                 <attribute name="invisible">not can_user_access_cost_prices</attribute>
@@ -23,7 +49,40 @@
             </xpath>
         </field>
     </record>
-    
+
+    <!-- Tree View: Add Business Unit column -->
+    <record id="view_product_template_tree_inherit" model="ir.ui.view">
+        <field name="name">product.template.tree.inherit.ops</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="business_unit_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search View: Add Business Unit and Global Master filters -->
+    <record id="view_product_template_search_inherit" model="ir.ui.view">
+        <field name="name">product.template.search.inherit.ops</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='filter_to_purchase']" position="after">
+                <separator/>
+                <filter string="Global Master Products" name="filter_global_master"
+                        domain="[('ops_is_global_master', '=', True)]"/>
+            </xpath>
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="business_unit_id"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="Business Unit" name="group_business_unit"
+                        context="{'group_by': 'business_unit_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
     <!-- The Cost Shield: Apply same security to Purchase views (if module is installed) -->
     <record id="view_product_template_purchase_form_inherit" model="ir.ui.view">
         <field name="name">product.template.purchase.form.inherit.cost.shield</field>

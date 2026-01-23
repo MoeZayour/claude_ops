@@ -1,6 +1,6 @@
 {
     'name': 'OPS Matrix Reporting',
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.6.0',
     'category': 'Reporting',
     'summary': 'Branch/Business Unit Matrix Analytics and Reporting',
     'description': """

@@ -112,7 +112,7 @@
     <record id="action_ops_data_archival" model="ir.actions.act_window">
         <field name="name">Data Archival</field>
         <field name="res_model">ops.data.archival</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a data archival job
@@ -176,7 +176,7 @@
     <record id="action_ops_archived_record" model="ir.actions.act_window">
         <field name="name">Archived Records</field>
         <field name="res_model">ops.archived.record</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <!-- Menu Items -->

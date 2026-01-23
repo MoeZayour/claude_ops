@@ -148,67 +148,81 @@ class OpsSalesAnalysis(models.Model):
     def init(self):
         """
         Create the PostgreSQL view when the model is initialized.
-        
+
         The view:
         1. Joins sale.order_line with sale.order
         2. Filters for confirmed orders (state in confirmed, done)
-        3. Calculates margin as (price_subtotal - cogs)
+        3. Calculates margin from purchase_price field (sale_margin module)
         4. Includes Branch and Business Unit dimensions
         5. Optimized for pivot/grouping operations
+
+        CRITICAL FIX (Odoo 19):
+        - Removed sol.state condition (field doesn't exist in Odoo 19)
+        - Uses purchase_price from sale.order.line (requires sale_margin module)
+        - Gracefully handles NULL purchase_price with COALESCE
+        - Avoids JSONB standard_price complexity
         """
         self.env.cr.execute(
             f"""
+            DROP VIEW IF EXISTS {self._table} CASCADE;
             CREATE OR REPLACE VIEW {self._table} AS (
                 SELECT
-                    -- Identification
+                    -- Identification (explicit integer cast)
                     sol.id::integer AS id,
-                    
-                    -- Temporal
+
+                    -- Temporal (explicit timestamp cast)
                     so.date_order::timestamp AS date_order,
-                    
+
                     -- Products & Customers (explicit integer casting for Many2one fields)
-                    sol.product_id::integer AS product_id,
-                    so.partner_id::integer AS partner_id,
-                    
-                    -- OPS Matrix Dimensions (explicit integer casting for Many2one fields)
-                    so.ops_branch_id::integer AS ops_branch_id,
-                    so.ops_business_unit_id::integer AS ops_business_unit_id,
-                    
-                    -- Quantities & Revenue (explicit numeric casting for float fields)
-                    sol.product_uom_qty::numeric AS product_uom_qty,
-                    sol.price_subtotal::numeric AS price_subtotal,
-                    
-                    -- Margin Calculation (already numeric from computation)
+                    COALESCE(sol.product_id, 0)::integer AS product_id,
+                    COALESCE(so.partner_id, 0)::integer AS partner_id,
+
+                    -- OPS Matrix Dimensions (explicit integer casting, null-safe)
+                    COALESCE(so.ops_branch_id, 0)::integer AS ops_branch_id,
+                    COALESCE(so.ops_business_unit_id, 0)::integer AS ops_business_unit_id,
+
+                    -- Quantities & Revenue (explicit numeric casting, null-safe)
+                    COALESCE(sol.product_uom_qty, 0)::numeric AS product_uom_qty,
+                    COALESCE(sol.price_subtotal, 0)::numeric AS price_subtotal,
+
+                    -- Margin Calculation: Use purchase_price from sale.order.line
+                    -- This is set by sale_margin module and is already numeric
                     (
-                        sol.price_subtotal::numeric -
-                        (sol.product_uom_qty::numeric * COALESCE(CAST(pp.standard_price AS NUMERIC), 0))
+                        COALESCE(sol.price_subtotal, 0)::numeric -
+                        (
+                            COALESCE(sol.product_uom_qty, 0)::numeric *
+                            COALESCE(sol.purchase_price, 0)::numeric
+                        )
                     )::numeric AS margin,
-                    
-                    -- Margin Percentage (already numeric from computation)
+
+                    -- Margin Percentage (null-safe with division by zero protection)
                     CASE
-                        WHEN sol.price_subtotal = 0 THEN 0::numeric
+                        WHEN COALESCE(sol.price_subtotal, 0) = 0 THEN 0::numeric
                         ELSE ROUND(
                             (
                                 (
-                                    sol.price_subtotal::numeric -
-                                    (sol.product_uom_qty::numeric * COALESCE(CAST(pp.standard_price AS NUMERIC), 0))
-                                ) / sol.price_subtotal::numeric * 100
+                                    COALESCE(sol.price_subtotal, 0)::numeric -
+                                    (
+                                        COALESCE(sol.product_uom_qty, 0)::numeric *
+                                        COALESCE(sol.purchase_price, 0)::numeric
+                                    )
+                                ) / NULLIF(sol.price_subtotal::numeric, 0) * 100
                             )::numeric,
                             2
                         )
                     END AS margin_percent
-                
+
                 FROM sale_order_line sol
-                
+
                 INNER JOIN sale_order so ON sol.order_id = so.id
                 LEFT JOIN product_product pp ON sol.product_id = pp.id
                 LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
-                
+
                 WHERE
-                    -- Only include confirmed/done orders
+                    -- Only include confirmed/done orders (order state, not line state)
                     so.state IN ('sale', 'done')
-                    -- Exclude cancelled lines
-                    AND sol.state != 'cancel'
+                    -- Ensure we have valid product references
+                    AND sol.product_id IS NOT NULL
             )
             """
         )

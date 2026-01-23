@@ -69,6 +69,18 @@ class OpsMatrixSnapshot(models.Model):
         ondelete='cascade'
     )
 
+    # Pipeline / Projected metrics (Booked Sales not yet invoiced)
+    projected_revenue = fields.Monetary(
+        currency_field='currency_id',
+        help='Projected Revenue from Booked Sales Orders (confirmed but not fully invoiced)'
+    )
+    total_pipeline = fields.Monetary(
+        currency_field='currency_id',
+        compute='_compute_total_pipeline',
+        store=True,
+        help='Total Pipeline = Projected Revenue + Actual Revenue'
+    )
+
     # Income statement metrics
     revenue = fields.Monetary(
         currency_field='currency_id',
@@ -170,6 +182,12 @@ class OpsMatrixSnapshot(models.Model):
          'unique(company_id, branch_id, business_unit_id, period_type, snapshot_date)',
          'Snapshot already exists for this combination'),
     ]
+
+    @api.depends('projected_revenue', 'revenue')
+    def _compute_total_pipeline(self):
+        """Calculate total pipeline (projected + actual revenue)."""
+        for snapshot in self:
+            snapshot.total_pipeline = (snapshot.projected_revenue or 0) + (snapshot.revenue or 0)
 
     @api.depends('revenue', 'cogs', 'operating_expense', 'depreciation',
                  'interest_expense', 'tax_expense', 'total_assets', 'total_liabilities')
@@ -454,7 +472,51 @@ class OpsMatrixSnapshot(models.Model):
                 ('state', '=', 'posted'),
             ])
 
+        # =====================================================================
+        # PROJECTED REVENUE: Booked Sales Orders (confirmed but not invoiced)
+        # =====================================================================
+        # Query sale.order for orders that are:
+        # - Confirmed (state in 'sale', 'done')
+        # - In the specified branch/BU combination
+        # - Not fully invoiced yet (invoice_status != 'invoiced')
+        # - Order date falls within the snapshot period
+        # =====================================================================
+        projected_revenue = 0.0
+        if 'sale.order' in self.env:
+            SaleOrder = self.env['sale.order']
+            booked_orders = SaleOrder.search([
+                ('state', 'in', ('sale', 'done')),
+                ('ops_branch_id', '=', branch.id),
+                ('ops_business_unit_id', '=', business_unit.id),
+                ('date_order', '>=', date_from),
+                ('date_order', '<=', date_to),
+                ('invoice_status', '!=', 'invoiced'),  # Exclude fully invoiced
+            ])
+
+            if booked_orders:
+                # Sum the uninvoiced portion of booked orders
+                for order in booked_orders:
+                    # For partially invoiced orders, calculate remaining amount
+                    if order.invoice_status == 'to invoice':
+                        # Fully unbooked - use full amount
+                        projected_revenue += order.amount_total
+                    elif order.invoice_status == 'no':
+                        # Nothing to invoice (fully delivered services, etc.)
+                        continue
+                    else:
+                        # Partial invoice - calculate uninvoiced lines
+                        for line in order.order_line:
+                            if line.qty_to_invoice > 0:
+                                projected_revenue += line.price_unit * line.qty_to_invoice
+
+                _logger.debug(
+                    f"Projected Revenue for {branch.code}/{business_unit.code} "
+                    f"({date_from} to {date_to}): {projected_revenue:.2f} "
+                    f"from {len(booked_orders)} booked orders"
+                )
+
         return {
+            'projected_revenue': projected_revenue,
             'revenue': revenue,
             'cogs': cogs,
             'operating_expense': operating_expense,

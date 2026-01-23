@@ -86,36 +86,69 @@ class ResCompany(models.Model):
     # ---------------------------------------------------------
     # CRUD & Sequence Generation
     # ---------------------------------------------------------
+
+    def _generate_ops_code(self, company_name: str = None) -> str:
+        """
+        Generate OPS code with fallback logic:
+        1. Try to get next value from sequence 'res.company.ops'
+        2. If sequence doesn't exist or returns 'New', use first 3 letters of company name
+        3. Ensure uniqueness by appending a counter if needed
+        """
+        # Step 1: Try sequence
+        code = self.env['ir.sequence'].next_by_code('res.company.ops')
+        if code and code != 'New':
+            return code
+
+        # Step 2: Fallback to company name prefix
+        if company_name:
+            # Extract first 3 uppercase letters (alphanumeric only)
+            import re
+            clean_name = re.sub(r'[^a-zA-Z0-9]', '', company_name)
+            base_code = clean_name[:3].upper() if len(clean_name) >= 3 else clean_name.upper().ljust(3, 'X')
+
+            # Step 3: Ensure uniqueness
+            final_code = base_code
+            counter = 1
+            while self.search_count([('ops_code', '=', final_code)]) > 0:
+                final_code = f"{base_code}-{counter:03d}"
+                counter += 1
+
+            _logger.info(f"Generated fallback OPS code '{final_code}' from company name '{company_name}'")
+            return final_code
+
+        # Last resort
+        return 'NEW'
+
     @api.model_create_multi
     def create(self, vals_list: List[Dict[str, Any]]) -> 'ResCompany':
         """Override create to auto-generate OPS code and analytic account."""
         for vals in vals_list:
             if vals.get('ops_code', 'New') == 'New':
-                vals['ops_code'] = self.env['ir.sequence'].next_by_code('res.company.ops') or 'New'
+                company_name = vals.get('name', '')
+                vals['ops_code'] = self._generate_ops_code(company_name)
 
         records = super().create(vals_list)
         records._create_ops_analytic_accounts()
         return records
-    
+
     def write(self, vals: Dict[str, Any]) -> bool:
         """
-        Override write to auto-generate OPS code when company name changes
-        but ops_code is still 'New' (handles pre-configured 'New Company' scenario).
-        Also sync analytic account name when name changes.
+        Override write to:
+        1. Auto-generate OPS code when ops_code is still 'New' (on any save)
+        2. Sync analytic account name when company name changes
         """
         result = super().write(vals)
 
-        # If name is being changed and ops_code is still 'New', generate proper code
-        if 'name' in vals:
-            for company in self:
-                if company.ops_code == 'New':
-                    new_code = self.env['ir.sequence'].next_by_code('res.company.ops') or 'New'
-                    # Use super().write to avoid recursion
-                    super(ResCompany, company).write({'ops_code': new_code})
-                    _logger.info(
-                        f"Auto-generated OPS code '{new_code}' for company '{company.name}' "
-                        f"(was 'New')"
-                    )
+        # Always check if ops_code is 'New' and generate proper code (not just on name change)
+        for company in self:
+            if company.ops_code == 'New':
+                new_code = self._generate_ops_code(company.name)
+                # Use super().write to avoid recursion
+                super(ResCompany, company).write({'ops_code': new_code})
+                _logger.info(
+                    f"Auto-generated OPS code '{new_code}' for company '{company.name}' "
+                    f"(was 'New')"
+                )
 
         # Sync analytic account name if name changed
         if 'name' in vals:

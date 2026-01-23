@@ -155,5 +155,17 @@
             </xpath>
         </field>
     </record>
+
+    <!-- ========================================================================
+         PRICE PROTECTION: Lock Unit Prices for Sales Reps
+         Only Managers and Administrators can edit the Unit Price field
+         Sales Reps see it as readonly to prevent unauthorized price changes
+
+         Odoo 19 Implementation: Protection is enforced at model level via
+         @api.constrains on sale.order.line.price_unit - see sale_order.py
+
+         Note: View-level readonly was removed due to Odoo 19 sol_o2m widget
+         incompatibility. Model-level enforcement is more robust anyway.
+    ======================================================================== -->
     
 </odoo>

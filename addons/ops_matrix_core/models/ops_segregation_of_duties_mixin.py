@@ -68,6 +68,15 @@ class OpsSoDMixin(models.AbstractModel):
         _logger.debug('Found %d applicable SoD rules for %s', len(rules), self._name)
         
         for rule in rules:
+            # CATALOG MODE: Skip rules that are not enabled
+            # This allows rules to be visible (active=True) but not enforced (enabled=False)
+            if not rule.enabled:
+                _logger.debug(
+                    'Rule %s: Not enabled (Catalog Mode), skipping enforcement',
+                    rule.name
+                )
+                continue
+
             # Check if threshold applies
             if rule.threshold_amount > 0:
                 if hasattr(self, 'amount_total'):

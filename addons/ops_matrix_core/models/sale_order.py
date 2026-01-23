@@ -19,6 +19,37 @@ class SaleOrder(models.Model):
     _inherit = ['sale.order', 'ops.governance.mixin', 'ops.matrix.mixin', 'ops.approval.mixin', 'ops.segregation.of.duties.mixin']
 
     # ==========================================================================
+    # DEFAULT VALUES: Automatically inherit matrix dimensions from user
+    # ==========================================================================
+    @api.model
+    def default_get(self, fields_list):
+        """
+        Override default_get to automatically populate matrix dimensions
+        from the current user's default branch and business unit.
+
+        This ensures:
+        1. Sales orders inherit the user's primary branch by default
+        2. Sales orders inherit the user's default business unit by default
+        3. Users don't have to manually select these on every order
+        """
+        defaults = super().default_get(fields_list)
+        user = self.env.user
+
+        # Auto-populate ops_branch_id from user's primary branch or default branch
+        if 'ops_branch_id' in fields_list and not defaults.get('ops_branch_id'):
+            branch_id = user.primary_branch_id.id or user.ops_default_branch_id.id
+            if branch_id:
+                defaults['ops_branch_id'] = branch_id
+
+        # Auto-populate ops_business_unit_id from user's default business unit
+        if 'ops_business_unit_id' in fields_list and not defaults.get('ops_business_unit_id'):
+            bu_id = user.ops_default_business_unit_id.id
+            if bu_id:
+                defaults['ops_business_unit_id'] = bu_id
+
+        return defaults
+
+    # ==========================================================================
     # STATE EXTENSION: Add 'waiting_approval' state for governance workflow
     # ==========================================================================
     state = fields.Selection(
@@ -28,7 +59,30 @@ class SaleOrder(models.Model):
         ondelete={'waiting_approval': 'set default'}
     )
 
-    # Note: ops_branch_id and ops_business_unit_id are inherited from ops.matrix.mixin
+    # ==========================================================================
+    # REQUIRED MATRIX DIMENSIONS: Override mixin fields to enforce at DB level
+    # ==========================================================================
+    # These fields are inherited from ops.matrix.mixin but we override them
+    # to make them REQUIRED at the database level for sale.order
+    ops_branch_id = fields.Many2one(
+        'ops.branch',
+        string='Branch',
+        required=True,
+        ondelete='restrict',
+        index=True,
+        tracking=True,
+        help='Branch where this sale order originates. Required for all orders.'
+    )
+    ops_business_unit_id = fields.Many2one(
+        'ops.business.unit',
+        string='Business Unit',
+        required=True,
+        ondelete='restrict',
+        index=True,
+        tracking=True,
+        help='Business Unit responsible for this sale order. Required for all orders.'
+    )
+
     # Additional sale order specific fields
     ops_credit_check_passed = fields.Boolean(
         string='Credit Check Passed',
@@ -64,12 +118,42 @@ class SaleOrder(models.Model):
             order.approval_request_ids = requests
             order.approval_request_count = len(requests)
 
+    @api.constrains('ops_branch_id', 'ops_business_unit_id')
+    def _check_matrix_dimensions_required(self) -> None:
+        """
+        IRON LOCK: Enforce that Branch and Business Unit are always set on save.
+
+        This constraint prevents sales orders from being saved without
+        proper matrix dimensions, ensuring full governance tracking.
+
+        Exemptions:
+        - Superuser/Admin bypass for system operations
+        """
+        for order in self:
+            # Skip checks for superuser/admin
+            if order.env.is_superuser() or order.env.user.has_group('base.group_system'):
+                continue
+
+            if not order.ops_branch_id:
+                raise ValidationError(_(
+                    "🔒 GOVERNANCE VIOLATION: Branch is required!\n\n"
+                    "Order '%(order_name)s' cannot be saved without a Branch.\n\n"
+                    "Please select a Branch in the Matrix Dimensions section."
+                ) % {'order_name': order.name or 'New'})
+
+            if not order.ops_business_unit_id:
+                raise ValidationError(_(
+                    "🔒 GOVERNANCE VIOLATION: Business Unit is required!\n\n"
+                    "Order '%(order_name)s' cannot be saved without a Business Unit.\n\n"
+                    "Please select a Business Unit in the Matrix Dimensions section."
+                ) % {'order_name': order.name or 'New'})
+
     @api.constrains('order_line')
     def _check_business_unit_silo(self) -> None:
         """
         Strictly enforce that a user can only sell products belonging to
         their allowed Business Units.
-        
+
         Note: This constraint works alongside the governance rules engine.
         For more complex rules, use ops.governance.rule instead.
         """
@@ -148,72 +232,342 @@ class SaleOrder(models.Model):
         
         return list(documents.values())
 
-    def _check_partner_credit_firewall(self) -> Tuple[bool, str]:
+    def _is_immediate_payment_term(self) -> bool:
         """
-        Credit Firewall: Check if partner can have this order confirmed.
-        Returns (passed: bool, message: str)
+        SMART GATE HELPER: Determine if the payment term is immediate/cash.
+
+        Immediate payment terms have:
+        1. No payment term set (defaults to immediate)
+        2. Payment term with 0 days due
+        3. Payment term name containing 'immediate', 'cash', 'prepaid', 'advance'
+
+        Returns:
+            bool: True if this is an immediate/cash transaction
         """
         self.ensure_one()
-        
+        payment_term = self.payment_term_id
+
+        # No payment term = immediate payment
+        if not payment_term:
+            return True
+
+        # Check payment term name for cash/immediate keywords
+        term_name = (payment_term.name or '').lower()
+        cash_keywords = ['immediate', 'cash', 'prepaid', 'advance', 'cod', 'upon receipt', 'due immediately']
+        if any(kw in term_name for kw in cash_keywords):
+            return True
+
+        # Check if all payment lines have 0 days due
+        if payment_term.line_ids:
+            max_days = max(line.nb_days for line in payment_term.line_ids)
+            if max_days == 0:
+                return True
+
+        return False
+
+    def _check_partner_credit_firewall(self) -> Tuple[bool, str, bool]:
+        """
+        Credit Firewall: Check if partner can have this order confirmed.
+
+        Returns tuple of (passed: bool, message: str, is_warning_only: bool)
+
+        SMART GATE LOGIC ("Speed at Quote, Governance at Credit"):
+        - CASH/Immediate Payment: Allow confirmation even for unverified customers
+        - CREDIT Transactions: Block if customer is NOT Master Verified
+
+        This enables:
+        - Walk-in sales and cash transactions to flow freely
+        - Credit/receivables transactions to require proper customer verification
+        """
+        self.ensure_one()
+
         if self.env.is_superuser():
-            return True, 'Superuser bypass'
-        
+            return True, 'Superuser bypass', False
+
         partner = self.partner_id
-        
+        is_cash_transaction = self._is_immediate_payment_term()
+
+        # ======================================================================
+        # SMART GATE: Master Data Verification Check
+        # ======================================================================
+        # Cash transactions bypass the verification requirement
+        # Credit transactions require Master Verified = True
+        # ======================================================================
+        if hasattr(partner, 'ops_master_verified'):
+            if not partner.ops_master_verified:
+                if is_cash_transaction:
+                    # CASH GATE: Allow cash transactions for unverified customers
+                    return True, (
+                        f"✅ CASH GATE PASSED: Customer '{partner.name}' is NOT Master Verified, "
+                        f"but payment is immediate/cash. Transaction allowed."
+                    ), False
+                else:
+                    # CREDIT GATE: Block credit transactions for unverified customers
+                    payment_term_name = self.payment_term_id.name if self.payment_term_id else 'Not Set'
+                    return False, (
+                        f"🚫 CREDIT TRANSACTION BLOCKED\n\n"
+                        f"Customer '{partner.name}' is NOT MASTER VERIFIED.\n\n"
+                        f"Payment Term: {payment_term_name}\n\n"
+                        f"SMART GATE RULE:\n"
+                        f"• Credit transactions require Master Data verification\n"
+                        f"• Cash/Immediate transactions are allowed for any customer\n\n"
+                        f"OPTIONS:\n"
+                        f"1. Change Payment Term to 'Immediate Payment' or 'Cash'\n"
+                        f"2. Contact Finance to verify customer '{partner.name}'"
+                    ), False
+
         # Check 1: Partner Stewardship State (soft-pass draft for branch users)
+        # These remain HARD BLOCKS - cannot confirm orders for blocked/archived partners
         if hasattr(partner, 'ops_state'):
-            # Blocked/archived remain hard blocks
             if partner.ops_state == 'blocked':
-                return False, 'Partner is blocked from transactions'
+                return False, 'Partner is blocked from transactions', False
             if partner.ops_state == 'archived':
-                return False, 'Partner is archived'
+                return False, 'Partner is archived', False
 
             # Allow draft partners to proceed but log the state for auditing
             if partner.ops_state == 'draft':
-                return True, 'Partner in draft state - soft-pass credit firewall'
-            
+                return True, 'Partner in draft state - soft-pass credit firewall', False
+
             # Any other non-approved state is blocked
             if partner.ops_state not in ['approved']:
-                return False, f'Partner state is "{partner.ops_state}" - orders cannot be confirmed'
-        
-        # Check 2: Partner Activity
+                return False, f'Partner state is "{partner.ops_state}" - orders cannot be confirmed', False
+
+        # Check 2: Partner Activity - HARD BLOCK
         if not partner.active:
-            return False, 'Partner is inactive'
-        
-        # Check 3: Credit Limit Enforcement
+            return False, 'Partner is inactive', False
+
+        # Check 3: Credit Limit Enforcement - NOW WARNING ONLY
+        # The hard block is enforced at Picking validation (button_validate)
         if hasattr(partner, 'ops_credit_limit') and hasattr(partner, 'ops_total_outstanding'):
             if partner.ops_credit_limit > 0:
                 total_outstanding = partner.ops_total_outstanding
                 potential_total = total_outstanding + self.amount_total
-                
+
                 if potential_total > partner.ops_credit_limit:
-                    return False, (
-                        f'Order would exceed credit limit. '
-                        f'Current outstanding: {total_outstanding}, '
-                        f'Order amount: {self.amount_total}, '
-                        f'Credit limit: {partner.ops_credit_limit}'
-                    )
-        
-        # Check 4: Partner Confirmation Restrictions (if field exists)
+                    # Return as WARNING ONLY - order can still be confirmed
+                    return True, (
+                        f'⚠️ CREDIT WARNING: This order would exceed credit limit. '
+                        f'Current outstanding: {total_outstanding:.2f}, '
+                        f'Order amount: {self.amount_total:.2f}, '
+                        f'Credit limit: {partner.ops_credit_limit:.2f}. '
+                        f'NOTE: Delivery will be BLOCKED until credit is cleared.'
+                    ), True
+
+        # Check 4: Partner Confirmation Restrictions (if field exists) - HARD BLOCK
         if hasattr(partner, 'ops_confirmation_restrictions'):
             if partner.ops_confirmation_restrictions:
-                return False, f'Partner restrictions: {partner.ops_confirmation_restrictions}'
-        
-        return True, 'Credit check passed'
-    
+                return False, f'Partner restrictions: {partner.ops_confirmation_restrictions}', False
+
+        return True, 'Credit check passed', False
+
+    def _evaluate_governance_rules_for_confirm(self) -> bool:
+        """
+        GOVERNANCE INTERCEPTOR: Evaluate governance rules BEFORE confirmation.
+
+        This method is called BEFORE super().action_confirm() to ensure that:
+        1. Rules like ">$10K requires approval" are evaluated
+        2. If approval is required, the order transitions to 'waiting_approval'
+        3. An approval request is created and linked to the order
+        4. The confirmation is blocked until approval is granted
+
+        Returns:
+            bool: True if approval is required (confirmation should be blocked),
+                  False if no approval is needed (confirmation can proceed)
+        """
+        self.ensure_one()
+
+        # Skip if already in waiting_approval state
+        if self.state == 'waiting_approval':
+            return True
+
+        # Skip if there's an approved approval request for this order
+        ApprovalRequest = self.env['ops.approval.request']
+        approved_approval = ApprovalRequest.search([
+            ('model_name', '=', 'sale.order'),
+            ('res_id', '=', self.id),
+            ('state', '=', 'approved'),
+        ], limit=1)
+
+        if approved_approval:
+            _logger.info(
+                "OPS Governance: SO %s has approved approval request - allowing confirmation",
+                self.name
+            )
+            return False  # Allow confirmation to proceed
+
+        # Find applicable governance rules that require approval
+        GovernanceRule = self.env['ops.governance.rule']
+        rules = GovernanceRule.search([
+            ('active', '=', True),
+            ('enabled', '=', True),
+            ('model_id.model', '=', 'sale.order'),
+            ('action_type', '=', 'require_approval'),
+            '|',
+                ('company_id', '=', False),
+                ('company_id', '=', self.company_id.id),
+        ])
+
+        if not rules:
+            return False  # No approval rules, allow confirmation
+
+        # Evaluate each rule to see if it triggers
+        for rule in rules:
+            triggered = False
+            rule_message = ''
+
+            try:
+                if rule.condition_code:
+                    code = rule.condition_code.strip()
+                    if code:
+                        safe_locals = {
+                            'self': self,
+                            'record': self,
+                            'user': self.env.user,
+                            'env': self.env,
+                        }
+                        from odoo.tools.safe_eval import safe_eval
+                        triggered = safe_eval(code, safe_locals)
+                        rule_message = rule.error_message or f"Rule '{rule.name}' triggered"
+
+                elif rule.condition_domain:
+                    domain = rule._parse_domain_string(rule.condition_domain)
+                    triggered = bool(self.filtered_domain(domain))
+                    rule_message = rule.error_message or f"Rule '{rule.name}' triggered"
+
+            except Exception as e:
+                _logger.error(
+                    "Error evaluating governance rule %s for SO %s: %s",
+                    rule.name, self.name, str(e)
+                )
+                continue
+
+            if triggered:
+                _logger.info(
+                    "OPS Governance: Rule '%s' triggered for SO %s - requiring approval",
+                    rule.name, self.name
+                )
+
+                # Check for existing pending approval
+                existing_approval = ApprovalRequest.search([
+                    ('model_name', '=', 'sale.order'),
+                    ('res_id', '=', self.id),
+                    ('rule_id', '=', rule.id),
+                    ('state', '=', 'pending'),
+                ], limit=1)
+
+                if not existing_approval:
+                    # Create approval request
+                    approvers = self._get_governance_approvers(rule)
+
+                    existing_approval = ApprovalRequest.create({
+                        'name': _("Approval Required: %s - %s") % (self.name, rule.name),
+                        'rule_id': rule.id,
+                        'model_name': 'sale.order',
+                        'res_id': self.id,
+                        'notes': rule_message,
+                        'approver_ids': [(6, 0, approvers.ids)] if approvers else [],
+                        'requested_by': self.env.user.id,
+                    })
+
+                    _logger.info(
+                        "OPS Governance: Created approval request %s for SO %s",
+                        existing_approval.id, self.name
+                    )
+
+                # Transition order to waiting_approval state
+                self.with_context(approval_unlock=True).write({
+                    'state': 'waiting_approval',
+                    'approval_locked': True,
+                    'approval_request_id': existing_approval.id,
+                })
+
+                # Post to chatter for visibility
+                if hasattr(self, 'message_post'):
+                    self.message_post(
+                        body=_(
+                            "<strong>🔒 Confirmation Blocked - Approval Required</strong><br/><br/>"
+                            "Rule: %s<br/>"
+                            "Reason: %s<br/><br/>"
+                            "This order cannot be confirmed until approval is granted.<br/>"
+                            "An approval request has been sent to authorized approvers."
+                        ) % (rule.name, rule_message),
+                        subject=_("Approval Required for Confirmation"),
+                        message_type='notification',
+                        subtype_xmlid='mail.mt_note',
+                    )
+
+                return True  # Block confirmation
+
+        return False  # No rules triggered, allow confirmation
+
+    def _get_governance_approvers(self, rule) -> 'models.Model':
+        """
+        Get the list of users who can approve this governance rule.
+
+        Priority:
+        1. Rule-specific approver groups
+        2. OPS Manager group
+        3. Admin user (fallback)
+
+        Args:
+            rule: The ops.governance.rule record
+
+        Returns:
+            res.users recordset of approvers
+        """
+        approvers = self.env['res.users']
+
+        # Try rule-specific approver group first
+        if hasattr(rule, 'approver_group_id') and rule.approver_group_id:
+            try:
+                group_data = rule.approver_group_id.read(['users'])[0]
+                user_ids = group_data.get('users', [])
+                if user_ids:
+                    approvers = self.env['res.users'].browse(user_ids).filtered(
+                        lambda u: u.active and self.company_id.id in u.company_ids.ids
+                    )[:5]
+            except Exception:
+                pass
+
+        # Fallback to OPS Manager group
+        if not approvers:
+            try:
+                manager_group = self.env.ref('ops_matrix_core.group_ops_manager', raise_if_not_found=False)
+                if manager_group:
+                    group_data = manager_group.read(['users'])[0]
+                    user_ids = group_data.get('users', [])
+                    if user_ids:
+                        approvers = self.env['res.users'].browse(user_ids).filtered(
+                            lambda u: u.active and self.company_id.id in u.company_ids.ids
+                        )[:5]
+            except Exception:
+                pass
+
+        # Final fallback to admin
+        if not approvers:
+            admin_user = self.env.ref('base.user_admin', raise_if_not_found=False)
+            if admin_user and admin_user.active:
+                approvers = admin_user
+
+        return approvers
+
     def action_confirm(self) -> bool:
         """
         Override action_confirm to enforce credit firewall and governance rules.
-        
+
         This ensures that:
         1. Segregation of Duties (SoD) rules are enforced
-        2. Governance rules (margins, discounts, approvals) are enforced
+        2. Governance rules (margins, discounts, approvals) are evaluated BEFORE confirmation
         3. Credit firewall checks pass
         4. All validations happen before state changes to 'sale'
+
+        GOVERNANCE INTERCEPTOR: Rules are evaluated BEFORE super() is called.
+        If a rule requires approval, the order transitions to 'waiting_approval'
+        state and the confirmation is blocked until approval is granted.
         """
         for order in self:
             _logger.info("OPS Governance: Checking SO %s for confirmation rules", order.name)
-            
+
             # ADMIN BYPASS: Skip governance for administrators
             if self.env.su or self.env.user.has_group('base.group_system'):
                 _logger.info("OPS Governance: Admin bypass for SO %s", order.name)
@@ -229,31 +583,79 @@ class SaleOrder(models.Model):
             else:
                 # Check Segregation of Duties (SoD) rules BEFORE governance rules
                 order._check_sod_violation('confirm')
-                
-                # Explicitly trigger Governance check for 'on_write' triggers
-                # This catches rules like:
-                # - "Discounts > 20% require approval"
-                # - "Margins < 15% require approval"
-                # - "Orders > $50K require approval"
-                order._enforce_governance_rules(order, trigger_type='on_write')
-                
+
+                # =================================================================
+                # GOVERNANCE INTERCEPTOR: Evaluate rules BEFORE super().action_confirm()
+                # =================================================================
+                # This must happen BEFORE the confirmation proceeds to ensure:
+                # - Rules like ">$10K requires approval" block confirmation
+                # - Orders transition to 'waiting_approval' if approval is needed
+                # - The confirmation does NOT proceed until approval is granted
+                # =================================================================
+                approval_required = order._evaluate_governance_rules_for_confirm()
+
+                if approval_required:
+                    _logger.info(
+                        "OPS Governance: SO %s requires approval - transitioning to waiting_approval",
+                        order.name
+                    )
+                    # Order already transitioned to waiting_approval by the method
+                    # Return early - do NOT call super().action_confirm()
+                    return {
+                        'type': 'ir.actions.client',
+                        'tag': 'display_notification',
+                        'params': {
+                            'title': _('Approval Required'),
+                            'message': _(
+                                'Order %s requires approval before confirmation. '
+                                'An approval request has been created.'
+                            ) % order.name,
+                            'type': 'warning',
+                            'sticky': True,
+                        }
+                    }
+
                 _logger.info("OPS Governance: SO %s passed all governance checks", order.name)
-            
+
             # Perform credit check
-            passed, message = order._check_partner_credit_firewall()
-            
+            passed, message, is_warning_only = order._check_partner_credit_firewall()
+
             if not passed:
                 order.write({
                     'ops_credit_check_passed': False,
                     'ops_credit_check_notes': message
                 })
                 raise UserError(_('Credit Firewall: ' + message))
-            
-            order.write({
-                'ops_credit_check_passed': True,
-                'ops_credit_check_notes': message
-            })
-        
+
+            # Handle credit limit warnings (soft block at SO, hard block at Picking)
+            if is_warning_only:
+                order.write({
+                    'ops_credit_check_passed': False,  # Mark as not fully passed
+                    'ops_credit_check_notes': message
+                })
+                # Log the warning
+                _logger.warning(
+                    "Credit Warning on SO %s: %s (Delivery will be blocked)",
+                    order.name, message
+                )
+                # Post warning to chatter for visibility
+                if hasattr(order, 'message_post'):
+                    order.message_post(
+                        body=_(
+                            "<strong>⚠️ Credit Limit Warning</strong><br/>"
+                            "%s<br/><br/>"
+                            "<em>Order confirmed, but delivery will be blocked until credit is cleared.</em>"
+                        ) % message,
+                        subject=_("Credit Limit Warning"),
+                        message_type='notification',
+                        subtype_xmlid='mail.mt_note',
+                    )
+            else:
+                order.write({
+                    'ops_credit_check_passed': True,
+                    'ops_credit_check_notes': message
+                })
+
         # Call parent method to confirm
         return super().action_confirm()
     
@@ -766,6 +1168,16 @@ class SaleOrderLine(models.Model):
     # - ops_company_id
     # - ops_analytic_distribution
     
+    # ==========================================================================
+    # PRICE PROTECTION: Field to control price_unit editability
+    # ==========================================================================
+    can_edit_unit_price = fields.Boolean(
+        string='Can Edit Unit Price',
+        compute='_compute_can_edit_unit_price',
+        store=False,
+        help="Determines if the current user can edit unit prices. Only Managers and Admins can edit."
+    )
+
     # The Cost Shield: Field-Level Security for Sale Order Line Costs
     can_user_access_cost_prices = fields.Boolean(
         string='Can Access Cost Prices',
@@ -804,15 +1216,32 @@ class SaleOrderLine(models.Model):
     )
     
     @api.depends_context('uid')
+    def _compute_can_edit_unit_price(self):
+        """
+        PRICE PROTECTION: Determine if user can edit unit prices.
+
+        Only OPS Managers (group_ops_manager) and System Administrators (group_system)
+        can edit unit prices. Sales Representatives see prices as readonly.
+
+        This prevents unauthorized price changes that could affect margins.
+        """
+        is_manager = self.env.user.has_group('ops_matrix_core.group_ops_manager')
+        is_admin = self.env.user.has_group('base.group_system')
+        can_edit = is_manager or is_admin
+
+        for record in self:
+            record.can_edit_unit_price = can_edit
+
+    @api.depends_context('uid')
     def _compute_can_user_access_cost_prices(self):
         """
         Check if user has authority to view cost prices on sale order lines.
-        
+
         Security Logic:
         - System administrators (base.group_system) always have access
         - Other users must have 'can_access_cost_prices' authority flag
         - This protects margin calculations from unauthorized viewing
-        
+
         This implements "The Cost Shield" anti-fraud measure.
         """
         for record in self:
@@ -883,11 +1312,34 @@ class SaleOrderLine(models.Model):
                 return order.ops_business_unit_id.id
         return super()._get_default_ops_business_unit()
     
+    def write(self, vals):
+        """
+        Override write to enforce PRICE PROTECTION.
+
+        Only OPS Managers and System Administrators can modify price_unit.
+        Regular Sales Reps attempting to change prices will be blocked.
+
+        This provides model-level enforcement that works regardless of UI.
+        """
+        # Check if price_unit is being modified
+        if 'price_unit' in vals:
+            # Skip check for superuser/admin
+            if not (self.env.su or self.env.user.has_group('base.group_system')):
+                # Check if user is OPS Manager
+                if not self.env.user.has_group('ops_matrix_core.group_ops_manager'):
+                    raise UserError(_(
+                        "🔒 PRICE PROTECTION: You are not authorized to change unit prices.\n\n"
+                        "Only Managers and Administrators can modify the Unit Price field.\n"
+                        "Please contact your manager if a price adjustment is required."
+                    ))
+
+        return super().write(vals)
+
     @api.onchange('order_id')
     def _onchange_order_id_propagate_dimensions(self):
         """
         When order_id changes or is set, inherit the order's matrix dimensions.
-        
+
         This ensures that when a line is added to an order with specific dimensions,
         it automatically gets the correct dimensions.
         """
@@ -897,3 +1349,38 @@ class SaleOrderLine(models.Model):
                 self.ops_branch_id = self.order_id.ops_branch_id
             if not self.ops_business_unit_id and self.order_id.ops_business_unit_id:
                 self.ops_business_unit_id = self.order_id.ops_business_unit_id
+
+    @api.constrains('product_id', 'order_id')
+    def _check_product_branch_activation(self):
+        """
+        BRANCH ACTIVATION GOVERNANCE: Ensure products are activated for the order's branch.
+
+        For Global Master products, verify they are explicitly activated for the
+        branch specified on the parent Sales Order. This prevents selling products
+        in branches where they haven't been approved for distribution.
+        """
+        for line in self:
+            # Skip validation for superuser/admin
+            if self.env.is_superuser() or self.env.user.has_group('base.group_system'):
+                continue
+
+            if not line.product_id or not line.order_id:
+                continue
+
+            product_tmpl = line.product_id.product_tmpl_id
+            order_branch = line.order_id.ops_branch_id
+
+            # Check if product is a Global Master
+            if product_tmpl.ops_is_global_master:
+                # Check if product is activated for this branch
+                if order_branch and order_branch not in product_tmpl.ops_branch_activation_ids:
+                    raise ValidationError(_(
+                        "🚫 BRANCH ACTIVATION BLOCK: Product '%(product)s' is a Global Master "
+                        "and is NOT activated for branch '%(branch)s'.\n\n"
+                        "Global Master products must be explicitly activated for each branch "
+                        "before they can be sold in that branch.\n\n"
+                        "Contact Master Data Management to request activation."
+                    ) % {
+                        'product': product_tmpl.name,
+                        'branch': order_branch.display_name,
+                    })

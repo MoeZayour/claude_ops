@@ -120,7 +120,7 @@
     <record id="action_ops_security_dashboard_enhanced" model="ir.actions.act_window">
         <field name="name">Security Dashboard</field>
         <field name="res_model">ops.security.audit</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{'search_default_status_unresolved': 1, 'search_default_this_week': 1}</field>
         <field name="domain">[('risk_level', 'in', ['high', 'critical'])]</field>
     </record>

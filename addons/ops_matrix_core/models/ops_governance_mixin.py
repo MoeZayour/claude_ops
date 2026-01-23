@@ -99,10 +99,18 @@ class OpsGovernanceMixin(models.AbstractModel):
     def write(self, vals: Dict[str, Any]) -> bool:
         """
         Override write to enforce governance rules on record updates.
-        
+
+        IMPORTANT: Governance rules are evaluated BEFORE the write operation.
+        This ensures that rules with action_type='block' or 'require_approval'
+        can prevent the write from happening.
+
         :param vals: Dictionary of values to update
         :return: Result of parent write operation
         """
+        # Skip governance check if explicitly bypassed via context
+        if self._context.get('skip_governance_check') or self._context.get('approval_unlock'):
+            return super().write(vals)
+
         # Check if record is approval locked
         for record in self:
             if hasattr(record, 'approval_locked') and record.approval_locked:
@@ -115,16 +123,133 @@ class OpsGovernanceMixin(models.AbstractModel):
                         ('state', '=', 'pending'),
                     ])
                     pending_approvals.write({'state': 'cancelled'})
-                    
+
                     # Unlock and allow change
                     vals['approval_locked'] = False
-        
+
+        # =====================================================================
+        # GOVERNANCE INTERCEPTION: Evaluate rules BEFORE write
+        # =====================================================================
+        # For 'on_write' trigger, we need to simulate what the record would look
+        # like after the write to properly evaluate conditions.
+        # We create a temporary version of the record with the new values.
+        # =====================================================================
+        self._enforce_governance_rules_pre_write(self, vals, 'on_write')
+
         result = super().write(vals)
-        
-        # Enforce governance rules
-        self._enforce_governance_rules(self, 'on_write')
-        
+
         return result
+
+    def _enforce_governance_rules_pre_write(self, records, vals: Dict[str, Any], trigger_type: str) -> None:
+        """
+        Enforce governance rules BEFORE a write operation.
+
+        This method evaluates rules against what the record WILL look like
+        after the write, allowing blocking rules to prevent the write.
+
+        :param records: Records being written to
+        :param vals: Values being written
+        :param trigger_type: Type of trigger ('on_write')
+        """
+        if not records:
+            return
+
+        # ADMIN BYPASS: Skip governance rule enforcement for Administrator and System Managers
+        if self.env.su or self.env.user.has_group('base.group_system'):
+            return
+
+        model_name = self._name
+
+        # Try to find governance rules
+        try:
+            rules = self.env['ops.governance.rule'].search([
+                ('active', '=', True),
+                ('enabled', '=', True),
+                ('model_id.model', '=', model_name),
+                ('trigger_type', '=', trigger_type),
+            ])
+        except Exception as e:
+            _logger.debug(f"Governance rule enforcement skipped (ACL/access issue): {str(e)}")
+            return
+
+        if not rules:
+            return
+
+        # Evaluate each rule against the simulated post-write state
+        warnings = []
+        for rule in rules:
+            for record in records:
+                # Create a virtual copy of the record with new values applied
+                # This allows condition evaluation against the "future" state
+                res = self._apply_governance_rule_pre_write(rule, trigger_type, record, vals)
+                if res and 'warning' in res:
+                    warnings.append(res['warning']['message'])
+
+        # Display accumulated warnings
+        if warnings:
+            warning_msg = '\n'.join(set(warnings))
+            raise UserError(
+                f'Governance Warnings:\n{warning_msg}\n\n'
+                f'Please review the above warnings before proceeding.'
+            )
+
+    def _apply_governance_rule_pre_write(self, rule, trigger_type: str, record, vals: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """
+        Apply a governance rule for pre-write validation.
+
+        Simulates the post-write state to evaluate conditions.
+        """
+        # Evaluate condition using a simulated record state
+        try:
+            if rule.condition_code:
+                code = rule.condition_code.strip()
+                if not code:
+                    return {}
+
+                # Create a simple namespace that includes both current and new values
+                # For code evaluation, we simulate the "after write" state
+                class SimulatedRecord:
+                    def __init__(self, orig_record, new_vals):
+                        self._orig = orig_record
+                        self._new = new_vals
+
+                    def __getattr__(self, name):
+                        if name.startswith('_'):
+                            return object.__getattribute__(self, name)
+                        # Return new value if it's being written, else original
+                        if name in self._new:
+                            return self._new[name]
+                        return getattr(self._orig, name)
+
+                simulated = SimulatedRecord(record, vals)
+
+                safe_locals = {
+                    'self': simulated,
+                    'record': simulated,
+                    'user': record.env.user,
+                    'env': record.env,
+                    'vals': vals,  # Also provide raw vals for inspection
+                }
+                from odoo.tools.safe_eval import safe_eval
+                result = safe_eval(code, safe_locals)
+            elif rule.condition_domain:
+                # Domain conditions work on the current record
+                # For pre-write, we apply the rule to see if the write should be blocked
+                domain = rule._parse_domain_string(rule.condition_domain)
+                result = bool(record.filtered_domain(domain))
+            else:
+                result = True
+        except SyntaxError as e:
+            _logger.error(f"Syntax error in rule {rule.name}: {str(e)}")
+            return {}
+        except Exception as e:
+            raise UserError(f"Error evaluating rule '{rule.name}': {str(e)}")
+
+        if result:
+            # Rule triggered - delegate to the standard action handler
+            return self._apply_governance_rule(rule, trigger_type, record)
+
+        return {}
 
     def unlink(self) -> bool:
         """
