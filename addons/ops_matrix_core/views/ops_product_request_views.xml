@@ -143,11 +143,27 @@
         </field>
     </record>
     
-    <!-- Menu under Sales → Products -->
+    <!-- Menu under Inventory → Products → Product Requests -->
+    <!-- This allows users to request new products through Inventory app -->
     <menuitem id="menu_ops_product_request"
               name="Product Requests"
-              parent="sale.prod_config_main"
+              parent="stock.menu_stock_inventory_control"
               action="action_ops_product_request"
-              sequence="15"/>
+              sequence="50"/>
+
+    <!-- Also add "New Product" action that opens product form in create mode -->
+    <record id="action_new_product_create" model="ir.actions.act_window">
+        <field name="name">New Product</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'default_detailed_type': 'product'}</field>
+    </record>
+
+    <menuitem id="menu_new_product_quick"
+              name="New Product"
+              parent="stock.menu_stock_inventory_control"
+              action="action_new_product_create"
+              sequence="5"/>
     
 </odoo>

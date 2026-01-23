@@ -12,33 +12,43 @@
                 <field name="can_user_modify_product_master" invisible="1"/>
             </xpath>
 
-            <!-- OPS MATRIX: Add Business Unit (THE MASTER) at top - Required field -->
-            <xpath expr="//field[@name='categ_id']" position="before">
-                <field name="business_unit_id"
-                       required="1"
-                       options="{'no_create': True, 'no_open': True}"
-                       placeholder="Select Business Unit (Required)"/>
+            <!-- OPS MATRIX HEADER: Business Unit + Branch at the VERY TOP of form -->
+            <xpath expr="//div[@class='oe_title']" position="before">
+                <div class="alert alert-primary mb-3" role="status">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="business_unit_id" class="fw-bold"/>
+                            <field name="business_unit_id"
+                                   required="1"
+                                   readonly="0"
+                                   options="{'no_create': True, 'no_open': True}"
+                                   placeholder="Select Business Unit (Required)"
+                                   class="oe_inline"/>
+                        </div>
+                        <div class="col-6">
+                            <label for="ops_branch_activation_ids" class="fw-bold"/>
+                            <field name="ops_branch_activation_ids"
+                                   widget="many2many_tags"
+                                   required="1"
+                                   readonly="0"
+                                   options="{'no_create': True, 'color_field': 'color'}"
+                                   placeholder="Select Branch(es) (Required)"
+                                   class="oe_inline"/>
+                        </div>
+                    </div>
+                </div>
             </xpath>
 
-            <!-- OPS MATRIX: Add Global Master and Branch Activation in General Info tab -->
+            <!-- OPS MATRIX: Additional controls in General Info tab -->
             <xpath expr="//page[@name='general_information']" position="inside">
-                <group string="OPS Matrix - Branch Activation" name="ops_branch_activation">
+                <group string="OPS Matrix - Product Governance" name="ops_product_governance">
                     <group>
                         <field name="ops_is_global_master"
-                               help="Enable to require explicit branch activation for this product"/>
+                               help="Mark as Global Master to enforce branch activation workflow"/>
                     </group>
                     <group>
-                        <field name="ops_branch_activation_ids"
-                               widget="many2many_tags"
-                               options="{'no_create': True}"
-                               invisible="not ops_is_global_master"
-                               placeholder="Select branches where this product can be sold"/>
+                        <field name="ops_business_unit_id" invisible="1"/>
                     </group>
-                    <div class="alert alert-info" role="alert" invisible="not ops_is_global_master">
-                        <strong>Global Master Product:</strong> This product requires explicit branch activation.
-                        Select the branches where this product should be available for sales.
-                        If no branches are selected, the product cannot be sold anywhere.
-                    </div>
                 </group>
             </xpath>
 

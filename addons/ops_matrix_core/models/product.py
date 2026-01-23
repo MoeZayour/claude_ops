@@ -211,6 +211,35 @@ class ProductTemplate(models.Model):
         if business_units:
             return business_units[0]
         return None
+
+    @api.model
+    def default_get(self, fields_list):
+        """
+        Override default_get to pre-fill OPS Matrix fields from current user context.
+
+        Auto-populates:
+        - business_unit_id: User's default business unit
+        - ops_branch_activation_ids: User's primary branch (pre-selected)
+        """
+        defaults = super().default_get(fields_list)
+        user = self.env.user
+
+        # Pre-fill Business Unit from user's default
+        if 'business_unit_id' in fields_list and not defaults.get('business_unit_id'):
+            default_bu = self._search_default_business_unit()
+            if default_bu:
+                defaults['business_unit_id'] = default_bu.id
+
+        # Pre-fill Branch Activation with user's primary branch
+        if 'ops_branch_activation_ids' in fields_list and not defaults.get('ops_branch_activation_ids'):
+            if user.primary_branch_id:
+                # Use (6, 0, [ids]) format to set Many2many default
+                defaults['ops_branch_activation_ids'] = [(6, 0, [user.primary_branch_id.id])]
+            elif user.ops_allowed_branch_ids:
+                # Fallback: use first allowed branch
+                defaults['ops_branch_activation_ids'] = [(6, 0, [user.ops_allowed_branch_ids[0].id])]
+
+        return defaults
     
     @api.model
     def search(self, domain, offset=0, limit=None, order=None, count=False):
