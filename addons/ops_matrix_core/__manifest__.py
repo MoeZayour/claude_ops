@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Matrix Core',
-    'version': '19.0.1.10.0',
+    'version': '19.0.1.11.0',
     'category': 'Operations',
     'summary': 'Core module for OPS Matrix Framework',
     'description': """
@@ -124,6 +124,9 @@
         'wizard/ops_sale_order_import_wizard_views.xml',
         'wizard/ops_purchase_order_import_wizard_views.xml',
         'views/sale_order_import_wizard_views.xml',
+
+        # Phase 13: UAT Fixes
+        'data/hide_duplicate_reports.xml',
     ],
     'demo': [
         'demo/ops_demo_data.xml',

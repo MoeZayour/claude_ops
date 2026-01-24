@@ -140,3 +140,8 @@ access_ops_segregation_of_duties_log_system,ops.segregation.of.duties.log.system
 access_ops_field_visibility_rule_system,ops.field.visibility.rule.system,model_ops_field_visibility_rule,base.group_system,1,1,1,1
 access_ops_sale_order_import_wizard_system,ops.sale.order.import.wizard.system,model_ops_sale_order_import_wizard,base.group_system,1,1,1,1
 access_ops_three_way_match_system,ops.three.way.match.system,model_ops_three_way_match,base.group_system,1,1,1,1
+access_ops_matrix_config_account_user,ops.matrix.config.account.user,model_ops_matrix_config,account.group_account_user,1,0,0,0
+access_ops_matrix_config_account_invoice,ops.matrix.config.account.invoice,model_ops_matrix_config,account.group_account_invoice,1,0,0,0
+access_ops_matrix_config_system,ops.matrix.config.system,model_ops_matrix_config,base.group_system,1,1,1,1
+access_ops_dashboard_widget_base_user,ops.dashboard.widget.base.user,model_ops_dashboard_widget,base.group_user,1,0,0,0
+access_ops_report_template_base_read,ops.report.template.base.read,model_ops_report_template,base.group_user,1,0,0,0

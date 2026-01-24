@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Availability Report -->
+    <!-- Availability Report (DEPRECATED - Use Products Availability instead) -->
+    <!-- Hidden from print menu - the detailed Products Availability report is preferred -->
     <record id="action_report_sale_order_availability" model="ir.actions.report">
-        <field name="name">Availability Report</field>
+        <field name="name">Availability Report (Legacy)</field>
         <field name="model">sale.order</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">ops_matrix_core.report_sale_order_availability</field>
         <field name="report_file">ops_matrix_core.report_sale_order_availability</field>
-        <field name="binding_model_id" ref="sale.model_sale_order"/>
-        <field name="binding_type">report</field>
+        <!-- Removed binding to hide from print menu -->
+        <!-- <field name="binding_model_id" ref="sale.model_sale_order"/> -->
+        <!-- <field name="binding_type">report</field> -->
     </record>
     
     <!-- Report Template -->

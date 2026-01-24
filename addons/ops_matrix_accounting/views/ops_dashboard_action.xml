@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+    ================================================================
+    OPS Matrix Accounting Dashboard Action Reset
+
+    Phase 13: UAT Fixes - Ensure users see the standard Journals
+    dashboard (Cards view) when clicking the Accounting app.
+    ================================================================
+    -->
+
+    <!-- Reset the Accounting app's default action to Journal Dashboard -->
+    <record id="account.menu_finance" model="ir.ui.menu">
+        <field name="action" ref="account.open_account_journal_dashboard_kanban"/>
+    </record>
+
+</odoo>

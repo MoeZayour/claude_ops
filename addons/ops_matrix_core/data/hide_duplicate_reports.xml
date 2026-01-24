@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <!--
+    Phase 13: UAT Fixes - Hide Duplicate Reports
+
+    Remove the simpler "Availability Report" from the print menu
+    to reduce clutter. Keep only the detailed "Products Availability" report.
+    -->
+
+    <!-- Remove binding from the legacy/simple Availability Report -->
+    <record id="ops_matrix_core.action_report_sale_order_availability" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+</odoo>
