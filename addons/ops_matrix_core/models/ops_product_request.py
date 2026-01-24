@@ -21,13 +21,29 @@ class OpsProductRequest(models.Model):
                                required=True, tracking=True)
     
     # Requester Info
-    requester_id = fields.Many2one('res.users', 'Requester', 
+    requester_id = fields.Many2one('res.users', 'Requester',
                                     required=True, readonly=True,
                                     default=lambda self: self.env.user)
-    branch_id = fields.Many2one('ops.branch', 'Branch', required=True,
-                                 default=lambda self: self.env.user.branch_id)
-    request_date = fields.Date('Request Date', default=fields.Date.today, 
+    request_date = fields.Date('Request Date', default=fields.Date.today,
                                readonly=True)
+
+    # Matrix Fields - BU & Branch (Auto-filled from user's defaults)
+    ops_business_unit_id = fields.Many2one(
+        'ops.business.unit',
+        string='Business Unit',
+        required=True,
+        tracking=True,
+        default=lambda self: self.env.user.ops_default_business_unit_id,
+        help='Business Unit for this product request'
+    )
+    branch_id = fields.Many2one(
+        'ops.branch',
+        string='Branch',
+        required=True,
+        tracking=True,
+        default=lambda self: self.env.user.primary_branch_id,
+        help='Branch submitting this product request'
+    )
     
     # Business Justification
     justification = fields.Text('Business Justification', required=True,

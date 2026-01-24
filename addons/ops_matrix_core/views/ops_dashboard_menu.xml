@@ -99,12 +99,10 @@
               sequence="30"
               groups="ops_matrix_core.group_ops_user"/>
 
-    <!-- Product Requests (under Inventory) -->
-    <menuitem id="menu_ops_product_request"
-              name="Product Requests"
-              parent="stock.menu_stock_root"
-              action="action_ops_product_request"
-              groups="stock.group_stock_user,ops_matrix_core.group_ops_user"
-              sequence="50"/>
+    <!--
+         Product Requests Menu REMOVED from top-level Inventory.
+         Access is now exclusively via: Inventory → Products → Request Product
+         (See: ops_product_request_views.xml → menu_request_product_quick)
+    -->
 
 </odoo>
