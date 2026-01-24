@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+    OPS Report Audit Views
+    ======================
+
+    Read-only audit trail for all OPS Matrix reporting activities.
+    "The Black Box" - compliance-grade logging.
+
+    Access: Account Manager and above only.
+    -->
+
+    <!-- List View (Primary) -->
+    <record id="view_ops_report_audit_list" model="ir.ui.view">
+        <field name="name">ops.report.audit.list</field>
+        <field name="model">ops.report.audit</field>
+        <field name="arch" type="xml">
+            <list string="Report Audit Log" create="false" edit="false" delete="false"
+                  decoration-info="report_engine == 'financial'"
+                  decoration-success="report_engine == 'treasury'"
+                  decoration-warning="report_engine == 'asset'"
+                  decoration-muted="report_engine == 'inventory'">
+                <field name="action_date" string="Date/Time"/>
+                <field name="user_id"/>
+                <field name="report_engine" string="Engine"/>
+                <field name="report_name"/>
+                <field name="report_type" optional="hide"/>
+                <field name="export_format" string="Format"/>
+                <field name="record_count" string="Records" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="ip_address" optional="hide"/>
+                <field name="wizard_model" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View (Read-Only Detail) -->
+    <record id="view_ops_report_audit_form" model="ir.ui.view">
+        <field name="name">ops.report.audit.form</field>
+        <field name="model">ops.report.audit</field>
+        <field name="arch" type="xml">
+            <form string="Report Audit Entry" create="false" edit="false" delete="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Report Information">
+                            <field name="report_engine"/>
+                            <field name="report_name"/>
+                            <field name="report_type"/>
+                            <field name="export_format"/>
+                            <field name="record_count"/>
+                        </group>
+                        <group string="Audit Trail">
+                            <field name="user_id"/>
+                            <field name="action_date"/>
+                            <field name="ip_address"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Technical Details">
+                        <field name="wizard_model"/>
+                    </group>
+                    <group string="Parameters">
+                        <field name="parameters" widget="text" readonly="1" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_ops_report_audit_search" model="ir.ui.view">
+        <field name="name">ops.report.audit.search</field>
+        <field name="model">ops.report.audit</field>
+        <field name="arch" type="xml">
+            <search string="Search Audit Logs">
+                <field name="user_id"/>
+                <field name="report_name"/>
+                <field name="report_engine"/>
+                <field name="report_type"/>
+                <filter name="filter_today" string="Today"
+                        domain="[('action_date', '&gt;=', (context_today()))]"/>
+                <filter name="filter_month" string="This Month"
+                        domain="[('action_date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <separator/>
+                <filter name="filter_financial" string="Financial" domain="[('report_engine', '=', 'financial')]"/>
+                <filter name="filter_treasury" string="Treasury" domain="[('report_engine', '=', 'treasury')]"/>
+                <filter name="filter_asset" string="Asset" domain="[('report_engine', '=', 'asset')]"/>
+                <filter name="filter_inventory" string="Inventory" domain="[('report_engine', '=', 'inventory')]"/>
+                <separator/>
+                <filter name="filter_excel" string="Excel Exports" domain="[('export_format', '=', 'excel')]"/>
+                <filter name="filter_pdf" string="PDF Exports" domain="[('export_format', '=', 'pdf')]"/>
+                <separator/>
+                <filter name="group_user" string="User" context="{'group_by': 'user_id'}"/>
+                <filter name="group_engine" string="Engine" context="{'group_by': 'report_engine'}"/>
+                <filter name="group_report" string="Report" context="{'group_by': 'report_name'}"/>
+                <filter name="group_date" string="Date" context="{'group_by': 'action_date:day'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Pivot View for Analytics -->
+    <record id="view_ops_report_audit_pivot" model="ir.ui.view">
+        <field name="name">ops.report.audit.pivot</field>
+        <field name="model">ops.report.audit</field>
+        <field name="arch" type="xml">
+            <pivot string="Report Audit Analysis">
+                <field name="action_date" type="row" interval="month"/>
+                <field name="report_engine" type="col"/>
+                <field name="id" type="measure" string="Count"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph View -->
+    <record id="view_ops_report_audit_graph" model="ir.ui.view">
+        <field name="name">ops.report.audit.graph</field>
+        <field name="model">ops.report.audit</field>
+        <field name="arch" type="xml">
+            <graph string="Report Activity" type="line">
+                <field name="action_date" interval="day"/>
+                <field name="id" type="measure" string="Reports Generated"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_ops_report_audit" model="ir.actions.act_window">
+        <field name="name">Report Audit Log</field>
+        <field name="res_model">ops.report.audit</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+        <field name="search_view_id" ref="view_ops_report_audit_search"/>
+        <field name="context">{'search_default_filter_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No audit records yet
+            </p>
+            <p>
+                Report audit logs are created automatically when users generate reports
+                through the OPS Matrix reporting engines.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu: Accounting > Configuration > Reporting Audit -->
+    <menuitem
+        id="menu_ops_report_audit"
+        name="Reporting Audit"
+        parent="account.menu_finance_configuration"
+        action="action_ops_report_audit"
+        sequence="99"
+        groups="account.group_account_manager"/>
+
+</odoo>

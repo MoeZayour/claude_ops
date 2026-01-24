@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.6.0.0",
+    "version": "19.0.12.0.0",
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -58,6 +58,7 @@
         "views/ops_report_menu.xml",
         "views/ops_report_template_views.xml",
         "views/ops_inventory_report_views.xml",
+        "views/ops_report_audit_views.xml",
 
         # Wizards
         "wizard/ops_asset_depreciation_wizard_views.xml",
