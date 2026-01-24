@@ -6,3 +6,6 @@ from . import ops_asset_register_report
 # XLSX Report Generators
 from . import ops_asset_register_xlsx
 from . import ops_general_ledger_xlsx
+
+# Excel Style Factory (centralized styles for all XLSX reports)
+from . import excel_styles

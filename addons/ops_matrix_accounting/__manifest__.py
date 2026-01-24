@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.2.4.0",
+    "version": "19.0.2.5.0",
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -63,6 +63,7 @@
         # "wizard/ops_asset_report_wizard.xml",  # Disabled - references AbstractModel
 
         # Reports
+        "report/ops_report_layout.xml",  # Corporate branding & shared styles
         "report/ops_asset_report_templates.xml",
         "report/ops_consolidated_report_templates.xml",
         "report/ops_financial_report_template.xml",

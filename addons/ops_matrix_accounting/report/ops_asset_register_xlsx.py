@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
+"""
+Asset Register XLSX Export
+==========================
+
+Uses centralized OPSExcelStyles for consistent branding.
+v19.0.2.5: Phase 5 - Applied corporate branding via excel_styles.
+"""
 
 from odoo import models
 from datetime import datetime
+from .excel_styles import OPSExcelStyles, apply_standard_widths
+
 
 class AssetRegisterXLSX(models.AbstractModel):
     """
@@ -24,49 +32,97 @@ class AssetRegisterXLSX(models.AbstractModel):
             data (dict): Data passed from the wizard or report action.
             assets (recordset): The 'ops.asset' recordset to be reported on.
         """
+        # Initialize centralized styles
+        styles = OPSExcelStyles(workbook)
+
         sheet = workbook.add_worksheet('Asset Register')
 
-        # Define styles
-        title_style = workbook.add_format({'bold': True, 'font_size': 16, 'align': 'center'})
-        header_style = workbook.add_format({'bold': True, 'bg_color': '#E0E0E0', 'border': 1, 'align': 'center'})
-        cell_style = workbook.add_format({'border': 1})
-        date_format = workbook.add_format({'num_format': 'yyyy-mm-dd', 'border': 1})
-        money_format = workbook.add_format({'num_format': '#,##0.00', 'border': 1})
-        bold_style = workbook.add_format({'bold': True})
+        # Apply standard column widths
+        apply_standard_widths(sheet, [
+            'name',       # Asset Name (35)
+            'code',       # Asset Code (15)
+            'name_short', # Category (25)
+            'date',       # Purchase Date (12)
+            'currency',   # Purchase Value (15)
+            'datetime',   # Depreciation Start Date (18)
+            'currency',   # Book Value (15)
+            'status'      # Status (12)
+        ])
 
-        # Set column widths for better readability
-        sheet.set_column('A:A', 35)  # Asset Name
-        sheet.set_column('B:B', 20)  # Asset Code
-        sheet.set_column('C:C', 25)  # Category
-        sheet.set_column('D:D', 15)  # Purchase Date
-        sheet.set_column('E:E', 15)  # Purchase Value
-        sheet.set_column('F:F', 22)  # Depreciation Start Date
-        sheet.set_column('G:G', 15)  # Book Value
-        sheet.set_column('H:H', 15)  # Status
+        # Report Title
+        sheet.merge_range('A1:H1', 'ASSET REGISTER REPORT', styles.title)
+        sheet.set_row(0, 30)  # Increase title row height
 
-        # Report Title and Generation Time
-        sheet.merge_range('A1:H1', 'Asset Register Report', title_style)
-        sheet.write('A2', f"Report Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", bold_style)
+        # Metadata section
+        row = 1
+        sheet.write(row, 0, 'Generated:', styles.meta_label)
+        sheet.write(row, 1, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), styles.meta_value)
+        row += 1
+
+        sheet.write(row, 0, 'Total Assets:', styles.meta_label)
+        sheet.write(row, 1, len(assets), styles.meta_value)
+        row += 2
 
         # Table Headers
         headers = [
             'Asset Name', 'Asset Code', 'Category', 'Purchase Date',
-            'Purchase Value', 'Depreciation Start Date', 'Book Value', 'Status'
+            'Purchase Value', 'Depreciation Start', 'Book Value', 'Status'
         ]
         for col_num, header in enumerate(headers):
-            sheet.write(3, col_num, header, header_style)
+            sheet.write(row, col_num, header, styles.header)
+        row += 1
 
-        # Data Rows
-        row_num = 4
-        for asset in assets:
+        # Status to badge mapping
+        status_badges = {
+            'draft': styles.badge_info,
+            'active': styles.badge_success,
+            'fully_depreciated': styles.badge_warning,
+            'disposed': styles.badge_muted,
+            'sold': styles.badge_muted,
+        }
+
+        # Data Rows with zebra striping
+        total_purchase_value = 0.0
+        total_book_value = 0.0
+
+        for idx, asset in enumerate(assets):
             state_label = dict(asset._fields['state'].selection).get(asset.state, '')
-            
-            sheet.write(row_num, 0, asset.name or '', cell_style)
-            sheet.write(row_num, 1, asset.code or '', cell_style)
-            sheet.write(row_num, 2, asset.category_id.name or '', cell_style)
-            sheet.write(row_num, 3, asset.purchase_date, date_format)
-            sheet.write(row_num, 4, asset.purchase_value, money_format)
-            sheet.write(row_num, 5, asset.depreciation_start_date, date_format)
-            sheet.write(row_num, 6, asset.book_value, money_format)
-            sheet.write(row_num, 7, state_label, cell_style)
-            row_num += 1
+
+            # Get zebra-striped styles
+            text_style = styles.get_row_style(idx, is_currency=False)
+            currency_style = styles.get_row_style(idx, is_currency=True)
+            status_style = status_badges.get(asset.state, styles.badge_muted)
+
+            sheet.write(row, 0, asset.name or '', text_style)
+            sheet.write(row, 1, asset.code or '', text_style)
+            sheet.write(row, 2, asset.category_id.name or '', text_style)
+            sheet.write(row, 3, asset.purchase_date, styles.date)
+            sheet.write(row, 4, asset.purchase_value, currency_style)
+            sheet.write(row, 5, asset.depreciation_start_date, styles.date)
+            sheet.write(row, 6, asset.book_value, currency_style)
+            sheet.write(row, 7, state_label, status_style)
+
+            total_purchase_value += asset.purchase_value or 0.0
+            total_book_value += asset.book_value or 0.0
+            row += 1
+
+        # Totals row
+        sheet.write(row, 3, 'TOTALS:', styles.total)
+        sheet.write(row, 4, total_purchase_value, styles.total_currency)
+        sheet.write(row, 5, '', styles.total)
+        sheet.write(row, 6, total_book_value, styles.total_currency)
+        sheet.write(row, 7, '', styles.total)
+        row += 2
+
+        # Summary box
+        sheet.write(row, 0, 'Total Depreciation:', styles.meta_label)
+        sheet.write(row, 1, total_purchase_value - total_book_value, styles.currency)
+        row += 1
+
+        # Footer
+        row += 1
+        sheet.merge_range(
+            row, 0, row, 7,
+            'Generated by OPS Matrix | Asset data sourced from Fixed Asset Management module',
+            styles.meta_value
+        )

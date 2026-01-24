@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!--
+        Asset Register Report - QWeb Template
+        =====================================
+        Uses OPS Matrix corporate branding.
+
+        v19.0.2.5: Phase 5 - Applied ops_report_layout styles
+    -->
     <data>
         <report
             id="action_report_asset_register"
@@ -14,41 +21,121 @@
         <template id="report_asset_register_template">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="doc">
-                    <t t-call="web.external_layout">
-                        <div class="page">
-                            <h2>Asset Register Report</h2>
-                            <p>
-                                <strong>Date From:</strong> <span t-field="doc.date_from"/><br/>
-                                <strong>Date To:</strong> <span t-field="doc.date_to"/><br/>
-                            </p>
-                            <table class="table table-sm">
+                    <t t-call="ops_matrix_accounting.ops_external_layout">
+                        <div class="page ops-report-container">
+                            <!-- Professional Header -->
+                            <div class="ops-report-header text-center">
+                                <h2>Asset Register Report</h2>
+                                <p class="ops-subtitle">Fixed Asset Overview &amp; Valuation</p>
+                            </div>
+
+                            <!-- Report Info Box -->
+                            <div class="ops-info-box">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <span class="ops-info-label">Date From:</span>
+                                        <span t-field="doc.date_from"/><br/>
+                                        <span class="ops-info-label">Date To:</span>
+                                        <span t-field="doc.date_to"/>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <span class="ops-info-label">Generated:</span>
+                                        <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Asset Status Legend -->
+                            <div class="ops-legend mb16">
+                                <strong>Status:</strong>
+                                <span class="ops-badge ops-badge-info">Draft</span>
+                                <span class="ops-badge ops-badge-success">Active</span>
+                                <span class="ops-badge ops-badge-warning">Fully Depreciated</span>
+                                <span class="ops-badge ops-badge-muted">Disposed/Sold</span>
+                            </div>
+
+                            <!-- Asset Table -->
+                            <table class="ops_table_matrix">
                                 <thead>
                                     <tr>
                                         <th>Asset</th>
                                         <th>Category</th>
                                         <th>Purchase Date</th>
-                                        <th>Purchase Value</th>
+                                        <th class="text-end">Purchase Value</th>
                                         <th>Depreciation Start</th>
                                         <th>Depreciation End</th>
-                                        <th>Status</th>
-                                        <th class="text-right">Book Value</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-end">Book Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <t t-foreach="doc.get_report_data()['assets']" t-as="asset">
+                                    <t t-set="report_data" t-value="doc.get_report_data()"/>
+                                    <t t-set="total_purchase" t-value="0"/>
+                                    <t t-set="total_book" t-value="0"/>
+                                    <t t-foreach="report_data['assets']" t-as="asset">
+                                        <t t-set="total_purchase" t-value="total_purchase + (asset.get('purchase_value', 0) or 0)"/>
+                                        <t t-set="total_book" t-value="total_book + (asset.get('book_value', 0) or 0)"/>
                                         <tr>
                                             <td><span t-esc="asset['name']"/></td>
                                             <td><span t-esc="asset['category']"/></td>
                                             <td><span t-esc="asset['purchase_date']"/></td>
-                                            <td><span t-esc="asset['purchase_value']" t-options='{"widget": "monetary", "display_currency": user.company_id.currency_id}'/></td>
+                                            <td class="text-end ops-number">
+                                                <span t-esc="'%.2f' % (asset['purchase_value'] or 0)"/>
+                                            </td>
                                             <td><span t-esc="asset['depreciation_start_date']"/></td>
                                             <td><span t-esc="asset['depreciation_end_date']"/></td>
-                                            <td><span t-esc="asset['status']"/></td>
-                                            <td class="text-right"><span t-esc="asset['book_value']" t-options='{"widget": "monetary", "display_currency": user.company_id.currency_id}'/></td>
+                                            <td class="text-center">
+                                                <t t-set="status_lower" t-value="(asset.get('status') or '').lower()"/>
+                                                <t t-if="'active' in status_lower">
+                                                    <span class="ops-badge ops-badge-success"><t t-esc="asset['status']"/></span>
+                                                </t>
+                                                <t t-elif="'draft' in status_lower">
+                                                    <span class="ops-badge ops-badge-info"><t t-esc="asset['status']"/></span>
+                                                </t>
+                                                <t t-elif="'depreciated' in status_lower">
+                                                    <span class="ops-badge ops-badge-warning"><t t-esc="asset['status']"/></span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="ops-badge ops-badge-muted"><t t-esc="asset['status']"/></span>
+                                                </t>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-set="book_val" t-value="asset.get('book_value', 0) or 0"/>
+                                                <t t-set="book_class" t-value="'ops-number-positive' if book_val > 0 else 'ops-number-zero'"/>
+                                                <strong t-attf-class="ops-number #{book_class}">
+                                                    <span t-esc="'%.2f' % book_val"/>
+                                                </strong>
+                                            </td>
                                         </tr>
                                     </t>
                                 </tbody>
+                                <tfoot>
+                                    <tr class="ops-total-row">
+                                        <td colspan="3" class="text-end"><strong>TOTALS:</strong></td>
+                                        <td class="text-end ops-number">
+                                            <strong><span t-esc="'%.2f' % total_purchase"/></strong>
+                                        </td>
+                                        <td colspan="3"></td>
+                                        <td class="text-end ops-number">
+                                            <strong><span t-esc="'%.2f' % total_book"/></strong>
+                                        </td>
+                                    </tr>
+                                    <tr class="ops-grand-total">
+                                        <td colspan="3" class="text-end"><strong>ACCUMULATED DEPRECIATION:</strong></td>
+                                        <td class="text-end" colspan="5">
+                                            <strong><span t-esc="'%.2f' % (total_purchase - total_book)"/></strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
                             </table>
+
+                            <!-- Report Footer -->
+                            <div class="ops-report-footer">
+                                <p class="ops-footer-note">
+                                    <strong>Audit Trail:</strong> All asset data is sourced from the Fixed Asset Management module.
+                                    Book values are calculated based on the depreciation method and schedule assigned to each asset.
+                                </p>
+                            </div>
                         </div>
                     </t>
                 </t>
