@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Matrix Core',
-    'version': '19.0.1.9.0',
+    'version': '19.0.1.10.0',
     'category': 'Operations',
     'summary': 'Core module for OPS Matrix Framework',
     'description': """
@@ -38,6 +38,7 @@
 
         # 2. ACTORS (Core Personas - REQUIRED)
         'data/ops_persona_templates.xml',
+        'data/ops_user_templates.xml',
 
         # 3. DEFINITIONS
         'data/ops_sla_templates.xml',
