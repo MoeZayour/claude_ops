@@ -557,10 +557,10 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             groupby_fields.append('partner_id')
         
         # Aggregate initial balances
-        _read_group(
+        initial_data = MoveLine.read_group(
             domain=domain,
-            groupby=groupby_fields,
-            aggregates=['debit:sum', 'credit:sum', 'balance:sum']
+            fields=['debit:sum', 'credit:sum', 'balance:sum'],
+            groupby=groupby_fields
         )
         
         # Process into dictionary
