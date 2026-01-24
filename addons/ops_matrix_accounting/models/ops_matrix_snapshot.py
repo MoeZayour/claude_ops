@@ -426,28 +426,24 @@ class OpsMatrixSnapshot(models.Model):
         transaction_count = 0
 
         # Aggregate by account type
-        for result in results:
-            account_type = result.get('account_id.account_type')
-            debit = result.get('debit', 0.0)
-            credit = result.get('credit', 0.0)
-            count = result.get('__count', 0)
-
-            transaction_count += count
+        # Odoo 19 _read_group returns tuples: (groupby_value, agg1, agg2, ...)
+        for account_type, debit, credit, count in results:
+            transaction_count += count or 0
 
             if account_type in ['income', 'income_other']:
-                revenue += (credit - debit)
+                revenue += (credit or 0.0) - (debit or 0.0)
             elif account_type in ['expense_direct_cost']:
-                cogs += (debit - credit)
+                cogs += (debit or 0.0) - (credit or 0.0)
             elif account_type == 'expense_depreciation':
-                depreciation += (debit - credit)
+                depreciation += (debit or 0.0) - (credit or 0.0)
             elif account_type in ['expense']:
-                operating_expense += (debit - credit)
+                operating_expense += (debit or 0.0) - (credit or 0.0)
             elif account_type in ['asset_receivable', 'asset_cash', 'asset_current',
                                   'asset_non_current', 'asset_prepayments', 'asset_fixed']:
-                total_assets += (debit - credit)
+                total_assets += (debit or 0.0) - (credit or 0.0)
             elif account_type in ['liability_payable', 'liability_credit_card',
                                   'liability_current', 'liability_non_current']:
-                total_liabilities += (credit - debit)
+                total_liabilities += (credit or 0.0) - (debit or 0.0)
 
         # Count invoices
         Move = self.env['account.move']

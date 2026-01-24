@@ -23,7 +23,7 @@ class OpsAssetDepreciation(models.Model):
         ('draft', 'Draft'),
         ('posted', 'Posted'),
         ('failed', 'Failed')
-    ], string='Status', default='draft', required=True, tracking=True, index=True)
+    ], string='Status', default='draft', required=True, index=True)
 
     # Analytic fields for reporting and grouping, inherited from asset
     branch_id = fields.Many2one(related='asset_id.ops_branch_id', store=True, readonly=True)
