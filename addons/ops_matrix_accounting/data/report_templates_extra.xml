@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        OPS MATRIX SMART REPORT TEMPLATES - PHASE 10 EXPANSION
+        =======================================================
+
+        10 New High-Value Templates spanning Inventory, Treasury,
+        Financial, and Asset reporting domains.
+
+        Templates:
+        INVENTORY:
+        1. Stock Valuation - Dubai HQ
+        2. Dead Stock Audit (>180 Days)
+        3. Fresh Stock (0-30 Days)
+        4. Negative Stock Check
+
+        TREASURY:
+        5. Cash Outflow - Next 7 Days
+        6. Critical PDCs (Bounced)
+
+        FINANCIAL:
+        7. Critical Collections (>90 Days)
+        8. Unreconciled Bank Transactions
+        9. Segment P and L (Electronics)
+
+        ASSETS:
+        10. New CAPEX (YTD)
+    -->
+
+    <data noupdate="1">
+
+        <!-- INVENTORY TEMPLATES -->
+
+        <!-- 1. Stock Valuation - Dubai HQ -->
+        <record id="template_stock_valuation_dubai" model="ops.report.template">
+            <field name="name">Stock Valuation - Dubai HQ</field>
+            <field name="engine">inventory</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Stock valuation report filtered for Dubai headquarters location. Shows current inventory levels and values grouped by product category for the main Dubai warehouse.</field>
+            <field name="config_data">{
+    "report_type": "valuation",
+    "group_by": "category",
+    "include_zero_qty": false,
+    "ops_branch_ids": [],
+    "location_ids": [],
+    "product_category_ids": [],
+    "branch_filter_name": "Dubai"
+}</field>
+        </record>
+
+        <!-- 2. Dead Stock Audit (>180 Days) -->
+        <record id="template_dead_stock_audit" model="ops.report.template">
+            <field name="name">Dead Stock Audit (>180 Days)</field>
+            <field name="engine">inventory</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Identifies inventory items that have been in stock for more than 180 days without movement. Critical for identifying obsolete inventory and potential write-offs.</field>
+            <field name="config_data">{
+    "report_type": "aging",
+    "group_by": "category",
+    "include_zero_qty": false,
+    "aging_period_1": 30,
+    "aging_period_2": 60,
+    "aging_period_3": 90,
+    "aging_period_4": 180,
+    "min_age_days": 180,
+    "ops_branch_ids": [],
+    "location_ids": [],
+    "product_category_ids": []
+}</field>
+        </record>
+
+        <!-- 3. Fresh Stock (0-30 Days) -->
+        <record id="template_fresh_stock" model="ops.report.template">
+            <field name="name">Fresh Stock (0-30 Days)</field>
+            <field name="engine">inventory</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Shows recently received inventory items (within the last 30 days). Useful for monitoring incoming stock and ensuring proper receiving processes.</field>
+            <field name="config_data">{
+    "report_type": "aging",
+    "group_by": "location",
+    "include_zero_qty": false,
+    "aging_period_1": 30,
+    "aging_period_2": 60,
+    "aging_period_3": 90,
+    "aging_period_4": 180,
+    "min_age_days": 0,
+    "ops_branch_ids": [],
+    "location_ids": [],
+    "product_category_ids": []
+}</field>
+        </record>
+
+        <!-- 4. Negative Stock Check -->
+        <record id="template_negative_stock_check" model="ops.report.template">
+            <field name="name">Negative Stock Check</field>
+            <field name="engine">inventory</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Alerts for all items with negative stock quantities across all branches and locations. Critical for identifying inventory discrepancies requiring immediate correction.</field>
+            <field name="config_data">{
+    "report_type": "negative",
+    "group_by": "branch",
+    "include_zero_qty": false,
+    "ops_branch_ids": [],
+    "location_ids": [],
+    "product_category_ids": []
+}</field>
+        </record>
+
+        <!-- TREASURY TEMPLATES -->
+
+        <!-- 5. Cash Outflow - Next 7 Days -->
+        <record id="template_cash_outflow_7days" model="ops.report.template">
+            <field name="name">Cash Outflow - Next 7 Days</field>
+            <field name="engine">treasury</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Shows all payable post-dated checks maturing within the next 7 days. Critical for daily cash flow management and ensuring funds availability.</field>
+            <field name="config_data">{
+    "report_type": "maturity",
+    "pdc_type": "outbound",
+    "date_mode": "next_7_days",
+    "state_filter": "open",
+    "period_length": 7,
+    "group_by": "bank",
+    "branch_ids": [],
+    "partner_ids": [],
+    "bank_ids": []
+}</field>
+        </record>
+
+        <!-- 6. Critical PDCs (Bounced) -->
+        <record id="template_pdc_bounced" model="ops.report.template">
+            <field name="name">Critical PDCs (Bounced)</field>
+            <field name="engine">treasury</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Registry of all bounced post-dated checks requiring immediate attention. Shows customer PDCs that were returned unpaid for collection follow-up.</field>
+            <field name="config_data">{
+    "report_type": "registry",
+    "pdc_type": "inbound",
+    "state_filter": "bounced",
+    "group_by": "partner",
+    "branch_ids": [],
+    "partner_ids": [],
+    "bank_ids": []
+}</field>
+        </record>
+
+        <!-- FINANCIAL TEMPLATES -->
+
+        <!-- 7. Critical Collections (>90 Days) -->
+        <record id="template_critical_collections" model="ops.report.template">
+            <field name="name">Critical Collections (>90 Days Overdue)</field>
+            <field name="engine">financial</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Aged receivables report focusing on invoices overdue by more than 90 days. Prioritizes collection efforts on high-risk accounts requiring immediate action.</field>
+            <field name="config_data">{
+    "report_type": "aged",
+    "target_move": "posted",
+    "reconciled": "unreconciled",
+    "aging_type": "receivable",
+    "period_length": 30,
+    "aging_start_days": 90,
+    "partner_type": "customer",
+    "sort_by": "amount_desc",
+    "branch_ids": [],
+    "partner_ids": []
+}</field>
+        </record>
+
+        <!-- 8. Unreconciled Bank Transactions -->
+        <record id="template_unreconciled_bank" model="ops.report.template">
+            <field name="name">Unreconciled Bank Transactions</field>
+            <field name="engine">financial</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">General Ledger filtered for bank accounts showing only unreconciled entries. Essential for bank reconciliation and identifying outstanding items.</field>
+            <field name="config_data">{
+    "report_type": "gl",
+    "date_mode": "current_month",
+    "target_move": "posted",
+    "display_account": "movement",
+    "reconciled": "unreconciled",
+    "account_type_filter": "asset_cash",
+    "matrix_filter_mode": "any",
+    "report_format": "detailed",
+    "sort_by": "date",
+    "include_initial_balance": false,
+    "branch_ids": [],
+    "business_unit_ids": [],
+    "account_ids": [],
+    "journal_ids": []
+}</field>
+        </record>
+
+        <!-- 9. Segment P&L (Electronics) -->
+        <record id="template_segment_pl_electronics" model="ops.report.template">
+            <field name="name">Segment P&amp;L (Electronics BU)</field>
+            <field name="engine">financial</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Profit and Loss Statement filtered for the Electronics business unit segment. Shows revenue, costs, and profitability for this specific product line.</field>
+            <field name="config_data">{
+    "report_type": "pl",
+    "date_mode": "ytd",
+    "target_move": "posted",
+    "display_account": "movement",
+    "matrix_filter_mode": "business_unit",
+    "report_format": "detailed",
+    "consolidate_by_branch": false,
+    "consolidate_by_bu": true,
+    "business_unit_filter_name": "Electronics",
+    "branch_ids": [],
+    "business_unit_ids": [],
+    "account_ids": [],
+    "journal_ids": []
+}</field>
+        </record>
+
+        <!-- ASSET TEMPLATES -->
+
+        <!-- 10. New CAPEX (YTD) -->
+        <record id="template_new_capex_ytd" model="ops.report.template">
+            <field name="name">New CAPEX (YTD Acquisitions)</field>
+            <field name="engine">asset</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Asset Register showing all fixed assets acquired in the current year (Year-to-Date). Tracks capital expenditure additions for budget monitoring and compliance.</field>
+            <field name="config_data">{
+    "report_type": "register",
+    "asset_state": "running",
+    "date_mode": "ytd",
+    "acquisition_date_filter": "ytd",
+    "group_by": "category",
+    "include_fully_depreciated": false,
+    "show_depreciation_details": true,
+    "branch_ids": [],
+    "business_unit_ids": [],
+    "asset_category_ids": []
+}</field>
+        </record>
+
+    </data>
+</odoo>

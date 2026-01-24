@@ -82,3 +82,7 @@ access_ops_report_template_admin,ops.report.template.admin,model_ops_report_temp
 access_ops_report_template_system,ops.report.template.system,model_ops_report_template,base.group_system,1,1,1,1
 access_ops_report_template_save_wizard_user,ops.report.template.save.wizard.user,model_ops_report_template_save_wizard,base.group_user,1,1,1,1
 access_ops_report_template_save_wizard_system,ops.report.template.save.wizard.system,model_ops_report_template_save_wizard,base.group_system,1,1,1,1
+access_ops_inventory_report_wizard_user,ops.inventory.report.wizard.user,model_ops_inventory_report_wizard,ops_matrix_core.group_ops_user,1,1,1,1
+access_ops_inventory_report_wizard_manager,ops.inventory.report.wizard.manager,model_ops_inventory_report_wizard,ops_matrix_core.group_ops_manager,1,1,1,1
+access_ops_inventory_report_wizard_admin,ops.inventory.report.wizard.admin,model_ops_inventory_report_wizard,ops_matrix_core.group_ops_admin_power,1,1,1,1
+access_ops_inventory_report_wizard_system,ops.inventory.report.wizard.system,model_ops_inventory_report_wizard,base.group_system,1,1,1,1

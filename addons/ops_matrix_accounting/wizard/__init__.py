@@ -5,3 +5,4 @@ from . import ops_treasury_report_wizard
 from . import ops_asset_report_wizard
 from . import ops_asset_depreciation_wizard
 from . import ops_asset_disposal_wizard
+from . import ops_inventory_report_wizard

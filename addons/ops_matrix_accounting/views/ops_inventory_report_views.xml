@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+    ====================================================
+    OPS Matrix Inventory Intelligence Views & Menus
+    Phase 10 - Inventory Reporting Engine
+    ====================================================
+    -->
+
+    <!-- =================== WIZARD FORM VIEW =================== -->
+    <record id="view_ops_inventory_report_wizard_form" model="ir.ui.view">
+        <field name="name">ops.inventory.report.wizard.form</field>
+        <field name="model">ops.inventory.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Inventory Intelligence">
+                <group>
+                    <group string="Report Configuration">
+                        <field name="report_template_id" options="{'no_create': True}"/>
+                        <field name="report_type" widget="radio" options="{'horizontal': true}"/>
+                        <field name="date_to"/>
+                        <field name="date_from" invisible="report_type != 'movement'"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <group string="Dimension Filters">
+                        <field name="ops_branch_ids" widget="many2many_tags"/>
+                        <field name="location_ids" widget="many2many_tags"/>
+                        <field name="product_category_ids" widget="many2many_tags"/>
+                        <field name="product_ids" widget="many2many_tags" invisible="report_type not in ['valuation', 'negative']"/>
+                    </group>
+                </group>
+
+                <!-- Aging Options (visible for aging report) -->
+                <group string="Aging Periods (Days)" invisible="report_type != 'aging'" col="5">
+                    <field name="aging_period_1" string="Period 1"/>
+                    <field name="aging_period_2" string="Period 2"/>
+                    <field name="aging_period_3" string="Period 3"/>
+                    <field name="aging_period_4" string="Period 4"/>
+                    <field name="min_age_days" string="Min Age Filter"/>
+                </group>
+
+                <!-- Movement Options (visible for movement report) -->
+                <group string="Movement Analysis Options" invisible="report_type != 'movement'" col="2">
+                    <field name="movement_period"/>
+                    <field name="slow_threshold"/>
+                </group>
+
+                <group col="2">
+                    <group string="Output Options">
+                        <field name="group_by"/>
+                        <field name="include_zero_qty" invisible="report_type in ['negative']"/>
+                    </group>
+                    <group string="Preview">
+                        <field name="filter_summary" readonly="1" class="text-muted"/>
+                        <field name="record_count" readonly="1"/>
+                        <field name="total_quantity" readonly="1" invisible="report_type == 'movement'"/>
+                        <field name="total_value" readonly="1" widget="monetary"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                </group>
+
+                <footer>
+                    <button name="action_generate_report" string="Generate Report" type="object" class="btn-primary"/>
+                    <button name="action_view_quants" string="View Stock" type="object" class="btn-secondary"/>
+                    <button name="action_save_template" string="Save Template" type="object" class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- =================== WIZARD ACTION =================== -->
+    <record id="action_ops_inventory_report_wizard" model="ir.actions.act_window">
+        <field name="name">Inventory Intelligence</field>
+        <field name="res_model">ops.inventory.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- =================== QUICK ACTION - VALUATION =================== -->
+    <record id="action_ops_inventory_valuation_quick" model="ir.actions.act_window">
+        <field name="name">Stock Valuation</field>
+        <field name="res_model">ops.inventory.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'valuation'}</field>
+    </record>
+
+    <!-- =================== QUICK ACTION - AGING =================== -->
+    <record id="action_ops_inventory_aging_quick" model="ir.actions.act_window">
+        <field name="name">Inventory Aging</field>
+        <field name="res_model">ops.inventory.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'aging'}</field>
+    </record>
+
+    <!-- =================== QUICK ACTION - NEGATIVE =================== -->
+    <record id="action_ops_inventory_negative_quick" model="ir.actions.act_window">
+        <field name="name">Negative Stock Alerts</field>
+        <field name="res_model">ops.inventory.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'negative'}</field>
+    </record>
+
+    <!-- =================== QUICK ACTION - MOVEMENT =================== -->
+    <record id="action_ops_inventory_movement_quick" model="ir.actions.act_window">
+        <field name="name">Movement Analysis</field>
+        <field name="res_model">ops.inventory.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'movement'}</field>
+    </record>
+
+    <!-- =================== MENU STRUCTURE =================== -->
+
+    <!-- Main Inventory Intelligence Menu under Accounting > Reporting -->
+    <menuitem
+        id="menu_ops_inventory_intelligence"
+        name="Inventory Intelligence"
+        parent="ops_matrix_core.menu_ops_reporting"
+        sequence="30"/>
+
+    <!-- Main Wizard Entry -->
+    <menuitem
+        id="menu_ops_inventory_wizard"
+        name="Inventory Analysis"
+        parent="menu_ops_inventory_intelligence"
+        action="action_ops_inventory_report_wizard"
+        sequence="10"/>
+
+    <!-- Quick Access Sub-menus -->
+    <menuitem
+        id="menu_ops_inventory_valuation"
+        name="Stock Valuation"
+        parent="menu_ops_inventory_intelligence"
+        action="action_ops_inventory_valuation_quick"
+        sequence="20"/>
+
+    <menuitem
+        id="menu_ops_inventory_aging"
+        name="Aging Analysis"
+        parent="menu_ops_inventory_intelligence"
+        action="action_ops_inventory_aging_quick"
+        sequence="30"/>
+
+    <menuitem
+        id="menu_ops_inventory_negative"
+        name="Negative Stock Alerts"
+        parent="menu_ops_inventory_intelligence"
+        action="action_ops_inventory_negative_quick"
+        sequence="40"/>
+
+    <menuitem
+        id="menu_ops_inventory_movement"
+        name="Movement Analysis"
+        parent="menu_ops_inventory_intelligence"
+        action="action_ops_inventory_movement_quick"
+        sequence="50"/>
+
+</odoo>

@@ -44,6 +44,7 @@ class OpsReportTemplate(models.Model):
         ('financial', 'Financial Intelligence'),
         ('treasury', 'Treasury (PDC)'),
         ('asset', 'Asset Management'),
+        ('inventory', 'Inventory Intelligence'),
     ], string='Report Engine', required=True, index=True,
        help='Which reporting engine this template applies to')
 
@@ -125,6 +126,7 @@ class OpsReportTemplate(models.Model):
             'financial': 'FIN',
             'treasury': 'PDC',
             'asset': 'AST',
+            'inventory': 'INV',
         }
         for template in self:
             prefix = engine_labels.get(template.engine, 'RPT')
@@ -258,6 +260,7 @@ class OpsReportTemplateSaveWizard(models.TransientModel):
             'ops.general.ledger.wizard.enhanced': 'financial',
             'ops.treasury.report.wizard': 'treasury',
             'ops.asset.report.wizard': 'asset',
+            'ops.inventory.report.wizard': 'inventory',
         }
         engine = engine_map.get(self.source_wizard_model)
         if not engine:
