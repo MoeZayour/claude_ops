@@ -1,169 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
-    <!-- Enhanced General Ledger Wizard Form View -->
+
+    <!-- ================================================================
+         MATRIX FINANCIAL INTELLIGENCE - THE BIG 8 UNIFIED WIZARD
+
+         Consolidated Financial Reporting Engine with Matrix Dimensions.
+         Reports: GL, TB, P&L, BS, CF, Aged, Partner Ledger, SoA
+         ================================================================ -->
+
     <record id="view_ops_general_ledger_wizard_enhanced_form" model="ir.ui.view">
         <field name="name">ops.general.ledger.wizard.enhanced.form</field>
         <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="arch" type="xml">
-            <form string="General Ledger Report with Matrix Filters">
+            <form string="Matrix Financial Intelligence">
                 <sheet>
+                    <!-- ==================== HEADER ==================== -->
                     <div class="oe_title">
-                        <h1>General Ledger Report</h1>
-                        <h3 class="text-muted">Matrix-Enhanced Financial Reporting</h3>
+                        <h1>
+                            <field name="report_title" readonly="1"/>
+                        </h1>
+                        <h3 class="text-muted">Matrix Financial Intelligence</h3>
                         <div class="text-muted mt-2">
                             <field name="filter_summary" widget="text" readonly="1"/>
                         </div>
                     </div>
-                    
+
+                    <!-- ==================== REPORT TYPE SELECTOR ==================== -->
+                    <div class="alert alert-primary mb-4" role="alert">
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="report_type" class="fw-bold mb-2">Select Report Type:</label>
+                                <field name="report_type" widget="radio" options="{'horizontal': true}"/>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Quick Stats Alert -->
                     <div class="alert alert-info" role="alert" invisible="record_count == 0">
                         <div class="row">
                             <div class="col-8">
-                                <strong>Estimated records:</strong> 
+                                <strong>Estimated records:</strong>
                                 <field name="record_count" readonly="1"/> transactions
                             </div>
-                            <div class="col-4 text-right">
-                                <span invisible="record_count &lt;= 10000" class="badge badge-success">
+                            <div class="col-4 text-end">
+                                <span invisible="record_count &gt; 10000" class="badge text-bg-success">
                                     Good size
                                 </span>
-                                <span invisible="record_count &lt;= 10000 or record_count &gt; 50000" class="badge badge-warning">
+                                <span invisible="record_count &lt;= 10000 or record_count &gt; 50000" class="badge text-bg-warning">
                                     Large dataset
                                 </span>
-                                <span invisible="record_count &lt;= 50000" class="badge badge-danger">
+                                <span invisible="record_count &lt;= 50000" class="badge text-bg-danger">
                                     Very large - use filters
                                 </span>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Tabbed Interface for Filters -->
+
+                    <!-- ==================== TABBED INTERFACE ==================== -->
                     <notebook>
+
                         <!-- Tab 1: Period & Company -->
                         <page string="Period &amp; Company" name="page_period">
                             <group>
                                 <group>
-                                    <field name="date_from"/>
-                                    <field name="date_to"/>
-                                    <field name="include_initial_balance"/>
+                                    <!-- Date Range (hidden for BS which uses as_of_date) -->
+                                    <field name="date_from" invisible="report_type == 'bs'"/>
+                                    <field name="date_to" invisible="report_type == 'bs'"/>
+
+                                    <!-- As of Date for Balance Sheet -->
+                                    <field name="as_of_date" invisible="report_type != 'bs'"
+                                           string="As of Date"/>
+
+                                    <!-- Initial Balance (not for aged/soa) -->
+                                    <field name="include_initial_balance"
+                                           invisible="report_type in ('aged', 'soa', 'cf')"/>
                                 </group>
-                                
+
                                 <group>
                                     <field name="company_id" options="{'no_create': True}"/>
-                                    <field name="journal_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                    <field name="journal_ids" widget="many2many_tags"
+                                           options="{'no_create': True}"
+                                           invisible="report_type in ('aged', 'soa')"/>
                                 </group>
                             </group>
-                            
+
                             <group>
                                 <group>
                                     <field name="target_move" widget="radio"/>
-                                    <field name="reconciled" widget="radio"/>
+
+                                    <!-- Reconciliation Filter (hidden for P&L, BS, CF) -->
+                                    <field name="reconciled" widget="radio"
+                                           invisible="report_type in ('pl', 'bs', 'cf')"/>
                                 </group>
                             </group>
                         </page>
-                        
-                        <!-- Tab 2: Matrix Dimensions (PRIMARY FEATURE) -->
+
+                        <!-- Tab 2: Matrix Dimensions -->
                         <page string="Matrix Dimensions" name="page_matrix">
                             <div class="alert alert-primary" role="alert">
                                 <h4><i class="fa fa-filter"/> Matrix Filtering</h4>
-                                <p>Filter transactions by Branch and/or Business Unit dimensions for precise organizational reporting.</p>
+                                <p>Filter by Branch and/or Business Unit for organizational reporting.</p>
                             </div>
-                            
+
                             <group>
                                 <group>
-                                    <field name="branch_ids" widget="many2many_tags" options="{'no_create': True, 'color_field': 'color'}"/>
+                                    <field name="branch_ids" widget="many2many_tags"
+                                           options="{'no_create': True, 'color_field': 'color'}"/>
                                 </group>
-                                
+
                                 <group>
-                                    <field name="business_unit_ids" widget="many2many_tags" options="{'no_create': True, 'color_field': 'color'}"/>
+                                    <field name="business_unit_ids" widget="many2many_tags"
+                                           options="{'no_create': True, 'color_field': 'color'}"/>
                                 </group>
                             </group>
-                            
+
                             <separator string="Matrix Filter Mode"/>
                             <group>
                                 <field name="matrix_filter_mode" widget="radio" class="oe_inline"/>
                             </group>
-                            
-                            <div class="alert alert-info mt-3" role="alert">
-                                <h5>Filter Mode Explanation:</h5>
-                                <ul class="mb-0">
-                                    <li invisible="matrix_filter_mode != 'any'">
-                                        <strong>Any Dimension:</strong> Shows transactions matching ANY selected branch OR business unit (inclusive)
-                                    </li>
-                                    <li invisible="matrix_filter_mode != 'both'">
-                                        <strong>Both Dimensions:</strong> Shows transactions matching BOTH selected branch AND business unit (restrictive)
-                                    </li>
-                                    <li invisible="matrix_filter_mode != 'exact'">
-                                        <strong>Exact Combination:</strong> Shows only transactions with exact branch-BU combinations (e.g., Branch A + BU X only)
-                                    </li>
-                                </ul>
-                            </div>
                         </page>
-                        
-                        <!-- Tab 3: Accounts -->
-                        <page string="Accounts" name="page_accounts">
+
+                        <!-- Tab 3: Accounts (hidden for partner reports) -->
+                        <page string="Accounts" name="page_accounts"
+                              invisible="report_type in ('aged', 'partner', 'soa')">
                             <group>
                                 <group>
-                                    <field name="account_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                    <field name="account_ids" widget="many2many_tags"
+                                           options="{'no_create': True}"/>
                                     <field name="account_type_ids"/>
                                 </group>
-                                
+
                                 <group>
                                     <field name="display_account" widget="radio"/>
                                 </group>
                             </group>
-                            
-                            <div class="alert alert-secondary mt-3" role="alert">
-                                <p class="mb-0">
-                                    <strong>Tip:</strong> Leave account fields empty to include all accounts, or select specific accounts/types for focused analysis.
-                                </p>
-                            </div>
                         </page>
-                        
-                        <!-- Tab 4: Partners -->
+
+                        <!-- Tab 4: Partners (enhanced for partner reports) -->
                         <page string="Partners" name="page_partners">
                             <group>
                                 <group>
-                                    <field name="partner_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                    <field name="partner_ids" widget="many2many_tags"
+                                           options="{'no_create': True}"
+                                           required="report_type == 'soa'"/>
+
+                                    <!-- Partner Type Filter (only for partner reports) -->
+                                    <field name="partner_type"
+                                           invisible="report_type not in ('aged', 'partner')"/>
                                 </group>
                             </group>
-                            
-                            <div class="alert alert-secondary mt-3" role="alert">
+
+                            <!-- Aging Options (only for Aged reports) -->
+                            <group invisible="report_type != 'aged'">
+                                <group>
+                                    <field name="aging_type" widget="radio"/>
+                                </group>
+                                <group>
+                                    <field name="period_length"/>
+                                </group>
+                            </group>
+
+                            <div class="alert alert-secondary mt-3" role="alert"
+                                 invisible="report_type not in ('aged', 'partner', 'soa')">
+                                <p class="mb-0" invisible="report_type != 'soa'">
+                                    <strong>Required:</strong> Select partners for Statement of Account.
+                                </p>
+                                <p class="mb-0" invisible="report_type != 'aged'">
+                                    <strong>Aged Balance:</strong> Shows open items grouped by aging periods.
+                                </p>
+                                <p class="mb-0" invisible="report_type != 'partner'">
+                                    <strong>Partner Ledger:</strong> Transaction history grouped by partner.
+                                </p>
+                            </div>
+
+                            <div class="alert alert-secondary mt-3" role="alert"
+                                 invisible="report_type in ('aged', 'partner', 'soa')">
                                 <p class="mb-0">
-                                    <strong>Optional:</strong> Filter by specific partners to analyze supplier/customer transactions.
+                                    <strong>Optional:</strong> Filter by specific partners for focused analysis.
                                 </p>
                             </div>
                         </page>
-                        
-                        <!-- Tab 5: Report Options -->
-                        <page string="Report Options" name="page_options">
+
+                        <!-- Tab 5: Report Options (hidden for some report types) -->
+                        <page string="Report Options" name="page_options"
+                              invisible="report_type in ('aged', 'soa')">
                             <group>
                                 <group>
-                                    <field name="report_format" widget="radio"/>
-                                    <field name="sort_by"/>
+                                    <field name="report_format" widget="radio"
+                                           invisible="report_type in ('pl', 'bs', 'cf', 'tb')"/>
+                                    <field name="sort_by"
+                                           invisible="report_type in ('pl', 'bs', 'cf', 'tb', 'aged')"/>
                                 </group>
-                                
+
                                 <group>
-                                    <field name="group_by_date"/>
-                                    <separator string="Consolidate By:"/>
-                                    <field name="consolidate_by_branch"/>
-                                    <field name="consolidate_by_bu"/>
-                                    <field name="consolidate_by_partner"/>
+                                    <field name="group_by_date"
+                                           invisible="report_type in ('pl', 'bs', 'aged', 'soa')"/>
+                                    <separator string="Consolidate By:"
+                                               invisible="report_type in ('pl', 'bs', 'cf', 'tb', 'aged')"/>
+                                    <field name="consolidate_by_branch"
+                                           invisible="report_type in ('pl', 'bs', 'cf', 'tb', 'aged')"/>
+                                    <field name="consolidate_by_bu"
+                                           invisible="report_type in ('pl', 'bs', 'cf', 'tb', 'aged')"/>
+                                    <field name="consolidate_by_partner"
+                                           invisible="report_type in ('pl', 'bs', 'cf', 'tb', 'aged')"/>
                                 </group>
                             </group>
-                            
-                            <div class="alert alert-info mt-3" role="alert">
+
+                            <div class="alert alert-info mt-3" role="alert"
+                                 invisible="report_type in ('pl', 'bs', 'cf', 'tb', 'aged')">
                                 <h5>Format Guide:</h5>
                                 <ul class="mb-0">
-                                    <li><strong>Detailed:</strong> Line-by-line transaction listing (best for &lt;10k records)</li>
-                                    <li><strong>Summary:</strong> Aggregated by account and selected dimensions (efficient for large datasets)</li>
+                                    <li><strong>Detailed:</strong> Line-by-line transaction listing</li>
+                                    <li><strong>Summary:</strong> Aggregated by account and dimensions</li>
                                     <li><strong>Both:</strong> Combined detailed and summary views</li>
                                 </ul>
                             </div>
                         </page>
+
                     </notebook>
-                    
-                    <!-- Action Buttons -->
+
+                    <!-- ==================== ACTION BUTTONS ==================== -->
                     <footer>
                         <button name="action_generate_report"
                                 string="Generate Report"
@@ -182,7 +238,7 @@
                                 type="object"
                                 class="btn-secondary"
                                 icon="fa-list"
-                                invisible="not date_from or not date_to"/>
+                                invisible="not date_from or not date_to or report_type in ('pl', 'bs', 'cf', 'tb')"/>
                         <button string="Cancel"
                                 class="btn-secondary"
                                 icon="fa-times"
@@ -192,21 +248,22 @@
             </form>
         </field>
     </record>
-    
-    <!-- Action to Open Enhanced Wizard -->
+
+    <!-- ==================== ACTION ==================== -->
     <record id="action_ops_general_ledger_wizard_enhanced" model="ir.actions.act_window">
-        <field name="name">General Ledger (Matrix)</field>
+        <field name="name">Matrix Financial Intelligence</field>
         <field name="res_model">ops.general.ledger.wizard.enhanced</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="context">{}</field>
     </record>
-    
-    <!-- Menu Item -->
+
+    <!-- ==================== MENU ITEM ==================== -->
     <menuitem id="menu_ops_general_ledger_enhanced"
-              name="General Ledger (Matrix)"
+              name="Matrix Financial Intelligence"
               parent="account.menu_finance_reports"
               action="action_ops_general_ledger_wizard_enhanced"
-              sequence="5"/>
+              sequence="1"
+              groups="account.group_account_user"/>
 
 </odoo>

@@ -3,14 +3,41 @@ from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 import io
 import base64
+import logging
+import warnings
+
+_logger = logging.getLogger(__name__)
+
 
 class OpsFinancialReportWizard(models.TransientModel):
     """
-    Lightweight Financial Reporting Wizard for Zero DB Bloat.
-    Uses native Odoo views for on-screen analysis and in-memory generation for exports.
+    ============================================================================
+    DEPRECATED: This wizard is deprecated as of v19.0.2.2
+
+    Please use 'ops.general.ledger.wizard.enhanced' (Matrix Financial Intelligence)
+    which consolidates all 8 core financial reports with full Matrix dimension support.
+
+    Menu: Accounting > Reporting > Matrix Financial Intelligence
+
+    This wizard will be removed in a future version.
+    ============================================================================
     """
     _name = 'ops.financial.report.wizard'
-    _description = 'Financial Report Wizard'
+    _description = 'Financial Report Wizard (DEPRECATED - Use Matrix Financial Intelligence)'
+
+    @api.model
+    def _log_deprecation_warning(self):
+        """Log deprecation warning when wizard is accessed."""
+        _logger.warning(
+            "DEPRECATED: ops.financial.report.wizard is deprecated. "
+            "Please use 'ops.general.ledger.wizard.enhanced' (Matrix Financial Intelligence) instead. "
+            "This wizard will be removed in a future version."
+        )
+        warnings.warn(
+            "ops.financial.report.wizard is deprecated. Use ops.general.ledger.wizard.enhanced instead.",
+            DeprecationWarning,
+            stacklevel=3
+        )
 
     report_type = fields.Selection([
         ('pl', 'P&L'),
@@ -51,6 +78,7 @@ class OpsFinancialReportWizard(models.TransientModel):
     @api.model
     def default_get(self, fields_list):
         """Set default date range to current month."""
+        self._log_deprecation_warning()
         res = super().default_get(fields_list)
         
         today = fields.Date.context_today(self)

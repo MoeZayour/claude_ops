@@ -1,28 +1,55 @@
 # -*- coding: utf-8 -*-
 """
-OPS Matrix Accounting - Enhanced General Ledger Wizard
-======================================================
+OPS Matrix Financial Intelligence Engine
+=========================================
 
-Comprehensive General Ledger wizard with matrix dimension filtering
-(Branch and Business Unit) and advanced consolidation options.
+The "Big 8" Unified Financial Reporting Wizard with Matrix Dimension filtering.
+Consolidates all core financial reports into a single, powerful interface.
+
+Reports Supported:
+- General Ledger (GL)
+- Trial Balance (TB)
+- Profit & Loss (PL)
+- Balance Sheet (BS)
+- Cash Flow Statement (CF)
+- Aged Partner Balance (AGED)
+- Partner Ledger (PARTNER)
+- Statement of Account (SOA)
 
 Author: OPS Matrix Framework
+Version: 2.0 (Phase 2 - Big 8 Consolidation)
 """
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import date_utils, float_round
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import logging
 
 _logger = logging.getLogger(__name__)
 
 
 class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
-    """Enhanced General Ledger Report Wizard with Matrix Dimensions"""
+    """Matrix Financial Intelligence - Unified Reporting Engine"""
     _name = 'ops.general.ledger.wizard.enhanced'
-    _description = 'General Ledger Report Wizard with Matrix Dimensions'
-    
+    _description = 'Matrix Financial Intelligence'
+
+    # ============================================
+    # 0. REPORT TYPE SELECTOR (THE BIG 8)
+    # ============================================
+    report_type = fields.Selection([
+        ('gl', 'General Ledger'),
+        ('tb', 'Trial Balance'),
+        ('pl', 'Profit & Loss'),
+        ('bs', 'Balance Sheet'),
+        ('cf', 'Cash Flow Statement'),
+        ('aged', 'Aged Partner Balance'),
+        ('partner', 'Partner Ledger'),
+        ('soa', 'Statement of Account'),
+    ], string='Report Type', required=True, default='gl',
+       help='Select the type of financial report to generate')
+
     # ============================================
     # 1. PERIOD FILTERS
     # ============================================
@@ -36,7 +63,14 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         required=True,
         default=lambda self: date_utils.end_of(datetime.now(), 'month')
     )
-    
+
+    # For Balance Sheet - single date
+    as_of_date = fields.Date(
+        string='As of Date',
+        default=lambda self: fields.Date.context_today(self),
+        help='Balance Sheet date (shows cumulative balances up to this date)'
+    )
+
     # ============================================
     # 2. COMPANY & JOURNALS
     # ============================================
@@ -51,12 +85,10 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         string='Journals',
         help='Leave empty for all journals'
     )
-    
+
     # ============================================
     # 3. MATRIX DIMENSION FILTERS
     # ============================================
-    
-    # Branch Filter
     branch_ids = fields.Many2many(
         'ops.branch',
         'gl_wizard_branch_rel',
@@ -65,8 +97,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         string='Branches',
         help='Filter by specific branches. Leave empty for all branches.'
     )
-    
-    # Business Unit Filter
+
     business_unit_ids = fields.Many2many(
         'ops.business.unit',
         'gl_wizard_bu_rel',
@@ -75,8 +106,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         string='Business Units',
         help='Filter by specific business units. Leave empty for all BUs.'
     )
-    
-    # Matrix Combination Mode
+
     matrix_filter_mode = fields.Selection([
         ('any', 'Any Dimension (Branch OR BU)'),
         ('both', 'Both Dimensions (Branch AND BU)'),
@@ -86,7 +116,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         - Both: Show transactions that match BOTH selected branch AND BU
         - Exact: Show transactions with exact branch/BU combinations
     """)
-    
+
     # ============================================
     # 4. ACCOUNT FILTERS
     # ============================================
@@ -98,7 +128,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         string='Accounts',
         help='Filter by specific accounts. Leave empty for all accounts.'
     )
-    
+
     account_type_ids = fields.Selection(
         selection=[
             ('asset_receivable', 'Receivable'),
@@ -123,13 +153,13 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         string='Account Type',
         help='Filter by specific account type'
     )
-    
+
     display_account = fields.Selection([
         ('all', 'All Accounts'),
         ('movement', 'With Movements'),
         ('not_zero', 'With Balance Not Zero'),
     ], string='Display Accounts', default='movement', required=True)
-    
+
     # ============================================
     # 5. TRANSACTION FILTERS
     # ============================================
@@ -137,44 +167,69 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         ('posted', 'Posted Entries'),
         ('all', 'All Entries'),
     ], string='Target Moves', default='posted', required=True)
-    
+
     reconciled = fields.Selection([
         ('all', 'All Items'),
         ('reconciled', 'Reconciled Only'),
         ('unreconciled', 'Unreconciled Only'),
     ], string='Reconciliation Status', default='all', required=True)
-    
-    # Partner Filter
+
+    # ============================================
+    # 6. PARTNER FILTERS (For Partner Reports)
+    # ============================================
     partner_ids = fields.Many2many(
         'res.partner',
         'gl_wizard_partner_rel',
         'wizard_id',
         'partner_id',
         string='Partners',
-        help='Filter by specific partners'
+        help='Filter by specific partners. Required for Statement of Account.'
     )
-    
+
+    partner_type = fields.Selection([
+        ('all', 'All Partners'),
+        ('customer', 'Customers Only'),
+        ('supplier', 'Suppliers Only'),
+    ], string='Partner Type', default='all',
+       help='Filter partners by type for aged/partner reports')
+
     # ============================================
-    # 6. CONSOLIDATION & GROUPING OPTIONS
+    # 7. AGED REPORT SPECIFIC
+    # ============================================
+    aging_type = fields.Selection([
+        ('receivable', 'Receivable (Customers)'),
+        ('payable', 'Payable (Suppliers)'),
+        ('both', 'Both'),
+    ], string='Aging Type', default='receivable',
+       help='Type of aged balance to calculate')
+
+    period_length = fields.Integer(
+        string='Period Length (days)',
+        default=30,
+        help='Number of days per aging period'
+    )
+
+    # ============================================
+    # 8. CONSOLIDATION & GROUPING OPTIONS
     # ============================================
     consolidate_by_branch = fields.Boolean(
         string='Consolidate by Branch',
         help='Show totals grouped by branch',
         default=False
     )
-    
+
     consolidate_by_bu = fields.Boolean(
         string='Consolidate by Business Unit',
         help='Show totals grouped by business unit',
         default=False
     )
-    
+
     consolidate_by_partner = fields.Boolean(
         string='Consolidate by Partner',
         help='Show totals grouped by partner',
         default=False
     )
-    
+
     group_by_date = fields.Selection([
         ('none', 'No Grouping'),
         ('day', 'Daily'),
@@ -183,16 +238,16 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         ('quarter', 'Quarterly'),
         ('year', 'Yearly'),
     ], string='Group by Date', default='none', required=True)
-    
+
     # ============================================
-    # 7. OUTPUT OPTIONS
+    # 9. OUTPUT OPTIONS
     # ============================================
     report_format = fields.Selection([
         ('detailed', 'Detailed Lines'),
         ('summary', 'Summary Only'),
         ('both', 'Both Detailed and Summary'),
     ], string='Report Format', default='detailed', required=True)
-    
+
     sort_by = fields.Selection([
         ('date', 'Date'),
         ('account', 'Account'),
@@ -200,43 +255,68 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         ('branch', 'Branch'),
         ('bu', 'Business Unit'),
     ], string='Sort By', default='date', required=True)
-    
+
     include_initial_balance = fields.Boolean(
         string='Include Initial Balance',
         default=True,
         help='Show opening balance before period'
     )
-    
+
     # ============================================
-    # 8. COMPUTED FIELDS
+    # 10. COMPUTED FIELDS
     # ============================================
     filter_summary = fields.Char(
         compute='_compute_filter_summary',
         string='Filter Summary',
         help='Summary of active filters'
     )
-    
+
     record_count = fields.Integer(
         compute='_compute_record_count',
         string='Estimated Records',
         help='Estimated number of records matching filters'
     )
-    
+
+    report_title = fields.Char(
+        compute='_compute_report_title',
+        string='Report Title'
+    )
+
     # ============================================
     # COMPUTED METHODS
     # ============================================
-    
-    @api.depends('branch_ids', 'business_unit_ids', 'account_ids', 'journal_ids', 
-                 'date_from', 'date_to', 'target_move', 'reconciled', 'partner_ids')
+
+    @api.depends('report_type')
+    def _compute_report_title(self):
+        """Get human-readable report title."""
+        titles = {
+            'gl': 'General Ledger',
+            'tb': 'Trial Balance',
+            'pl': 'Profit & Loss Statement',
+            'bs': 'Balance Sheet',
+            'cf': 'Cash Flow Statement',
+            'aged': 'Aged Partner Balance',
+            'partner': 'Partner Ledger',
+            'soa': 'Statement of Account',
+        }
+        for wizard in self:
+            wizard.report_title = titles.get(wizard.report_type, 'Financial Report')
+
+    @api.depends('branch_ids', 'business_unit_ids', 'account_ids', 'journal_ids',
+                 'date_from', 'date_to', 'target_move', 'reconciled', 'partner_ids',
+                 'report_type')
     def _compute_filter_summary(self):
         """Compute human-readable summary of active filters."""
         for wizard in self:
-            parts = []
-            
+            parts = [wizard.report_title or 'Report']
+
             # Date range
-            if wizard.date_from and wizard.date_to:
+            if wizard.report_type == 'bs':
+                if wizard.as_of_date:
+                    parts.append(f"As of: {wizard.as_of_date}")
+            elif wizard.date_from and wizard.date_to:
                 parts.append(f"Period: {wizard.date_from} to {wizard.date_to}")
-            
+
             # Matrix dimensions
             if wizard.branch_ids:
                 if len(wizard.branch_ids) <= 3:
@@ -244,310 +324,939 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
                     parts.append(f"Branches: {', '.join(branch_names)}")
                 else:
                     parts.append(f"Branches: {len(wizard.branch_ids)} selected")
-            
+
             if wizard.business_unit_ids:
                 if len(wizard.business_unit_ids) <= 3:
                     bu_names = wizard.business_unit_ids.mapped('code')
                     parts.append(f"BUs: {', '.join(bu_names)}")
                 else:
                     parts.append(f"BUs: {len(wizard.business_unit_ids)} selected")
-            
-            # Accounts and journals
-            if wizard.account_ids:
-                parts.append(f"Accounts: {len(wizard.account_ids)} selected")
-            
-            if wizard.journal_ids:
-                parts.append(f"Journals: {len(wizard.journal_ids)} selected")
-            
+
             # Partners
             if wizard.partner_ids:
                 parts.append(f"Partners: {len(wizard.partner_ids)} selected")
-            
+
             # Transaction filters
             if wizard.target_move == 'posted':
                 parts.append("Posted only")
-            
-            if wizard.reconciled == 'unreconciled':
-                parts.append("Unreconciled")
-            elif wizard.reconciled == 'reconciled':
-                parts.append("Reconciled")
-            
+
             wizard.filter_summary = " | ".join(parts) if parts else "No filters applied"
-    
-    @api.depends('date_from', 'date_to', 'company_id', 'branch_ids', 'business_unit_ids', 
-                 'account_ids', 'target_move', 'journal_ids', 'partner_ids')
+
+    @api.depends('date_from', 'date_to', 'company_id', 'branch_ids', 'business_unit_ids',
+                 'account_ids', 'target_move', 'journal_ids', 'partner_ids', 'report_type')
     def _compute_record_count(self):
         """Estimate number of records matching current filters."""
         for wizard in self:
             if not wizard.date_from or not wizard.date_to:
                 wizard.record_count = 0
                 continue
-            
+
             try:
-                # Build domain
                 domain = wizard._build_domain()
-                
-                # Count records
                 count = self.env['account.move.line'].search_count(domain)
                 wizard.record_count = count
             except Exception as e:
                 _logger.error(f"Error counting records: {e}")
                 wizard.record_count = 0
-    
+
     # ============================================
     # DOMAIN BUILDING METHODS
     # ============================================
-    
+
     def _build_domain(self):
         """Build complete domain for account move line query."""
         self.ensure_one()
-        
-        domain = [
-            ('date', '>=', self.date_from),
-            ('date', '<=', self.date_to),
-            ('company_id', '=', self.company_id.id),
-        ]
-        
+
+        # Date handling differs by report type
+        if self.report_type == 'bs':
+            # Balance Sheet: cumulative to as_of_date
+            domain = [
+                ('date', '<=', self.as_of_date or self.date_to),
+                ('company_id', '=', self.company_id.id),
+            ]
+        else:
+            domain = [
+                ('date', '>=', self.date_from),
+                ('date', '<=', self.date_to),
+                ('company_id', '=', self.company_id.id),
+            ]
+
         # Target moves filter
         if self.target_move == 'posted':
             domain.append(('move_id.state', '=', 'posted'))
-        
-        # Reconciliation filter
-        if self.reconciled == 'unreconciled':
-            domain.append(('reconciled', '=', False))
-        elif self.reconciled == 'reconciled':
-            domain.append(('reconciled', '=', True))
-        
+
+        # Reconciliation filter (not for P&L/BS)
+        if self.report_type not in ('pl', 'bs', 'cf'):
+            if self.reconciled == 'unreconciled':
+                domain.append(('reconciled', '=', False))
+            elif self.reconciled == 'reconciled':
+                domain.append(('reconciled', '=', True))
+
+        # Account type filters based on report type
+        domain += self._get_account_type_domain()
+
         # Account filters
         if self.account_ids:
             domain.append(('account_id', 'in', self.account_ids.ids))
-        
+
         if self.account_type_ids:
-            # Note: account.account uses 'company_ids' (Many2many) not 'company_id'
             account_ids = self.env['account.account'].search([
                 ('account_type', '=', self.account_type_ids),
                 ('company_ids', 'in', [self.company_id.id])
             ])
             domain.append(('account_id', 'in', account_ids.ids))
-        
+
         # Journal filters
         if self.journal_ids:
             domain.append(('journal_id', 'in', self.journal_ids.ids))
-        
+
         # Partner filter
         if self.partner_ids:
             domain.append(('partner_id', 'in', self.partner_ids.ids))
-        
+        elif self.report_type in ('aged', 'partner', 'soa'):
+            # For partner reports, filter by partner type
+            if self.partner_type == 'customer':
+                domain.append(('partner_id.customer_rank', '>', 0))
+            elif self.partner_type == 'supplier':
+                domain.append(('partner_id.supplier_rank', '>', 0))
+
         # Matrix dimension filters
         matrix_domain = self._build_matrix_domain()
         if matrix_domain:
             domain += matrix_domain
-        
+
         return domain
-    
+
+    def _get_account_type_domain(self):
+        """Get account type domain based on report type."""
+        self.ensure_one()
+
+        if self.report_type == 'pl':
+            # P&L: Income and Expense accounts
+            return [('account_id.account_type', 'in', [
+                'income', 'income_other',
+                'expense', 'expense_depreciation', 'expense_direct_cost'
+            ])]
+        elif self.report_type == 'bs':
+            # BS: Asset, Liability, Equity accounts
+            return [('account_id.account_type', 'in', [
+                'asset_receivable', 'asset_cash', 'asset_current',
+                'asset_non_current', 'asset_prepayments', 'asset_fixed',
+                'liability_payable', 'liability_credit_card',
+                'liability_current', 'liability_non_current',
+                'equity', 'equity_unaffected'
+            ])]
+        elif self.report_type == 'cf':
+            # CF: Bank and Cash accounts primarily
+            return [('account_id.account_type', 'in', ['asset_cash'])]
+        elif self.report_type == 'aged':
+            # Aged: Receivable or Payable based on aging_type
+            if self.aging_type == 'receivable':
+                return [('account_id.account_type', '=', 'asset_receivable')]
+            elif self.aging_type == 'payable':
+                return [('account_id.account_type', '=', 'liability_payable')]
+            else:
+                return [('account_id.account_type', 'in', ['asset_receivable', 'liability_payable'])]
+        elif self.report_type in ('partner', 'soa'):
+            # Partner reports: Receivable and Payable
+            return [('account_id.account_type', 'in', ['asset_receivable', 'liability_payable'])]
+
+        return []
+
     def _build_matrix_domain(self):
         """Build matrix dimension domain based on filter mode."""
         matrix_domain = []
-        
-        # If no matrix filters, return empty
+
         if not self.branch_ids and not self.business_unit_ids:
             return matrix_domain
-        
-        # Build branch domain
+
         branch_domain = []
         if self.branch_ids:
             branch_domain = [('ops_branch_id', 'in', self.branch_ids.ids)]
-        
-        # Build BU domain
+
         bu_domain = []
         if self.business_unit_ids:
             bu_domain = [('ops_business_unit_id', 'in', self.business_unit_ids.ids)]
-        
-        # Apply filter mode
+
         if self.matrix_filter_mode == 'any':
-            # OR condition: Branch OR BU
             if branch_domain and bu_domain:
                 matrix_domain = ['|'] + branch_domain + bu_domain
             elif branch_domain:
                 matrix_domain = branch_domain
             elif bu_domain:
                 matrix_domain = bu_domain
-        
         elif self.matrix_filter_mode == 'both':
-            # AND condition: Branch AND BU
             if branch_domain and bu_domain:
                 matrix_domain = branch_domain + bu_domain
             else:
-                # If only one dimension selected in "both" mode, treat as "any"
                 matrix_domain = branch_domain or bu_domain
-        
         elif self.matrix_filter_mode == 'exact':
-            # Exact combinations: apply both filters, post-filter in Python
             matrix_domain = []
             if branch_domain:
                 matrix_domain += branch_domain
             if bu_domain:
                 matrix_domain += bu_domain
-        
+
         return matrix_domain
-    
+
     def _get_exact_matrix_combinations(self):
         """Get list of exact branch-BU combinations for exact filter mode."""
         combinations = set()
         if self.branch_ids and self.business_unit_ids:
             for branch in self.branch_ids:
                 for bu in self.business_unit_ids:
-                    # Check if BU actually operates in this branch
                     if branch in bu.branch_ids:
                         combinations.add((branch.id, bu.id))
         return combinations
-    
+
     # ============================================
     # VALIDATION METHODS
     # ============================================
-    
+
     def _validate_filters(self):
         """Validate wizard filters before generating report."""
         self.ensure_one()
-        
+
         if self.date_from > self.date_to:
             raise ValidationError(_("From date cannot be after To date."))
-        
-        # Check matrix filter logic
+
+        # SoA requires partner selection
+        if self.report_type == 'soa' and not self.partner_ids:
+            raise ValidationError(_(
+                "Statement of Account requires at least one partner to be selected."
+            ))
+
+        # Matrix exact mode validation
         if self.matrix_filter_mode == 'exact' and (not self.branch_ids or not self.business_unit_ids):
             raise ValidationError(_(
                 "Exact combination mode requires both Branch and Business Unit filters."
             ))
-        
-        # Check for very large date ranges
+
+        # Large dataset warnings
         date_diff = (self.date_to - self.date_from).days
         if date_diff > 365 and self.report_format == 'detailed' and not self.account_ids:
             return {
                 'warning': {
                     'title': _('Large Date Range'),
                     'message': _(
-                        'You are generating a detailed report for more than 1 year without account filter. '
-                        'This may take a long time. Consider using summary format or filtering by accounts.'
+                        'You are generating a detailed report for more than 1 year. '
+                        'Consider using summary format or filtering by accounts.'
                     ),
                 }
             }
-        
-        # Check for large result sets
+
         if self.record_count > 50000 and self.report_format == 'detailed':
             return {
                 'warning': {
                     'title': _('Large Result Set'),
                     'message': _(
-                        'This filter will return approximately %(count)d records. '
-                        'Consider using summary format or applying additional filters.'
+                        'Approximately %(count)d records. Consider summary format.'
                     ) % {'count': self.record_count},
                 }
             }
-        
+
         return True
-    
+
     # ============================================
-    # REPORT GENERATION METHODS
+    # REPORT DISPATCH & GENERATION
     # ============================================
-    
+
     def action_generate_report(self):
-        """Generate the general ledger report with matrix filters."""
+        """Main action: Generate report based on report_type."""
         self.ensure_one()
-        
-        # Validate filters
+
+        # Validate
         validation_result = self._validate_filters()
         if isinstance(validation_result, dict) and 'warning' in validation_result:
-            # Return warning but allow user to proceed
-            pass
-        
-        # Generate report data
-        report_data = self._prepare_report_data()
-        
+            pass  # Allow to proceed with warning
+
+        # Dispatch to appropriate handler
+        report_data = self._get_report_data()
+
         # Return report action
         return self._return_report_action(report_data)
-    
-    def _prepare_report_data(self):
-        """Prepare complete report data."""
+
+    def _get_report_data(self):
+        """Dispatch to appropriate report data method."""
         self.ensure_one()
-        
+
+        dispatch = {
+            'gl': self._get_gl_data,
+            'tb': self._get_trial_balance_data,
+            'pl': self._get_financial_statement_data,
+            'bs': self._get_financial_statement_data,
+            'cf': self._get_cash_flow_data,
+            'aged': self._get_aged_partner_data,
+            'partner': self._get_partner_ledger_data,
+            'soa': self._get_statement_of_account_data,
+        }
+
+        handler = dispatch.get(self.report_type, self._get_gl_data)
+        return handler()
+
+    # ============================================
+    # GENERAL LEDGER DATA
+    # ============================================
+
+    def _get_gl_data(self):
+        """Get General Ledger report data."""
+        self.ensure_one()
+
         domain = self._build_domain()
         MoveLine = self.env['account.move.line']
-        
-        # Get initial balances if requested
+
+        # Initial balances
         initial_balances = {}
         if self.include_initial_balance:
             initial_balances = self._get_initial_balances()
-        
+
         # Get move lines
         order_by = self._get_sort_order()
         lines = MoveLine.search(domain, order=order_by)
-        
+
         # Apply exact matrix filtering if needed
         if self.matrix_filter_mode == 'exact' and self.branch_ids and self.business_unit_ids:
             exact_combinations = self._get_exact_matrix_combinations()
             lines = lines.filtered(
                 lambda l: (l.ops_branch_id.id, l.ops_business_unit_id.id) in exact_combinations
             )
-        
-        # Process lines based on report format
+
+        # Process based on format
         if self.report_format == 'summary':
             processed_data = self._process_summary_data(lines)
         elif self.report_format == 'detailed':
             processed_data = self._process_detailed_data(lines)
-        else:  # both
+        else:
             processed_data = {
                 'summary': self._process_summary_data(lines),
                 'detailed': self._process_detailed_data(lines),
             }
-        
-        # Prepare final report data
-        report_data = {
+
+        return self._build_report_dict(lines, processed_data, initial_balances)
+
+    # ============================================
+    # TRIAL BALANCE DATA
+    # ============================================
+
+    def _get_trial_balance_data(self):
+        """Get Trial Balance report data."""
+        self.ensure_one()
+
+        MoveLine = self.env['account.move.line']
+        Account = self.env['account.account']
+
+        # Get all accounts with activity
+        domain = self._build_domain()
+
+        # Get initial balances
+        initial_domain = [
+            ('date', '<', self.date_from),
+            ('company_id', '=', self.company_id.id),
+            ('move_id.state', '=', 'posted'),
+        ]
+        initial_domain += self._build_matrix_domain()
+
+        # Read group for period and initial
+        period_data = MoveLine._read_group(
+            domain=domain,
+            groupby=['account_id'],
+            aggregates=['debit:sum', 'credit:sum', 'balance:sum']
+        )
+
+        initial_data = MoveLine._read_group(
+            domain=initial_domain,
+            groupby=['account_id'],
+            aggregates=['debit:sum', 'credit:sum', 'balance:sum']
+        )
+
+        # Build initial balance map
+        initial_map = {}
+        for item in initial_data:
+            account = item[0]
+            if account:
+                initial_map[account.id] = {
+                    'debit': item[1] or 0,
+                    'credit': item[2] or 0,
+                    'balance': item[3] or 0,
+                }
+
+        # Build trial balance lines
+        tb_lines = []
+        total_initial_debit = total_initial_credit = 0
+        total_period_debit = total_period_credit = 0
+        total_ending_debit = total_ending_credit = 0
+
+        for item in period_data:
+            account = item[0]
+            if not account:
+                continue
+
+            period_debit = item[1] or 0
+            period_credit = item[2] or 0
+
+            initial = initial_map.get(account.id, {'debit': 0, 'credit': 0, 'balance': 0})
+            initial_balance = initial['balance']
+
+            ending_balance = initial_balance + (period_debit - period_credit)
+
+            # Determine debit/credit presentation
+            ending_debit = ending_balance if ending_balance > 0 else 0
+            ending_credit = abs(ending_balance) if ending_balance < 0 else 0
+
+            tb_lines.append({
+                'account_id': account.id,
+                'account_code': account.code,
+                'account_name': account.name,
+                'account_type': account.account_type,
+                'initial_debit': initial['debit'],
+                'initial_credit': initial['credit'],
+                'initial_balance': initial_balance,
+                'period_debit': period_debit,
+                'period_credit': period_credit,
+                'ending_debit': ending_debit,
+                'ending_credit': ending_credit,
+                'ending_balance': ending_balance,
+            })
+
+            total_initial_debit += initial['debit']
+            total_initial_credit += initial['credit']
+            total_period_debit += period_debit
+            total_period_credit += period_credit
+            total_ending_debit += ending_debit
+            total_ending_credit += ending_credit
+
+        # Sort by account code
+        tb_lines.sort(key=lambda x: x['account_code'])
+
+        return {
+            'report_type': 'tb',
+            'report_title': 'Trial Balance',
             'wizard_id': self.id,
             'company_name': self.company_id.name,
             'company_currency': self.company_id.currency_id.name,
             'date_from': str(self.date_from),
             'date_to': str(self.date_to),
             'filters': self._get_filter_summary_dict(),
-            'initial_balances': initial_balances,
-            'data': processed_data,
-            'report_format': self.report_format,
+            'data': tb_lines,
             'totals': {
-                'total_debit': sum(line.debit for line in lines),
-                'total_credit': sum(line.credit for line in lines),
-                'total_balance': sum(line.balance for line in lines),
-                'line_count': len(lines),
+                'initial_debit': total_initial_debit,
+                'initial_credit': total_initial_credit,
+                'period_debit': total_period_debit,
+                'period_credit': total_period_credit,
+                'ending_debit': total_ending_debit,
+                'ending_credit': total_ending_credit,
+                'line_count': len(tb_lines),
             },
         }
-        
-        return report_data
-    
+
+    # ============================================
+    # FINANCIAL STATEMENT DATA (P&L, BS)
+    # ============================================
+
+    def _get_financial_statement_data(self):
+        """Get P&L or Balance Sheet report data."""
+        self.ensure_one()
+
+        MoveLine = self.env['account.move.line']
+        domain = self._build_domain()
+
+        # Group by account type for financial statement presentation
+        data = MoveLine._read_group(
+            domain=domain,
+            groupby=['account_id', 'account_id.account_type'],
+            aggregates=['debit:sum', 'credit:sum', 'balance:sum']
+        )
+
+        # Organize by account type
+        sections = {}
+        for item in data:
+            account = item[0]
+            account_type = item[1]
+            if not account:
+                continue
+
+            if account_type not in sections:
+                sections[account_type] = {
+                    'type': account_type,
+                    'label': self._get_account_type_label(account_type),
+                    'accounts': [],
+                    'total_debit': 0,
+                    'total_credit': 0,
+                    'total_balance': 0,
+                }
+
+            debit = item[2] or 0
+            credit = item[3] or 0
+            balance = item[4] or 0
+
+            sections[account_type]['accounts'].append({
+                'account_id': account.id,
+                'account_code': account.code,
+                'account_name': account.name,
+                'debit': debit,
+                'credit': credit,
+                'balance': balance,
+            })
+            sections[account_type]['total_debit'] += debit
+            sections[account_type]['total_credit'] += credit
+            sections[account_type]['total_balance'] += balance
+
+        # Calculate totals based on report type
+        if self.report_type == 'pl':
+            income_total = sum(
+                s['total_balance'] for k, s in sections.items()
+                if k in ('income', 'income_other')
+            )
+            expense_total = sum(
+                s['total_balance'] for k, s in sections.items()
+                if k in ('expense', 'expense_depreciation', 'expense_direct_cost')
+            )
+            # Income is credit-based (negative balance), expense is debit-based (positive)
+            net_income = abs(income_total) - expense_total
+
+            summary = {
+                'total_income': abs(income_total),
+                'total_expense': expense_total,
+                'net_income': net_income,
+            }
+        else:  # Balance Sheet
+            asset_total = sum(
+                s['total_balance'] for k, s in sections.items()
+                if k.startswith('asset_')
+            )
+            liability_total = sum(
+                s['total_balance'] for k, s in sections.items()
+                if k.startswith('liability_')
+            )
+            equity_total = sum(
+                s['total_balance'] for k, s in sections.items()
+                if k.startswith('equity')
+            )
+
+            summary = {
+                'total_assets': asset_total,
+                'total_liabilities': abs(liability_total),
+                'total_equity': abs(equity_total),
+                'check_balance': asset_total + liability_total + equity_total,
+            }
+
+        return {
+            'report_type': self.report_type,
+            'report_title': 'Profit & Loss Statement' if self.report_type == 'pl' else 'Balance Sheet',
+            'wizard_id': self.id,
+            'company_name': self.company_id.name,
+            'company_currency': self.company_id.currency_id.name,
+            'date_from': str(self.date_from) if self.report_type == 'pl' else None,
+            'date_to': str(self.date_to) if self.report_type == 'pl' else None,
+            'as_of_date': str(self.as_of_date) if self.report_type == 'bs' else None,
+            'filters': self._get_filter_summary_dict(),
+            'sections': list(sections.values()),
+            'summary': summary,
+        }
+
+    def _get_account_type_label(self, account_type):
+        """Get human-readable label for account type."""
+        labels = {
+            'asset_receivable': 'Accounts Receivable',
+            'asset_cash': 'Bank and Cash',
+            'asset_current': 'Current Assets',
+            'asset_non_current': 'Non-current Assets',
+            'asset_prepayments': 'Prepayments',
+            'asset_fixed': 'Fixed Assets',
+            'liability_payable': 'Accounts Payable',
+            'liability_credit_card': 'Credit Card',
+            'liability_current': 'Current Liabilities',
+            'liability_non_current': 'Non-current Liabilities',
+            'equity': 'Equity',
+            'equity_unaffected': 'Current Year Earnings',
+            'income': 'Operating Income',
+            'income_other': 'Other Income',
+            'expense': 'Operating Expenses',
+            'expense_depreciation': 'Depreciation',
+            'expense_direct_cost': 'Cost of Revenue',
+            'off_balance': 'Off-Balance Sheet',
+        }
+        return labels.get(account_type, account_type)
+
+    # ============================================
+    # CASH FLOW DATA
+    # ============================================
+
+    def _get_cash_flow_data(self):
+        """Get Cash Flow Statement data."""
+        self.ensure_one()
+
+        MoveLine = self.env['account.move.line']
+        domain = self._build_domain()
+
+        # Get cash account movements
+        data = MoveLine._read_group(
+            domain=domain,
+            groupby=['account_id', 'journal_id'],
+            aggregates=['debit:sum', 'credit:sum']
+        )
+
+        # Categorize cash flows
+        operating = []
+        investing = []
+        financing = []
+
+        for item in data:
+            account = item[0]
+            journal = item[1]
+            if not account or not journal:
+                continue
+
+            inflow = item[2] or 0  # debit to cash = inflow
+            outflow = item[3] or 0  # credit from cash = outflow
+            net = inflow - outflow
+
+            line = {
+                'account_code': account.code,
+                'account_name': account.name,
+                'journal_name': journal.name,
+                'inflow': inflow,
+                'outflow': outflow,
+                'net': net,
+            }
+
+            # Simple categorization based on journal type
+            if journal.type in ('sale', 'purchase', 'general'):
+                operating.append(line)
+            elif journal.type == 'bank':
+                financing.append(line)
+            else:
+                investing.append(line)
+
+        # Calculate totals
+        total_operating = sum(l['net'] for l in operating)
+        total_investing = sum(l['net'] for l in investing)
+        total_financing = sum(l['net'] for l in financing)
+        net_change = total_operating + total_investing + total_financing
+
+        return {
+            'report_type': 'cf',
+            'report_title': 'Cash Flow Statement',
+            'wizard_id': self.id,
+            'company_name': self.company_id.name,
+            'company_currency': self.company_id.currency_id.name,
+            'date_from': str(self.date_from),
+            'date_to': str(self.date_to),
+            'filters': self._get_filter_summary_dict(),
+            'sections': {
+                'operating': {'lines': operating, 'total': total_operating},
+                'investing': {'lines': investing, 'total': total_investing},
+                'financing': {'lines': financing, 'total': total_financing},
+            },
+            'summary': {
+                'total_operating': total_operating,
+                'total_investing': total_investing,
+                'total_financing': total_financing,
+                'net_change': net_change,
+            },
+        }
+
+    # ============================================
+    # AGED PARTNER BALANCE DATA
+    # ============================================
+
+    def _get_aged_partner_data(self):
+        """Get Aged Partner Balance data."""
+        self.ensure_one()
+
+        MoveLine = self.env['account.move.line']
+        today = self.date_to
+        period = self.period_length
+
+        # Build domain for open items
+        domain = self._build_domain()
+        domain.append(('reconciled', '=', False))
+
+        # Get unreconciled items
+        lines = MoveLine.search(domain)
+
+        # Apply matrix filtering
+        if self.matrix_filter_mode == 'exact' and self.branch_ids and self.business_unit_ids:
+            exact_combinations = self._get_exact_matrix_combinations()
+            lines = lines.filtered(
+                lambda l: (l.ops_branch_id.id, l.ops_business_unit_id.id) in exact_combinations
+            )
+
+        # Age the balances
+        aged_data = {}
+        for line in lines:
+            partner = line.partner_id
+            if not partner:
+                partner_key = 0
+                partner_name = 'Unknown'
+            else:
+                partner_key = partner.id
+                partner_name = partner.name
+
+            if partner_key not in aged_data:
+                aged_data[partner_key] = {
+                    'partner_id': partner_key,
+                    'partner_name': partner_name,
+                    'current': 0,
+                    'period_1': 0,  # 1-30
+                    'period_2': 0,  # 31-60
+                    'period_3': 0,  # 61-90
+                    'period_4': 0,  # 91-120
+                    'older': 0,
+                    'total': 0,
+                }
+
+            # Calculate age
+            due_date = line.date_maturity or line.date
+            if due_date:
+                age_days = (today - due_date).days
+            else:
+                age_days = 0
+
+            amount = line.amount_residual if hasattr(line, 'amount_residual') else line.balance
+
+            # Bucket the amount
+            if age_days <= 0:
+                aged_data[partner_key]['current'] += amount
+            elif age_days <= period:
+                aged_data[partner_key]['period_1'] += amount
+            elif age_days <= period * 2:
+                aged_data[partner_key]['period_2'] += amount
+            elif age_days <= period * 3:
+                aged_data[partner_key]['period_3'] += amount
+            elif age_days <= period * 4:
+                aged_data[partner_key]['period_4'] += amount
+            else:
+                aged_data[partner_key]['older'] += amount
+
+            aged_data[partner_key]['total'] += amount
+
+        # Convert to list and sort
+        aged_list = list(aged_data.values())
+        aged_list.sort(key=lambda x: x['total'], reverse=True)
+
+        # Calculate totals
+        totals = {
+            'current': sum(p['current'] for p in aged_list),
+            'period_1': sum(p['period_1'] for p in aged_list),
+            'period_2': sum(p['period_2'] for p in aged_list),
+            'period_3': sum(p['period_3'] for p in aged_list),
+            'period_4': sum(p['period_4'] for p in aged_list),
+            'older': sum(p['older'] for p in aged_list),
+            'total': sum(p['total'] for p in aged_list),
+        }
+
+        return {
+            'report_type': 'aged',
+            'report_title': f"Aged {'Receivables' if self.aging_type == 'receivable' else 'Payables'}",
+            'wizard_id': self.id,
+            'company_name': self.company_id.name,
+            'company_currency': self.company_id.currency_id.name,
+            'as_of_date': str(self.date_to),
+            'period_length': period,
+            'aging_type': self.aging_type,
+            'filters': self._get_filter_summary_dict(),
+            'period_labels': {
+                'current': 'Current',
+                'period_1': f'1-{period}',
+                'period_2': f'{period+1}-{period*2}',
+                'period_3': f'{period*2+1}-{period*3}',
+                'period_4': f'{period*3+1}-{period*4}',
+                'older': f'>{period*4}',
+            },
+            'data': aged_list,
+            'totals': totals,
+        }
+
+    # ============================================
+    # PARTNER LEDGER DATA
+    # ============================================
+
+    def _get_partner_ledger_data(self):
+        """Get Partner Ledger data."""
+        self.ensure_one()
+
+        MoveLine = self.env['account.move.line']
+        domain = self._build_domain()
+
+        # Group by partner
+        order_by = 'partner_id, date, id'
+        lines = MoveLine.search(domain, order=order_by)
+
+        # Apply matrix filtering
+        if self.matrix_filter_mode == 'exact' and self.branch_ids and self.business_unit_ids:
+            exact_combinations = self._get_exact_matrix_combinations()
+            lines = lines.filtered(
+                lambda l: (l.ops_branch_id.id, l.ops_business_unit_id.id) in exact_combinations
+            )
+
+        # Group by partner
+        partner_data = {}
+        for line in lines:
+            partner = line.partner_id
+            partner_key = partner.id if partner else 0
+            partner_name = partner.name if partner else 'No Partner'
+
+            if partner_key not in partner_data:
+                partner_data[partner_key] = {
+                    'partner_id': partner_key,
+                    'partner_name': partner_name,
+                    'lines': [],
+                    'total_debit': 0,
+                    'total_credit': 0,
+                    'balance': 0,
+                }
+
+            partner_data[partner_key]['lines'].append({
+                'date': str(line.date),
+                'move_name': line.move_id.name,
+                'account_code': line.account_id.code,
+                'ref': line.ref or '',
+                'name': line.name,
+                'debit': line.debit,
+                'credit': line.credit,
+                'balance': line.balance,
+            })
+            partner_data[partner_key]['total_debit'] += line.debit
+            partner_data[partner_key]['total_credit'] += line.credit
+            partner_data[partner_key]['balance'] += line.balance
+
+        # Convert to list
+        partner_list = list(partner_data.values())
+        partner_list.sort(key=lambda x: x['partner_name'])
+
+        return {
+            'report_type': 'partner',
+            'report_title': 'Partner Ledger',
+            'wizard_id': self.id,
+            'company_name': self.company_id.name,
+            'company_currency': self.company_id.currency_id.name,
+            'date_from': str(self.date_from),
+            'date_to': str(self.date_to),
+            'filters': self._get_filter_summary_dict(),
+            'data': partner_list,
+            'totals': {
+                'total_debit': sum(p['total_debit'] for p in partner_list),
+                'total_credit': sum(p['total_credit'] for p in partner_list),
+                'balance': sum(p['balance'] for p in partner_list),
+                'partner_count': len(partner_list),
+            },
+        }
+
+    # ============================================
+    # STATEMENT OF ACCOUNT DATA
+    # ============================================
+
+    def _get_statement_of_account_data(self):
+        """Get Statement of Account data for selected partners."""
+        self.ensure_one()
+
+        if not self.partner_ids:
+            raise UserError(_("Please select at least one partner for Statement of Account."))
+
+        MoveLine = self.env['account.move.line']
+
+        # Get opening balance (before date_from)
+        opening_domain = [
+            ('date', '<', self.date_from),
+            ('company_id', '=', self.company_id.id),
+            ('move_id.state', '=', 'posted'),
+            ('partner_id', 'in', self.partner_ids.ids),
+            ('account_id.account_type', 'in', ['asset_receivable', 'liability_payable']),
+        ]
+        opening_domain += self._build_matrix_domain()
+
+        opening_data = MoveLine._read_group(
+            domain=opening_domain,
+            groupby=['partner_id'],
+            aggregates=['balance:sum']
+        )
+        opening_map = {item[0].id: item[1] or 0 for item in opening_data if item[0]}
+
+        # Get period transactions
+        domain = self._build_domain()
+        lines = MoveLine.search(domain, order='partner_id, date, id')
+
+        # Apply matrix filtering
+        if self.matrix_filter_mode == 'exact' and self.branch_ids and self.business_unit_ids:
+            exact_combinations = self._get_exact_matrix_combinations()
+            lines = lines.filtered(
+                lambda l: (l.ops_branch_id.id, l.ops_business_unit_id.id) in exact_combinations
+            )
+
+        # Build SoA per partner
+        statements = []
+        for partner in self.partner_ids:
+            partner_lines = lines.filtered(lambda l: l.partner_id.id == partner.id)
+
+            opening_balance = opening_map.get(partner.id, 0)
+            running_balance = opening_balance
+
+            soa_lines = []
+            for line in partner_lines:
+                running_balance += line.balance
+                soa_lines.append({
+                    'date': str(line.date),
+                    'move_name': line.move_id.name,
+                    'ref': line.ref or '',
+                    'name': line.name,
+                    'debit': line.debit,
+                    'credit': line.credit,
+                    'balance': running_balance,
+                })
+
+            closing_balance = running_balance
+
+            statements.append({
+                'partner_id': partner.id,
+                'partner_name': partner.name,
+                'partner_ref': partner.ref or '',
+                'opening_balance': opening_balance,
+                'lines': soa_lines,
+                'closing_balance': closing_balance,
+                'total_debit': sum(l.debit for l in partner_lines),
+                'total_credit': sum(l.credit for l in partner_lines),
+            })
+
+        return {
+            'report_type': 'soa',
+            'report_title': 'Statement of Account',
+            'wizard_id': self.id,
+            'company_name': self.company_id.name,
+            'company_currency': self.company_id.currency_id.name,
+            'date_from': str(self.date_from),
+            'date_to': str(self.date_to),
+            'filters': self._get_filter_summary_dict(),
+            'statements': statements,
+        }
+
+    # ============================================
+    # HELPER METHODS
+    # ============================================
+
     def _get_initial_balances(self):
         """Get initial balances for accounts before the period."""
         self.ensure_one()
-        
+
         MoveLine = self.env['account.move.line']
-        
-        # Build domain for transactions before period
+
         domain = [
             ('date', '<', self.date_from),
             ('company_id', '=', self.company_id.id),
             ('move_id.state', '=', 'posted'),
         ]
-        
-        # Apply same filters as main report
+
         if self.account_ids:
             domain.append(('account_id', 'in', self.account_ids.ids))
         if self.journal_ids:
             domain.append(('journal_id', 'in', self.journal_ids.ids))
         if self.partner_ids:
             domain.append(('partner_id', 'in', self.partner_ids.ids))
-        
-        # Matrix filters
+
         matrix_domain = self._build_matrix_domain()
         if matrix_domain:
             domain += matrix_domain
-        
-        # Group by account (and other dimensions if consolidating)
+
         groupby_fields = ['account_id']
         if self.consolidate_by_branch and self.branch_ids:
             groupby_fields.append('ops_branch_id')
@@ -555,31 +1264,39 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             groupby_fields.append('ops_business_unit_id')
         if self.consolidate_by_partner and self.partner_ids:
             groupby_fields.append('partner_id')
-        
-        # Aggregate initial balances
-        initial_data = MoveLine.read_group(
+
+        initial_data = MoveLine._read_group(
             domain=domain,
-            fields=['debit:sum', 'credit:sum', 'balance:sum'],
-            groupby=groupby_fields
+            groupby=groupby_fields,
+            aggregates=['debit:sum', 'credit:sum', 'balance:sum']
         )
-        
-        # Process into dictionary
+
         balances = {}
         for item in initial_data:
-            key = tuple(item.get(field, False) for field in groupby_fields)
+            # Build key from groupby fields
+            key_parts = []
+            for i, field in enumerate(groupby_fields):
+                val = item[i]
+                if hasattr(val, 'id'):
+                    key_parts.append(val.id)
+                else:
+                    key_parts.append(val)
+            key = tuple(key_parts)
+
+            # Get aggregates (after groupby fields)
+            offset = len(groupby_fields)
             balances[key] = {
-                'debit': item.get('debit', 0),
-                'credit': item.get('credit', 0),
-                'balance': item.get('balance', 0),
+                'debit': item[offset] or 0,
+                'credit': item[offset + 1] or 0,
+                'balance': item[offset + 2] or 0,
             }
-        
+
         return balances
-    
+
     def _process_summary_data(self, lines):
         """Process lines into summary format with grouping."""
         self.ensure_one()
-        
-        # Determine grouping
+
         groupby_fields = ['account_id']
         if self.consolidate_by_branch:
             groupby_fields.append('ops_branch_id')
@@ -587,22 +1304,19 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             groupby_fields.append('ops_business_unit_id')
         if self.consolidate_by_partner:
             groupby_fields.append('partner_id')
-        
-        # Group data
+
         grouped_data = {}
         for line in lines:
-            # Create group key
-            key_parts = []
-            key_parts.append(line.account_id.id)
+            key_parts = [line.account_id.id]
             if self.consolidate_by_branch:
                 key_parts.append(line.ops_branch_id.id if line.ops_branch_id else False)
             if self.consolidate_by_bu:
                 key_parts.append(line.ops_business_unit_id.id if line.ops_business_unit_id else False)
             if self.consolidate_by_partner:
                 key_parts.append(line.partner_id.id if line.partner_id else False)
-            
+
             key = tuple(key_parts)
-            
+
             if key not in grouped_data:
                 grouped_data[key] = {
                     'account_id': line.account_id.id,
@@ -613,7 +1327,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
                     'balance': 0,
                     'count': 0,
                 }
-                
+
                 if self.consolidate_by_branch:
                     grouped_data[key]['branch_id'] = line.ops_branch_id.id if line.ops_branch_id else False
                     grouped_data[key]['branch_name'] = line.ops_branch_id.name if line.ops_branch_id else ''
@@ -623,24 +1337,24 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
                 if self.consolidate_by_partner:
                     grouped_data[key]['partner_id'] = line.partner_id.id if line.partner_id else False
                     grouped_data[key]['partner_name'] = line.partner_id.name if line.partner_id else ''
-            
+
             grouped_data[key]['debit'] += line.debit
             grouped_data[key]['credit'] += line.credit
             grouped_data[key]['balance'] += line.balance
             grouped_data[key]['count'] += 1
-        
+
         return list(grouped_data.values())
-    
+
     def _process_detailed_data(self, lines):
         """Process lines into detailed format."""
         self.ensure_one()
-        
+
         detailed_data = []
         running_balance = 0
-        
+
         for line in lines:
             running_balance += line.balance
-            
+
             detailed_data.append({
                 'id': line.id,
                 'date': str(line.date),
@@ -664,9 +1378,9 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
                 'currency_id': line.currency_id.name if line.currency_id else '',
                 'amount_currency': line.amount_currency,
             })
-        
+
         return detailed_data
-    
+
     def _get_sort_order(self):
         """Get sort order based on wizard selection."""
         sort_mapping = {
@@ -677,10 +1391,12 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             'bu': 'ops_business_unit_id, date, id',
         }
         return sort_mapping.get(self.sort_by, 'date, move_id, id')
-    
+
     def _get_filter_summary_dict(self):
         """Get filter summary as dictionary for report."""
         return {
+            'report_type': self.report_type,
+            'report_title': self.report_title,
             'branch_count': len(self.branch_ids),
             'branch_names': self.branch_ids.mapped('name') if self.branch_ids else [],
             'bu_count': len(self.business_unit_ids),
@@ -699,54 +1415,83 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             'display_account': self.display_account,
             'include_initial_balance': self.include_initial_balance,
         }
-    
+
+    def _build_report_dict(self, lines, processed_data, initial_balances):
+        """Build standard report dictionary."""
+        return {
+            'report_type': self.report_type,
+            'report_title': self.report_title,
+            'wizard_id': self.id,
+            'company_name': self.company_id.name,
+            'company_currency': self.company_id.currency_id.name,
+            'date_from': str(self.date_from),
+            'date_to': str(self.date_to),
+            'filters': self._get_filter_summary_dict(),
+            'initial_balances': initial_balances,
+            'data': processed_data,
+            'report_format': self.report_format,
+            'totals': {
+                'total_debit': sum(line.debit for line in lines),
+                'total_credit': sum(line.credit for line in lines),
+                'total_balance': sum(line.balance for line in lines),
+                'line_count': len(lines),
+            },
+        }
+
     def _return_report_action(self, data):
-        """Return appropriate report action."""
+        """Return appropriate report action based on report type."""
+        report_names = {
+            'gl': 'ops_matrix_accounting.report_general_ledger_matrix',
+            'tb': 'ops_matrix_accounting.report_trial_balance_matrix',
+            'pl': 'ops_matrix_accounting.report_profit_loss_matrix',
+            'bs': 'ops_matrix_accounting.report_balance_sheet_matrix',
+            'cf': 'ops_matrix_accounting.report_cash_flow_matrix',
+            'aged': 'ops_matrix_accounting.report_aged_partner_matrix',
+            'partner': 'ops_matrix_accounting.report_partner_ledger_matrix',
+            'soa': 'ops_matrix_accounting.report_statement_of_account_matrix',
+        }
+
         return {
             'type': 'ir.actions.report',
-            'report_name': 'ops_matrix_accounting.report_general_ledger_matrix',
+            'report_name': report_names.get(self.report_type, report_names['gl']),
             'report_type': 'qweb-pdf',
             'data': data,
             'config': False,
         }
-    
+
     # ============================================
     # ACTION METHODS
     # ============================================
-    
+
     def action_export_to_excel(self):
         """Export report to Excel format."""
         self.ensure_one()
-        
-        # Prepare report data
-        report_data = self._prepare_report_data()
-        
+
+        report_data = self._get_report_data()
+
         return {
             'type': 'ir.actions.report',
-            'report_name': 'ops_matrix_accounting.report_general_ledger_matrix_xlsx',
+            'report_name': 'ops_matrix_accounting.report_financial_matrix_xlsx',
             'report_type': 'xlsx',
             'data': report_data,
             'config': False,
         }
-    
+
     def action_view_transactions(self):
         """Open filtered journal entries in list view."""
         self.ensure_one()
-        
+
         domain = self._build_domain()
-        
-        # Get move IDs
         lines = self.env['account.move.line'].search(domain)
-        
-        # Apply exact matrix filtering if needed
+
         if self.matrix_filter_mode == 'exact' and self.branch_ids and self.business_unit_ids:
             exact_combinations = self._get_exact_matrix_combinations()
             lines = lines.filtered(
                 lambda l: (l.ops_branch_id.id, l.ops_business_unit_id.id) in exact_combinations
             )
-        
+
         move_ids = lines.mapped('move_id').ids
-        
+
         return {
             'name': _('Journal Entries'),
             'type': 'ir.actions.act_window',
@@ -757,18 +1502,18 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
                 'search_default_group_by_date': 1 if self.group_by_date != 'none' else 0,
             },
         }
-    
+
     def action_view_account_moves(self):
         """View moves for specific account (called from report)."""
         self.ensure_one()
-        
+
         account_id = self.env.context.get('account_id')
         if not account_id:
             raise UserError(_("No account specified"))
-        
+
         domain = self._build_domain()
         domain.append(('account_id', '=', account_id))
-        
+
         return {
             'name': _('Account Moves'),
             'type': 'ir.actions.act_window',
@@ -776,11 +1521,24 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             'view_mode': 'list,form',
             'domain': domain,
         }
-    
+
     # ============================================
     # ONCHANGE METHODS
     # ============================================
-    
+
+    @api.onchange('report_type')
+    def _onchange_report_type(self):
+        """Adjust options based on report type."""
+        if self.report_type == 'bs':
+            # Balance Sheet uses as_of_date
+            self.as_of_date = self.date_to
+        if self.report_type == 'aged':
+            # Default to unreconciled for aged reports
+            self.reconciled = 'unreconciled'
+        if self.report_type in ('pl', 'bs'):
+            # Clear reconciliation filter for financial statements
+            self.reconciled = 'all'
+
     @api.onchange('company_id')
     def _onchange_company_id(self):
         """Reset filters when company changes."""
@@ -790,7 +1548,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             self.account_ids = False
             self.journal_ids = False
             self.partner_ids = False
-    
+
     @api.onchange('branch_ids')
     def _onchange_branch_ids(self):
         """Update BU domain when branches change."""
@@ -801,7 +1559,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
                 }
             }
         return {}
-    
+
     @api.onchange('business_unit_ids')
     def _onchange_business_unit_ids(self):
         """Update branch domain when BUs change."""
@@ -813,12 +1571,21 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
                 }
             }
         return {}
-    
+
     @api.onchange('report_format')
     def _onchange_report_format(self):
         """Adjust options based on report format."""
         if self.report_format == 'summary':
-            # Enable consolidation for summary
             if not any([self.consolidate_by_branch, self.consolidate_by_bu, self.consolidate_by_partner]):
                 self.consolidate_by_branch = bool(self.branch_ids)
                 self.consolidate_by_bu = bool(self.business_unit_ids)
+
+    @api.onchange('aging_type')
+    def _onchange_aging_type(self):
+        """Update partner type filter based on aging type."""
+        if self.aging_type == 'receivable':
+            self.partner_type = 'customer'
+        elif self.aging_type == 'payable':
+            self.partner_type = 'supplier'
+        else:
+            self.partner_type = 'all'
