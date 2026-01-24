@@ -6,7 +6,13 @@ OPS Matrix - Centralized Excel Style Factory
 Provides consistent styling across all XLSX reports.
 Use these style definitions instead of defining inline styles.
 
-v19.0.2.5: Phase 5 - Corporate Branding & Visual Polish
+v19.0.4.0: Phase 5 - Corporate Design System (BEM Architecture)
+
+Color Palette (matching CSS Design Tokens):
+    --ops-primary: #0056b3 (Corporate Blue)
+    --ops-secondary: #f8f9fa (Light Background)
+    --ops-danger: #dc3545 (Negative/Warning)
+    --ops-success: #28a745 (Positive/Success)
 
 Usage:
     from .excel_styles import OPSExcelStyles
@@ -26,34 +32,39 @@ class OPSExcelStyles:
     """
     Centralized Excel style factory for OPS Matrix reports.
 
-    Corporate color scheme:
-    - Primary: #2f6fad (Blue)
-    - Header BG: #2f6fad with white text
-    - Subheader BG: #E9ECEF (Light gray)
-    - Total BG: #e8eef5 (Light blue)
-    - Grand Total: #2f6fad (Primary blue)
-    - Success: #4CAF50 (Green)
-    - Warning: #FF9800 (Orange)
-    - Danger: #f44336 (Red)
+    Corporate color scheme (BEM Design System):
+    - Primary: #0056b3 (Corporate Blue)
+    - Primary Dark: #004494
+    - Header BG: #0056b3 with white text
+    - Subheader BG: #e9ecef (Light gray)
+    - Total BG: #e7f1ff (Primary light)
+    - Grand Total: #0056b3 (Primary blue)
+    - Success: #28a745 (Green)
+    - Warning: #ffc107 (Yellow/Orange)
+    - Danger: #dc3545 (Red)
+    - Info: #17a2b8 (Teal)
     """
 
-    # Corporate Color Palette
+    # Corporate Color Palette (matching CSS Design Tokens)
     COLORS = {
-        'primary': '#2f6fad',
-        'primary_dark': '#1d4d7a',
-        'secondary': '#667eea',
-        'accent': '#764ba2',
-        'success': '#4CAF50',
-        'warning': '#FF9800',
-        'danger': '#f44336',
-        'info': '#2196F3',
+        'primary': '#0056b3',
+        'primary_dark': '#004494',
+        'primary_light': '#e7f1ff',
+        'secondary': '#f8f9fa',
+        'secondary_dark': '#e9ecef',
+        'success': '#28a745',
+        'warning': '#ffc107',
+        'danger': '#dc3545',
+        'info': '#17a2b8',
         'muted': '#6c757d',
+        'dark': '#343a40',
         'light': '#f8f9fa',
-        'header_bg': '#2f6fad',
-        'subheader_bg': '#E9ECEF',
-        'total_bg': '#e8eef5',
-        'grand_total_bg': '#2f6fad',
-        'row_even': '#fafbfc',
+        'white': '#ffffff',
+        'header_bg': '#0056b3',
+        'subheader_bg': '#e9ecef',
+        'total_bg': '#e7f1ff',
+        'grand_total_bg': '#0056b3',
+        'row_even': '#f8f9fa',
         'row_odd': '#ffffff',
         'border': '#dee2e6',
     }

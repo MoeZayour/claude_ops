@@ -1,0 +1,628 @@
+/*
+ * OPS Matrix - Corporate Design System
+ * =====================================
+ * BEM (Block Element Modifier) CSS Architecture
+ *
+ * v19.0.4.0: Phase 5 - Corporate Branding via Frontend Agent
+ *
+ * Naming Convention:
+ *   .ops-block__element--modifier
+ *
+ * Color Palette (CSS Custom Properties):
+ *   --ops-primary: #0056b3 (Corporate Blue)
+ *   --ops-secondary: #f8f9fa (Light Background)
+ *   --ops-danger: #dc3545 (Negative/Warning)
+ *   --ops-success: #28a745 (Positive/Success)
+ *   --ops-muted: #6c757d (Muted Text)
+ */
+
+/* ============================================
+   CSS CUSTOM PROPERTIES (Design Tokens)
+   ============================================ */
+:root {
+  /* Primary Brand Colors */
+  --ops-primary: #0056b3;
+  --ops-primary-dark: #004494;
+  --ops-primary-light: #e7f1ff;
+
+  /* Secondary Colors */
+  --ops-secondary: #f8f9fa;
+  --ops-secondary-dark: #e9ecef;
+
+  /* Status Colors */
+  --ops-success: #28a745;
+  --ops-warning: #ffc107;
+  --ops-danger: #dc3545;
+  --ops-info: #17a2b8;
+  --ops-muted: #6c757d;
+
+  /* Neutral Colors */
+  --ops-dark: #343a40;
+  --ops-light: #f8f9fa;
+  --ops-white: #ffffff;
+  --ops-border: #dee2e6;
+
+  /* Typography */
+  --ops-font-stack: 'Inter', 'Roboto', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ops-font-mono: 'Roboto Mono', 'Consolas', 'Monaco', monospace;
+  --ops-font-size-base: 11px;
+  --ops-font-size-sm: 10px;
+  --ops-font-size-xs: 9px;
+  --ops-font-size-lg: 14px;
+  --ops-font-size-xl: 18px;
+  --ops-line-height: 1.5;
+
+  /* Spacing */
+  --ops-spacing-xs: 4px;
+  --ops-spacing-sm: 8px;
+  --ops-spacing-md: 16px;
+  --ops-spacing-lg: 24px;
+  --ops-spacing-xl: 32px;
+
+  /* Border Radius */
+  --ops-radius-sm: 3px;
+  --ops-radius-md: 5px;
+  --ops-radius-lg: 8px;
+
+  /* Shadows */
+  --ops-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --ops-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   BLOCK: ops-report (Main Report Container)
+   ============================================ */
+.ops-report {
+  font-family: var(--ops-font-stack);
+  font-size: var(--ops-font-size-base);
+  line-height: var(--ops-line-height);
+  color: var(--ops-dark);
+  background-color: var(--ops-white);
+}
+
+/* ============================================
+   BLOCK: ops-report__header
+   ============================================ */
+.ops-report__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--ops-spacing-lg);
+  background: linear-gradient(135deg, var(--ops-primary) 0%, var(--ops-primary-dark) 100%);
+  color: var(--ops-white);
+  border-bottom: 3px solid var(--ops-primary-dark);
+  border-radius: var(--ops-radius-lg) var(--ops-radius-lg) 0 0;
+  margin-bottom: var(--ops-spacing-lg);
+}
+
+.ops-report__header--centered {
+  justify-content: center;
+  text-align: center;
+}
+
+.ops-report__header-logo {
+  max-height: 50px;
+  width: auto;
+}
+
+.ops-report__header-title {
+  margin: 0;
+  font-size: var(--ops-font-size-xl);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.ops-report__header-subtitle {
+  margin: var(--ops-spacing-xs) 0 0 0;
+  font-size: var(--ops-font-size-sm);
+  opacity: 0.9;
+}
+
+.ops-report__header-company {
+  text-align: right;
+  font-size: var(--ops-font-size-sm);
+}
+
+/* ============================================
+   BLOCK: ops-report__meta (Metadata Info Box)
+   ============================================ */
+.ops-report__meta {
+  background-color: var(--ops-secondary);
+  padding: var(--ops-spacing-md);
+  border-radius: var(--ops-radius-md);
+  border-left: 4px solid var(--ops-primary);
+  margin-bottom: var(--ops-spacing-lg);
+}
+
+.ops-report__meta-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--ops-spacing-md);
+}
+
+.ops-report__meta-item {
+  flex: 1;
+  min-width: 200px;
+}
+
+.ops-report__meta-label {
+  font-weight: 600;
+  color: var(--ops-primary);
+  display: inline-block;
+  min-width: 100px;
+}
+
+.ops-report__meta-value {
+  color: var(--ops-dark);
+}
+
+/* ============================================
+   BLOCK: ops-report__body
+   ============================================ */
+.ops-report__body {
+  padding: var(--ops-spacing-md);
+}
+
+/* ============================================
+   BLOCK: ops-report__section
+   ============================================ */
+.ops-report__section {
+  margin-bottom: var(--ops-spacing-lg);
+  page-break-inside: avoid;
+}
+
+.ops-report__section-header {
+  background-color: var(--ops-primary);
+  color: var(--ops-white);
+  padding: var(--ops-spacing-sm) var(--ops-spacing-md);
+  border-radius: var(--ops-radius-sm) var(--ops-radius-sm) 0 0;
+  font-weight: 600;
+  font-size: var(--ops-font-size-base);
+}
+
+.ops-report__section-header--asset {
+  background-color: var(--ops-success);
+}
+
+.ops-report__section-header--liability {
+  background-color: var(--ops-danger);
+}
+
+.ops-report__section-header--revenue {
+  background-color: var(--ops-info);
+}
+
+.ops-report__section-header--expense {
+  background-color: #fd7e14;
+}
+
+/* ============================================
+   BLOCK: ops-table (Data Tables)
+   ============================================ */
+.ops-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--ops-spacing-md);
+  box-shadow: var(--ops-shadow-sm);
+  font-size: var(--ops-font-size-sm);
+}
+
+.ops-table th {
+  background-color: var(--ops-primary);
+  color: var(--ops-white);
+  padding: var(--ops-spacing-sm);
+  font-weight: 600;
+  text-align: left;
+  border: 1px solid var(--ops-primary-dark);
+  white-space: nowrap;
+}
+
+.ops-table th--right {
+  text-align: right;
+}
+
+.ops-table th--center {
+  text-align: center;
+}
+
+.ops-table td {
+  padding: var(--ops-spacing-sm);
+  border: 1px solid var(--ops-border);
+  vertical-align: middle;
+}
+
+.ops-table td--right {
+  text-align: right;
+}
+
+.ops-table td--center {
+  text-align: center;
+}
+
+/* Table Row Variants */
+.ops-table__row--even {
+  background-color: var(--ops-secondary);
+}
+
+.ops-table__row--odd {
+  background-color: var(--ops-white);
+}
+
+.ops-table__row--hover:hover {
+  background-color: var(--ops-primary-light);
+}
+
+/* Table Total Rows */
+.ops-table__row--total {
+  background-color: var(--ops-secondary-dark);
+  font-weight: 600;
+  border-top: 2px solid var(--ops-primary);
+}
+
+.ops-table__row--grand-total {
+  background: linear-gradient(135deg, var(--ops-primary) 0%, var(--ops-primary-dark) 100%);
+  color: var(--ops-white);
+  font-weight: 700;
+  font-size: var(--ops-font-size-base);
+}
+
+/* ============================================
+   BLOCK: ops-text (Text Utilities)
+   ============================================ */
+.ops-text--positive {
+  color: var(--ops-success);
+}
+
+.ops-text--negative {
+  color: var(--ops-danger);
+  font-weight: 600;
+}
+
+.ops-text--warning {
+  color: var(--ops-warning);
+}
+
+.ops-text--muted {
+  color: var(--ops-muted);
+}
+
+.ops-text--primary {
+  color: var(--ops-primary);
+}
+
+.ops-text--bold {
+  font-weight: 600;
+}
+
+/* ============================================
+   BLOCK: ops-number (Numeric Values)
+   ============================================ */
+.ops-number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--ops-font-mono);
+}
+
+.ops-number--positive {
+  color: var(--ops-success);
+}
+
+.ops-number--negative {
+  color: var(--ops-danger);
+  font-weight: 600;
+}
+
+.ops-number--zero {
+  color: var(--ops-muted);
+}
+
+/* Debit/Credit Accounting Colors */
+.ops-number--debit {
+  color: var(--ops-success);
+}
+
+.ops-number--credit {
+  color: var(--ops-danger);
+}
+
+/* ============================================
+   BLOCK: ops-badge (Status Badges)
+   ============================================ */
+.ops-badge {
+  display: inline-block;
+  padding: 2px var(--ops-spacing-sm);
+  border-radius: var(--ops-radius-sm);
+  font-size: var(--ops-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ops-badge--success {
+  background-color: var(--ops-success);
+  color: var(--ops-white);
+}
+
+.ops-badge--warning {
+  background-color: var(--ops-warning);
+  color: var(--ops-dark);
+}
+
+.ops-badge--danger {
+  background-color: var(--ops-danger);
+  color: var(--ops-white);
+}
+
+.ops-badge--info {
+  background-color: var(--ops-info);
+  color: var(--ops-white);
+}
+
+.ops-badge--muted {
+  background-color: var(--ops-muted);
+  color: var(--ops-white);
+}
+
+.ops-badge--primary {
+  background-color: var(--ops-primary);
+  color: var(--ops-white);
+}
+
+/* ============================================
+   BLOCK: ops-alert (Alert Boxes)
+   ============================================ */
+.ops-alert {
+  padding: var(--ops-spacing-md);
+  border-radius: var(--ops-radius-md);
+  margin: var(--ops-spacing-md) 0;
+  border-left: 4px solid;
+}
+
+.ops-alert--success {
+  background-color: #d4edda;
+  border-color: var(--ops-success);
+  color: #155724;
+}
+
+.ops-alert--warning {
+  background-color: #fff3cd;
+  border-color: var(--ops-warning);
+  color: #856404;
+}
+
+.ops-alert--danger {
+  background-color: #f8d7da;
+  border-color: var(--ops-danger);
+  color: #721c24;
+}
+
+.ops-alert--info {
+  background-color: #d1ecf1;
+  border-color: var(--ops-info);
+  color: #0c5460;
+}
+
+/* ============================================
+   BLOCK: ops-kpi (KPI Cards)
+   ============================================ */
+.ops-kpi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ops-spacing-md);
+  margin-bottom: var(--ops-spacing-lg);
+}
+
+.ops-kpi__card {
+  flex: 1;
+  min-width: 150px;
+  padding: var(--ops-spacing-md);
+  border-radius: var(--ops-radius-md);
+  background-color: var(--ops-white);
+  border: 1px solid var(--ops-border);
+  box-shadow: var(--ops-shadow-sm);
+  text-align: center;
+}
+
+.ops-kpi__card--success {
+  border-left: 4px solid var(--ops-success);
+}
+
+.ops-kpi__card--danger {
+  border-left: 4px solid var(--ops-danger);
+}
+
+.ops-kpi__card--warning {
+  border-left: 4px solid var(--ops-warning);
+}
+
+.ops-kpi__card--primary {
+  border-left: 4px solid var(--ops-primary);
+}
+
+.ops-kpi__label {
+  font-size: var(--ops-font-size-sm);
+  color: var(--ops-muted);
+  margin-bottom: var(--ops-spacing-xs);
+}
+
+.ops-kpi__value {
+  font-size: var(--ops-font-size-lg);
+  font-weight: 700;
+  font-family: var(--ops-font-mono);
+}
+
+.ops-kpi__value--positive {
+  color: var(--ops-success);
+}
+
+.ops-kpi__value--negative {
+  color: var(--ops-danger);
+}
+
+/* ============================================
+   BLOCK: ops-report__footer
+   ============================================ */
+.ops-report__footer {
+  margin-top: var(--ops-spacing-xl);
+  padding: var(--ops-spacing-md);
+  background-color: var(--ops-secondary);
+  border-radius: var(--ops-radius-md);
+  border-top: 2px solid var(--ops-primary);
+  font-size: var(--ops-font-size-sm);
+  color: var(--ops-muted);
+}
+
+.ops-report__footer-note {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.ops-report__footer-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--ops-spacing-sm);
+}
+
+.ops-report__page-info {
+  text-align: center;
+  font-size: var(--ops-font-size-xs);
+}
+
+.ops-report__generated-by {
+  text-align: right;
+  font-size: var(--ops-font-size-xs);
+  font-style: italic;
+}
+
+/* ============================================
+   BLOCK: ops-signature (Signature Section)
+   ============================================ */
+.ops-signature {
+  margin-top: var(--ops-spacing-xl);
+  page-break-inside: avoid;
+}
+
+.ops-signature__row {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--ops-spacing-xl);
+}
+
+.ops-signature__box {
+  flex: 1;
+  border-top: 1px solid var(--ops-dark);
+  padding-top: var(--ops-spacing-sm);
+  margin-top: 50px;
+  text-align: center;
+  font-size: var(--ops-font-size-sm);
+}
+
+/* ============================================
+   BLOCK: ops-legend (Color Legend)
+   ============================================ */
+.ops-legend {
+  margin-bottom: var(--ops-spacing-md);
+  font-size: var(--ops-font-size-sm);
+}
+
+.ops-legend__item {
+  display: inline-block;
+  padding: var(--ops-spacing-xs) var(--ops-spacing-sm);
+  border-radius: var(--ops-radius-sm);
+  margin-right: var(--ops-spacing-sm);
+  color: var(--ops-white);
+  font-size: var(--ops-font-size-xs);
+}
+
+/* ============================================
+   PRINT STYLES (@media print)
+   ============================================ */
+@media print {
+  /* Hide non-printable elements */
+  .ops-no-print,
+  .o_control_panel,
+  .o_cp_searchview,
+  .o_main_navbar,
+  button,
+  .btn {
+    display: none !important;
+  }
+
+  /* Reset page margins */
+  @page {
+    margin: 1cm;
+  }
+
+  /* Container adjustments */
+  .ops-report {
+    font-size: 10px;
+    background: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Header styling for print */
+  .ops-report__header {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Table print optimizations */
+  .ops-table {
+    page-break-inside: auto;
+  }
+
+  .ops-table tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  .ops-table thead {
+    display: table-header-group;
+  }
+
+  .ops-table tfoot {
+    display: table-footer-group;
+  }
+
+  /* Section breaks */
+  .ops-report__section {
+    page-break-inside: avoid;
+  }
+
+  /* Footer on every page */
+  .ops-report__footer {
+    page-break-inside: avoid;
+  }
+
+  /* Ensure colors print */
+  .ops-badge,
+  .ops-table th,
+  .ops-table__row--grand-total,
+  .ops-kpi__card {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.ops-mt-0 { margin-top: 0 !important; }
+.ops-mt-1 { margin-top: var(--ops-spacing-sm) !important; }
+.ops-mt-2 { margin-top: var(--ops-spacing-md) !important; }
+.ops-mt-3 { margin-top: var(--ops-spacing-lg) !important; }
+
+.ops-mb-0 { margin-bottom: 0 !important; }
+.ops-mb-1 { margin-bottom: var(--ops-spacing-sm) !important; }
+.ops-mb-2 { margin-bottom: var(--ops-spacing-md) !important; }
+.ops-mb-3 { margin-bottom: var(--ops-spacing-lg) !important; }
+
+.ops-text-center { text-align: center !important; }
+.ops-text-right { text-align: right !important; }
+.ops-text-left { text-align: left !important; }
+
+.ops-d-flex { display: flex !important; }
+.ops-justify-between { justify-content: space-between !important; }
+.ops-align-center { align-items: center !important; }

@@ -1,17 +1,172 @@
-/* OPS Matrix Accounting module styles */
+/*
+ * OPS Matrix Accounting - Backend UI Styles
+ * ==========================================
+ * Styling for Odoo backend views (forms, lists, kanban)
+ *
+ * v19.0.4.0: Phase 5 - Corporate Design System (BEM Architecture)
+ *
+ * Uses same color palette as report CSS for consistency:
+ *   --ops-primary: #0056b3 (Corporate Blue)
+ *   --ops-secondary: #f8f9fa (Light Background)
+ *   --ops-danger: #dc3545 (Negative/Warning)
+ *   --ops-success: #28a745 (Positive/Success)
+ */
+
+/* ============================================
+   CSS CUSTOM PROPERTIES (Design Tokens)
+   ============================================ */
 :root {
-  --ops-accounting-accent: #2f6fad;
+  /* Primary Brand Colors */
+  --ops-accounting-primary: #0056b3;
+  --ops-accounting-primary-dark: #004494;
+  --ops-accounting-primary-light: #e7f1ff;
+
+  /* Status Colors */
+  --ops-accounting-success: #28a745;
+  --ops-accounting-warning: #ffc107;
+  --ops-accounting-danger: #dc3545;
+  --ops-accounting-info: #17a2b8;
+  --ops-accounting-muted: #6c757d;
+
+  /* Typography */
+  --ops-accounting-font: 'Inter', 'Roboto', 'Open Sans', sans-serif;
 }
 
+/* ============================================
+   BLOCK: ops-accounting (Module Container)
+   ============================================ */
 .ops-accounting-section h1,
 .ops-accounting-section h2,
 .ops-accounting-section h3 {
-  color: var(--ops-accounting-accent);
+  color: var(--ops-accounting-primary);
+  font-weight: 600;
 }
 
-.ops-accounting-highlight {
-  background-color: rgba(47, 111, 173, 0.08);
-  border-left: 3px solid var(--ops-accounting-accent);
-  padding: 8px 12px;
+/* ============================================
+   BLOCK: ops-accounting__highlight
+   ============================================ */
+.ops-accounting-highlight,
+.ops-accounting__highlight {
+  background-color: var(--ops-accounting-primary-light);
+  border-left: 4px solid var(--ops-accounting-primary);
+  padding: 12px 16px;
   border-radius: 4px;
+  margin: 8px 0;
+}
+
+/* ============================================
+   BLOCK: ops-accounting__card (Summary Cards)
+   ============================================ */
+.ops-accounting__card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid var(--ops-accounting-primary);
+}
+
+.ops-accounting__card--success {
+  border-left-color: var(--ops-accounting-success);
+}
+
+.ops-accounting__card--danger {
+  border-left-color: var(--ops-accounting-danger);
+}
+
+.ops-accounting__card--warning {
+  border-left-color: var(--ops-accounting-warning);
+}
+
+/* ============================================
+   BLOCK: ops-accounting__badge (Status Badges)
+   ============================================ */
+.ops-accounting__badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.ops-accounting__badge--success {
+  background-color: var(--ops-accounting-success);
+  color: white;
+}
+
+.ops-accounting__badge--danger {
+  background-color: var(--ops-accounting-danger);
+  color: white;
+}
+
+.ops-accounting__badge--warning {
+  background-color: var(--ops-accounting-warning);
+  color: #333;
+}
+
+.ops-accounting__badge--info {
+  background-color: var(--ops-accounting-info);
+  color: white;
+}
+
+.ops-accounting__badge--muted {
+  background-color: var(--ops-accounting-muted);
+  color: white;
+}
+
+/* ============================================
+   BLOCK: ops-accounting__number (Currency Values)
+   ============================================ */
+.ops-accounting__number {
+  font-variant-numeric: tabular-nums;
+  font-family: 'Roboto Mono', 'Consolas', monospace;
+}
+
+.ops-accounting__number--positive {
+  color: var(--ops-accounting-success);
+}
+
+.ops-accounting__number--negative {
+  color: var(--ops-accounting-danger);
+  font-weight: 600;
+}
+
+.ops-accounting__number--zero {
+  color: var(--ops-accounting-muted);
+}
+
+/* ============================================
+   BLOCK: ops-accounting__table (Enhanced Tables)
+   ============================================ */
+.ops-accounting__table th {
+  background-color: var(--ops-accounting-primary);
+  color: white;
+  font-weight: 600;
+}
+
+.ops-accounting__table tr:nth-child(even) {
+  background-color: var(--ops-accounting-primary-light);
+}
+
+.ops-accounting__table tr:hover {
+  background-color: #d0e7ff;
+}
+
+/* ============================================
+   ODOO WIDGET OVERRIDES (OPS Branding)
+   ============================================ */
+
+/* Widget stat buttons */
+.o_stat_info .o_stat_value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Form sheet styling */
+.o_form_sheet .ops-accounting-section {
+  margin-bottom: 24px;
+}
+
+/* Kanban cards */
+.o_kanban_record .ops-accounting__badge {
+  margin-top: 4px;
 }

@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.3.0.0",
+    "version": "19.0.4.0.0",
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -77,6 +77,7 @@
     "assets": {
         "web.assets_backend": [
             "ops_matrix_accounting/static/src/css/ops_accounting.css",
+            "ops_matrix_accounting/static/src/css/ops_report.css",
         ],
     },
     "post_init_hook": "post_init_hook",
