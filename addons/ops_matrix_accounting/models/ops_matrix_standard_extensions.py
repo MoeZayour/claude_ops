@@ -1,4 +1,8 @@
+import logging
 from odoo import models, fields, api
+from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -153,16 +157,47 @@ class AccountMove(models.Model):
         default=lambda self: self._get_default_business_unit(),
         help="Business unit this entry belongs to"
     )
-    
+
     def _get_default_branch(self):
         """Get default branch from user or first available"""
         if hasattr(self.env.user, 'branch_id') and self.env.user.branch_id:
             return self.env.user.branch_id
         return self.env['ops.branch'].search([], limit=1)
-    
+
     def _get_default_business_unit(self):
         """Get default business unit or first available"""
         return self.env['ops.business.unit'].search([], limit=1)
+
+    # =========================================================================
+    # ZERO-TRUST SECURITY: Matrix Dimension Validation
+    # =========================================================================
+
+    def _validate_matrix_dimensions(self):
+        """
+        Validate that required matrix dimensions are set before posting.
+        This enforces Zero-Trust Governance - no financial transaction
+        can be posted without proper Branch/BU classification.
+        """
+        for move in self:
+            # Only validate for actual financial transactions (not misc entries)
+            if move.move_type in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund'):
+                if not move.ops_branch_id:
+                    raise UserError(
+                        f"SECURITY BLOCK: Cannot post {move.name or 'invoice'}.\n\n"
+                        f"Matrix Governance requires a Branch to be assigned.\n"
+                        f"Please select a Branch before posting this transaction."
+                    )
+                if not move.ops_business_unit_id:
+                    raise UserError(
+                        f"SECURITY BLOCK: Cannot post {move.name or 'invoice'}.\n\n"
+                        f"Matrix Governance requires a Business Unit to be assigned.\n"
+                        f"Please select a Business Unit before posting this transaction."
+                    )
+
+    def action_post(self):
+        """Override to enforce Zero-Trust Matrix validation before posting."""
+        self._validate_matrix_dimensions()
+        return super().action_post()
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -228,18 +263,18 @@ class AccountMove(models.Model):
                 })
                 _logger.info(f"   Cleared {len(wizards)} cached report(s)")
 
-            # Also clear matrix wizard caches
-            matrix_wizards = self.env['ops.profitability.matrix.wizard'].search([
-                ('company_id', 'in', companies.ids),
-                ('cached_data', '!=', False)
-            ]) if 'ops.profitability.matrix.wizard' in self.env else self.env['ops.profitability.matrix.wizard'].browse()
-
-            if matrix_wizards:
-                matrix_wizards.write({
-                    'cached_data': False,
-                    'cache_timestamp': False
-                })
-                _logger.info(f"   Cleared {len(matrix_wizards)} cached matrix report(s)")
+            # Also clear matrix wizard caches (if model exists)
+            if 'ops.profitability.matrix.wizard' in self.env:
+                matrix_wizards = self.env['ops.profitability.matrix.wizard'].search([
+                    ('company_id', 'in', companies.ids),
+                    ('cached_data', '!=', False)
+                ])
+                if matrix_wizards:
+                    matrix_wizards.write({
+                        'cached_data': False,
+                        'cache_timestamp': False
+                    })
+                    _logger.info(f"   Cleared {len(matrix_wizards)} cached matrix report(s)")
 
 
 class AccountMoveLine(models.Model):
@@ -261,7 +296,7 @@ class AccountMoveLine(models.Model):
         default=lambda self: self._get_default_business_unit(),
         help="Business unit for this journal item"
     )
-    
+
     def _get_default_branch(self):
         """Get default branch from move or user or first available"""
         if self.move_id and self.move_id.ops_branch_id:
@@ -269,7 +304,7 @@ class AccountMoveLine(models.Model):
         if hasattr(self.env.user, 'branch_id') and self.env.user.branch_id:
             return self.env.user.branch_id
         return self.env['ops.branch'].search([], limit=1)
-    
+
     def _get_default_business_unit(self):
         """Get default business unit from move or first available"""
         if self.move_id and self.move_id.ops_business_unit_id:
@@ -286,5 +321,37 @@ class AccountMoveLine(models.Model):
                     vals['ops_branch_id'] = move.ops_branch_id.id
                 if not vals.get('ops_business_unit_id'):
                     vals['ops_business_unit_id'] = move.ops_business_unit_id.id
-        
+
         return super().create(vals_list)
+
+    # =========================================================================
+    # ZERO-TRUST SECURITY: Line-level Matrix Validation
+    # =========================================================================
+
+    @api.constrains('ops_business_unit_id', 'account_id')
+    def _check_revenue_expense_bu(self):
+        """
+        Validate that revenue/expense lines have Business Unit assigned.
+        This ensures proper profit center tracking for P&L items.
+        """
+        for line in self:
+            # Skip if no account (happens during creation)
+            if not line.account_id:
+                continue
+
+            # Check if this is a revenue or expense account (P&L accounts)
+            account_type = line.account_id.account_type
+            pnl_types = (
+                'income', 'income_other',
+                'expense', 'expense_depreciation', 'expense_direct_cost'
+            )
+
+            if account_type in pnl_types:
+                # Only enforce on posted moves to allow draft editing
+                if line.move_id.state == 'posted' and not line.ops_business_unit_id:
+                    raise ValidationError(
+                        f"SECURITY BLOCK: Revenue/Expense line requires Business Unit.\n\n"
+                        f"Account: {line.account_id.display_name}\n"
+                        f"Matrix Governance requires all P&L items to be assigned to a Business Unit "
+                        f"for proper profit center tracking."
+                    )

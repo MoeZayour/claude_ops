@@ -78,17 +78,19 @@ class OpsAsset(models.Model):
 
     # Analytic Fields are inherited from ops.analytic.mixin
 
-    @api.model
-    def create(self, vals):
-        vals['code'] = self.env['ir.sequence'].next_by_code('ops.asset') or _('New')
-        # Ensure analytic fields are set from category if not provided
-        if 'category_id' in vals and ('ops_branch_id' not in vals or 'ops_business_unit_id' not in vals):
-            category = self.env['ops.asset.category'].browse(vals['category_id'])
-            if 'ops_branch_id' not in vals:
-                vals['ops_branch_id'] = category.branch_id.id
-            if 'ops_business_unit_id' not in vals:
-                vals['ops_business_unit_id'] = category.business_unit_id.id
-        return super(OpsAsset, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('code'):
+                vals['code'] = self.env['ir.sequence'].next_by_code('ops.asset') or _('New')
+            # Ensure analytic fields are set from category if not provided
+            if 'category_id' in vals and ('ops_branch_id' not in vals or 'ops_business_unit_id' not in vals):
+                category = self.env['ops.asset.category'].browse(vals['category_id'])
+                if 'ops_branch_id' not in vals:
+                    vals['ops_branch_id'] = category.branch_id.id
+                if 'ops_business_unit_id' not in vals:
+                    vals['ops_business_unit_id'] = category.business_unit_id.id
+        return super(OpsAsset, self).create(vals_list)
 
     @api.depends('purchase_value', 'salvage_value', 'depreciation_ids.amount', 'depreciation_ids.state')
     def _compute_depreciation_values(self):
@@ -114,6 +116,24 @@ class OpsAsset(models.Model):
                 raise ValidationError(_("Salvage value cannot be greater than the purchase value."))
             if asset.purchase_value <= 0:
                 raise ValidationError(_("Purchase value must be positive."))
+
+    # =========================================================================
+    # ZERO-TRUST SECURITY: Matrix Dimension Validation for Assets
+    # =========================================================================
+
+    @api.constrains('ops_branch_id')
+    def _check_asset_branch_required(self):
+        """
+        Validate that all assets have a Branch assigned.
+        Assets represent company property and must be tracked by location/branch.
+        """
+        for asset in self:
+            if not asset.ops_branch_id:
+                raise ValidationError(
+                    _("SECURITY BLOCK: Asset '%s' requires a Branch.\n\n"
+                      "Matrix Governance requires all assets to be assigned to a Branch "
+                      "for proper location tracking and depreciation allocation.") % asset.name
+                )
 
     def action_confirm(self):
         for asset in self:
