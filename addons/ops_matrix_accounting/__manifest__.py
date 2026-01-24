@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.2.5.0",
+    "version": "19.0.3.0.0",
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -20,7 +20,6 @@
     "depends": [
         "account",
         "ops_matrix_core",
-        "ops_matrix_reporting",
         "report_xlsx",
         "analytic",
     ],
