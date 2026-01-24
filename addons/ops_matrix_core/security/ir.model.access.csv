@@ -45,6 +45,7 @@ access_ops_product_request_user,ops.product.request.user,model_ops_product_reque
 access_ops_product_request_manager,ops.product.request.manager,model_ops_product_request,group_ops_manager,1,1,1,1
 access_ops_product_request_approver,ops.product.request.approver,model_ops_product_request,group_ops_product_approver,1,1,1,1
 access_ops_product_request_admin,ops.product.request.admin,model_ops_product_request,group_ops_admin_power,1,1,1,1
+access_ops_product_request_sales,ops.product.request.sales,model_ops_product_request,sales_team.group_sale_salesman,1,1,1,0
 access_ops_security_audit_user,ops.security.audit.user,model_ops_security_audit,group_ops_user,1,0,0,0
 access_ops_security_audit_manager,ops.security.audit.manager,model_ops_security_audit,group_ops_manager,1,0,0,0
 access_ops_security_audit_admin,ops.security.audit.admin,model_ops_security_audit,group_ops_admin_power,1,0,0,0

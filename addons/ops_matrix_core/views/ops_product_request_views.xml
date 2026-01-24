@@ -143,27 +143,21 @@
         </field>
     </record>
     
-    <!-- Menu under Inventory → Products → Product Requests -->
-    <!-- This allows users to request new products through Inventory app -->
-    <menuitem id="menu_ops_product_request"
-              name="Product Requests"
+    <!--
+         "Request Product" Menu - For Sales Reps
+         ========================================
+         Opens the Product Request list view where Sales Reps can:
+         - View their existing requests and status
+         - Create new product requests for approval
+
+         NOTE: The main "Product Requests" menu is defined in ops_dashboard_menu.xml
+               to avoid duplicate menu IDs.
+    -->
+    <menuitem id="menu_request_product_quick"
+              name="Request Product"
               parent="stock.menu_stock_inventory_control"
               action="action_ops_product_request"
-              sequence="50"/>
-
-    <!-- Also add "New Product" action that opens product form in create mode -->
-    <record id="action_new_product_create" model="ir.actions.act_window">
-        <field name="name">New Product</field>
-        <field name="res_model">product.template</field>
-        <field name="view_mode">form</field>
-        <field name="target">current</field>
-        <field name="context">{'default_detailed_type': 'product'}</field>
-    </record>
-
-    <menuitem id="menu_new_product_quick"
-              name="New Product"
-              parent="stock.menu_stock_inventory_control"
-              action="action_new_product_create"
-              sequence="5"/>
+              sequence="5"
+              groups="sales_team.group_sale_salesman,ops_matrix_core.group_ops_user"/>
     
 </odoo>
