@@ -761,7 +761,7 @@ class ResUsers(models.Model):
 
             # Skip Settings Managers / System Administrators
             # Check group membership directly to avoid issues during create
-            if system_group and system_group in user.groups_id:
+            if system_group and hasattr(user, 'groups_id') and user.groups_id and system_group in user.groups_id:
                 continue
 
             # === GOVERNANCE VALIDATION (Soft) ===
