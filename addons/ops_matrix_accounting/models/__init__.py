@@ -9,3 +9,4 @@ from . import ops_asset_category
 from . import ops_asset
 from . import ops_asset_depreciation
 from . import account_move
+from . import ops_report_template

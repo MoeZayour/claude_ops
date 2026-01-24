@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.4.0.0",
+    "version": "19.0.5.0.0",
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -36,6 +36,7 @@
         "data/pdc_sequence.xml",
         "data/cron_snapshot.xml",
         "data/templates/ops_budget_templates.xml",
+        "data/report_templates.xml",
 
         # Views
         "views/ops_asset_category_views.xml",
@@ -53,6 +54,7 @@
         "views/ops_matrix_snapshot_views.xml",
         "views/ops_trend_analysis_views.xml",
         "views/ops_report_menu.xml",
+        "views/ops_report_template_views.xml",
 
         # Wizards
         "wizard/ops_asset_depreciation_wizard_views.xml",

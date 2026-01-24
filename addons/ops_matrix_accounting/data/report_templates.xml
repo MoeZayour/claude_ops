@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        OPS MATRIX SMART REPORT TEMPLATES - DEFAULT PRESETS
+        ====================================================
+
+        Pre-configured report templates for common reporting scenarios.
+        These templates are global (visible to all users) and provide
+        quick access to frequently used report configurations.
+
+        Templates:
+        1. Corporate Balance Sheet (Financial)
+        2. Monthly P&amp;L (Financial)
+        3. PDC Inflow - Next 30 Days (Treasury)
+        4. Asset Register - Active IT (Asset)
+        5. Detailed Partner Ledger (Financial)
+    -->
+
+    <data noupdate="1">
+
+        <!-- =================================================== -->
+        <!-- 1. CORPORATE BALANCE SHEET                          -->
+        <!-- =================================================== -->
+        <record id="template_corporate_balance_sheet" model="ops.report.template">
+            <field name="name">Corporate Balance Sheet</field>
+            <field name="engine">financial</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Complete Balance Sheet report showing all assets, liabilities, and equity as of the current date. Includes all branches and business units consolidated.</field>
+            <field name="config_data">{
+    "report_type": "bs",
+    "target_move": "posted",
+    "display_account": "not_zero",
+    "matrix_filter_mode": "any",
+    "report_format": "detailed",
+    "include_initial_balance": true,
+    "branch_ids": [],
+    "business_unit_ids": [],
+    "account_ids": [],
+    "journal_ids": []
+}</field>
+        </record>
+
+        <!-- =================================================== -->
+        <!-- 2. MONTHLY P&amp;L (LAST MONTH)                         -->
+        <!-- =================================================== -->
+        <record id="template_monthly_pl" model="ops.report.template">
+            <field name="name">Monthly P&amp;L (Last Month)</field>
+            <field name="engine">financial</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Profit and Loss Statement for the previous calendar month. Automatically calculates dates based on current date. Shows income vs expenses with net profit.</field>
+            <field name="config_data">{
+    "report_type": "pl",
+    "date_mode": "last_month",
+    "target_move": "posted",
+    "display_account": "movement",
+    "matrix_filter_mode": "any",
+    "report_format": "detailed",
+    "consolidate_by_branch": false,
+    "consolidate_by_bu": false,
+    "branch_ids": [],
+    "business_unit_ids": [],
+    "account_ids": [],
+    "journal_ids": []
+}</field>
+        </record>
+
+        <!-- =================================================== -->
+        <!-- 3. PDC INFLOW - NEXT 30 DAYS                        -->
+        <!-- =================================================== -->
+        <record id="template_pdc_inflow_30days" model="ops.report.template">
+            <field name="name">PDC Inflow - Next 30 Days</field>
+            <field name="engine">treasury</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Shows all receivable post-dated checks maturing within the next 30 days. Useful for cash flow forecasting and collection planning.</field>
+            <field name="config_data">{
+    "report_type": "maturity",
+    "pdc_type": "inbound",
+    "date_mode": "next_30_days",
+    "state_filter": "open",
+    "period_length": 30,
+    "group_by": "none",
+    "branch_ids": [],
+    "partner_ids": [],
+    "bank_ids": []
+}</field>
+        </record>
+
+        <!-- =================================================== -->
+        <!-- 4. ASSET REGISTER - ACTIVE (RUNNING)                -->
+        <!-- =================================================== -->
+        <record id="template_asset_register_active" model="ops.report.template">
+            <field name="name">Asset Register - Active Assets</field>
+            <field name="engine">asset</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Complete register of all active (running) fixed assets as of today. Shows gross value, accumulated depreciation, and net book value grouped by category.</field>
+            <field name="config_data">{
+    "report_type": "register",
+    "asset_state": "running",
+    "group_by": "category",
+    "include_fully_depreciated": true,
+    "show_depreciation_details": false,
+    "branch_ids": [],
+    "business_unit_ids": [],
+    "asset_category_ids": []
+}</field>
+        </record>
+
+        <!-- =================================================== -->
+        <!-- 5. DETAILED PARTNER LEDGER                          -->
+        <!-- =================================================== -->
+        <record id="template_detailed_partner_ledger" model="ops.report.template">
+            <field name="name">Detailed Partner Ledger</field>
+            <field name="engine">financial</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Detailed ledger showing all partner transactions (receivables and payables). Year-to-date with all entries including initial balances.</field>
+            <field name="config_data">{
+    "report_type": "partner",
+    "date_mode": "ytd",
+    "target_move": "posted",
+    "reconciled": "all",
+    "display_account": "all",
+    "matrix_filter_mode": "any",
+    "report_format": "detailed",
+    "include_initial_balance": true,
+    "partner_type": "all",
+    "sort_by": "partner",
+    "branch_ids": [],
+    "business_unit_ids": [],
+    "account_ids": [],
+    "partner_ids": []
+}</field>
+        </record>
+
+        <!-- =================================================== -->
+        <!-- ADDITIONAL TEMPLATES                                -->
+        <!-- =================================================== -->
+
+        <!-- 6. Trial Balance - Current Month -->
+        <record id="template_trial_balance_current" model="ops.report.template">
+            <field name="name">Trial Balance - Current Month</field>
+            <field name="engine">financial</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Trial Balance for the current month showing all accounts with movements. Includes opening, period activity, and closing balances.</field>
+            <field name="config_data">{
+    "report_type": "tb",
+    "date_mode": "current_month",
+    "target_move": "posted",
+    "display_account": "movement",
+    "include_initial_balance": true,
+    "branch_ids": [],
+    "business_unit_ids": [],
+    "account_ids": [],
+    "journal_ids": []
+}</field>
+        </record>
+
+        <!-- 7. Aged Receivables -->
+        <record id="template_aged_receivables" model="ops.report.template">
+            <field name="name">Aged Receivables (30-day buckets)</field>
+            <field name="engine">financial</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Customer aging report with 30-day buckets. Shows overdue amounts by customer to help prioritize collection efforts.</field>
+            <field name="config_data">{
+    "report_type": "aged",
+    "target_move": "posted",
+    "reconciled": "unreconciled",
+    "aging_type": "receivable",
+    "period_length": 30,
+    "partner_type": "customer",
+    "branch_ids": [],
+    "partner_ids": []
+}</field>
+        </record>
+
+        <!-- 8. PDC Registry - All Open -->
+        <record id="template_pdc_registry_open" model="ops.report.template">
+            <field name="name">PDC Registry - All Open Checks</field>
+            <field name="engine">treasury</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Complete registry of all open (not yet cleared) post-dated checks, both receivable and payable. Useful for PDC inventory management.</field>
+            <field name="config_data">{
+    "report_type": "registry",
+    "pdc_type": "both",
+    "state_filter": "open",
+    "group_by": "none",
+    "branch_ids": [],
+    "partner_ids": [],
+    "bank_ids": []
+}</field>
+        </record>
+
+        <!-- 9. Depreciation Forecast - Next Quarter -->
+        <record id="template_depreciation_forecast" model="ops.report.template">
+            <field name="name">Depreciation Forecast - Running Assets</field>
+            <field name="engine">asset</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Forecasts pending depreciation entries for all running assets. Shows monthly breakdown for CAPEX planning and expense budgeting.</field>
+            <field name="config_data">{
+    "report_type": "forecast",
+    "asset_state": "running",
+    "depreciation_state": "draft",
+    "group_by": "category",
+    "branch_ids": [],
+    "business_unit_ids": [],
+    "asset_category_ids": []
+}</field>
+        </record>
+
+        <!-- 10. General Ledger - YTD -->
+        <record id="template_general_ledger_ytd" model="ops.report.template">
+            <field name="name">General Ledger - Year to Date</field>
+            <field name="engine">financial</field>
+            <field name="is_global" eval="True"/>
+            <field name="description">Complete General Ledger from January 1st to today. Shows all posted journal entries with running balances.</field>
+            <field name="config_data">{
+    "report_type": "gl",
+    "date_mode": "ytd",
+    "target_move": "posted",
+    "display_account": "movement",
+    "matrix_filter_mode": "any",
+    "report_format": "detailed",
+    "sort_by": "date",
+    "include_initial_balance": true,
+    "branch_ids": [],
+    "business_unit_ids": [],
+    "account_ids": [],
+    "journal_ids": []
+}</field>
+        </record>
+
+    </data>
+</odoo>

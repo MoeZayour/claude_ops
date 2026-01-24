@@ -32,6 +32,16 @@ class OpsAssetReportWizard(models.TransientModel):
     _description = 'Asset Intelligence - Fixed Asset Report Wizard'
 
     # ============================================
+    # SMART TEMPLATE SELECTOR
+    # ============================================
+    report_template_id = fields.Many2one(
+        'ops.report.template',
+        string='Load Template',
+        domain="[('engine', '=', 'asset'), '|', ('is_global', '=', True), ('user_id', '=', uid)]",
+        help='Select a saved report template to load its configuration'
+    )
+
+    # ============================================
     # 1. REPORT TYPE SELECTOR
     # ============================================
     report_type = fields.Selection([
@@ -810,3 +820,80 @@ class OpsAssetReportWizard(models.TransientModel):
                 }
             }
         return {}
+
+    # ============================================
+    # SMART TEMPLATE METHODS
+    # ============================================
+
+    @api.onchange('report_template_id')
+    def _onchange_report_template_id(self):
+        """Load configuration from selected template."""
+        if not self.report_template_id:
+            return
+
+        template = self.report_template_id
+        config = template.get_config_dict()
+
+        if not config:
+            return
+
+        # Apply scalar fields
+        scalar_fields = [
+            'report_type', 'asset_state', 'depreciation_state', 'group_by',
+            'include_fully_depreciated', 'show_depreciation_details',
+        ]
+        for field in scalar_fields:
+            if field in config:
+                setattr(self, field, config[field])
+
+        # Apply date fields
+        if config.get('date_from'):
+            self.date_from = fields.Date.from_string(config['date_from'])
+        if config.get('date_to'):
+            self.date_to = fields.Date.from_string(config['date_to'])
+        if config.get('as_of_date'):
+            self.as_of_date = fields.Date.from_string(config['as_of_date'])
+
+        # Apply Many2many fields
+        if config.get('branch_ids'):
+            self.branch_ids = [(6, 0, config['branch_ids'])]
+        if config.get('business_unit_ids'):
+            self.business_unit_ids = [(6, 0, config['business_unit_ids'])]
+        if config.get('asset_category_ids'):
+            self.asset_category_ids = [(6, 0, config['asset_category_ids'])]
+
+        # Increment template usage
+        template.increment_usage()
+
+        _logger.info(f"Loaded asset report template: {template.name}")
+
+    def _get_template_config(self):
+        """Get current wizard configuration for template saving."""
+        self.ensure_one()
+        return {
+            'report_type': self.report_type,
+            'asset_state': self.asset_state,
+            'depreciation_state': self.depreciation_state,
+            'group_by': self.group_by,
+            'include_fully_depreciated': self.include_fully_depreciated,
+            'show_depreciation_details': self.show_depreciation_details,
+            # Many2many as ID lists
+            'branch_ids': self.branch_ids.ids,
+            'business_unit_ids': self.business_unit_ids.ids,
+            'asset_category_ids': self.asset_category_ids.ids,
+        }
+
+    def action_save_template(self):
+        """Open wizard to save current settings as a template."""
+        self.ensure_one()
+        return {
+            'name': _('Save as Report Template'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'ops.report.template.save.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_source_wizard_model': self._name,
+                'default_source_wizard_id': self.id,
+            },
+        }

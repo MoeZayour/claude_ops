@@ -17,6 +17,21 @@
         <field name="arch" type="xml">
             <form string="Asset Intelligence">
                 <sheet>
+                    <!-- ==================== SMART TEMPLATE SELECTOR ==================== -->
+                    <div class="alert alert-secondary mb-3" role="alert">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <label for="report_template_id" class="fw-bold me-2">Quick Load:</label>
+                                <field name="report_template_id" placeholder="Select a saved template or configure manually..."
+                                       options="{'no_create': True, 'no_open': True}" class="d-inline-block" style="width: 400px;"/>
+                            </div>
+                            <div class="col-4 text-end">
+                                <button name="action_save_template" type="object" class="btn btn-sm btn-outline-primary"
+                                        string="Save as Template" icon="fa-save"/>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- ==================== HEADER ==================== -->
                     <div class="oe_title">
                         <h1>

@@ -76,3 +76,9 @@ access_ops_asset_report_wizard_user,ops.asset.report.wizard.user,model_ops_asset
 access_ops_asset_report_wizard_manager,ops.asset.report.wizard.manager,model_ops_asset_report_wizard,ops_matrix_core.group_ops_manager,1,1,1,1
 access_ops_asset_report_wizard_admin,ops.asset.report.wizard.admin,model_ops_asset_report_wizard,ops_matrix_core.group_ops_admin_power,1,1,1,1
 access_ops_asset_report_wizard_system,ops.asset.report.wizard.system,model_ops_asset_report_wizard,base.group_system,1,1,1,1
+access_ops_report_template_user,ops.report.template.user,model_ops_report_template,base.group_user,1,1,1,0
+access_ops_report_template_manager,ops.report.template.manager,model_ops_report_template,ops_matrix_core.group_ops_manager,1,1,1,1
+access_ops_report_template_admin,ops.report.template.admin,model_ops_report_template,ops_matrix_core.group_ops_admin_power,1,1,1,1
+access_ops_report_template_system,ops.report.template.system,model_ops_report_template,base.group_system,1,1,1,1
+access_ops_report_template_save_wizard_user,ops.report.template.save.wizard.user,model_ops_report_template_save_wizard,base.group_user,1,1,1,1
+access_ops_report_template_save_wizard_system,ops.report.template.save.wizard.system,model_ops_report_template_save_wizard,base.group_system,1,1,1,1

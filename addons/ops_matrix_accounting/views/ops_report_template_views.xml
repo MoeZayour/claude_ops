@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         OPS MATRIX SMART REPORT TEMPLATES
+
+         Views for managing saved report configurations.
+         ================================================================ -->
+
+    <!-- ==================== REPORT TEMPLATE TREE VIEW ==================== -->
+    <record id="view_ops_report_template_tree" model="ir.ui.view">
+        <field name="name">ops.report.template.tree</field>
+        <field name="model">ops.report.template</field>
+        <field name="arch" type="xml">
+            <list string="Report Templates" decoration-muted="not active">
+                <field name="name"/>
+                <field name="engine" widget="badge" decoration-info="engine == 'financial'"
+                       decoration-success="engine == 'treasury'" decoration-warning="engine == 'asset'"/>
+                <field name="is_global" widget="boolean_toggle"/>
+                <field name="user_id"/>
+                <field name="usage_count"/>
+                <field name="last_used"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ==================== REPORT TEMPLATE FORM VIEW ==================== -->
+    <record id="view_ops_report_template_form" model="ir.ui.view">
+        <field name="name">ops.report.template.form</field>
+        <field name="model">ops.report.template</field>
+        <field name="arch" type="xml">
+            <form string="Report Template">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" title="Global" bg_color="text-bg-success"
+                            invisible="not is_global"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Template Name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="engine" widget="radio"/>
+                            <field name="is_global"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="ops_branch_id"/>
+                            <field name="ops_business_unit_id"/>
+                        </group>
+                    </group>
+
+                    <group string="Description">
+                        <field name="description" nolabel="1" placeholder="Describe what this template reports on..."/>
+                    </group>
+
+                    <group string="Statistics">
+                        <group>
+                            <field name="usage_count" readonly="1"/>
+                            <field name="last_used" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Configuration Data (Advanced)" groups="base.group_no_one">
+                        <field name="config_data" widget="ace" options="{'mode': 'json'}" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== REPORT TEMPLATE SEARCH VIEW ==================== -->
+    <record id="view_ops_report_template_search" model="ir.ui.view">
+        <field name="name">ops.report.template.search</field>
+        <field name="model">ops.report.template</field>
+        <field name="arch" type="xml">
+            <search string="Search Templates">
+                <field name="name"/>
+                <field name="description"/>
+                <field name="user_id"/>
+                <field name="engine"/>
+                <filter string="Financial" name="filter_financial" domain="[('engine', '=', 'financial')]"/>
+                <filter string="Treasury" name="filter_treasury" domain="[('engine', '=', 'treasury')]"/>
+                <filter string="Asset" name="filter_asset" domain="[('engine', '=', 'asset')]"/>
+                <filter string="Global" name="filter_global" domain="[('is_global', '=', True)]"/>
+                <filter string="My Templates" name="filter_mine" domain="[('user_id', '=', uid)]"/>
+                <filter string="Archived" name="filter_inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ==================== SAVE TEMPLATE WIZARD VIEW ==================== -->
+    <record id="view_ops_report_template_save_wizard_form" model="ir.ui.view">
+        <field name="name">ops.report.template.save.wizard.form</field>
+        <field name="model">ops.report.template.save.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Save Report Template">
+                <group>
+                    <field name="name" placeholder="e.g., Monthly P&amp;L - All Branches"/>
+                    <field name="description" placeholder="Optional: Describe what this template is for..."/>
+                    <field name="is_global"/>
+                </group>
+                <footer>
+                    <button name="action_save" type="object" string="Save Template" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+                <field name="source_wizard_model" invisible="1"/>
+                <field name="source_wizard_id" invisible="1"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== MENU ACTIONS ==================== -->
+    <record id="action_ops_report_template" model="ir.actions.act_window">
+        <field name="name">Report Templates</field>
+        <field name="res_model">ops.report.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ops_report_template_search"/>
+        <field name="context">{'search_default_filter_mine': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first report template
+            </p>
+            <p>
+                Save frequently used report configurations as templates for quick access.
+                Templates can be private (only you) or shared globally with all users.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item (under Accounting > Reporting) -->
+    <menuitem id="menu_ops_report_templates"
+              name="Report Templates"
+              parent="ops_matrix_accounting.menu_ops_financial_reports"
+              action="action_ops_report_template"
+              sequence="99"/>
+
+</odoo>

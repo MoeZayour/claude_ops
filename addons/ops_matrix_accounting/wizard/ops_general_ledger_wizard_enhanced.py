@@ -36,6 +36,16 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
     _description = 'Matrix Financial Intelligence'
 
     # ============================================
+    # SMART TEMPLATE SELECTOR
+    # ============================================
+    report_template_id = fields.Many2one(
+        'ops.report.template',
+        string='Load Template',
+        domain="[('engine', '=', 'financial'), '|', ('is_global', '=', True), ('user_id', '=', uid)]",
+        help='Select a saved report template to load its configuration'
+    )
+
+    # ============================================
     # 0. REPORT TYPE SELECTOR (THE BIG 8)
     # ============================================
     report_type = fields.Selection([
@@ -1589,3 +1599,111 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             self.partner_type = 'supplier'
         else:
             self.partner_type = 'all'
+
+    # ============================================
+    # SMART TEMPLATE METHODS
+    # ============================================
+
+    @api.onchange('report_template_id')
+    def _onchange_report_template_id(self):
+        """Load configuration from selected template."""
+        if not self.report_template_id:
+            return
+
+        template = self.report_template_id
+        config = template.get_config_dict()
+
+        if not config:
+            return
+
+        # Apply scalar fields
+        scalar_fields = [
+            'report_type', 'target_move', 'reconciled', 'display_account',
+            'matrix_filter_mode', 'report_format', 'sort_by', 'group_by_date',
+            'consolidate_by_branch', 'consolidate_by_bu', 'consolidate_by_partner',
+            'include_initial_balance', 'aging_type', 'period_length', 'partner_type',
+            'account_type_ids',
+        ]
+        for field in scalar_fields:
+            if field in config:
+                setattr(self, field, config[field])
+
+        # Apply date fields with dynamic calculation
+        if config.get('date_mode') == 'last_month':
+            today = fields.Date.today()
+            self.date_from = date_utils.start_of(today - relativedelta(months=1), 'month')
+            self.date_to = date_utils.end_of(today - relativedelta(months=1), 'month')
+        elif config.get('date_mode') == 'current_month':
+            today = fields.Date.today()
+            self.date_from = date_utils.start_of(today, 'month')
+            self.date_to = date_utils.end_of(today, 'month')
+        elif config.get('date_mode') == 'ytd':
+            today = fields.Date.today()
+            self.date_from = date_utils.start_of(today, 'year')
+            self.date_to = today
+        elif config.get('date_from'):
+            self.date_from = fields.Date.from_string(config['date_from'])
+        if config.get('date_to'):
+            self.date_to = fields.Date.from_string(config['date_to'])
+        if config.get('as_of_date'):
+            self.as_of_date = fields.Date.from_string(config['as_of_date'])
+
+        # Apply Many2many fields
+        if config.get('branch_ids'):
+            self.branch_ids = [(6, 0, config['branch_ids'])]
+        if config.get('business_unit_ids'):
+            self.business_unit_ids = [(6, 0, config['business_unit_ids'])]
+        if config.get('account_ids'):
+            self.account_ids = [(6, 0, config['account_ids'])]
+        if config.get('journal_ids'):
+            self.journal_ids = [(6, 0, config['journal_ids'])]
+        if config.get('partner_ids'):
+            self.partner_ids = [(6, 0, config['partner_ids'])]
+
+        # Increment template usage
+        template.increment_usage()
+
+        _logger.info(f"Loaded financial report template: {template.name}")
+
+    def _get_template_config(self):
+        """Get current wizard configuration for template saving."""
+        self.ensure_one()
+        return {
+            'report_type': self.report_type,
+            'target_move': self.target_move,
+            'reconciled': self.reconciled,
+            'display_account': self.display_account,
+            'matrix_filter_mode': self.matrix_filter_mode,
+            'report_format': self.report_format,
+            'sort_by': self.sort_by,
+            'group_by_date': self.group_by_date,
+            'consolidate_by_branch': self.consolidate_by_branch,
+            'consolidate_by_bu': self.consolidate_by_bu,
+            'consolidate_by_partner': self.consolidate_by_partner,
+            'include_initial_balance': self.include_initial_balance,
+            'aging_type': self.aging_type,
+            'period_length': self.period_length,
+            'partner_type': self.partner_type,
+            'account_type_ids': self.account_type_ids,
+            # Many2many as ID lists
+            'branch_ids': self.branch_ids.ids,
+            'business_unit_ids': self.business_unit_ids.ids,
+            'account_ids': self.account_ids.ids,
+            'journal_ids': self.journal_ids.ids,
+            'partner_ids': self.partner_ids.ids,
+        }
+
+    def action_save_template(self):
+        """Open wizard to save current settings as a template."""
+        self.ensure_one()
+        return {
+            'name': _('Save as Report Template'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'ops.report.template.save.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_source_wizard_model': self._name,
+                'default_source_wizard_id': self.id,
+            },
+        }
