@@ -68,3 +68,7 @@ access_ops_trend_analysis_system,ops.trend.analysis.system,model_ops_trend_analy
 access_ops_asset_depreciation_wizard,ops.asset.depreciation.wizard,model_ops_asset_depreciation_wizard,base.group_user,1,1,1,1
 access_ops_asset_disposal_wizard,ops.asset.disposal.wizard,model_ops_asset_disposal_wizard,base.group_user,1,1,1,1
 access_ops_asset_register_wizard,ops.asset.register.wizard,model_ops_asset_register_wizard,base.group_user,1,1,1,1
+access_ops_treasury_report_wizard_user,ops.treasury.report.wizard.user,model_ops_treasury_report_wizard,ops_matrix_core.group_ops_user,1,1,1,1
+access_ops_treasury_report_wizard_manager,ops.treasury.report.wizard.manager,model_ops_treasury_report_wizard,ops_matrix_core.group_ops_manager,1,1,1,1
+access_ops_treasury_report_wizard_admin,ops.treasury.report.wizard.admin,model_ops_treasury_report_wizard,ops_matrix_core.group_ops_admin_power,1,1,1,1
+access_ops_treasury_report_wizard_system,ops.treasury.report.wizard.system,model_ops_treasury_report_wizard,base.group_system,1,1,1,1

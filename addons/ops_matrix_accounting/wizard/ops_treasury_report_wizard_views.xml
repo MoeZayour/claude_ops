@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         TREASURY INTELLIGENCE ENGINE - PDC ANALYSIS
+
+         Comprehensive Post-Dated Check reporting wizard with:
+         - PDC Registry: Complete list with all details
+         - Maturity Analysis: Aging buckets by due date
+         - PDCs in Hand: Open checks ready for deposit/payment
+         ================================================================ -->
+
+    <record id="view_ops_treasury_report_wizard_form" model="ir.ui.view">
+        <field name="name">ops.treasury.report.wizard.form</field>
+        <field name="model">ops.treasury.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Treasury Intelligence">
+                <sheet>
+                    <!-- ==================== HEADER ==================== -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="report_title" readonly="1"/>
+                        </h1>
+                        <h3 class="text-muted">Treasury Intelligence - PDC Analysis</h3>
+                        <div class="text-muted mt-2">
+                            <field name="filter_summary" widget="text" readonly="1"/>
+                        </div>
+                    </div>
+
+                    <!-- ==================== REPORT TYPE SELECTOR ==================== -->
+                    <div class="alert alert-primary mb-4" role="alert">
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="report_type" class="fw-bold mb-2">Report Type:</label>
+                                <field name="report_type" widget="radio"/>
+                            </div>
+                            <div class="col-6">
+                                <label for="pdc_type" class="fw-bold mb-2">PDC Type:</label>
+                                <field name="pdc_type" widget="radio"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="alert alert-info" role="alert">
+                        <div class="row">
+                            <div class="col-4">
+                                <strong>Matching PDCs:</strong>
+                                <field name="record_count" readonly="1"/> checks
+                            </div>
+                            <div class="col-4">
+                                <strong>Total Amount:</strong>
+                                <field name="total_amount" readonly="1" widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="currency_id" invisible="1"/>
+                            </div>
+                            <div class="col-4 text-end">
+                                <span invisible="record_count &gt; 100" class="badge text-bg-success">
+                                    Good size
+                                </span>
+                                <span invisible="record_count &lt;= 100 or record_count &gt; 500" class="badge text-bg-warning">
+                                    Large dataset
+                                </span>
+                                <span invisible="record_count &lt;= 500" class="badge text-bg-danger">
+                                    Very large
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== TABBED FILTERS ==================== -->
+                    <notebook>
+
+                        <!-- Tab 1: Date & Status Filters -->
+                        <page string="Date &amp; Status" name="page_dates">
+                            <group>
+                                <group string="Maturity Date Range">
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="as_of_date"
+                                           invisible="report_type != 'maturity'"
+                                           string="Analysis Date"/>
+                                </group>
+
+                                <group string="Status Filter">
+                                    <field name="company_id" options="{'no_create': True}"/>
+                                    <field name="state_filter" widget="radio"
+                                           invisible="report_type == 'on_hand'"/>
+                                </group>
+                            </group>
+
+                            <!-- Maturity Options -->
+                            <group invisible="report_type != 'maturity'">
+                                <group string="Maturity Analysis Options">
+                                    <field name="period_length"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Tab 2: Dimension Filters -->
+                        <page string="Dimension Filters" name="page_dimensions">
+                            <group>
+                                <group string="Branch Filter">
+                                    <field name="branch_ids" widget="many2many_tags"
+                                           options="{'no_create': True, 'color_field': 'color'}"/>
+                                </group>
+
+                                <group string="Bank Filter">
+                                    <field name="bank_ids" widget="many2many_tags"
+                                           options="{'no_create': True}"/>
+                                </group>
+                            </group>
+
+                            <group>
+                                <group string="Partner Filter">
+                                    <field name="partner_ids" widget="many2many_tags"
+                                           options="{'no_create': True}"
+                                           domain="[('is_company', '=', True)]"/>
+                                </group>
+                            </group>
+
+                            <div class="alert alert-secondary mt-3" role="alert">
+                                <p class="mb-0">
+                                    <strong>Tip:</strong> Leave filters empty to include all records.
+                                    Use Branch filter to analyze PDCs by organizational unit.
+                                </p>
+                            </div>
+                        </page>
+
+                        <!-- Tab 3: Output Options -->
+                        <page string="Output Options" name="page_output"
+                              invisible="report_type == 'maturity'">
+                            <group>
+                                <group string="Grouping">
+                                    <field name="group_by" widget="radio"/>
+                                </group>
+                            </group>
+
+                            <div class="alert alert-info mt-3" role="alert">
+                                <h5>Report Descriptions:</h5>
+                                <ul class="mb-0">
+                                    <li invisible="report_type != 'registry'">
+                                        <strong>PDC Registry:</strong> Complete list of all PDCs with details
+                                    </li>
+                                    <li invisible="report_type != 'maturity'">
+                                        <strong>Maturity Analysis:</strong> PDCs grouped by days to maturity
+                                    </li>
+                                    <li invisible="report_type != 'on_hand'">
+                                        <strong>PDCs in Hand:</strong> Open checks ready for deposit/payment
+                                    </li>
+                                </ul>
+                            </div>
+                        </page>
+
+                    </notebook>
+
+                    <!-- ==================== ACTION BUTTONS ==================== -->
+                    <footer>
+                        <button name="action_generate_report"
+                                string="Generate Report"
+                                type="object"
+                                class="btn-primary"
+                                icon="fa-file-pdf-o"/>
+                        <button name="action_export_excel"
+                                string="Export to Excel"
+                                type="object"
+                                class="btn-secondary"
+                                icon="fa-file-excel-o"/>
+                        <button name="action_view_pdcs"
+                                string="View PDCs"
+                                type="object"
+                                class="btn-secondary"
+                                icon="fa-list"/>
+                        <button string="Cancel"
+                                class="btn-secondary"
+                                icon="fa-times"
+                                special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== ACTION ==================== -->
+    <record id="action_ops_treasury_report_wizard" model="ir.actions.act_window">
+        <field name="name">Treasury Intelligence</field>
+        <field name="res_model">ops.treasury.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- ==================== MENU ITEM ==================== -->
+    <menuitem id="menu_ops_treasury_reports"
+              name="Treasury Intelligence"
+              parent="account.menu_finance_reports"
+              action="action_ops_treasury_report_wizard"
+              sequence="3"
+              groups="account.group_account_user"/>
+
+</odoo>
