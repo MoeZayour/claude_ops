@@ -38,9 +38,11 @@
         <field name="binding_view_types">form</field>
     </record>
 
-    <menuitem id="menu_ops_general_ledger_report" 
-              name="General Ledger" 
-              parent="menu_ops_accounting_reports" 
-              action="action_ops_general_ledger_wizard" 
-              sequence="10"/>
+    <!-- Basic GL hidden - users should use Enhanced version -->
+    <menuitem id="menu_ops_general_ledger_report"
+              name="General Ledger (Basic)"
+              parent="menu_ops_accounting_reports"
+              action="action_ops_general_ledger_wizard"
+              sequence="99"
+              active="False"/>
 </odoo>

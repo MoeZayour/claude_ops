@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- ================================================================
+         OPS MATRIX ACCOUNTING - REPORT MENU
+
+         Phase 1 Cleanup: Removed broken and duplicate menu items.
+         - REMOVED: Report Templates (model doesn't exist)
+         - REMOVED: Excel Export (model doesn't exist)
+         - REMOVED: Consolidated Reporting (models don't exist yet)
+
+         Kept: Financial Reports Wizard (basic, until Phase 2)
+         ================================================================ -->
+
     <!-- Financial Reports Wizard Action -->
     <record id="action_ops_financial_reports_wizard" model="ir.actions.act_window">
         <field name="name">Financial Reports</field>
@@ -8,8 +19,8 @@
         <field name="target">new</field>
         <field name="context">{}</field>
     </record>
-    
-    <!-- Financial Reports Wizard Action -->
+
+    <!-- Financial Reports Wizard Action (alternate ID for compatibility) -->
     <record id="action_ops_financial_report_wizard_new" model="ir.actions.act_window">
         <field name="name">Financial Reports</field>
         <field name="res_model">ops.financial.report.wizard</field>
@@ -22,95 +33,7 @@
               name="Financial Reports"
               parent="account.menu_finance_reports"
               action="action_ops_financial_report_wizard_new"
-              sequence="5"
+              sequence="10"
               groups="account.group_account_manager"/>
 
-    <!-- Consolidated Reporting Actions -->
-    <record id="action_ops_company_consolidation" model="ir.actions.act_window">
-        <field name="name">Company Consolidation</field>
-        <field name="res_model">ops.company.consolidation</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-    </record>
-
-    <record id="action_ops_branch_report" model="ir.actions.act_window">
-        <field name="name">Branch Report</field>
-        <field name="res_model">ops.branch.report</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-    </record>
-
-    <record id="action_ops_bu_report" model="ir.actions.act_window">
-        <field name="name">Business Unit Report</field>
-        <field name="res_model">ops.business.unit.report</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-    </record>
-
-    <record id="action_ops_consolidated_bs" model="ir.actions.act_window">
-        <field name="name">Consolidated Balance Sheet</field>
-        <field name="res_model">ops.consolidated.balance.sheet</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-    </record>
-
-    <!-- Consolidated Reporting Menus -->
-    <menuitem id="menu_ops_consolidation_root"
-              name="Consolidated Reporting"
-              parent="account.menu_finance_reports"
-              sequence="50"
-              groups="account.group_account_manager"/>
-
-    <menuitem id="menu_ops_company_consolidation"
-              name="Company Consolidation"
-              parent="menu_ops_consolidation_root"
-              action="action_ops_company_consolidation"
-              sequence="10"/>
-
-    <menuitem id="menu_ops_branch_report"
-              name="Branch P&amp;L"
-              parent="menu_ops_consolidation_root"
-              action="action_ops_branch_report"
-              sequence="20"/>
-
-    <menuitem id="menu_ops_bu_report"
-              name="Business Unit Profitability"
-              parent="menu_ops_consolidation_root"
-              action="action_ops_bu_report"
-              sequence="30"/>
-
-    <menuitem id="menu_ops_consolidated_bs"
-              name="Consolidated Balance Sheet"
-              parent="menu_ops_consolidation_root"
-              action="action_ops_consolidated_bs"
-              sequence="40"/>
-    
-    <!-- Report Templates Menu -->
-    <record id="action_ops_report_template" model="ir.actions.act_window">
-        <field name="name">Report Templates</field>
-        <field name="res_model">ops.report.template</field>
-        <field name="view_mode">list,form</field>
-    </record>
-    
-    <menuitem id="menu_ops_report_templates"
-              name="Report Templates"
-              parent="account.menu_finance_reports"
-              action="action_ops_report_template"
-              sequence="90"
-              groups="account.group_account_manager"/>
-    
-    <!-- Excel Export Wizard -->
-    <record id="action_ops_excel_export" model="ir.actions.act_window">
-        <field name="name">Excel Export</field>
-        <field name="res_model">ops.excel.export.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-    </record>
-    
-    <menuitem id="menu_ops_excel_export"
-              name="Excel Export"
-              parent="account.menu_finance_reports"
-              action="action_ops_excel_export"
-              sequence="95"
-              groups="account.group_account_user"/>
 </odoo>
