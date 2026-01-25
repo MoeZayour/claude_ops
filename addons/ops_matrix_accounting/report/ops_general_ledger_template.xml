@@ -298,4 +298,15 @@
         <field name="binding_type">report</field>
     </record>
 
+    <!-- Financial Matrix XLSX Export (Matrix Enhanced) -->
+    <record id="report_financial_matrix_xlsx" model="ir.actions.report">
+        <field name="name">Financial Report (Excel)</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">ops_matrix_accounting.report_financial_matrix_xlsx</field>
+        <field name="report_file">ops_matrix_accounting.report_financial_matrix_xlsx</field>
+        <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
+        <field name="binding_type">report</field>
+    </record>
+
 </odoo>

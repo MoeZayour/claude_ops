@@ -33,16 +33,12 @@ _logger = logging.getLogger(__name__)
 class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
     """Matrix Financial Intelligence - Unified Reporting Engine"""
     _name = 'ops.general.ledger.wizard.enhanced'
+    _inherit = 'ops.base.report.wizard'
     _description = 'Matrix Financial Intelligence'
 
-    # ============================================
-    # SMART TEMPLATE SELECTOR
-    # ============================================
+    # Template domain override
     report_template_id = fields.Many2one(
-        'ops.report.template',
-        string='Load Template',
-        domain="[('engine', '=', 'financial'), '|', ('is_global', '=', True), ('user_id', '=', uid)]",
-        help='Select a saved report template to load its configuration'
+        domain="[('engine', '=', 'financial'), '|', ('is_global', '=', True), ('user_id', '=', uid)]"
     )
 
     # ============================================
@@ -84,12 +80,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
     # ============================================
     # 2. COMPANY & JOURNALS
     # ============================================
-    company_id = fields.Many2one(
-        'res.company',
-        string='Company',
-        required=True,
-        default=lambda self: self.env.company
-    )
+    # company_id inherited from ops.base.report.wizard
     journal_ids = fields.Many2many(
         'account.journal',
         string='Journals',
@@ -273,33 +264,22 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
     )
 
     # ============================================
-    # 10. COMPUTED FIELDS
+    # 10. COMPUTED FIELDS (inherited from base, with overrides)
     # ============================================
-    filter_summary = fields.Char(
-        compute='_compute_filter_summary',
-        string='Filter Summary',
-        help='Summary of active filters'
-    )
-
-    record_count = fields.Integer(
-        compute='_compute_record_count',
-        string='Estimated Records',
-        help='Estimated number of records matching filters'
-    )
-
-    report_title = fields.Char(
-        compute='_compute_report_title',
-        string='Report Title'
-    )
+    # filter_summary, record_count, report_title inherited from base
+    # currency_id inherited from base
 
     # ============================================
-    # COMPUTED METHODS
+    # BASE CLASS HOOK IMPLEMENTATIONS
     # ============================================
 
-    @api.depends('report_type')
-    def _compute_report_title(self):
-        """Get human-readable report title."""
-        titles = {
+    def _get_engine_name(self):
+        """Return engine name for template filtering."""
+        return 'financial'
+
+    def _get_report_titles(self):
+        """Return mapping of report_type to human-readable title."""
+        return {
             'gl': 'General Ledger',
             'tb': 'Trial Balance',
             'pl': 'Profit & Loss Statement',
@@ -309,65 +289,98 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             'partner': 'Partner Ledger',
             'soa': 'Statement of Account',
         }
-        for wizard in self:
-            wizard.report_title = titles.get(wizard.report_type, 'Financial Report')
 
-    @api.depends('branch_ids', 'business_unit_ids', 'account_ids', 'journal_ids',
-                 'date_from', 'date_to', 'target_move', 'reconciled', 'partner_ids',
-                 'report_type')
-    def _compute_filter_summary(self):
-        """Compute human-readable summary of active filters."""
-        for wizard in self:
-            parts = [wizard.report_title or 'Report']
+    def _get_scalar_fields_for_template(self):
+        """Return scalar fields for template save/load."""
+        return [
+            'report_type', 'target_move', 'reconciled', 'display_account',
+            'matrix_filter_mode', 'report_format', 'sort_by', 'group_by_date',
+            'consolidate_by_branch', 'consolidate_by_bu', 'consolidate_by_partner',
+            'include_initial_balance', 'aging_type', 'period_length', 'partner_type',
+            'account_type_ids',
+        ]
 
-            # Date range
-            if wizard.report_type == 'bs':
-                if wizard.as_of_date:
-                    parts.append(f"As of: {wizard.as_of_date}")
-            elif wizard.date_from and wizard.date_to:
-                parts.append(f"Period: {wizard.date_from} to {wizard.date_to}")
+    def _get_m2m_fields_for_template(self):
+        """Return Many2many fields for template save/load."""
+        return ['branch_ids', 'business_unit_ids', 'account_ids', 'journal_ids', 'partner_ids']
 
-            # Matrix dimensions
-            if wizard.branch_ids:
-                if len(wizard.branch_ids) <= 3:
-                    branch_names = wizard.branch_ids.mapped('code')
-                    parts.append(f"Branches: {', '.join(branch_names)}")
-                else:
-                    parts.append(f"Branches: {len(wizard.branch_ids)} selected")
+    def _add_filter_summary_parts(self, parts):
+        """Add financial-specific filter descriptions."""
+        # Date handling differs by report type
+        if self.report_type == 'bs':
+            if self.as_of_date:
+                # Replace generic date range with as_of_date
+                parts[:] = [p for p in parts if not p.startswith('Period:')]
+                parts.append(f"As of: {self.as_of_date}")
 
-            if wizard.business_unit_ids:
-                if len(wizard.business_unit_ids) <= 3:
-                    bu_names = wizard.business_unit_ids.mapped('code')
-                    parts.append(f"BUs: {', '.join(bu_names)}")
-                else:
-                    parts.append(f"BUs: {len(wizard.business_unit_ids)} selected")
+        # Matrix dimensions
+        if self.branch_ids:
+            if len(self.branch_ids) <= 3:
+                branch_names = self.branch_ids.mapped('code')
+                parts.append(f"Branches: {', '.join(branch_names)}")
+            else:
+                parts.append(f"Branches: {len(self.branch_ids)} selected")
 
-            # Partners
-            if wizard.partner_ids:
-                parts.append(f"Partners: {len(wizard.partner_ids)} selected")
+        if self.business_unit_ids:
+            if len(self.business_unit_ids) <= 3:
+                bu_names = self.business_unit_ids.mapped('code')
+                parts.append(f"BUs: {', '.join(bu_names)}")
+            else:
+                parts.append(f"BUs: {len(self.business_unit_ids)} selected")
 
-            # Transaction filters
-            if wizard.target_move == 'posted':
-                parts.append("Posted only")
+        # Partners
+        if self.partner_ids:
+            parts.append(f"Partners: {len(self.partner_ids)} selected")
 
-            wizard.filter_summary = " | ".join(parts) if parts else "No filters applied"
+        # Transaction filters
+        if self.target_move == 'posted':
+            parts.append("Posted only")
 
-    @api.depends('date_from', 'date_to', 'company_id', 'branch_ids', 'business_unit_ids',
-                 'account_ids', 'target_move', 'journal_ids', 'partner_ids', 'report_type')
-    def _compute_record_count(self):
-        """Estimate number of records matching current filters."""
-        for wizard in self:
-            if not wizard.date_from or not wizard.date_to:
-                wizard.record_count = 0
-                continue
+    def _validate_filters_extra(self):
+        """Perform financial-specific validation."""
+        # SoA requires partner selection
+        if self.report_type == 'soa' and not self.partner_ids:
+            raise ValidationError(_(
+                "Statement of Account requires at least one partner to be selected."
+            ))
 
-            try:
-                domain = wizard._build_domain()
-                count = self.env['account.move.line'].search_count(domain)
-                wizard.record_count = count
-            except Exception as e:
-                _logger.error(f"Error counting records: {e}")
-                wizard.record_count = 0
+        # Matrix exact mode validation
+        if self.matrix_filter_mode == 'exact' and (not self.branch_ids or not self.business_unit_ids):
+            raise ValidationError(_(
+                "Exact combination mode requires both Branch and Business Unit filters."
+            ))
+
+        # Large dataset warnings
+        date_diff = (self.date_to - self.date_from).days
+        if date_diff > 365 and self.report_format == 'detailed' and not self.account_ids:
+            return {
+                'warning': {
+                    'title': _('Large Date Range'),
+                    'message': _(
+                        'You are generating a detailed report for more than 1 year. '
+                        'Consider using summary format or filtering by accounts.'
+                    ),
+                }
+            }
+
+        if self.record_count > 50000 and self.report_format == 'detailed':
+            return {
+                'warning': {
+                    'title': _('Large Result Set'),
+                    'message': _(
+                        'Approximately %(count)d records. Consider summary format.'
+                    ) % {'count': self.record_count},
+                }
+            }
+
+        return True
+
+    def _estimate_record_count(self):
+        """Estimate number of account move lines matching filters."""
+        if not self.date_from or not self.date_to:
+            return 0
+        domain = self._build_domain()
+        return self.env['account.move.line'].search_count(domain)
 
     # ============================================
     # DOMAIN BUILDING METHODS
@@ -520,71 +533,9 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         return combinations
 
     # ============================================
-    # VALIDATION METHODS
-    # ============================================
-
-    def _validate_filters(self):
-        """Validate wizard filters before generating report."""
-        self.ensure_one()
-
-        if self.date_from > self.date_to:
-            raise ValidationError(_("From date cannot be after To date."))
-
-        # SoA requires partner selection
-        if self.report_type == 'soa' and not self.partner_ids:
-            raise ValidationError(_(
-                "Statement of Account requires at least one partner to be selected."
-            ))
-
-        # Matrix exact mode validation
-        if self.matrix_filter_mode == 'exact' and (not self.branch_ids or not self.business_unit_ids):
-            raise ValidationError(_(
-                "Exact combination mode requires both Branch and Business Unit filters."
-            ))
-
-        # Large dataset warnings
-        date_diff = (self.date_to - self.date_from).days
-        if date_diff > 365 and self.report_format == 'detailed' and not self.account_ids:
-            return {
-                'warning': {
-                    'title': _('Large Date Range'),
-                    'message': _(
-                        'You are generating a detailed report for more than 1 year. '
-                        'Consider using summary format or filtering by accounts.'
-                    ),
-                }
-            }
-
-        if self.record_count > 50000 and self.report_format == 'detailed':
-            return {
-                'warning': {
-                    'title': _('Large Result Set'),
-                    'message': _(
-                        'Approximately %(count)d records. Consider summary format.'
-                    ) % {'count': self.record_count},
-                }
-            }
-
-        return True
-
-    # ============================================
     # REPORT DISPATCH & GENERATION
     # ============================================
-
-    def action_generate_report(self):
-        """Main action: Generate report based on report_type."""
-        self.ensure_one()
-
-        # Validate
-        validation_result = self._validate_filters()
-        if isinstance(validation_result, dict) and 'warning' in validation_result:
-            pass  # Allow to proceed with warning
-
-        # Dispatch to appropriate handler
-        report_data = self._get_report_data()
-
-        # Return report action
-        return self._return_report_action(report_data)
+    # action_generate_report inherited from base class
 
     def _get_report_data(self):
         """Dispatch to appropriate report data method."""
@@ -1450,7 +1401,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
 
     def _return_report_action(self, data):
         """Return appropriate report action based on report type."""
-        report_names = {
+        report_xml_ids = {
             'gl': 'ops_matrix_accounting.report_general_ledger_matrix',
             'tb': 'ops_matrix_accounting.report_trial_balance_matrix',
             'pl': 'ops_matrix_accounting.report_profit_loss_matrix',
@@ -1461,13 +1412,9 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             'soa': 'ops_matrix_accounting.report_statement_of_account_matrix',
         }
 
-        return {
-            'type': 'ir.actions.report',
-            'report_name': report_names.get(self.report_type, report_names['gl']),
-            'report_type': 'qweb-pdf',
-            'data': data,
-            'config': False,
-        }
+        xml_id = report_xml_ids.get(self.report_type, report_xml_ids['gl'])
+        report = self.env.ref(xml_id)
+        return report.report_action(self, data=data)
 
     # ============================================
     # ACTION METHODS
@@ -1478,14 +1425,8 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         self.ensure_one()
 
         report_data = self._get_report_data()
-
-        return {
-            'type': 'ir.actions.report',
-            'report_name': 'ops_matrix_accounting.report_financial_matrix_xlsx',
-            'report_type': 'xlsx',
-            'data': report_data,
-            'config': False,
-        }
+        report = self.env.ref('ops_matrix_accounting.report_financial_matrix_xlsx')
+        return report.report_action(self, data=report_data)
 
     def action_view_transactions(self):
         """Open filtered journal entries in list view."""
@@ -1603,107 +1544,5 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
     # ============================================
     # SMART TEMPLATE METHODS
     # ============================================
-
-    @api.onchange('report_template_id')
-    def _onchange_report_template_id(self):
-        """Load configuration from selected template."""
-        if not self.report_template_id:
-            return
-
-        template = self.report_template_id
-        config = template.get_config_dict()
-
-        if not config:
-            return
-
-        # Apply scalar fields
-        scalar_fields = [
-            'report_type', 'target_move', 'reconciled', 'display_account',
-            'matrix_filter_mode', 'report_format', 'sort_by', 'group_by_date',
-            'consolidate_by_branch', 'consolidate_by_bu', 'consolidate_by_partner',
-            'include_initial_balance', 'aging_type', 'period_length', 'partner_type',
-            'account_type_ids',
-        ]
-        for field in scalar_fields:
-            if field in config:
-                setattr(self, field, config[field])
-
-        # Apply date fields with dynamic calculation
-        if config.get('date_mode') == 'last_month':
-            today = fields.Date.today()
-            self.date_from = date_utils.start_of(today - relativedelta(months=1), 'month')
-            self.date_to = date_utils.end_of(today - relativedelta(months=1), 'month')
-        elif config.get('date_mode') == 'current_month':
-            today = fields.Date.today()
-            self.date_from = date_utils.start_of(today, 'month')
-            self.date_to = date_utils.end_of(today, 'month')
-        elif config.get('date_mode') == 'ytd':
-            today = fields.Date.today()
-            self.date_from = date_utils.start_of(today, 'year')
-            self.date_to = today
-        elif config.get('date_from'):
-            self.date_from = fields.Date.from_string(config['date_from'])
-        if config.get('date_to'):
-            self.date_to = fields.Date.from_string(config['date_to'])
-        if config.get('as_of_date'):
-            self.as_of_date = fields.Date.from_string(config['as_of_date'])
-
-        # Apply Many2many fields
-        if config.get('branch_ids'):
-            self.branch_ids = [(6, 0, config['branch_ids'])]
-        if config.get('business_unit_ids'):
-            self.business_unit_ids = [(6, 0, config['business_unit_ids'])]
-        if config.get('account_ids'):
-            self.account_ids = [(6, 0, config['account_ids'])]
-        if config.get('journal_ids'):
-            self.journal_ids = [(6, 0, config['journal_ids'])]
-        if config.get('partner_ids'):
-            self.partner_ids = [(6, 0, config['partner_ids'])]
-
-        # Increment template usage
-        template.increment_usage()
-
-        _logger.info(f"Loaded financial report template: {template.name}")
-
-    def _get_template_config(self):
-        """Get current wizard configuration for template saving."""
-        self.ensure_one()
-        return {
-            'report_type': self.report_type,
-            'target_move': self.target_move,
-            'reconciled': self.reconciled,
-            'display_account': self.display_account,
-            'matrix_filter_mode': self.matrix_filter_mode,
-            'report_format': self.report_format,
-            'sort_by': self.sort_by,
-            'group_by_date': self.group_by_date,
-            'consolidate_by_branch': self.consolidate_by_branch,
-            'consolidate_by_bu': self.consolidate_by_bu,
-            'consolidate_by_partner': self.consolidate_by_partner,
-            'include_initial_balance': self.include_initial_balance,
-            'aging_type': self.aging_type,
-            'period_length': self.period_length,
-            'partner_type': self.partner_type,
-            'account_type_ids': self.account_type_ids,
-            # Many2many as ID lists
-            'branch_ids': self.branch_ids.ids,
-            'business_unit_ids': self.business_unit_ids.ids,
-            'account_ids': self.account_ids.ids,
-            'journal_ids': self.journal_ids.ids,
-            'partner_ids': self.partner_ids.ids,
-        }
-
-    def action_save_template(self):
-        """Open wizard to save current settings as a template."""
-        self.ensure_one()
-        return {
-            'name': _('Save as Report Template'),
-            'type': 'ir.actions.act_window',
-            'res_model': 'ops.report.template.save.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_source_wizard_model': self._name,
-                'default_source_wizard_id': self.id,
-            },
-        }
+    # _onchange_report_template_id, _get_template_config, action_save_template
+    # are inherited from ops.base.report.wizard
