@@ -1,563 +1,1136 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        OPS Matrix Corporate Report Layout (BEM Architecture)
-        Standard company branding for all Matrix reports.
-        Uses BEM (Block Element Modifier) naming convention.
+        OPS Matrix Corporate Report Layout
+        ==================================
+        v19.3.2.0: Phase 16 - VOGUE Update (PDF-Safe Premium Styling)
 
-        v19.0.4.0: Phase 5 Corporate Design System via Frontend Agent
-
-        Naming Convention:
-          .ops-report__element__modifier
+        CRITICAL PDF COMPATIBILITY RULES:
+        - NO CSS Variables (use literal hex codes)
+        - NO Remote Fonts (use system fonts)
+        - FORCE Print Colors (-webkit-print-color-adjust: exact !important)
+        - Table-based layouts for wkhtmltopdf
 
         Color Palette:
-          ops-primary: #0056b3 (Corporate Blue)
-          ops-secondary: #f8f9fa (Light Background)
-          ops-danger: #dc3545 (Negative/Warning)
-          ops-success: #28a745 (Positive/Success)
+        - Primary Deep: #0f172a
+        - Primary: #1e293b
+        - Primary Light: #334155
+        - Gold: #d97706
+        - Gold Light: #f59e0b
+        - Accent Blue: #3b82f6
+        - Success: #059669
+        - Danger: #dc2626
+        - Background: #ffffff
     -->
 
-    <!-- OPS Matrix Report Styles (embedded CSS for PDF reports) -->
+    <!-- OPS Matrix Report Styles (PDF-Safe Embedded CSS) -->
     <template id="ops_report_styles">
         <style type="text/css">
             /* ============================================
-               CSS CUSTOM PROPERTIES (Design Tokens)
+               PHASE 16 - VOGUE UPDATE
+               PDF-Safe Premium Executive Styling
                ============================================ */
-            :root {
-                /* Primary Brand Colors */
-                --ops-primary: #0056b3;
-                --ops-primary-dark: #004494;
-                --ops-primary-light: #e7f1ff;
 
-                /* Secondary Colors */
-                --ops-secondary: #f8f9fa;
-                --ops-secondary-dark: #e9ecef;
-
-                /* Status Colors */
-                --ops-success: #28a745;
-                --ops-warning: #ffc107;
-                --ops-danger: #dc3545;
-                --ops-info: #17a2b8;
-                --ops-muted: #6c757d;
-
-                /* Neutral Colors */
-                --ops-dark: #343a40;
-                --ops-light: #f8f9fa;
-                --ops-white: #ffffff;
-                --ops-border: #dee2e6;
-
-                /* Typography */
-                --ops-font-stack: 'Inter', 'Roboto', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                --ops-font-mono: 'Roboto Mono', 'Consolas', 'Monaco', monospace;
+            /* Force all colors to print */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
-            /* ============================================
-               BLOCK: ops-report (Main Container)
-               ============================================ */
-            .ops-report {
-                font-family: var(--ops-font-stack);
+            /* Base Typography - System Fonts Only */
+            body, .page {
+                font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif;
                 font-size: 11px;
                 line-height: 1.5;
-                color: var(--ops-dark);
-                background-color: var(--ops-white);
+                color: #1e293b;
+                background-color: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
             }
 
-            /* Backward compatibility alias */
+            .ops-report,
             .ops-report-container {
-                font-family: var(--ops-font-stack);
+                font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif;
                 font-size: 11px;
-                line-height: 1.4;
-                color: #333333;
+                line-height: 1.5;
+                color: #1e293b;
+                background-color: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
             }
 
             /* ============================================
-               BLOCK: ops-report__header
+               COVER PAGE - Premium Executive Design
                ============================================ */
-            .ops-report__header,
-            .ops-report-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 20px 25px;
-                background: linear-gradient(135deg, var(--ops-primary) 0%, var(--ops-primary-dark) 100%);
-                color: var(--ops-white);
-                border-bottom: 3px solid var(--ops-primary-dark);
-                border-radius: 6px;
-                margin-bottom: 20px;
-                page-break-inside: avoid;
+            .ops-cover-page {
+                min-height: 100%;
+                background: #ffffff !important;
+                page-break-after: always;
+                -webkit-print-color-adjust: exact !important;
             }
 
-            .ops-report__header--centered,
-            .ops-report-header.text-center {
-                justify-content: center;
+            .ops-cover-header-band {
+                background: #0f172a !important;
+                padding: 40px 50px;
+                position: relative;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-cover-accent-bar {
+                height: 6px;
+                background: linear-gradient(90deg, #d97706 0%, #f59e0b 30%, #3b82f6 70%, #60a5fa 100%);
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-cover-logo-box {
+                display: inline-block;
+                width: 52px;
+                height: 52px;
+                background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+                border-radius: 10px;
                 text-align: center;
-                display: block;
-            }
-
-            .ops-report__header-title,
-            .ops-report-header h2 {
-                margin: 0;
-                font-size: 18px;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-                color: white;
-            }
-
-            .ops-report__header-subtitle,
-            .ops-report-header .ops-subtitle {
-                margin: 8px 0 0 0;
-                font-size: 12px;
-                opacity: 0.9;
-            }
-
-            .ops-report__header-logo {
-                max-height: 50px;
-                width: auto;
-            }
-
-            .ops-report__header-company {
-                text-align: right;
-                font-size: 10px;
-            }
-
-            /* ============================================
-               BLOCK: ops-report__meta (Metadata Info Box)
-               ============================================ */
-            .ops-report__meta,
-            .ops-info-box {
-                background-color: var(--ops-secondary);
-                padding: 15px 18px;
-                border-radius: 5px;
-                border-left: 4px solid var(--ops-primary);
-                margin-bottom: 20px;
-            }
-
-            .ops-report__meta-label,
-            .ops-info-label {
-                font-weight: 600;
-                color: var(--ops-primary);
-                display: inline-block;
-                min-width: 100px;
-            }
-
-            .ops-report__meta strong,
-            .ops-info-box strong {
-                color: var(--ops-primary);
-            }
-
-            /* ============================================
-               BLOCK: ops-table (Data Tables - BEM)
-               ============================================ */
-            .ops-table,
-            .ops_table_matrix {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 15px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-                font-size: 10px;
-            }
-
-            .ops-table thead tr,
-            .ops_table_matrix thead tr {
-                background-color: var(--ops-primary);
-                color: white;
-            }
-
-            .ops-table th,
-            .ops_table_matrix th {
-                padding: 10px 8px;
-                font-weight: 600;
-                text-align: left;
-                border: 1px solid var(--ops-primary-dark);
-                white-space: nowrap;
-                background-color: var(--ops-primary);
-                color: white;
-            }
-
-            .ops-table th--right,
-            .ops_table_matrix th.text-end,
-            .ops_table_matrix td.text-end {
-                text-align: right !important;
-            }
-
-            .ops-table th--center,
-            .ops_table_matrix th.text-center,
-            .ops_table_matrix td.text-center {
-                text-align: center !important;
-            }
-
-            .ops-table td,
-            .ops_table_matrix td {
-                padding: 8px;
-                border: 1px solid #e0e0e0;
+                line-height: 52px;
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 26px;
+                font-weight: bold;
+                color: #ffffff;
                 vertical-align: middle;
+                -webkit-print-color-adjust: exact !important;
             }
 
-            /* Zebra Striping */
-            .ops-table__row--even,
-            .ops_table_matrix tbody tr:nth-child(even) {
-                background-color: #fafbfc;
-            }
-
-            .ops-table__row--odd,
-            .ops_table_matrix tbody tr:nth-child(odd) {
-                background-color: #ffffff;
-            }
-
-            .ops-table__row--hover:hover,
-            .ops_table_matrix tbody tr:hover {
-                background-color: var(--ops-primary-light);
-            }
-
-            /* Total Rows */
-            .ops-table__row--total,
-            .ops_table_matrix tfoot tr,
-            .ops_table_matrix tr.ops-total-row {
-                background-color: #e8eef5;
-                font-weight: 600;
-                border-top: 2px solid var(--ops-primary);
-            }
-
-            .ops-table__row--grand-total,
-            .ops_table_matrix tr.ops-grand-total {
-                background: linear-gradient(135deg, var(--ops-primary) 0%, var(--ops-primary-dark) 100%);
-                color: white;
-                font-weight: 700;
-                font-size: 11px;
-            }
-
-            /* ============================================
-               BLOCK: ops-number (Numeric Values)
-               ============================================ */
-            .ops-number {
-                text-align: right;
-                font-variant-numeric: tabular-nums;
-                font-family: var(--ops-font-mono);
-            }
-
-            .ops-number--positive,
-            .ops-number-positive {
-                color: var(--ops-success);
-            }
-
-            .ops-number--negative,
-            .ops-number-negative {
-                color: var(--ops-danger);
-                font-weight: 600;
-            }
-
-            .ops-number--zero,
-            .ops-number-zero {
-                color: var(--ops-muted);
-            }
-
-            /* Debit/Credit Accounting Colors */
-            .ops-number--debit,
-            .ops-debit {
-                color: var(--ops-success);
-            }
-
-            .ops-number--credit,
-            .ops-credit {
-                color: var(--ops-danger);
-            }
-
-            /* Text negative class */
-            .ops-text--negative {
-                color: var(--ops-danger);
-                font-weight: 600;
-            }
-
-            .ops-text--positive {
-                color: var(--ops-success);
-            }
-
-            /* ============================================
-               BLOCK: ops-badge (Status Badges)
-               ============================================ */
-            .ops-badge {
+            .ops-cover-company-name {
                 display: inline-block;
-                padding: 2px 8px;
-                border-radius: 3px;
-                font-size: 9px;
+                vertical-align: middle;
+                margin-left: 14px;
+            }
+
+            .ops-cover-company-text {
+                font-size: 20px;
+                font-weight: bold;
+                color: #ffffff;
+                letter-spacing: -0.5px;
+            }
+
+            .ops-cover-tagline {
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.6);
+                font-weight: 500;
+                letter-spacing: 0.5px;
+            }
+
+            .ops-cover-fiscal-box {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                padding: 10px 18px;
+                border-radius: 8px;
+                text-align: right;
+            }
+
+            .ops-cover-fiscal-label {
+                font-size: 10px;
                 font-weight: 600;
+                color: rgba(255, 255, 255, 0.6);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .ops-cover-fiscal-year {
+                font-size: 18px;
+                font-weight: bold;
+                color: #ffffff;
+                margin-top: 2px;
+            }
+
+            .ops-cover-title-area {
+                padding: 60px 50px 40px 50px;
+                background: #0f172a !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-cover-doc-type {
+                font-size: 11px;
+                font-weight: 600;
+                color: #f59e0b;
+                text-transform: uppercase;
+                letter-spacing: 3px;
+                margin-bottom: 12px;
+            }
+
+            .ops-cover-main-title {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 38px;
+                font-weight: bold;
+                color: #ffffff;
+                line-height: 1.15;
+                margin: 0;
+            }
+
+            .ops-cover-content {
+                padding: 50px;
+            }
+
+            .ops-cover-kpi-grid {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 16px 0;
+                margin-bottom: 30px;
+            }
+
+            .ops-cover-kpi-card {
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 10px;
+                padding: 24px;
+                text-align: center;
+                position: relative;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-cover-kpi-card.revenue {
+                border-top: 4px solid #3b82f6 !important;
+            }
+
+            .ops-cover-kpi-card.profit {
+                border-top: 4px solid #059669 !important;
+            }
+
+            .ops-cover-kpi-card.expense {
+                border-top: 4px solid #dc2626 !important;
+            }
+
+            .ops-cover-kpi-card.assets {
+                border-top: 4px solid #d97706 !important;
+            }
+
+            .ops-cover-kpi-label {
+                font-size: 10px;
+                font-weight: bold;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 8px;
+            }
+
+            .ops-cover-kpi-value {
+                font-size: 26px;
+                font-weight: bold;
+                color: #0f172a;
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+            }
+
+            .ops-cover-kpi-badge {
+                font-size: 11px;
+                font-weight: bold;
+                margin-top: 8px;
+            }
+
+            .ops-cover-kpi-badge.positive {
+                color: #059669;
+            }
+
+            .ops-cover-kpi-badge.negative {
+                color: #dc2626;
+            }
+
+            .ops-cover-footer-area {
+                padding: 30px 50px;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .ops-cover-meta-label {
+                font-size: 10px;
+                font-weight: 600;
+                color: #94a3b8;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
 
-            .ops-badge--success,
-            .ops-badge-success {
-                background-color: var(--ops-success);
-                color: white;
+            .ops-cover-meta-value {
+                font-size: 13px;
+                font-weight: 500;
+                color: #1e293b;
             }
 
-            .ops-badge--warning,
-            .ops-badge-warning {
-                background-color: var(--ops-warning);
-                color: #333;
-            }
-
-            .ops-badge--danger,
-            .ops-badge-danger {
-                background-color: var(--ops-danger);
-                color: white;
-            }
-
-            .ops-badge--info,
-            .ops-badge-info {
-                background-color: var(--ops-info);
-                color: white;
-            }
-
-            .ops-badge--muted,
-            .ops-badge-muted {
-                background-color: #9E9E9E;
-                color: white;
-            }
-
-            .ops-badge--primary {
-                background-color: var(--ops-primary);
-                color: white;
+            .ops-cover-stamp {
+                background: #0f172a !important;
+                color: #ffffff;
+                padding: 6px 14px;
+                border-radius: 4px;
+                font-size: 10px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                -webkit-print-color-adjust: exact !important;
             }
 
             /* ============================================
-               BLOCK: ops-alert (Alert Boxes)
+               PAGE HEADER
+               ============================================ */
+            .ops-page-header {
+                width: 100%;
+                padding-bottom: 12px;
+                border-bottom: 3px solid #1e293b;
+                margin-bottom: 25px;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-page-header-left {
+                vertical-align: middle;
+                width: 70%;
+            }
+
+            .ops-page-number-box {
+                vertical-align: middle;
+                text-align: right;
+                width: 30%;
+            }
+
+            .ops-header-logo {
+                display: inline-block;
+                width: 36px;
+                height: 36px;
+                background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+                border-radius: 6px;
+                text-align: center;
+                line-height: 36px;
+                font-size: 18px;
+                font-weight: bold;
+                color: #ffffff;
+                vertical-align: middle;
+                margin-right: 10px;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-header-info {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .ops-header-company {
+                font-size: 14px;
+                font-weight: bold;
+                color: #1e293b;
+            }
+
+            .ops-header-subtitle {
+                font-size: 10px;
+                color: #94a3b8;
+            }
+
+            .ops-page-number {
+                font-size: 11px;
+                font-weight: 500;
+                color: #94a3b8;
+            }
+
+            .ops-page-date {
+                font-size: 10px;
+                color: #94a3b8;
+            }
+
+            /* ============================================
+               STATEMENT TITLE SECTION
+               ============================================ */
+            .ops-statement-title-section {
+                margin-bottom: 25px;
+                text-align: center;
+            }
+
+            .ops-statement-title {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 24px;
+                font-weight: bold;
+                color: #1e293b;
+                margin: 0 0 5px 0;
+            }
+
+            .ops-statement-subtitle {
+                font-size: 12px;
+                color: #475569;
+                margin: 0;
+            }
+
+            .ops-statement-period {
+                display: inline-block;
+                margin-top: 10px;
+                padding: 5px 15px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 15px;
+                font-size: 11px;
+                font-weight: 500;
+                color: #475569;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* ============================================
+               INFO BOX
+               ============================================ */
+            .ops-info-box {
+                background-color: #f8fafc !important;
+                padding: 15px 18px;
+                border-radius: 5px;
+                border-left: 4px solid #d97706 !important;
+                margin-bottom: 20px;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-info-label {
+                font-weight: bold;
+                color: #1e293b;
+                display: inline-block;
+                min-width: 100px;
+            }
+
+            /* ============================================
+               KPI HIGHLIGHT CARDS
+               ============================================ */
+            .ops-highlights {
+                width: 100%;
+                margin-bottom: 25px;
+            }
+
+            .ops-highlight-card {
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                padding: 18px;
+                text-align: center;
+                border-top: 3px solid #3b82f6 !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-highlight-card.revenue {
+                border-top-color: #3b82f6 !important;
+            }
+
+            .ops-highlight-card.profit {
+                border-top-color: #059669 !important;
+            }
+
+            .ops-highlight-card.expense {
+                border-top-color: #dc2626 !important;
+            }
+
+            .ops-highlight-card.assets {
+                border-top-color: #d97706 !important;
+            }
+
+            .ops-highlight-card.margin {
+                border-top-color: #7c3aed !important;
+            }
+
+            .ops-highlight-label {
+                font-size: 10px;
+                font-weight: bold;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 6px;
+            }
+
+            .ops-highlight-value {
+                font-size: 22px;
+                font-weight: bold;
+                color: #1e293b;
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+            }
+
+            .ops-highlight-change {
+                font-size: 11px;
+                font-weight: bold;
+                margin-top: 5px;
+            }
+
+            .ops-highlight-change.positive {
+                color: #059669 !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-highlight-change.negative {
+                color: #dc2626 !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* ============================================
+               FINANCIAL SECTION WITH GRADIENT HEADER
+               ============================================ */
+            .ops-financial-section {
+                margin-bottom: 20px;
+            }
+
+            .ops-section-header-row {
+                background: #1e293b !important;
+                padding: 10px 15px;
+                border-radius: 6px 6px 0 0;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-section-header-row.assets {
+                background: #1e40af !important;
+            }
+
+            .ops-section-header-row.liabilities {
+                background: #b45309 !important;
+            }
+
+            .ops-section-header-row.equity {
+                background: #047857 !important;
+            }
+
+            .ops-section-header-row.revenue,
+            .ops-section-header-row.income {
+                background: #1e40af !important;
+            }
+
+            .ops-section-header-row.expenses,
+            .ops-section-header-row.expense {
+                background: #b91c1c !important;
+            }
+
+            .ops-section-header-row.operating {
+                background: #7c3aed !important;
+            }
+
+            .ops-section-header-row.other {
+                background: #475569 !important;
+            }
+
+            .ops-section-header-row.cost {
+                background: #b91c1c !important;
+            }
+
+            .ops-section-title-text {
+                font-size: 12px;
+                font-weight: bold;
+                color: #ffffff !important;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .ops-section-amount {
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                font-size: 13px;
+                font-weight: bold;
+                color: #ffffff !important;
+                text-align: right;
+            }
+
+            /* ============================================
+               FINANCIAL TABLE - Premium Styling
+               ============================================ */
+            .ops-financial-table {
+                width: 100%;
+                border-collapse: collapse;
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-top: none;
+            }
+
+            .ops-financial-table thead th {
+                padding: 10px 15px;
+                text-align: left;
+                font-size: 9px;
+                font-weight: bold;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                background: #f8fafc !important;
+                border-bottom: 1px solid #e2e8f0;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-financial-table thead th:last-child,
+            .ops-financial-table thead th.text-end {
+                text-align: right;
+            }
+
+            .ops-financial-table tbody td {
+                padding: 10px 15px;
+                font-size: 11px;
+                color: #1e293b;
+                border-bottom: 1px dotted #cbd5e1;
+            }
+
+            .ops-financial-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .ops-financial-table tbody td:last-child,
+            .ops-financial-table tbody td.text-end {
+                text-align: right;
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                font-size: 10px;
+            }
+
+            /* Indentation */
+            .ops-financial-table .indent-1,
+            .ops-financial-table .ops-indent-1 {
+                padding-left: 30px;
+            }
+
+            .ops-financial-table .indent-2,
+            .ops-financial-table .ops-indent-2 {
+                padding-left: 45px;
+                font-size: 10px;
+                color: #475569;
+            }
+
+            .ops-financial-table .indent-3,
+            .ops-financial-table .ops-indent-3 {
+                padding-left: 60px;
+                font-size: 9px;
+                color: #94a3b8;
+            }
+
+            /* Group Row */
+            .ops-financial-table .group-row td {
+                font-weight: bold;
+                background: #f8fafc !important;
+                border-bottom: 1px solid #e2e8f0;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* Subtotal Row */
+            .ops-financial-table .subtotal-row td {
+                background: #f8fafc !important;
+                font-weight: bold;
+                border-bottom: 2px solid #cbd5e1;
+                padding-top: 12px;
+                padding-bottom: 12px;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* Total Row */
+            .ops-financial-table .total-row td {
+                background: #1e293b !important;
+                color: #ffffff !important;
+                font-weight: bold;
+                padding-top: 12px;
+                padding-bottom: 12px;
+                border-bottom: none;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* Grand Total Row - Dark Premium Style */
+            .ops-financial-table .grand-total-row td {
+                background: #0f172a !important;
+                color: #ffffff !important;
+                font-weight: bold;
+                font-size: 12px;
+                padding-top: 14px;
+                padding-bottom: 14px;
+                border-bottom: none;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-financial-table .grand-total-row td:last-child {
+                font-size: 13px;
+            }
+
+            /* Amount Colors */
+            .amount-positive,
+            .ops-amount-positive,
+            .ops-number-positive {
+                color: #059669 !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .amount-negative,
+            .ops-amount-negative,
+            .ops-number-negative {
+                color: #dc2626 !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* ============================================
+               TOTALS SUMMARY BOX - Executive Dark Theme
+               ============================================ */
+            .ops-totals-summary {
+                margin-top: 25px;
+                background: #0f172a !important;
+                border-radius: 8px;
+                padding: 20px 25px;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-totals-summary.success,
+            .ops-totals-summary.profit {
+                background: #047857 !important;
+            }
+
+            .ops-totals-summary.loss {
+                background: #991b1b !important;
+            }
+
+            .ops-totals-left {
+                vertical-align: middle;
+            }
+
+            .ops-totals-label {
+                font-size: 10px;
+                font-weight: bold;
+                color: rgba(255, 255, 255, 0.6);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .ops-totals-equation {
+                font-size: 12px;
+                color: rgba(255, 255, 255, 0.8);
+                margin-top: 3px;
+            }
+
+            .ops-totals-value {
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                font-size: 26px;
+                font-weight: bold;
+                color: #ffffff !important;
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            .ops-totals-badge {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                padding: 8px 14px;
+                border-radius: 6px;
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            .ops-badge-icon {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                background: #059669 !important;
+                border-radius: 50%;
+                text-align: center;
+                line-height: 20px;
+                color: #ffffff;
+                font-size: 12px;
+                font-weight: bold;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-badge-icon.warning {
+                background: #d97706 !important;
+            }
+
+            .ops-badge-icon.danger {
+                background: #dc2626 !important;
+            }
+
+            .ops-badge-text {
+                font-size: 11px;
+                font-weight: bold;
+                color: #ffffff;
+                margin-top: 4px;
+            }
+
+            /* ============================================
+               ALERT BOXES
                ============================================ */
             .ops-alert {
                 padding: 12px 15px;
                 border-radius: 5px;
                 margin: 15px 0;
                 border-left: 4px solid;
+                -webkit-print-color-adjust: exact !important;
             }
 
-            .ops-alert--success,
             .ops-alert-success {
-                background-color: #d4edda;
-                border-color: var(--ops-success);
-                color: #155724;
+                background-color: rgba(5, 150, 105, 0.1) !important;
+                border-color: #059669 !important;
+                color: #065f46;
             }
 
-            .ops-alert--warning,
             .ops-alert-warning {
-                background-color: #fff3cd;
-                border-color: var(--ops-warning);
-                color: #856404;
+                background-color: rgba(217, 119, 6, 0.1) !important;
+                border-color: #d97706 !important;
+                color: #92400e;
             }
 
-            .ops-alert--danger,
             .ops-alert-danger {
-                background-color: #f8d7da;
-                border-color: var(--ops-danger);
-                color: #721c24;
+                background-color: rgba(220, 38, 38, 0.1) !important;
+                border-color: #dc2626 !important;
+                color: #991b1b;
             }
 
-            .ops-alert--info,
             .ops-alert-info {
-                background-color: #d1ecf1;
-                border-color: var(--ops-info);
-                color: #0c5460;
+                background-color: rgba(59, 130, 246, 0.1) !important;
+                border-color: #3b82f6 !important;
+                color: #1e40af;
             }
 
             /* ============================================
-               BLOCK: ops-kpi (KPI Cards)
+               NOTES SECTION
                ============================================ */
-            .ops-kpi {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 16px;
-                margin-bottom: 20px;
+            .ops-notes-section {
+                margin-top: 25px;
+                padding: 15px 20px;
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0;
+                border-left: 4px solid #3b82f6 !important;
+                border-radius: 0 6px 6px 0;
+                -webkit-print-color-adjust: exact !important;
             }
 
-            .ops-kpi__card {
-                flex: 1;
-                min-width: 150px;
-                padding: 16px;
-                border-radius: 5px;
-                background-color: white;
-                border: 1px solid var(--ops-border);
-                box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-                text-align: center;
-            }
-
-            .ops-kpi__card--success {
-                border-left: 4px solid var(--ops-success);
-            }
-
-            .ops-kpi__card--danger {
-                border-left: 4px solid var(--ops-danger);
-            }
-
-            .ops-kpi__card--warning {
-                border-left: 4px solid var(--ops-warning);
-            }
-
-            .ops-kpi__card--primary {
-                border-left: 4px solid var(--ops-primary);
-            }
-
-            .ops-kpi__label {
+            .ops-notes-title {
                 font-size: 10px;
-                color: var(--ops-muted);
-                margin-bottom: 4px;
+                font-weight: bold;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 8px;
             }
 
-            .ops-kpi__value {
-                font-size: 14px;
-                font-weight: 700;
-                font-family: var(--ops-font-mono);
-            }
-
-            .ops-kpi__value--positive {
-                color: var(--ops-success);
-            }
-
-            .ops-kpi__value--negative {
-                color: var(--ops-danger);
-            }
-
-            /* ============================================
-               BLOCK: ops-section (Section Headers)
-               ============================================ */
-            .ops-report__section-header,
-            .ops-section-header {
-                background-color: var(--ops-primary);
-                color: white;
-                padding: 10px 12px;
-                border-radius: 4px 4px 0 0;
-                margin-bottom: 0;
-                font-weight: 600;
-            }
-
-            .ops-report__section-header--asset,
-            .ops-section-header-asset { background-color: var(--ops-success); }
-            .ops-report__section-header--liability,
-            .ops-section-header-liability { background-color: var(--ops-danger); }
-            .ops-report__section-header--revenue,
-            .ops-section-header-revenue { background-color: var(--ops-info); }
-            .ops-report__section-header--expense,
-            .ops-section-header-expense { background-color: #fd7e14; }
-
-            /* ============================================
-               BLOCK: ops-report__footer
-               ============================================ */
-            .ops-report__footer,
-            .ops-report-footer {
-                margin-top: 30px;
-                padding: 15px;
-                background-color: var(--ops-secondary);
-                border-radius: 5px;
-                font-size: 10px;
-                color: #666;
-                border-top: 2px solid var(--ops-primary);
-            }
-
-            .ops-report__footer-note,
-            .ops-report-footer .ops-footer-note {
+            .ops-notes-list {
+                list-style: none;
                 margin: 0;
-                line-height: 1.5;
+                padding: 0;
             }
 
-            .ops-report__page-info,
-            .ops-page-info {
-                text-align: center;
-                font-size: 9px;
-                color: var(--ops-muted);
-                margin-top: 10px;
-            }
-
-            .ops-report__generated-by,
-            .ops-generated-by {
-                text-align: right;
-                font-size: 9px;
-                color: var(--ops-muted);
-                font-style: italic;
-            }
-
-            /* ============================================
-               BLOCK: ops-signature (Signature Section)
-               ============================================ */
-            .ops-signature,
-            .ops-signature-section {
-                margin-top: 40px;
-                page-break-inside: avoid;
-            }
-
-            .ops-signature__box,
-            .ops-signature-box {
-                border-top: 1px solid #333;
-                padding-top: 5px;
-                margin-top: 50px;
-                text-align: center;
+            .ops-notes-list li {
                 font-size: 10px;
+                color: #475569;
+                padding: 3px 0 3px 15px;
+                position: relative;
+            }
+
+            .ops-notes-list li:before {
+                content: "\2022";
+                position: absolute;
+                left: 0;
+                color: #3b82f6;
+                font-weight: bold;
             }
 
             /* ============================================
-               BLOCK: ops-legend (Color Legend)
+               PAGE FOOTER
                ============================================ */
-            .ops-legend {
+            .ops-page-footer {
+                margin-top: 30px;
+                padding-top: 12px;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .ops-footer-text {
+                font-size: 9px;
+                color: #94a3b8;
+            }
+
+            .ops-footer-confidential {
+                font-size: 8px;
+                font-weight: bold;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                padding: 3px 8px;
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0;
+                border-radius: 3px;
+                text-align: right;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* ============================================
+               PERFORMANCE THRESHOLDS BOX
+               ============================================ */
+            .ops-performance-thresholds {
+                margin-top: 20px;
+                padding: 12px;
+                background-color: #f8fafc !important;
+                border-radius: 5px;
+                border: 1px solid #e2e8f0;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-performance-thresholds p {
+                margin: 0;
+                font-size: 10px;
+                color: #475569;
+            }
+
+            .threshold-excellent,
+            .threshold-good {
+                color: #059669 !important;
+                font-weight: bold;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .threshold-acceptable {
+                color: #d97706 !important;
+                font-weight: bold;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .threshold-below {
+                color: #dc2626 !important;
+                font-weight: bold;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* ============================================
+               LEGACY STYLES (Backward Compatibility)
+               ============================================ */
+            .ops_table_matrix {
+                width: 100%;
+                border-collapse: collapse;
                 margin-bottom: 15px;
                 font-size: 10px;
             }
 
-            .ops-legend__item,
-            .ops-legend-item {
-                display: inline-block;
-                padding: 3px 8px;
-                border-radius: 3px;
-                margin-right: 8px;
-                color: white;
-                font-size: 9px;
+            .ops_table_matrix thead tr {
+                background-color: #1e293b !important;
+                color: #ffffff;
+                -webkit-print-color-adjust: exact !important;
             }
 
-            /* ============================================
-               PRINT STYLES (@media print)
-               ============================================ */
+            .ops_table_matrix th {
+                padding: 10px 8px;
+                font-weight: bold;
+                text-align: left;
+                border: 1px solid #0f172a;
+                background-color: #1e293b !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops_table_matrix td {
+                padding: 8px;
+                border: 1px solid #e2e8f0;
+            }
+
+            .ops_table_matrix tbody tr:nth-child(even) {
+                background-color: #f8fafc !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops_table_matrix .text-end {
+                text-align: right !important;
+            }
+
+            .ops_table_matrix .text-center {
+                text-align: center !important;
+            }
+
+            .ops-total-row {
+                background-color: #f1f5f9 !important;
+                font-weight: bold;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-grand-total {
+                background: #0f172a !important;
+                color: #ffffff !important;
+                font-weight: bold;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-grand-total td {
+                color: #ffffff !important;
+            }
+
+            .ops-report-header {
+                text-align: center;
+                padding: 20px;
+                background: #1e293b !important;
+                color: #ffffff;
+                border-radius: 8px 8px 0 0;
+                margin-bottom: 20px;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-report-header h2 {
+                margin: 0;
+                font-size: 18px;
+                font-weight: bold;
+                color: #ffffff;
+            }
+
+            .ops-subtitle {
+                font-size: 12px;
+                color: rgba(255, 255, 255, 0.8);
+                margin-top: 5px;
+            }
+
+            .ops-report-footer {
+                margin-top: 25px;
+                padding: 12px;
+                background-color: #f8fafc !important;
+                border-radius: 5px;
+                border-top: 2px solid #1e293b;
+                font-size: 10px;
+                color: #94a3b8;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-footer-note {
+                margin: 0;
+                line-height: 1.5;
+            }
+
+            /* Badges */
+            .ops-badge {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 3px;
+                font-size: 9px;
+                font-weight: bold;
+                text-transform: uppercase;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-badge-success {
+                background: #059669 !important;
+                color: #ffffff;
+            }
+
+            .ops-badge-warning {
+                background: #d97706 !important;
+                color: #ffffff;
+            }
+
+            .ops-badge-danger {
+                background: #dc2626 !important;
+                color: #ffffff;
+            }
+
+            .ops-badge-info {
+                background: #3b82f6 !important;
+                color: #ffffff;
+            }
+
+            .ops-badge-muted {
+                background: #94a3b8 !important;
+                color: #ffffff;
+            }
+
+            .ops-badge-primary {
+                background: #1e293b !important;
+                color: #ffffff;
+            }
+
+            /* Legend */
+            .ops-legend {
+                margin-bottom: 12px;
+                font-size: 10px;
+            }
+
+            /* Numbers */
+            .ops-number {
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                text-align: right;
+            }
+
+            .ops-debit {
+                color: #059669 !important;
+            }
+
+            .ops-credit {
+                color: #dc2626 !important;
+            }
+
+            /* Section Headers */
+            .ops-section-header {
+                background-color: #1e293b !important;
+                color: #ffffff;
+                padding: 10px 12px;
+                border-radius: 4px 4px 0 0;
+                font-weight: bold;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-section-header-revenue {
+                background-color: #1e40af !important;
+            }
+
+            .ops-section-header-expense {
+                background-color: #b91c1c !important;
+            }
+
+            .ops-section-header-asset {
+                background-color: #1e40af !important;
+            }
+
+            .ops-section-header-liability {
+                background-color: #b45309 !important;
+            }
+
+            /* Signature Section */
+            .ops-signature-section {
+                margin-top: 30px;
+                page-break-inside: avoid;
+            }
+
+            .ops-signature-box {
+                border-top: 1px solid #1e293b;
+                padding-top: 5px;
+                margin-top: 40px;
+                text-align: center;
+                font-size: 10px;
+            }
+
+            /* Utility Classes */
+            .text-end {
+                text-align: right !important;
+            }
+
+            .text-center {
+                text-align: center !important;
+            }
+
+            .font-weight-bold,
+            strong {
+                font-weight: bold;
+            }
+
+            /* Row/Column helpers using tables */
+            .row {
+                display: table;
+                width: 100%;
+            }
+
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            .col-6 {
+                display: table-cell;
+                width: 50%;
+                vertical-align: top;
+            }
+
+            .col-3 {
+                display: table-cell;
+                width: 25%;
+                vertical-align: top;
+            }
+
+            .col-4 {
+                display: table-cell;
+                width: 33.33%;
+                vertical-align: top;
+            }
+
+            .col-12 {
+                display: block;
+                width: 100%;
+            }
+
+            /* Print Styles - Force Color Printing */
             @media print {
-                /* Hide non-printable elements */
-                .ops-no-print,
-                .o_control_panel,
-                .o_cp_searchview,
-                .o_main_navbar,
-                button,
-                .btn {
+                .ops-no-print {
                     display: none !important;
                 }
 
-                /* Container adjustments */
-                .ops-report,
-                .ops-report-container {
-                    font-size: 10px;
-                    background: white !important;
+                body {
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
                 }
 
-                /* Table print optimizations */
-                .ops-table,
-                .ops_table_matrix {
-                    page-break-inside: auto;
-                }
-
-                .ops-table tr,
-                .ops_table_matrix tr {
-                    page-break-inside: avoid;
-                    page-break-after: auto;
-                }
-
-                .ops-table thead,
-                .ops_table_matrix thead {
-                    display: table-header-group;
-                }
-
-                /* Ensure colors print */
-                .ops-badge,
-                .ops-table th,
-                .ops_table_matrix th,
-                .ops-table__row--grand-total,
-                .ops_table_matrix tr.ops-grand-total,
-                .ops-report__header,
-                .ops-report-header,
-                .ops-kpi__card {
+                * {
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
                 }
@@ -565,11 +1138,9 @@
         </style>
     </template>
 
-    <!-- OPS External Layout - Wrapper for all Matrix Reports (BEM) -->
+    <!-- OPS External Layout - Wrapper for all Matrix Reports -->
     <template id="ops_external_layout">
-        <!-- Include OPS Matrix styles first -->
         <t t-call="ops_matrix_accounting.ops_report_styles"/>
-        <!-- Then call standard external layout with content -->
         <t t-call="web.external_layout">
             <div class="ops-report">
                 <t t-raw="0"/>
@@ -585,76 +1156,69 @@
         </div>
     </template>
 
-    <!-- Helper template for standard report header (BEM) -->
+    <!-- Helper template for standard report header -->
     <template id="ops_report_header_template">
-        <div class="ops-report__header ops-report__header--centered">
-            <h2 class="ops-report__header-title"><t t-esc="title"/></h2>
-            <p class="ops-report__header-subtitle" t-if="subtitle"><t t-esc="subtitle"/></p>
+        <div class="ops-report-header">
+            <h2><t t-esc="title"/></h2>
+            <p class="ops-subtitle" t-if="subtitle"><t t-esc="subtitle"/></p>
         </div>
     </template>
 
-    <!-- Helper template for info box (BEM) -->
+    <!-- Helper template for info box -->
     <template id="ops_info_box_template">
-        <div class="ops-report__meta">
-            <div class="row">
-                <div class="col-6">
-                    <span class="ops-report__meta-label">Period:</span>
-                    <span t-esc="date_from"/> to <span t-esc="date_to"/><br/>
-                    <span class="ops-report__meta-label">Company:</span>
-                    <span t-esc="company.name if company else '-'"/>
-                </div>
-                <div class="col-6 text-end">
-                    <span class="ops-report__meta-label">Generated:</span>
-                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/><br/>
-                    <t t-if="extra_info">
-                        <span class="ops-report__meta-label" t-esc="extra_info_label"/>:
-                        <span t-esc="extra_info"/>
-                    </t>
-                </div>
-            </div>
+        <div class="ops-info-box">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                        <span class="ops-info-label">Period:</span>
+                        <span t-esc="date_from"/> to <span t-esc="date_to"/><br/>
+                        <span class="ops-info-label">Company:</span>
+                        <span t-esc="company.name if company else '-'"/>
+                    </td>
+                    <td style="width: 50%; vertical-align: top; text-align: right;">
+                        <span class="ops-info-label">Generated:</span>
+                        <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/><br/>
+                        <t t-if="extra_info">
+                            <span class="ops-info-label" t-esc="extra_info_label"/>:
+                            <span t-esc="extra_info"/>
+                        </t>
+                    </td>
+                </tr>
+            </table>
         </div>
     </template>
 
-    <!-- Helper template for report footer (BEM) -->
+    <!-- Helper template for report footer -->
     <template id="ops_report_footer_template">
-        <div class="ops-report__footer">
-            <p class="ops-report__footer-note">
+        <div class="ops-report-footer">
+            <p class="ops-footer-note">
                 <strong>Audit Trail:</strong>
                 <t t-if="footer_text" t-esc="footer_text"/>
                 <t t-else="">All data shown above is sourced from posted journal entries in the accounting system.</t>
             </p>
-            <div class="row" style="margin-top: 10px;">
-                <div class="col-6 ops-report__page-info">
-                    Page <span class="page"/> of <span class="topage"/>
-                </div>
-                <div class="col-6 ops-report__generated-by">
-                    Generated by OPS Matrix
-                </div>
-            </div>
+            <table style="width: 100%; margin-top: 8px;">
+                <tr>
+                    <td style="width: 50%; font-size: 9px; color: #94a3b8;">
+                        Page <span class="page"/> of <span class="topage"/>
+                    </td>
+                    <td style="width: 50%; text-align: right; font-size: 9px; color: #94a3b8; font-style: italic;">
+                        Generated by OPS Matrix
+                    </td>
+                </tr>
+            </table>
         </div>
     </template>
 
     <!-- Number formatting helper -->
     <template id="ops_format_number">
-        <!--
-            Usage: <t t-call="ops_matrix_accounting.ops_format_number">
-                     <t t-set="value" t-value="123.45"/>
-                   </t>
-        -->
-        <t t-set="num_class" t-value="'ops-number--positive' if value > 0 else 'ops-number--negative' if value &lt; 0 else 'ops-number--zero'"/>
+        <t t-set="num_class" t-value="'ops-number-positive' if value > 0 else 'ops-number-negative' if value &lt; 0 else ''"/>
         <span t-attf-class="ops-number #{num_class}">
             <t t-esc="'{:,.2f}'.format(value)"/>
         </span>
     </template>
 
-    <!-- ============================================
-         BACKWARD COMPATIBILITY ALIASES
-         ============================================ -->
-    <!-- These maintain compatibility with existing reports -->
-
-    <!-- Legacy header template (wraps new BEM template) -->
+    <!-- Legacy header template -->
     <template id="ops_legacy_header" inherit_id="ops_matrix_accounting.ops_report_header_template" primary="True">
-        <!-- This template is available for backward compatibility -->
     </template>
 
 </odoo>
