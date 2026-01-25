@@ -29,16 +29,12 @@ _logger = logging.getLogger(__name__)
 class OpsInventoryReportWizard(models.TransientModel):
     """Inventory Intelligence - Stock Analysis Engine"""
     _name = 'ops.inventory.report.wizard'
+    _inherit = 'ops.base.report.wizard'
     _description = 'Inventory Intelligence Report Wizard'
 
-    # ============================================
-    # SMART TEMPLATE SELECTOR
-    # ============================================
+    # Template domain override
     report_template_id = fields.Many2one(
-        'ops.report.template',
-        string='Load Template',
-        domain="[('engine', '=', 'inventory'), '|', ('is_global', '=', True), ('user_id', '=', uid)]",
-        help='Select a saved report template to load its configuration'
+        domain="[('engine', '=', 'inventory'), '|', ('is_global', '=', True), ('user_id', '=', uid)]"
     )
 
     # ============================================
@@ -70,12 +66,7 @@ class OpsInventoryReportWizard(models.TransientModel):
     # ============================================
     # 3. DIMENSION FILTERS
     # ============================================
-    company_id = fields.Many2one(
-        'res.company',
-        string='Company',
-        required=True,
-        default=lambda self: self.env.company
-    )
+    # company_id inherited from ops.base.report.wizard
 
     ops_branch_ids = fields.Many2many(
         'ops.branch',
@@ -183,20 +174,7 @@ class OpsInventoryReportWizard(models.TransientModel):
     # ============================================
     # 7. COMPUTED FIELDS
     # ============================================
-    report_title = fields.Char(
-        compute='_compute_report_title',
-        string='Report Title'
-    )
-
-    filter_summary = fields.Char(
-        compute='_compute_filter_summary',
-        string='Filter Summary'
-    )
-
-    record_count = fields.Integer(
-        compute='_compute_record_count',
-        string='Estimated Items'
-    )
+    # report_title, filter_summary, record_count, currency_id inherited from base
 
     total_value = fields.Monetary(
         compute='_compute_totals',
@@ -209,56 +187,54 @@ class OpsInventoryReportWizard(models.TransientModel):
         string='Total Quantity'
     )
 
-    currency_id = fields.Many2one(
-        related='company_id.currency_id',
-        string='Currency'
-    )
-
     # ============================================
-    # COMPUTED METHODS
+    # BASE CLASS HOOK IMPLEMENTATIONS
     # ============================================
 
-    @api.depends('report_type')
-    def _compute_report_title(self):
-        """Generate report title based on selections."""
-        report_titles = {
+    def _get_engine_name(self):
+        """Return engine name for template filtering."""
+        return 'inventory'
+
+    def _get_report_titles(self):
+        """Return mapping of report_type to human-readable title."""
+        return {
             'valuation': 'Stock Valuation Report',
             'aging': 'Inventory Aging Analysis',
             'negative': 'Negative Stock Alert',
             'movement': 'Fast vs Slow Moving Analysis',
         }
-        for wizard in self:
-            wizard.report_title = report_titles.get(wizard.report_type, 'Inventory Report')
 
-    @api.depends('date_to', 'ops_branch_ids', 'location_ids', 'product_category_ids', 'report_type')
-    def _compute_filter_summary(self):
-        """Generate human-readable filter summary."""
-        for wizard in self:
-            parts = [wizard.report_title or 'Inventory Report']
-            parts.append(f"As of: {wizard.date_to}")
+    def _get_scalar_fields_for_template(self):
+        """Return scalar fields for template save/load."""
+        return [
+            'report_type', 'group_by', 'include_zero_qty',
+            'aging_period_1', 'aging_period_2', 'aging_period_3', 'aging_period_4',
+            'min_age_days', 'movement_period', 'slow_threshold',
+        ]
 
-            if wizard.ops_branch_ids:
-                parts.append(f"Branches: {len(wizard.ops_branch_ids)} selected")
+    def _get_m2m_fields_for_template(self):
+        """Return Many2many fields for template save/load."""
+        return ['ops_branch_ids', 'location_ids', 'product_category_ids']
 
-            if wizard.location_ids:
-                parts.append(f"Locations: {len(wizard.location_ids)} selected")
+    def _add_filter_summary_parts(self, parts):
+        """Add inventory-specific filter descriptions."""
+        # Replace generic date with as_of for inventory
+        parts[:] = [p for p in parts if not p.startswith('Period:')]
+        parts.append(f"As of: {self.date_to}")
 
-            if wizard.product_category_ids:
-                parts.append(f"Categories: {len(wizard.product_category_ids)} selected")
+        if self.ops_branch_ids:
+            parts.append(f"Branches: {len(self.ops_branch_ids)} selected")
 
-            wizard.filter_summary = " | ".join(parts)
+        if self.location_ids:
+            parts.append(f"Locations: {len(self.location_ids)} selected")
 
-    @api.depends('ops_branch_ids', 'location_ids', 'product_category_ids', 'include_zero_qty')
-    def _compute_record_count(self):
+        if self.product_category_ids:
+            parts.append(f"Categories: {len(self.product_category_ids)} selected")
+
+    def _estimate_record_count(self):
         """Estimate number of quants matching filters."""
-        for wizard in self:
-            try:
-                domain = wizard._build_quant_domain()
-                count = self.env['stock.quant'].search_count(domain)
-                wizard.record_count = count
-            except Exception as e:
-                _logger.error(f"Error counting quants: {e}")
-                wizard.record_count = 0
+        domain = self._build_quant_domain()
+        return self.env['stock.quant'].search_count(domain)
 
     @api.depends('ops_branch_ids', 'location_ids', 'product_category_ids', 'include_zero_qty')
     def _compute_totals(self):
@@ -338,32 +314,16 @@ class OpsInventoryReportWizard(models.TransientModel):
     # VALIDATION
     # ============================================
 
-    def _validate_filters(self):
-        """Validate wizard filters."""
-        self.ensure_one()
-
+    def _validate_filters_extra(self):
+        """Perform inventory-specific validation."""
         if self.report_type == 'movement' and not self.date_from:
             self.date_from = self.date_to - timedelta(days=self.movement_period)
-
-        if self.date_from and self.date_to and self.date_from > self.date_to:
-            raise ValidationError(_("From date cannot be after To date."))
-
         return True
 
     # ============================================
     # REPORT GENERATION
     # ============================================
-
-    def action_generate_report(self):
-        """Main action: Generate inventory report."""
-        self.ensure_one()
-        self._validate_filters()
-
-        # Dispatch to appropriate handler
-        report_data = self._get_report_data()
-
-        # Return report action
-        return self._return_report_action(report_data)
+    # action_generate_report inherited from base
 
     def _get_report_data(self):
         """Get report data based on report_type."""
@@ -459,6 +419,35 @@ class OpsInventoryReportWizard(models.TransientModel):
                 'lot_name': quant.lot_id.name if quant.lot_id else '',
             })
         return data
+
+    def _build_empty_movement_result(self, date_from, date_to):
+        """Return empty movement result structure."""
+        return {
+            'report_type': 'movement',
+            'report_title': self.report_title,
+            'wizard_id': self.id,
+            'company_name': self.company_id.name,
+            'company_currency': self.company_id.currency_id.name,
+            'date_from': str(date_from),
+            'date_to': str(date_to),
+            'movement_period': self.movement_period,
+            'slow_threshold': self.slow_threshold,
+            'filters': self._get_filter_dict(),
+            'data': [],
+            'movement_summary': [
+                {'label': 'No Movement', 'count': 0, 'qty': 0, 'value': 0},
+                {'label': 'Slow Moving', 'count': 0, 'qty': 0, 'value': 0},
+                {'label': 'Fast Moving', 'count': 0, 'qty': 0, 'value': 0},
+            ],
+            'totals': {
+                'total_products': 0,
+                'total_qty': 0,
+                'total_value': 0,
+                'dead_count': 0,
+                'slow_count': 0,
+                'fast_count': 0,
+            },
+        }
 
     def _group_data(self, data, group_by):
         """Group data by specified field."""
@@ -674,7 +663,10 @@ class OpsInventoryReportWizard(models.TransientModel):
     # ============================================
 
     def _get_movement_data(self):
-        """Get Fast vs Slow Moving analysis report data."""
+        """Get Fast vs Slow Moving analysis report data.
+
+        OPTIMIZED: Uses _read_group for O(1) queries instead of N+1 pattern.
+        """
         self.ensure_one()
 
         # Set date range
@@ -693,25 +685,58 @@ class OpsInventoryReportWizard(models.TransientModel):
 
         # Get unique products
         products = quants.mapped('product_id')
+        product_ids = products.ids
 
-        # Analyze movements for each product
-        data = []
-        for product in products:
-            # Count stock moves in the period
-            move_domain = [
-                ('product_id', '=', product.id),
+        if not product_ids:
+            return self._build_empty_movement_result(date_from, date_to)
+
+        # =================================================================
+        # OPTIMIZED: Single grouped query for ALL product movements
+        # Instead of N queries (one per product), we do 1 aggregated query
+        # =================================================================
+        move_data = self.env['stock.move']._read_group(
+            domain=[
+                ('product_id', 'in', product_ids),
                 ('state', '=', 'done'),
                 ('date', '>=', date_from),
                 ('date', '<=', date_to),
-            ]
-            moves = self.env['stock.move'].search(move_domain)
-            move_count = len(moves)
-            total_qty_moved = sum(moves.mapped('quantity'))
+            ],
+            groupby=['product_id'],
+            aggregates=['id:count', 'quantity:sum']
+        )
 
-            # Get current stock
-            product_quants = quants.filtered(lambda q: q.product_id.id == product.id)
-            current_qty = sum(product_quants.mapped('quantity'))
-            current_value = sum(product_quants.mapped('value'))
+        # Build O(1) lookup dictionary: {product_id: {'count': N, 'qty': X}}
+        movement_map = {}
+        for product, count, qty_sum in move_data:
+            if product:
+                movement_map[product.id] = {
+                    'count': count or 0,
+                    'qty': qty_sum or 0.0
+                }
+
+        # =================================================================
+        # OPTIMIZED: Single pass aggregation for quants by product
+        # =================================================================
+        quant_map = {}
+        for quant in quants:
+            pid = quant.product_id.id
+            if pid not in quant_map:
+                quant_map[pid] = {'qty': 0.0, 'value': 0.0}
+            quant_map[pid]['qty'] += quant.quantity
+            quant_map[pid]['value'] += quant.value
+
+        # Build result data using lookup maps (no additional queries)
+        data = []
+        for product in products:
+            # Get movement info from pre-computed map
+            move_info = movement_map.get(product.id, {'count': 0, 'qty': 0.0})
+            move_count = move_info['count']
+            total_qty_moved = move_info['qty']
+
+            # Get current stock from pre-computed map
+            stock_info = quant_map.get(product.id, {'qty': 0.0, 'value': 0.0})
+            current_qty = stock_info['qty']
+            current_value = stock_info['value']
 
             # Classify movement
             if move_count == 0:
@@ -882,73 +907,5 @@ class OpsInventoryReportWizard(models.TransientModel):
     # ============================================
     # SMART TEMPLATE METHODS
     # ============================================
-
-    @api.onchange('report_template_id')
-    def _onchange_report_template_id(self):
-        """Load configuration from selected template."""
-        if not self.report_template_id:
-            return
-
-        template = self.report_template_id
-        config = template.get_config_dict()
-
-        if not config:
-            return
-
-        # Apply scalar fields
-        scalar_fields = [
-            'report_type', 'group_by', 'include_zero_qty',
-            'aging_period_1', 'aging_period_2', 'aging_period_3', 'aging_period_4',
-            'min_age_days', 'movement_period', 'slow_threshold',
-        ]
-        for field in scalar_fields:
-            if field in config:
-                setattr(self, field, config[field])
-
-        # Apply Many2many fields
-        if config.get('ops_branch_ids'):
-            self.ops_branch_ids = [(6, 0, config['ops_branch_ids'])]
-        if config.get('location_ids'):
-            self.location_ids = [(6, 0, config['location_ids'])]
-        if config.get('product_category_ids'):
-            self.product_category_ids = [(6, 0, config['product_category_ids'])]
-
-        # Increment template usage
-        template.increment_usage()
-
-        _logger.info(f"Loaded inventory report template: {template.name}")
-
-    def _get_template_config(self):
-        """Get current wizard configuration for template saving."""
-        self.ensure_one()
-        return {
-            'report_type': self.report_type,
-            'group_by': self.group_by,
-            'include_zero_qty': self.include_zero_qty,
-            'aging_period_1': self.aging_period_1,
-            'aging_period_2': self.aging_period_2,
-            'aging_period_3': self.aging_period_3,
-            'aging_period_4': self.aging_period_4,
-            'min_age_days': self.min_age_days,
-            'movement_period': self.movement_period,
-            'slow_threshold': self.slow_threshold,
-            # Many2many as ID lists
-            'ops_branch_ids': self.ops_branch_ids.ids,
-            'location_ids': self.location_ids.ids,
-            'product_category_ids': self.product_category_ids.ids,
-        }
-
-    def action_save_template(self):
-        """Open wizard to save current settings as a template."""
-        self.ensure_one()
-        return {
-            'name': _('Save as Report Template'),
-            'type': 'ir.actions.act_window',
-            'res_model': 'ops.report.template.save.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_source_wizard_model': self._name,
-                'default_source_wizard_id': self.id,
-            },
-        }
+    # _onchange_report_template_id, _get_template_config, action_save_template
+    # are inherited from ops.base.report.wizard

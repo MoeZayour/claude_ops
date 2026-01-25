@@ -186,93 +186,192 @@
                             </table>
                         </t>
 
-                        <!-- Report Content - P&L -->
+                        <!-- Report Content - P&L (Phase 14: Hierarchical Audit-Grade) -->
                         <t t-if="doc.report_type == 'pl'">
-                            <h4 class="ops-section-header ops-section-header-revenue" style="margin-top: 20px;">Income</h4>
-                            <table class="ops_table_matrix">
-                                <thead>
-                                    <tr>
-                                        <th>Account</th>
-                                        <th class="text-end">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="report_data['income_lines']" t-as="line">
+                            <!-- Check if hierarchical data is available -->
+                            <t t-if="report_data.get('use_hierarchy') and report_data.get('income_hierarchy')">
+                                <!-- INCOME SECTION - Hierarchical -->
+                                <h4 class="ops-section-title ops-section-title--income">INCOME</h4>
+                                <table class="ops-financial-table">
+                                    <colgroup>
+                                        <col class="ops-col-code"/>
+                                        <col class="ops-col-name"/>
+                                        <col class="ops-col-amount"/>
+                                    </colgroup>
+                                    <thead>
                                         <tr>
-                                            <td>
-                                                <span t-esc="line['account']"/>
-                                                <t t-if="line.get('account_id')">
-                                                    <br/><small style="color: #999;">(ID: <span t-esc="line['account_id']"/>)</small>
-                                                </t>
-                                            </td>
-                                            <td class="text-end ops-number ops-number-positive">
-                                                <span t-esc="'%.2f' % line['amount']"/>
+                                            <th style="width: 15%;">Code</th>
+                                            <th style="width: 55%;">Account</th>
+                                            <th class="text-end" style="width: 30%;">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="report_data['income_hierarchy']" t-as="line">
+                                            <t t-set="row_class" t-value="'ops-hierarchy-group' if line['type'] == 'group' else 'ops-hierarchy-account' if line['type'] == 'account' else 'ops-row-subtotal'"/>
+                                            <t t-set="indent_class" t-value="'ops-indent-%d' % min(line.get('indent', 0), 4)"/>
+                                            <tr t-attf-class="#{row_class} #{indent_class}">
+                                                <td class="ops-cell-code"><t t-esc="line.get('code', '')"/></td>
+                                                <td class="ops-cell-name"><t t-esc="line.get('name', '')"/></td>
+                                                <td class="ops-cell-amount">
+                                                    <t t-set="amount" t-value="abs(line.get('balance', 0))"/>
+                                                    <t t-set="amount_class" t-value="'ops-amount-zero' if amount == 0 else 'ops-amount-positive'"/>
+                                                    <span t-attf-class="#{amount_class}"><t t-esc="'%.2f' % amount"/></span>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="ops-row-section-total">
+                                            <td class="ops-cell-code"></td>
+                                            <td class="ops-cell-name"><strong>TOTAL INCOME</strong></td>
+                                            <td class="ops-cell-amount"><strong><t t-esc="'%.2f' % report_data['income_total']"/></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                                <!-- EXPENSES SECTION - Hierarchical -->
+                                <h4 class="ops-section-title ops-section-title--expense" style="margin-top: 20px;">EXPENSES</h4>
+                                <table class="ops-financial-table">
+                                    <colgroup>
+                                        <col class="ops-col-code"/>
+                                        <col class="ops-col-name"/>
+                                        <col class="ops-col-amount"/>
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 15%;">Code</th>
+                                            <th style="width: 55%;">Account</th>
+                                            <th class="text-end" style="width: 30%;">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="report_data['expense_hierarchy']" t-as="line">
+                                            <t t-set="row_class" t-value="'ops-hierarchy-group' if line['type'] == 'group' else 'ops-hierarchy-account' if line['type'] == 'account' else 'ops-row-subtotal'"/>
+                                            <t t-set="indent_class" t-value="'ops-indent-%d' % min(line.get('indent', 0), 4)"/>
+                                            <tr t-attf-class="#{row_class} #{indent_class}">
+                                                <td class="ops-cell-code"><t t-esc="line.get('code', '')"/></td>
+                                                <td class="ops-cell-name"><t t-esc="line.get('name', '')"/></td>
+                                                <td class="ops-cell-amount">
+                                                    <t t-set="amount" t-value="abs(line.get('balance', 0))"/>
+                                                    <t t-set="amount_class" t-value="'ops-amount-zero' if amount == 0 else 'ops-amount-negative'"/>
+                                                    <span t-attf-class="#{amount_class}"><t t-esc="'%.2f' % amount"/></span>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="ops-row-section-total">
+                                            <td class="ops-cell-code"></td>
+                                            <td class="ops-cell-name"><strong>TOTAL EXPENSES</strong></td>
+                                            <td class="ops-cell-amount"><strong><t t-esc="'%.2f' % report_data['expense_total']"/></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                                <!-- SUMMARY - Grand Totals -->
+                                <table class="ops-financial-table" style="margin-top: 20px;">
+                                    <colgroup>
+                                        <col style="width: 70%;"/>
+                                        <col style="width: 30%;"/>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr class="ops-row-subtotal">
+                                            <td class="ops-cell-name"><strong>Gross Profit</strong></td>
+                                            <td class="ops-cell-amount">
+                                                <t t-set="gp" t-value="report_data.get('gross_profit', 0)"/>
+                                                <t t-set="gp_class" t-value="'ops-amount-positive' if gp >= 0 else 'ops-amount-negative'"/>
+                                                <strong t-attf-class="#{gp_class}"><t t-esc="'%.2f' % gp"/></strong>
                                             </td>
                                         </tr>
-                                    </t>
-                                </tbody>
-                                <tfoot>
-                                    <tr class="ops-total-row">
-                                        <td><strong>Total Income</strong></td>
-                                        <td class="text-end ops-number"><strong><span t-esc="'%.2f' % report_data['income_total']"/></strong></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-
-                            <h4 class="ops-section-header ops-section-header-expense" style="margin-top: 20px;">Expenses</h4>
-                            <table class="ops_table_matrix">
-                                <thead>
-                                    <tr>
-                                        <th>Account</th>
-                                        <th class="text-end">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="report_data['expense_lines']" t-as="line">
-                                        <tr>
-                                            <td>
-                                                <span t-esc="line['account']"/>
-                                                <t t-if="line.get('account_id')">
-                                                    <br/><small style="color: #999;">(ID: <span t-esc="line['account_id']"/>)</small>
-                                                </t>
-                                            </td>
-                                            <td class="text-end ops-number ops-number-negative">
-                                                <span t-esc="'%.2f' % line['amount']"/>
+                                        <tr class="ops-row-grand-total">
+                                            <td class="ops-cell-name"><strong>NET PROFIT / (LOSS)</strong></td>
+                                            <td class="ops-cell-amount">
+                                                <strong><t t-esc="'%.2f' % report_data['net_profit']"/></strong>
+                                                <t t-if="report_data['net_profit'] &lt; 0"> (LOSS)</t>
                                             </td>
                                         </tr>
-                                    </t>
-                                </tbody>
-                                <tfoot>
-                                    <tr class="ops-total-row">
-                                        <td><strong>Total Expenses</strong></td>
-                                        <td class="text-end ops-number"><strong><span t-esc="'%.2f' % report_data['expense_total']"/></strong></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </t>
 
-                            <!-- Summary Table -->
-                            <table class="ops_table_matrix" style="margin-top: 20px;">
-                                <tbody>
-                                    <tr class="ops-total-row">
-                                        <td><strong>Gross Profit</strong></td>
-                                        <td class="text-end">
-                                            <t t-set="gp_class" t-value="'ops-number-positive' if report_data['gross_profit'] >= 0 else 'ops-number-negative'"/>
-                                            <strong t-attf-class="ops-number #{gp_class}">
-                                                <span t-esc="'%.2f' % report_data['gross_profit']"/>
-                                            </strong>
-                                        </td>
-                                    </tr>
-                                    <tr class="ops-grand-total">
-                                        <td style="padding: 12px;"><strong>NET PROFIT / (LOSS)</strong></td>
-                                        <td class="text-end" style="padding: 12px;">
-                                            <strong><span t-esc="'%.2f' % report_data['net_profit']"/></strong>
-                                            <t t-if="report_data['net_profit'] &lt; 0"> (LOSS)</t>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <!-- Fallback: Original flat structure -->
+                            <t t-else="">
+                                <h4 class="ops-section-header ops-section-header-revenue" style="margin-top: 20px;">Income</h4>
+                                <table class="ops_table_matrix">
+                                    <thead>
+                                        <tr>
+                                            <th>Account</th>
+                                            <th class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="report_data['income_lines']" t-as="line">
+                                            <tr>
+                                                <td><span t-esc="line['account']"/></td>
+                                                <td class="text-end ops-number ops-number-positive">
+                                                    <span t-esc="'%.2f' % line['amount']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="ops-total-row">
+                                            <td><strong>Total Income</strong></td>
+                                            <td class="text-end ops-number"><strong><span t-esc="'%.2f' % report_data['income_total']"/></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
 
-                            <!-- Performance Metrics Box -->
+                                <h4 class="ops-section-header ops-section-header-expense" style="margin-top: 20px;">Expenses</h4>
+                                <table class="ops_table_matrix">
+                                    <thead>
+                                        <tr>
+                                            <th>Account</th>
+                                            <th class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="report_data['expense_lines']" t-as="line">
+                                            <tr>
+                                                <td><span t-esc="line['account']"/></td>
+                                                <td class="text-end ops-number ops-number-negative">
+                                                    <span t-esc="'%.2f' % line['amount']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="ops-total-row">
+                                            <td><strong>Total Expenses</strong></td>
+                                            <td class="text-end ops-number"><strong><span t-esc="'%.2f' % report_data['expense_total']"/></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                                <!-- Summary Table -->
+                                <table class="ops_table_matrix" style="margin-top: 20px;">
+                                    <tbody>
+                                        <tr class="ops-total-row">
+                                            <td><strong>Gross Profit</strong></td>
+                                            <td class="text-end">
+                                                <t t-set="gp_class" t-value="'ops-number-positive' if report_data['gross_profit'] >= 0 else 'ops-number-negative'"/>
+                                                <strong t-attf-class="ops-number #{gp_class}">
+                                                    <span t-esc="'%.2f' % report_data['gross_profit']"/>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                        <tr class="ops-grand-total">
+                                            <td style="padding: 12px;"><strong>NET PROFIT / (LOSS)</strong></td>
+                                            <td class="text-end" style="padding: 12px;">
+                                                <strong><span t-esc="'%.2f' % report_data['net_profit']"/></strong>
+                                                <t t-if="report_data['net_profit'] &lt; 0"> (LOSS)</t>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </t>
+
+                            <!-- Performance Metrics Box (Always shown) -->
                             <div class="ops-info-box" style="margin-top: 20px;">
                                 <strong style="color: var(--ops-primary);">Performance Metrics</strong>
                                 <div class="row" style="margin-top: 10px;">
@@ -292,84 +391,237 @@
                             </div>
                         </t>
 
-                        <!-- Report Content - Balance Sheet -->
+                        <!-- Report Content - Balance Sheet (Phase 14: Hierarchical Audit-Grade) -->
                         <t t-if="doc.report_type == 'bs'">
-                            <div class="row">
-                                <div class="col-6">
-                                    <h4 class="ops-section-header ops-section-header-asset">Assets</h4>
-                                    <table class="ops_table_matrix">
-                                        <thead>
-                                            <tr>
-                                                <th>Account</th>
-                                                <th class="text-end">Amount</th>
+                            <!-- Check if hierarchical data is available -->
+                            <t t-if="report_data.get('use_hierarchy') and report_data.get('asset_hierarchy')">
+                                <!-- ASSETS SECTION - Hierarchical -->
+                                <h4 class="ops-section-title ops-section-title--asset">ASSETS</h4>
+                                <table class="ops-financial-table">
+                                    <colgroup>
+                                        <col class="ops-col-code"/>
+                                        <col class="ops-col-name"/>
+                                        <col class="ops-col-amount"/>
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 15%;">Code</th>
+                                            <th style="width: 55%;">Account</th>
+                                            <th class="text-end" style="width: 30%;">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="report_data['asset_hierarchy']" t-as="line">
+                                            <t t-set="row_class" t-value="'ops-hierarchy-group' if line['type'] == 'group' else 'ops-hierarchy-account' if line['type'] == 'account' else 'ops-row-subtotal'"/>
+                                            <t t-set="indent_class" t-value="'ops-indent-%d' % min(line.get('indent', 0), 4)"/>
+                                            <tr t-attf-class="#{row_class} #{indent_class}">
+                                                <td class="ops-cell-code"><t t-esc="line.get('code', '')"/></td>
+                                                <td class="ops-cell-name"><t t-esc="line.get('name', '')"/></td>
+                                                <td class="ops-cell-amount">
+                                                    <t t-set="amount" t-value="line.get('balance', 0)"/>
+                                                    <t t-set="amount_class" t-value="'ops-amount-zero' if amount == 0 else 'ops-amount-positive' if amount > 0 else 'ops-amount-negative'"/>
+                                                    <span t-attf-class="#{amount_class}"><t t-esc="'%.2f' % amount"/></span>
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            <t t-foreach="report_data['asset_lines']" t-as="line">
-                                                <tr>
-                                                    <td><span t-esc="line['account']"/></td>
-                                                    <td class="text-end ops-number"><span t-esc="'%.2f' % line['amount']"/></td>
-                                                </tr>
-                                            </t>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="ops-total-row">
-                                                <td><strong>Total Assets</strong></td>
-                                                <td class="text-end ops-number"><strong><span t-esc="'%.2f' % report_data['asset_total']"/></strong></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                                <div class="col-6">
-                                    <h4 class="ops-section-header ops-section-header-liability">Liabilities</h4>
-                                    <table class="ops_table_matrix">
-                                        <thead>
-                                            <tr>
-                                                <th>Account</th>
-                                                <th class="text-end">Amount</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <t t-foreach="report_data['liability_lines']" t-as="line">
-                                                <tr>
-                                                    <td><span t-esc="line['account']"/></td>
-                                                    <td class="text-end ops-number"><span t-esc="'%.2f' % line['amount']"/></td>
-                                                </tr>
-                                            </t>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="ops-total-row">
-                                                <td><strong>Total Liabilities</strong></td>
-                                                <td class="text-end ops-number"><strong><span t-esc="'%.2f' % report_data['liability_total']"/></strong></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                                        </t>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="ops-row-section-total">
+                                            <td class="ops-cell-code"></td>
+                                            <td class="ops-cell-name"><strong>TOTAL ASSETS</strong></td>
+                                            <td class="ops-cell-amount"><strong><t t-esc="'%.2f' % report_data['asset_total']"/></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
 
-                                    <h4 class="ops-section-header" style="margin-top: 20px; background-color: #9C27B0;">Equity</h4>
-                                    <table class="ops_table_matrix">
-                                        <thead>
-                                            <tr>
-                                                <th>Account</th>
-                                                <th class="text-end">Amount</th>
+                                <!-- LIABILITIES SECTION - Hierarchical -->
+                                <h4 class="ops-section-title ops-section-title--liability" style="margin-top: 20px;">LIABILITIES</h4>
+                                <table class="ops-financial-table">
+                                    <colgroup>
+                                        <col class="ops-col-code"/>
+                                        <col class="ops-col-name"/>
+                                        <col class="ops-col-amount"/>
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 15%;">Code</th>
+                                            <th style="width: 55%;">Account</th>
+                                            <th class="text-end" style="width: 30%;">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="report_data['liability_hierarchy']" t-as="line">
+                                            <t t-set="row_class" t-value="'ops-hierarchy-group' if line['type'] == 'group' else 'ops-hierarchy-account' if line['type'] == 'account' else 'ops-row-subtotal'"/>
+                                            <t t-set="indent_class" t-value="'ops-indent-%d' % min(line.get('indent', 0), 4)"/>
+                                            <tr t-attf-class="#{row_class} #{indent_class}">
+                                                <td class="ops-cell-code"><t t-esc="line.get('code', '')"/></td>
+                                                <td class="ops-cell-name"><t t-esc="line.get('name', '')"/></td>
+                                                <td class="ops-cell-amount">
+                                                    <t t-set="amount" t-value="abs(line.get('balance', 0))"/>
+                                                    <t t-set="amount_class" t-value="'ops-amount-zero' if amount == 0 else ''"/>
+                                                    <span t-attf-class="#{amount_class}"><t t-esc="'%.2f' % amount"/></span>
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            <t t-foreach="report_data['equity_lines']" t-as="line">
+                                        </t>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="ops-row-section-total">
+                                            <td class="ops-cell-code"></td>
+                                            <td class="ops-cell-name"><strong>TOTAL LIABILITIES</strong></td>
+                                            <td class="ops-cell-amount"><strong><t t-esc="'%.2f' % report_data['liability_total']"/></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                                <!-- EQUITY SECTION - Hierarchical -->
+                                <h4 class="ops-section-title ops-section-title--equity" style="margin-top: 20px;">EQUITY</h4>
+                                <table class="ops-financial-table">
+                                    <colgroup>
+                                        <col class="ops-col-code"/>
+                                        <col class="ops-col-name"/>
+                                        <col class="ops-col-amount"/>
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 15%;">Code</th>
+                                            <th style="width: 55%;">Account</th>
+                                            <th class="text-end" style="width: 30%;">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="report_data['equity_hierarchy']" t-as="line">
+                                            <t t-set="row_class" t-value="'ops-hierarchy-group' if line['type'] == 'group' else 'ops-hierarchy-account' if line['type'] == 'account' else 'ops-row-subtotal'"/>
+                                            <t t-set="indent_class" t-value="'ops-indent-%d' % min(line.get('indent', 0), 4)"/>
+                                            <tr t-attf-class="#{row_class} #{indent_class}">
+                                                <td class="ops-cell-code"><t t-esc="line.get('code', '')"/></td>
+                                                <td class="ops-cell-name"><t t-esc="line.get('name', '')"/></td>
+                                                <td class="ops-cell-amount">
+                                                    <t t-set="amount" t-value="abs(line.get('balance', 0))"/>
+                                                    <t t-set="amount_class" t-value="'ops-amount-zero' if amount == 0 else ''"/>
+                                                    <span t-attf-class="#{amount_class}"><t t-esc="'%.2f' % amount"/></span>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="ops-row-section-total">
+                                            <td class="ops-cell-code"></td>
+                                            <td class="ops-cell-name"><strong>TOTAL EQUITY</strong></td>
+                                            <td class="ops-cell-amount"><strong><t t-esc="'%.2f' % report_data['equity_total']"/></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                                <!-- BALANCE CHECK -->
+                                <table class="ops-financial-table" style="margin-top: 20px;">
+                                    <colgroup>
+                                        <col style="width: 70%;"/>
+                                        <col style="width: 30%;"/>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr class="ops-row-grand-total">
+                                            <td class="ops-cell-name"><strong>TOTAL LIABILITIES + EQUITY</strong></td>
+                                            <td class="ops-cell-amount">
+                                                <strong><t t-esc="'%.2f' % (report_data['liability_total'] + report_data['equity_total'])"/></strong>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- Balance Check Alert -->
+                                <t t-set="balance_diff" t-value="report_data['asset_total'] - (report_data['liability_total'] + report_data['equity_total'])"/>
+                                <t t-if="abs(balance_diff) > 0.01">
+                                    <div class="ops-alert ops-alert-danger" style="margin-top: 15px;">
+                                        <strong>Balance Check Warning:</strong> Assets do not equal Liabilities + Equity.
+                                        Difference: <strong><t t-esc="'%.2f' % balance_diff"/></strong>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="ops-alert ops-alert-success" style="margin-top: 15px;">
+                                        <strong>Balance Check:</strong> Assets = Liabilities + Equity (Balanced)
+                                    </div>
+                                </t>
+                            </t>
+
+                            <!-- Fallback: Original two-column layout -->
+                            <t t-else="">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h4 class="ops-section-header ops-section-header-asset">Assets</h4>
+                                        <table class="ops_table_matrix">
+                                            <thead>
                                                 <tr>
-                                                    <td><span t-esc="line['account']"/></td>
-                                                    <td class="text-end ops-number"><span t-esc="'%.2f' % line['amount']"/></td>
+                                                    <th>Account</th>
+                                                    <th class="text-end">Amount</th>
                                                 </tr>
-                                            </t>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="ops-total-row">
-                                                <td><strong>Total Equity</strong></td>
-                                                <td class="text-end ops-number"><strong><span t-esc="'%.2f' % report_data['equity_total']"/></strong></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="report_data['asset_lines']" t-as="line">
+                                                    <tr>
+                                                        <td><span t-esc="line['account']"/></td>
+                                                        <td class="text-end ops-number"><span t-esc="'%.2f' % line['amount']"/></td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="ops-total-row">
+                                                    <td><strong>Total Assets</strong></td>
+                                                    <td class="text-end ops-number"><strong><span t-esc="'%.2f' % report_data['asset_total']"/></strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div class="col-6">
+                                        <h4 class="ops-section-header ops-section-header-liability">Liabilities</h4>
+                                        <table class="ops_table_matrix">
+                                            <thead>
+                                                <tr>
+                                                    <th>Account</th>
+                                                    <th class="text-end">Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="report_data['liability_lines']" t-as="line">
+                                                    <tr>
+                                                        <td><span t-esc="line['account']"/></td>
+                                                        <td class="text-end ops-number"><span t-esc="'%.2f' % line['amount']"/></td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="ops-total-row">
+                                                    <td><strong>Total Liabilities</strong></td>
+                                                    <td class="text-end ops-number"><strong><span t-esc="'%.2f' % report_data['liability_total']"/></strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+
+                                        <h4 class="ops-section-header" style="margin-top: 20px; background-color: #9C27B0;">Equity</h4>
+                                        <table class="ops_table_matrix">
+                                            <thead>
+                                                <tr>
+                                                    <th>Account</th>
+                                                    <th class="text-end">Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="report_data['equity_lines']" t-as="line">
+                                                    <tr>
+                                                        <td><span t-esc="line['account']"/></td>
+                                                        <td class="text-end ops-number"><span t-esc="'%.2f' % line['amount']"/></td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="ops-total-row">
+                                                    <td><strong>Total Equity</strong></td>
+                                                    <td class="text-end ops-number"><strong><span t-esc="'%.2f' % report_data['equity_total']"/></strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
+                            </t>
                         </t>
 
                         <!-- Report Content - Aged Partner -->

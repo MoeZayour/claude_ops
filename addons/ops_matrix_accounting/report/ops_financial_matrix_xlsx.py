@@ -43,11 +43,25 @@ class OpsFinancialMatrixXlsx(models.AbstractModel):
             else:
                 styles = self._create_basic_styles(workbook)
 
-            # Get data - either from data param or generate from wizard
-            report_data = data if data else {}
+            # Get data - try multiple sources
+            report_data = None
+
+            # 1. Check if data was passed directly with report_type
+            if data and isinstance(data, dict) and data.get('report_type'):
+                report_data = data
+            # 2. Check if data is nested under 'data' key (some Odoo versions)
+            elif data and isinstance(data, dict) and data.get('data') and isinstance(data['data'], dict):
+                if data['data'].get('report_type'):
+                    report_data = data['data']
+            # 3. Generate from wizard as fallback
             if not report_data and wizards:
-                wizard = wizards[0]
-                report_data = wizard._get_report_data()
+                wizard = wizards[0] if wizards else None
+                if wizard and wizard.exists():
+                    report_data = wizard._get_report_data()
+
+            # If still no data, create minimal structure
+            if not report_data:
+                report_data = {'report_type': 'gl', 'report_title': 'Financial Report', 'data': []}
 
             report_type = report_data.get('report_type', 'gl')
             report_title = report_data.get('report_title', 'Financial Report')

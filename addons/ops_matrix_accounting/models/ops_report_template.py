@@ -19,10 +19,10 @@ _logger = logging.getLogger(__name__)
 
 
 class OpsReportTemplate(models.Model):
-    """Report Template - Saved configuration for Matrix Reports"""
-    _name = 'ops.report.template'
+    """Report Template - Extends core template with smart configuration storage"""
+    _inherit = 'ops.report.template'
     _description = 'Smart Report Template'
-    _order = 'engine, name'
+    _order = 'sequence, engine, name'
     _rec_name = 'display_name'
 
     # ============================================
@@ -45,7 +45,7 @@ class OpsReportTemplate(models.Model):
         ('treasury', 'Treasury (PDC)'),
         ('asset', 'Asset Management'),
         ('inventory', 'Inventory Intelligence'),
-    ], string='Report Engine', required=True, index=True,
+    ], string='Report Engine', required=False, index=True, default='financial',
        help='Which reporting engine this template applies to')
 
     description = fields.Text(

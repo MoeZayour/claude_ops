@@ -715,20 +715,27 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
     # ============================================
 
     def _get_financial_statement_data(self):
-        """Get P&L or Balance Sheet report data."""
+        """
+        Get P&L or Balance Sheet report data.
+        Phase 14: Now returns hierarchical CoA structure for audit-grade reports.
+        """
         self.ensure_one()
 
         MoveLine = self.env['account.move.line']
         domain = self._build_domain()
 
-        # Group by account type for financial statement presentation
+        # Phase 14: Build hierarchical data
+        hierarchy = self._get_hierarchical_financial_data()
+        hierarchical_data = self._flatten_hierarchy_for_template(hierarchy, self.report_type)
+
+        # Also get flat data for backward compatibility
         data = MoveLine._read_group(
             domain=domain,
             groupby=['account_id', 'account_id.account_type'],
             aggregates=['debit:sum', 'credit:sum', 'balance:sum']
         )
 
-        # Organize by account type
+        # Organize by account type (flat structure for backward compatibility)
         sections = {}
         for item in data:
             account = item[0]
@@ -775,9 +782,17 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             # Income is credit-based (negative balance), expense is debit-based (positive)
             net_income = abs(income_total) - expense_total
 
+            # Get COGS for gross profit calculation
+            cogs_total = sum(
+                s['total_balance'] for k, s in sections.items()
+                if k == 'expense_direct_cost'
+            )
+
             summary = {
                 'total_income': abs(income_total),
                 'total_expense': expense_total,
+                'cogs_total': cogs_total,
+                'gross_profit': abs(income_total) - cogs_total,
                 'net_income': net_income,
             }
         else:  # Balance Sheet
@@ -813,6 +828,9 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             'filters': self._get_filter_summary_dict(),
             'sections': list(sections.values()),
             'summary': summary,
+            # Phase 14: Hierarchical data for audit-grade rendering
+            'hierarchy': hierarchical_data,
+            'use_hierarchy': True,  # Flag to enable hierarchical rendering
         }
 
     def _get_account_type_label(self, account_type):
@@ -838,6 +856,333 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             'off_balance': 'Off-Balance Sheet',
         }
         return labels.get(account_type, account_type)
+
+    # ============================================
+    # PHASE 14: HIERARCHICAL COA LOGIC
+    # "The Boardroom Standard" - Audit-Grade Reports
+    # ============================================
+
+    def _get_hierarchical_financial_data(self):
+        """
+        Build hierarchical Chart of Accounts structure for audit-grade reports.
+        Returns data organized by: Group -> Sub-groups -> Accounts
+        Shows 0.00 balances for relevant accounts.
+        """
+        self.ensure_one()
+
+        MoveLine = self.env['account.move.line']
+        Account = self.env['account.account']
+        AccountGroup = self.env['account.group']
+
+        domain = self._build_domain()
+
+        # Get balances grouped by account
+        balance_data = MoveLine._read_group(
+            domain=domain,
+            groupby=['account_id'],
+            aggregates=['debit:sum', 'credit:sum', 'balance:sum']
+        )
+
+        # Build balance map: account_id -> {debit, credit, balance}
+        balance_map = {}
+        for item in balance_data:
+            account = item[0]
+            if account:
+                balance_map[account.id] = {
+                    'debit': item[1] or 0,
+                    'credit': item[2] or 0,
+                    'balance': item[3] or 0,
+                }
+
+        # Get all relevant accounts for this report type
+        account_type_filter = self._get_account_types_for_report()
+        all_accounts = Account.search([
+            ('account_type', 'in', account_type_filter),
+            ('company_ids', 'in', [self.company_id.id]),
+        ], order='code')
+
+        # Get all account groups
+        all_groups = AccountGroup.search([
+            ('company_id', '=', self.company_id.id),
+        ], order='code_prefix_start')
+
+        # Build hierarchical structure
+        hierarchy = self._build_account_hierarchy(all_accounts, all_groups, balance_map)
+
+        return hierarchy
+
+    def _get_account_types_for_report(self):
+        """Get account types relevant for the current report type."""
+        if self.report_type == 'pl':
+            return [
+                'income', 'income_other',
+                'expense', 'expense_depreciation', 'expense_direct_cost'
+            ]
+        elif self.report_type == 'bs':
+            return [
+                'asset_receivable', 'asset_cash', 'asset_current',
+                'asset_non_current', 'asset_prepayments', 'asset_fixed',
+                'liability_payable', 'liability_credit_card',
+                'liability_current', 'liability_non_current',
+                'equity', 'equity_unaffected'
+            ]
+        return []
+
+    def _build_account_hierarchy(self, accounts, groups, balance_map):
+        """
+        Build a nested hierarchy of groups and accounts.
+        Returns list of top-level groups with children.
+        """
+        # Build group tree structure
+        group_map = {g.id: {
+            'id': g.id,
+            'name': g.name,
+            'code_prefix': g.code_prefix_start or '',
+            'parent_id': g.parent_id.id if g.parent_id else None,
+            'children': [],
+            'accounts': [],
+            'total_debit': 0,
+            'total_credit': 0,
+            'total_balance': 0,
+            'level': 0,
+            'is_group': True,
+        } for g in groups}
+
+        # Build parent-child relationships for groups
+        root_groups = []
+        for group_id, group_data in group_map.items():
+            parent_id = group_data['parent_id']
+            if parent_id and parent_id in group_map:
+                group_map[parent_id]['children'].append(group_data)
+            else:
+                root_groups.append(group_data)
+
+        # Assign accounts to their groups
+        ungrouped_accounts = []
+        for account in accounts:
+            account_data = {
+                'id': account.id,
+                'code': account.code,
+                'name': account.name,
+                'account_type': account.account_type,
+                'debit': balance_map.get(account.id, {}).get('debit', 0),
+                'credit': balance_map.get(account.id, {}).get('credit', 0),
+                'balance': balance_map.get(account.id, {}).get('balance', 0),
+                'is_group': False,
+            }
+
+            # Find the most specific group for this account based on code prefix
+            assigned = False
+            best_match = None
+            best_match_len = 0
+
+            for group in groups:
+                prefix_start = group.code_prefix_start or ''
+                prefix_end = group.code_prefix_end or prefix_start
+                if prefix_start and account.code:
+                    if account.code >= prefix_start and account.code <= prefix_end + 'z':
+                        if len(prefix_start) > best_match_len:
+                            best_match = group
+                            best_match_len = len(prefix_start)
+
+            if best_match and best_match.id in group_map:
+                group_map[best_match.id]['accounts'].append(account_data)
+                assigned = True
+
+            if not assigned:
+                ungrouped_accounts.append(account_data)
+
+        # Calculate totals recursively
+        def calculate_totals(node):
+            total_debit = 0
+            total_credit = 0
+            total_balance = 0
+
+            for account in node.get('accounts', []):
+                total_debit += account['debit']
+                total_credit += account['credit']
+                total_balance += account['balance']
+
+            for child in node.get('children', []):
+                calculate_totals(child)
+                total_debit += child['total_debit']
+                total_credit += child['total_credit']
+                total_balance += child['total_balance']
+
+            node['total_debit'] = total_debit
+            node['total_credit'] = total_credit
+            node['total_balance'] = total_balance
+
+        for group in root_groups:
+            calculate_totals(group)
+
+        # Assign levels for indentation
+        def assign_levels(node, level=0):
+            node['level'] = level
+            for child in node.get('children', []):
+                assign_levels(child, level + 1)
+
+        for group in root_groups:
+            assign_levels(group)
+
+        # Sort groups by code prefix
+        root_groups.sort(key=lambda x: x['code_prefix'])
+
+        # Sort accounts within each group by code
+        def sort_accounts(node):
+            node['accounts'].sort(key=lambda x: x['code'])
+            for child in node['children']:
+                sort_accounts(child)
+            node['children'].sort(key=lambda x: x['code_prefix'])
+
+        for group in root_groups:
+            sort_accounts(group)
+
+        return {
+            'groups': root_groups,
+            'ungrouped': ungrouped_accounts,
+        }
+
+    def _flatten_hierarchy_for_template(self, hierarchy, report_type='pl'):
+        """
+        Flatten hierarchical data into a list suitable for template rendering.
+        Each item has: type (group/account), indent_level, data
+        """
+        lines = []
+
+        def process_node(node, indent=0):
+            if node.get('is_group'):
+                # Add group header line
+                lines.append({
+                    'type': 'group',
+                    'indent': indent,
+                    'code': node.get('code_prefix', ''),
+                    'name': node['name'],
+                    'debit': node['total_debit'],
+                    'credit': node['total_credit'],
+                    'balance': node['total_balance'],
+                    'is_subtotal': False,
+                })
+
+                # Process child groups
+                for child in node.get('children', []):
+                    process_node(child, indent + 1)
+
+                # Process accounts in this group
+                for account in node.get('accounts', []):
+                    lines.append({
+                        'type': 'account',
+                        'indent': indent + 1,
+                        'code': account['code'],
+                        'name': account['name'],
+                        'account_type': account['account_type'],
+                        'debit': account['debit'],
+                        'credit': account['credit'],
+                        'balance': account['balance'],
+                        'is_subtotal': False,
+                    })
+
+                # Add subtotal line for this group (if it has accounts or children)
+                if node.get('accounts') or node.get('children'):
+                    lines.append({
+                        'type': 'subtotal',
+                        'indent': indent,
+                        'code': '',
+                        'name': f"Total {node['name']}",
+                        'debit': node['total_debit'],
+                        'credit': node['total_credit'],
+                        'balance': node['total_balance'],
+                        'is_subtotal': True,
+                    })
+
+        # Process by category for P&L
+        if report_type == 'pl':
+            income_groups = []
+            expense_groups = []
+
+            for group in hierarchy.get('groups', []):
+                prefix = group.get('code_prefix', '')
+                # Typically income accounts start with 4, expenses with 5-6
+                if prefix.startswith('4'):
+                    income_groups.append(group)
+                elif prefix.startswith(('5', '6', '7')):
+                    expense_groups.append(group)
+
+            # Process income section
+            income_lines = []
+            income_total = 0
+            for group in income_groups:
+                process_node(group, 0)
+                income_total += abs(group['total_balance'])
+            income_lines = lines.copy()
+            lines.clear()
+
+            # Process expense section
+            expense_lines = []
+            expense_total = 0
+            for group in expense_groups:
+                process_node(group, 0)
+                expense_total += abs(group['total_balance'])
+            expense_lines = lines.copy()
+
+            return {
+                'income_hierarchy': income_lines,
+                'expense_hierarchy': expense_lines,
+                'income_total': income_total,
+                'expense_total': expense_total,
+                'net_profit': income_total - expense_total,
+            }
+
+        # Process for Balance Sheet
+        elif report_type == 'bs':
+            asset_groups = []
+            liability_groups = []
+            equity_groups = []
+
+            for group in hierarchy.get('groups', []):
+                prefix = group.get('code_prefix', '')
+                # Typically: 1=assets, 2=liabilities, 3=equity
+                if prefix.startswith('1'):
+                    asset_groups.append(group)
+                elif prefix.startswith('2'):
+                    liability_groups.append(group)
+                elif prefix.startswith('3'):
+                    equity_groups.append(group)
+
+            # Process each section
+            asset_lines = []
+            asset_total = 0
+            for group in asset_groups:
+                process_node(group, 0)
+                asset_total += group['total_balance']
+            asset_lines = lines.copy()
+            lines.clear()
+
+            liability_lines = []
+            liability_total = 0
+            for group in liability_groups:
+                process_node(group, 0)
+                liability_total += abs(group['total_balance'])
+            liability_lines = lines.copy()
+            lines.clear()
+
+            equity_lines = []
+            equity_total = 0
+            for group in equity_groups:
+                process_node(group, 0)
+                equity_total += abs(group['total_balance'])
+            equity_lines = lines.copy()
+
+            return {
+                'asset_hierarchy': asset_lines,
+                'liability_hierarchy': liability_lines,
+                'equity_hierarchy': equity_lines,
+                'asset_total': asset_total,
+                'liability_total': liability_total,
+                'equity_total': equity_total,
+            }
+
+        return {'lines': lines}
 
     # ============================================
     # CASH FLOW DATA

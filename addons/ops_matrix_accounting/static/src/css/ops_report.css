@@ -626,3 +626,268 @@
 .ops-d-flex { display: flex !important; }
 .ops-justify-between { justify-content: space-between !important; }
 .ops-align-center { align-items: center !important; }
+
+/* ============================================
+   PHASE 14: "THE BOARDROOM STANDARD"
+   Audit-Grade Financial Statement Styling
+   ============================================ */
+
+/*
+ * Design Philosophy:
+ * - HIERARCHY IS KING: Visual distinction between Groups > Sub-groups > Accounts
+ * - CONSISTENCY IS QUEEN: Show 0.00 values, never hide relevant data
+ * - READABILITY IS GOD: Clean typography, proper spacing, clear totals
+ */
+
+/* Financial Table - Main Container */
+.ops-financial-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--ops-spacing-md);
+  font-size: var(--ops-font-size-base);
+  background-color: var(--ops-white);
+}
+
+/* Column Width Enforcement: Code 15%, Name 55%, Amount 30% */
+.ops-financial-table colgroup .ops-col-code { width: 15%; }
+.ops-financial-table colgroup .ops-col-name { width: 55%; }
+.ops-financial-table colgroup .ops-col-amount { width: 30%; }
+
+/* Table Header - Corporate Blue Theme */
+.ops-financial-table thead th {
+  background-color: var(--ops-primary);
+  color: var(--ops-white);
+  padding: var(--ops-spacing-sm) var(--ops-spacing-md);
+  font-weight: 600;
+  font-size: 14px;
+  text-align: left;
+  border: 1px solid var(--ops-primary-dark);
+  white-space: nowrap;
+}
+
+.ops-financial-table thead th.text-end {
+  text-align: right;
+}
+
+/* Table Body Cells */
+.ops-financial-table tbody td {
+  padding: var(--ops-spacing-xs) var(--ops-spacing-md);
+  border: 1px solid var(--ops-border);
+  vertical-align: middle;
+  font-size: 11px;
+}
+
+/* Zebra Striping - Corporate Blue Tint */
+.ops-financial-table tbody tr:nth-child(even) {
+  background-color: var(--ops-primary-light);
+}
+
+.ops-financial-table tbody tr:nth-child(odd) {
+  background-color: var(--ops-white);
+}
+
+/* Hover State */
+.ops-financial-table tbody tr:hover {
+  background-color: #cfe2ff;
+}
+
+/* ============================================
+   HIERARCHY INDENTATION CLASSES
+   ============================================ */
+
+/* Group Level (Level 0) - Bold, 12px */
+.ops-hierarchy-group {
+  font-weight: 700;
+  font-size: 12px;
+  background-color: var(--ops-secondary-dark) !important;
+  color: var(--ops-primary);
+}
+
+.ops-hierarchy-group td {
+  padding-top: var(--ops-spacing-sm) !important;
+  padding-bottom: var(--ops-spacing-sm) !important;
+}
+
+/* Sub-group Level (Level 1) - Semi-bold, 11px */
+.ops-hierarchy-subgroup {
+  font-weight: 600;
+  font-size: 11px;
+  background-color: var(--ops-secondary) !important;
+}
+
+/* Account Level - Regular, 11px */
+.ops-hierarchy-account {
+  font-weight: 400;
+  font-size: 11px;
+}
+
+/* Indentation Classes */
+.ops-indent-0 .ops-cell-name { padding-left: var(--ops-spacing-md) !important; }
+.ops-indent-1 .ops-cell-name { padding-left: calc(var(--ops-spacing-md) + 20px) !important; }
+.ops-indent-2 .ops-cell-name { padding-left: calc(var(--ops-spacing-md) + 40px) !important; }
+.ops-indent-3 .ops-cell-name { padding-left: calc(var(--ops-spacing-md) + 60px) !important; }
+.ops-indent-4 .ops-cell-name { padding-left: calc(var(--ops-spacing-md) + 80px) !important; }
+
+/* Account Code Column - Left Aligned, Monospace */
+.ops-cell-code {
+  font-family: var(--ops-font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  white-space: nowrap;
+  color: var(--ops-muted);
+}
+
+/* Account Name Column */
+.ops-cell-name {
+  text-align: left;
+}
+
+/* Amount Column - Right Aligned, Monospace */
+.ops-cell-amount {
+  font-family: var(--ops-font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+/* ============================================
+   TOTAL ROW STYLING
+   ============================================ */
+
+/* Sub-total Row - Top Border */
+.ops-row-subtotal {
+  font-weight: 600;
+  background-color: var(--ops-secondary) !important;
+}
+
+.ops-row-subtotal td {
+  border-top: 2px solid var(--ops-primary) !important;
+  padding-top: var(--ops-spacing-sm) !important;
+  padding-bottom: var(--ops-spacing-sm) !important;
+}
+
+/* Section Total Row */
+.ops-row-section-total {
+  font-weight: 700;
+  background-color: var(--ops-secondary-dark) !important;
+}
+
+.ops-row-section-total td {
+  border-top: 2px solid var(--ops-dark) !important;
+  padding-top: var(--ops-spacing-sm) !important;
+  padding-bottom: var(--ops-spacing-sm) !important;
+  font-size: 12px;
+}
+
+/* Grand Total Row - Double Border */
+.ops-row-grand-total {
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--ops-primary) 0%, var(--ops-primary-dark) 100%) !important;
+  color: var(--ops-white) !important;
+}
+
+.ops-row-grand-total td {
+  border-top: 4px double var(--ops-dark) !important;
+  padding: var(--ops-spacing-md) !important;
+  font-size: 14px;
+}
+
+.ops-row-grand-total .ops-cell-amount {
+  color: var(--ops-white) !important;
+}
+
+/* ============================================
+   NUMBER DISPLAY - ZERO VALUES
+   ============================================ */
+
+/* Always show 0.00, never hide or dash */
+.ops-amount-zero {
+  color: var(--ops-muted);
+}
+
+.ops-amount-positive {
+  color: var(--ops-success);
+}
+
+.ops-amount-negative {
+  color: var(--ops-danger);
+  font-weight: 600;
+}
+
+/* ============================================
+   FINANCIAL SECTION HEADERS
+   ============================================ */
+
+.ops-section-title {
+  background-color: var(--ops-primary);
+  color: var(--ops-white);
+  padding: var(--ops-spacing-sm) var(--ops-spacing-md);
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: var(--ops-spacing-lg);
+  margin-bottom: 0;
+  border-radius: var(--ops-radius-sm) var(--ops-radius-sm) 0 0;
+}
+
+.ops-section-title--income {
+  background-color: var(--ops-success);
+}
+
+.ops-section-title--expense {
+  background-color: #fd7e14;
+}
+
+.ops-section-title--asset {
+  background-color: var(--ops-info);
+}
+
+.ops-section-title--liability {
+  background-color: var(--ops-danger);
+}
+
+.ops-section-title--equity {
+  background-color: #9C27B0;
+}
+
+/* ============================================
+   PRINT OPTIMIZATIONS FOR FINANCIAL STATEMENTS
+   ============================================ */
+
+@media print {
+  .ops-financial-table {
+    font-size: 9px;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .ops-financial-table thead th {
+    font-size: 10px;
+  }
+
+  .ops-financial-table tbody td {
+    font-size: 9px;
+    padding: 4px 8px;
+  }
+
+  .ops-hierarchy-group {
+    font-size: 10px;
+  }
+
+  .ops-row-grand-total td {
+    font-size: 11px;
+  }
+
+  /* Ensure zebra striping prints */
+  .ops-financial-table tbody tr:nth-child(even) {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Ensure totals print with colors */
+  .ops-row-subtotal,
+  .ops-row-section-total,
+  .ops-row-grand-total {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

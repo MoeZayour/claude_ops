@@ -29,16 +29,12 @@ _logger = logging.getLogger(__name__)
 class OpsTreasuryReportWizard(models.TransientModel):
     """Treasury Intelligence - PDC Analysis Engine"""
     _name = 'ops.treasury.report.wizard'
+    _inherit = 'ops.base.report.wizard'
     _description = 'Treasury Intelligence - PDC Report Wizard'
 
-    # ============================================
-    # SMART TEMPLATE SELECTOR
-    # ============================================
+    # Template domain override
     report_template_id = fields.Many2one(
-        'ops.report.template',
-        string='Load Template',
-        domain="[('engine', '=', 'treasury'), '|', ('is_global', '=', True), ('user_id', '=', uid)]",
-        help='Select a saved report template to load its configuration'
+        domain="[('engine', '=', 'treasury'), '|', ('is_global', '=', True), ('user_id', '=', uid)]"
     )
 
     # ============================================
@@ -78,12 +74,7 @@ class OpsTreasuryReportWizard(models.TransientModel):
     # ============================================
     # 3. DIMENSION FILTERS
     # ============================================
-    company_id = fields.Many2one(
-        'res.company',
-        string='Company',
-        required=True,
-        default=lambda self: self.env.company
-    )
+    # company_id inherited from ops.base.report.wizard
 
     branch_ids = fields.Many2many(
         'ops.branch',
@@ -146,20 +137,7 @@ class OpsTreasuryReportWizard(models.TransientModel):
     # ============================================
     # 7. COMPUTED FIELDS
     # ============================================
-    report_title = fields.Char(
-        compute='_compute_report_title',
-        string='Report Title'
-    )
-
-    filter_summary = fields.Char(
-        compute='_compute_filter_summary',
-        string='Filter Summary'
-    )
-
-    record_count = fields.Integer(
-        compute='_compute_record_count',
-        string='Estimated Records'
-    )
+    # report_title, filter_summary, record_count, currency_id inherited from base
 
     total_amount = fields.Monetary(
         compute='_compute_totals',
@@ -167,75 +145,68 @@ class OpsTreasuryReportWizard(models.TransientModel):
         currency_field='currency_id'
     )
 
-    currency_id = fields.Many2one(
-        related='company_id.currency_id',
-        string='Currency'
-    )
-
     # ============================================
-    # COMPUTED METHODS
+    # BASE CLASS HOOK IMPLEMENTATIONS
     # ============================================
 
-    @api.depends('report_type', 'pdc_type')
-    def _compute_report_title(self):
-        """Generate report title based on selections."""
-        report_titles = {
-            'registry': 'PDC Registry',
-            'maturity': 'PDC Maturity Analysis',
-            'on_hand': 'PDCs in Hand',
-        }
-        pdc_titles = {
+    def _get_engine_name(self):
+        """Return engine name for template filtering."""
+        return 'treasury'
+
+    def _get_report_titles(self):
+        """Return mapping of report_type to human-readable title."""
+        # Treasury has dynamic titles based on pdc_type
+        pdc_suffix = {
             'inbound': 'Receivable',
             'outbound': 'Payable',
             'both': 'All PDCs',
+        }.get(self.pdc_type, '')
+        return {
+            'registry': f'PDC Registry - {pdc_suffix}',
+            'maturity': f'PDC Maturity Analysis - {pdc_suffix}',
+            'on_hand': f'PDCs in Hand - {pdc_suffix}',
         }
-        for wizard in self:
-            report = report_titles.get(wizard.report_type, 'PDC Report')
-            pdc = pdc_titles.get(wizard.pdc_type, '')
-            wizard.report_title = f"{report} - {pdc}"
 
-    @api.depends('date_from', 'date_to', 'branch_ids', 'partner_ids',
-                 'pdc_type', 'state_filter')
-    def _compute_filter_summary(self):
-        """Generate human-readable filter summary."""
-        for wizard in self:
-            parts = [wizard.report_title or 'Treasury Report']
+    def _get_scalar_fields_for_template(self):
+        """Return scalar fields for template save/load."""
+        return ['report_type', 'pdc_type', 'state_filter', 'period_length', 'group_by']
 
-            if wizard.date_from and wizard.date_to:
-                parts.append(f"Maturity: {wizard.date_from} to {wizard.date_to}")
-            elif wizard.date_from:
-                parts.append(f"Maturity from: {wizard.date_from}")
-            elif wizard.date_to:
-                parts.append(f"Maturity to: {wizard.date_to}")
+    def _get_m2m_fields_for_template(self):
+        """Return Many2many fields for template save/load."""
+        return ['branch_ids', 'partner_ids', 'bank_ids']
 
-            if wizard.branch_ids:
-                parts.append(f"Branches: {len(wizard.branch_ids)} selected")
+    def _add_filter_summary_parts(self, parts):
+        """Add treasury-specific filter descriptions."""
+        # Override date display for maturity dates
+        if self.date_from and self.date_to:
+            # Remove generic date part and add maturity-specific
+            parts[:] = [p for p in parts if not p.startswith('Period:')]
+            parts.append(f"Maturity: {self.date_from} to {self.date_to}")
+        elif self.date_from:
+            parts[:] = [p for p in parts if not p.startswith('Period:')]
+            parts.append(f"Maturity from: {self.date_from}")
+        elif self.date_to:
+            parts.append(f"Maturity to: {self.date_to}")
 
-            if wizard.partner_ids:
-                parts.append(f"Partners: {len(wizard.partner_ids)} selected")
+        if self.branch_ids:
+            parts.append(f"Branches: {len(self.branch_ids)} selected")
 
-            if wizard.state_filter != 'all':
-                parts.append(f"Status: {dict(wizard._fields['state_filter'].selection).get(wizard.state_filter)}")
+        if self.partner_ids:
+            parts.append(f"Partners: {len(self.partner_ids)} selected")
 
-            wizard.filter_summary = " | ".join(parts)
+        if self.state_filter != 'all':
+            parts.append(f"Status: {dict(self._fields['state_filter'].selection).get(self.state_filter)}")
 
-    @api.depends('pdc_type', 'branch_ids', 'partner_ids', 'date_from',
-                 'date_to', 'state_filter')
-    def _compute_record_count(self):
+    def _estimate_record_count(self):
         """Estimate number of PDCs matching filters."""
-        for wizard in self:
-            try:
-                count = 0
-                if wizard.pdc_type in ('inbound', 'both'):
-                    domain = wizard._build_domain('inbound')
-                    count += self.env['ops.pdc.receivable'].search_count(domain)
-                if wizard.pdc_type in ('outbound', 'both'):
-                    domain = wizard._build_domain('outbound')
-                    count += self.env['ops.pdc.payable'].search_count(domain)
-                wizard.record_count = count
-            except Exception as e:
-                _logger.error(f"Error counting PDCs: {e}")
-                wizard.record_count = 0
+        count = 0
+        if self.pdc_type in ('inbound', 'both'):
+            domain = self._build_domain('inbound')
+            count += self.env['ops.pdc.receivable'].search_count(domain)
+        if self.pdc_type in ('outbound', 'both'):
+            domain = self._build_domain('outbound')
+            count += self.env['ops.pdc.payable'].search_count(domain)
+        return count
 
     @api.depends('pdc_type', 'branch_ids', 'partner_ids', 'date_from',
                  'date_to', 'state_filter')
@@ -309,32 +280,9 @@ class OpsTreasuryReportWizard(models.TransientModel):
         return domain
 
     # ============================================
-    # VALIDATION
-    # ============================================
-
-    def _validate_filters(self):
-        """Validate wizard filters."""
-        self.ensure_one()
-
-        if self.date_from and self.date_to and self.date_from > self.date_to:
-            raise ValidationError(_("From date cannot be after To date."))
-
-        return True
-
-    # ============================================
     # REPORT GENERATION
     # ============================================
-
-    def action_generate_report(self):
-        """Main action: Generate treasury report."""
-        self.ensure_one()
-        self._validate_filters()
-
-        # Dispatch to appropriate handler
-        report_data = self._get_report_data()
-
-        # Return report action
-        return self._return_report_action(report_data)
+    # _validate_filters and action_generate_report inherited from base
 
     def _get_report_data(self):
         """Get report data based on report_type."""
@@ -701,88 +649,5 @@ class OpsTreasuryReportWizard(models.TransientModel):
     # ============================================
     # SMART TEMPLATE METHODS
     # ============================================
-
-    @api.onchange('report_template_id')
-    def _onchange_report_template_id(self):
-        """Load configuration from selected template."""
-        if not self.report_template_id:
-            return
-
-        template = self.report_template_id
-        config = template.get_config_dict()
-
-        if not config:
-            return
-
-        # Apply scalar fields
-        scalar_fields = [
-            'report_type', 'pdc_type', 'state_filter', 'period_length', 'group_by',
-        ]
-        for field in scalar_fields:
-            if field in config:
-                setattr(self, field, config[field])
-
-        # Apply date fields with dynamic calculation
-        if config.get('date_mode') == 'next_30_days':
-            today = fields.Date.today()
-            self.date_from = today
-            self.date_to = today + timedelta(days=30)
-        elif config.get('date_mode') == 'next_60_days':
-            today = fields.Date.today()
-            self.date_from = today
-            self.date_to = today + timedelta(days=60)
-        elif config.get('date_mode') == 'next_90_days':
-            today = fields.Date.today()
-            self.date_from = today
-            self.date_to = today + timedelta(days=90)
-        else:
-            if config.get('date_from'):
-                self.date_from = fields.Date.from_string(config['date_from'])
-            if config.get('date_to'):
-                self.date_to = fields.Date.from_string(config['date_to'])
-
-        if config.get('as_of_date'):
-            self.as_of_date = fields.Date.from_string(config['as_of_date'])
-
-        # Apply Many2many fields
-        if config.get('branch_ids'):
-            self.branch_ids = [(6, 0, config['branch_ids'])]
-        if config.get('partner_ids'):
-            self.partner_ids = [(6, 0, config['partner_ids'])]
-        if config.get('bank_ids'):
-            self.bank_ids = [(6, 0, config['bank_ids'])]
-
-        # Increment template usage
-        template.increment_usage()
-
-        _logger.info(f"Loaded treasury report template: {template.name}")
-
-    def _get_template_config(self):
-        """Get current wizard configuration for template saving."""
-        self.ensure_one()
-        return {
-            'report_type': self.report_type,
-            'pdc_type': self.pdc_type,
-            'state_filter': self.state_filter,
-            'period_length': self.period_length,
-            'group_by': self.group_by,
-            # Many2many as ID lists
-            'branch_ids': self.branch_ids.ids,
-            'partner_ids': self.partner_ids.ids,
-            'bank_ids': self.bank_ids.ids,
-        }
-
-    def action_save_template(self):
-        """Open wizard to save current settings as a template."""
-        self.ensure_one()
-        return {
-            'name': _('Save as Report Template'),
-            'type': 'ir.actions.act_window',
-            'res_model': 'ops.report.template.save.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_source_wizard_model': self._name,
-                'default_source_wizard_id': self.id,
-            },
-        }
+    # _onchange_report_template_id, _get_template_config, action_save_template
+    # are inherited from ops.base.report.wizard

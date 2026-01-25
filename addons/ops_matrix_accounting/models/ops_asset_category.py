@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 class OpsAssetCategory(models.Model):
     _name = 'ops.asset.category'
@@ -63,9 +63,22 @@ class OpsAssetCategory(models.Model):
     asset_ids = fields.One2many('ops.asset', 'category_id', string='Assets')
     asset_count = fields.Integer(compute='_compute_asset_count', string='Asset Count')
 
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Asset category name must be unique!')
-    ]
+    # ============================================
+    # ORM CONSTRAINTS (replaces deprecated _sql_constraints)
+    # ============================================
+
+    @api.constrains('name')
+    def _check_unique_name(self):
+        """Ensure asset category names are unique (case-insensitive)."""
+        for record in self:
+            existing = self.search([
+                ('id', '!=', record.id),
+                ('name', '=ilike', record.name)
+            ], limit=1)
+            if existing:
+                raise ValidationError(_(
+                    "Asset category name '%(name)s' already exists."
+                ) % {'name': record.name})
 
     @api.depends('asset_ids')
     def _compute_asset_count(self):

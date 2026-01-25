@@ -177,11 +177,33 @@ class OpsMatrixSnapshot(models.Model):
         readonly=True
     )
 
-    _sql_constraints = [
-        ('unique_snapshot',
-         'unique(company_id, branch_id, business_unit_id, period_type, snapshot_date)',
-         'Snapshot already exists for this combination'),
-    ]
+    # ============================================
+    # ORM CONSTRAINTS (replaces deprecated _sql_constraints)
+    # ============================================
+
+    @api.constrains('company_id', 'branch_id', 'business_unit_id', 'period_type', 'snapshot_date')
+    def _check_unique_snapshot(self):
+        """Ensure no duplicate snapshots for same combination."""
+        for record in self:
+            existing = self.search([
+                ('id', '!=', record.id),
+                ('company_id', '=', record.company_id.id),
+                ('branch_id', '=', record.branch_id.id),
+                ('business_unit_id', '=', record.business_unit_id.id),
+                ('period_type', '=', record.period_type),
+                ('snapshot_date', '=', record.snapshot_date),
+            ], limit=1)
+            if existing:
+                raise ValidationError(_(
+                    "Snapshot already exists for this combination: "
+                    "%(company)s / %(branch)s / %(bu)s / %(period)s / %(date)s"
+                ) % {
+                    'company': record.company_id.name,
+                    'branch': record.branch_id.name,
+                    'bu': record.business_unit_id.name,
+                    'period': record.period_type,
+                    'date': record.snapshot_date,
+                })
 
     @api.depends('projected_revenue', 'revenue')
     def _compute_total_pipeline(self):
@@ -471,39 +493,54 @@ class OpsMatrixSnapshot(models.Model):
         # =====================================================================
         # PROJECTED REVENUE: Booked Sales Orders (confirmed but not invoiced)
         # =====================================================================
-        # Query sale.order for orders that are:
-        # - Confirmed (state in 'sale', 'done')
-        # - In the specified branch/BU combination
-        # - Not fully invoiced yet (invoice_status != 'invoiced')
-        # - Order date falls within the snapshot period
+        # OPTIMIZED: Uses separate queries for fully uninvoiced vs partial
+        # to avoid N+1 pattern of iterating through order lines
         # =====================================================================
         projected_revenue = 0.0
         if 'sale.order' in self.env:
             SaleOrder = self.env['sale.order']
-            booked_orders = SaleOrder.search([
+            base_domain = [
                 ('state', 'in', ('sale', 'done')),
                 ('ops_branch_id', '=', branch.id),
                 ('ops_business_unit_id', '=', business_unit.id),
                 ('date_order', '>=', date_from),
                 ('date_order', '<=', date_to),
-                ('invoice_status', '!=', 'invoiced'),  # Exclude fully invoiced
-            ])
+                ('invoice_status', '!=', 'invoiced'),
+            ]
+
+            booked_orders = SaleOrder.search(base_domain)
 
             if booked_orders:
-                # Sum the uninvoiced portion of booked orders
-                for order in booked_orders:
-                    # For partially invoiced orders, calculate remaining amount
-                    if order.invoice_status == 'to invoice':
-                        # Fully unbooked - use full amount
-                        projected_revenue += order.amount_total
-                    elif order.invoice_status == 'no':
-                        # Nothing to invoice (fully delivered services, etc.)
-                        continue
-                    else:
-                        # Partial invoice - calculate uninvoiced lines
-                        for line in order.order_line:
-                            if line.qty_to_invoice > 0:
-                                projected_revenue += line.price_unit * line.qty_to_invoice
+                # =================================================================
+                # OPTIMIZED: Separate fully uninvoiced from partial orders
+                # =================================================================
+
+                # Query 1: Sum fully uninvoiced orders in single operation
+                to_invoice_orders = booked_orders.filtered(
+                    lambda o: o.invoice_status == 'to invoice'
+                )
+                if to_invoice_orders:
+                    projected_revenue = sum(to_invoice_orders.mapped('amount_total'))
+
+                # Query 2: Get partial orders (not 'to invoice', 'no', or 'invoiced')
+                partial_orders = booked_orders.filtered(
+                    lambda o: o.invoice_status not in ('to invoice', 'no', 'invoiced')
+                )
+
+                if partial_orders:
+                    # Single fetch of all partial order lines with qty_to_invoice > 0
+                    partial_lines = self.env['sale.order.line'].search_read(
+                        [
+                            ('order_id', 'in', partial_orders.ids),
+                            ('qty_to_invoice', '>', 0)
+                        ],
+                        ['price_unit', 'qty_to_invoice']
+                    )
+                    # Sum in Python (much faster than N queries)
+                    projected_revenue += sum(
+                        line['price_unit'] * line['qty_to_invoice']
+                        for line in partial_lines
+                    )
 
                 _logger.debug(
                     f"Projected Revenue for {branch.code}/{business_unit.code} "

@@ -1,3 +1,5 @@
+# Base class MUST be imported first
+from . import ops_base_report_wizard
 from . import ops_financial_report_wizard
 from . import ops_general_ledger_wizard
 from . import ops_general_ledger_wizard_enhanced

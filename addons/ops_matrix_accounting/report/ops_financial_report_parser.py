@@ -13,16 +13,49 @@ class OpsFinancialReportParser(models.AbstractModel):
         if data and isinstance(data, dict) and 'report_type' in data:
             # Data was passed directly - transform it for the template
             report_data = self._transform_enhanced_data(None, data)
-            # Try to get wizard for docs, but don't fail if not found
+            # Get wizard for docs - try multiple sources
             active_model = self.env.context.get('active_model', 'ops.general.ledger.wizard.enhanced')
-            if active_model == 'ops.general.ledger.wizard.enhanced':
-                wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(docids)
-            else:
-                wizard = self.env['ops.financial.report.wizard'].browse(docids)
+            wizard = None
+
+            # Try docids first
+            if docids:
+                if active_model == 'ops.general.ledger.wizard.enhanced':
+                    wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(docids)
+                else:
+                    wizard = self.env['ops.financial.report.wizard'].browse(docids)
+
+            # If no wizard from docids, try active_id from context
+            if not wizard or not wizard.exists():
+                active_id = self.env.context.get('active_id')
+                active_ids = self.env.context.get('active_ids', [])
+                if active_id:
+                    wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(active_id)
+                elif active_ids:
+                    wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(active_ids[0])
+
+            # If still no wizard, try wizard_id from data
+            if (not wizard or not wizard.exists()) and data.get('wizard_id'):
+                wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(data.get('wizard_id'))
+
+            # Create a dummy wizard context if all else fails - the template needs docs for iteration
+            if not wizard or not wizard.exists():
+                # Create a mock object for template iteration with report_type from data
+                class MockWizard:
+                    def __init__(self, report_type):
+                        self.report_type = report_type
+                        self.id = False
+                mock_wizard = MockWizard(data.get('report_type', 'gl'))
+                return {
+                    'doc_ids': docids or [],
+                    'doc_model': active_model,
+                    'docs': [mock_wizard],  # List with one element for template iteration
+                    'report_data': report_data,
+                }
+
             return {
                 'doc_ids': docids,
                 'doc_model': active_model,
-                'docs': wizard if wizard.exists() else self.env[active_model],
+                'docs': wizard,
                 'report_data': report_data,
             }
 
@@ -140,7 +173,56 @@ class OpsFinancialReportParser(models.AbstractModel):
         return {'headers': ['Date', 'Entry', 'Account', 'Partner', 'Label', 'Debit', 'Credit', 'Balance'], 'lines': lines}
 
     def _transform_pl_from_enhanced(self, data):
-        """Transform P&L data from enhanced wizard."""
+        """
+        Transform P&L data from enhanced wizard.
+        Phase 14: Now supports hierarchical CoA structure for audit-grade reports.
+        """
+        # Check if hierarchical data is available (Phase 14)
+        hierarchy = data.get('hierarchy', {})
+        use_hierarchy = data.get('use_hierarchy', False)
+
+        if use_hierarchy and hierarchy:
+            # Phase 14: Return hierarchical structure
+            income_hierarchy = hierarchy.get('income_hierarchy', [])
+            expense_hierarchy = hierarchy.get('expense_hierarchy', [])
+
+            # Also build flat lists for backward compatibility
+            income_lines = []
+            expense_lines = []
+
+            for line in income_hierarchy:
+                if line.get('type') == 'account':
+                    income_lines.append({
+                        'account': f"{line.get('code', '')} - {line.get('name', '')}",
+                        'amount': abs(line.get('balance', 0)),
+                    })
+
+            for line in expense_hierarchy:
+                if line.get('type') == 'account':
+                    expense_lines.append({
+                        'account': f"{line.get('code', '')} - {line.get('name', '')}",
+                        'amount': abs(line.get('balance', 0)),
+                    })
+
+            summary = data.get('summary', {})
+            return {
+                'headers': ['Code', 'Account', 'Amount'],
+                # Phase 14: Hierarchical data for audit-grade rendering
+                'income_hierarchy': income_hierarchy,
+                'expense_hierarchy': expense_hierarchy,
+                'use_hierarchy': True,
+                # Flat lines for backward compatibility
+                'income_lines': income_lines,
+                'expense_lines': expense_lines,
+                'income_total': summary.get('total_income', hierarchy.get('income_total', 0)),
+                'expense_total': summary.get('total_expense', hierarchy.get('expense_total', 0)),
+                'cogs_total': summary.get('cogs_total', 0),
+                'gross_profit': summary.get('gross_profit', 0),
+                'net_profit': summary.get('net_income', hierarchy.get('net_profit', 0)),
+                'lines': income_lines + expense_lines,
+            }
+
+        # Original flat structure (backward compatibility)
         income_lines, expense_lines = [], []
         income_total, expense_total, cogs_total = 0, 0, 0
 
@@ -172,16 +254,76 @@ class OpsFinancialReportParser(models.AbstractModel):
             'gross_profit': summary.get('total_income', income_total) - cogs_total,
             'net_profit': summary.get('net_income', income_total - expense_total),
             'lines': income_lines + expense_lines,
+            'use_hierarchy': False,
         }
 
     def _transform_bs_from_enhanced(self, data):
-        """Transform Balance Sheet data from enhanced wizard."""
+        """
+        Transform Balance Sheet data from enhanced wizard.
+        Phase 14: Now supports hierarchical CoA structure for audit-grade reports.
+        """
+        # Check if hierarchical data is available (Phase 14)
+        hierarchy = data.get('hierarchy', {})
+        use_hierarchy = data.get('use_hierarchy', False)
+
+        if use_hierarchy and hierarchy:
+            # Phase 14: Return hierarchical structure
+            asset_hierarchy = hierarchy.get('asset_hierarchy', [])
+            liability_hierarchy = hierarchy.get('liability_hierarchy', [])
+            equity_hierarchy = hierarchy.get('equity_hierarchy', [])
+
+            # Also build flat lists for backward compatibility
+            asset_lines, liability_lines, equity_lines = [], [], []
+
+            for line in asset_hierarchy:
+                if line.get('type') == 'account':
+                    asset_lines.append({
+                        'account': f"{line.get('code', '')} - {line.get('name', '')}",
+                        'amount': line.get('balance', 0),
+                    })
+
+            for line in liability_hierarchy:
+                if line.get('type') == 'account':
+                    liability_lines.append({
+                        'account': f"{line.get('code', '')} - {line.get('name', '')}",
+                        'amount': abs(line.get('balance', 0)),
+                    })
+
+            for line in equity_hierarchy:
+                if line.get('type') == 'account':
+                    equity_lines.append({
+                        'account': f"{line.get('code', '')} - {line.get('name', '')}",
+                        'amount': abs(line.get('balance', 0)),
+                    })
+
+            summary = data.get('summary', {})
+            return {
+                'headers': ['Code', 'Account', 'Amount'],
+                # Phase 14: Hierarchical data for audit-grade rendering
+                'asset_hierarchy': asset_hierarchy,
+                'liability_hierarchy': liability_hierarchy,
+                'equity_hierarchy': equity_hierarchy,
+                'use_hierarchy': True,
+                # Flat lines for backward compatibility
+                'asset_lines': asset_lines,
+                'liability_lines': liability_lines,
+                'equity_lines': equity_lines,
+                'asset_total': summary.get('total_assets', hierarchy.get('asset_total', 0)),
+                'liability_total': summary.get('total_liabilities', hierarchy.get('liability_total', 0)),
+                'equity_total': summary.get('total_equity', hierarchy.get('equity_total', 0)),
+                'lines': asset_lines + liability_lines + equity_lines,
+            }
+
+        # Original flat structure (backward compatibility)
         asset_lines, liability_lines, equity_lines = [], [], []
 
         for section in data.get('sections', []):
             section_type = section.get('type', '')
             for acc in section.get('accounts', []):
-                line = {'account': f"{acc.get('account_code', '')} - {acc.get('account_name', '')}", 'amount': acc.get('balance', 0)}
+                line = {
+                    'account': f"{acc.get('account_code', '')} - {acc.get('account_name', '')}",
+                    'amount': acc.get('balance', 0)
+                }
                 if section_type.startswith('asset'):
                     asset_lines.append(line)
                 elif section_type.startswith('liability'):
@@ -192,11 +334,14 @@ class OpsFinancialReportParser(models.AbstractModel):
         summary = data.get('summary', {})
         return {
             'headers': ['Account', 'Amount'],
-            'asset_lines': asset_lines, 'liability_lines': liability_lines, 'equity_lines': equity_lines,
+            'asset_lines': asset_lines,
+            'liability_lines': liability_lines,
+            'equity_lines': equity_lines,
             'asset_total': summary.get('total_assets', 0),
             'liability_total': summary.get('total_liabilities', 0),
             'equity_total': summary.get('total_equity', 0),
             'lines': asset_lines + liability_lines + equity_lines,
+            'use_hierarchy': False,
         }
 
     def _transform_tb_from_enhanced(self, data):
