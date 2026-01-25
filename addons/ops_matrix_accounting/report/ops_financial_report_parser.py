@@ -9,7 +9,24 @@ class OpsFinancialReportParser(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        # Detect which wizard model to use based on context or data
+        # If data contains report data directly (from enhanced wizard), use it
+        if data and isinstance(data, dict) and 'report_type' in data:
+            # Data was passed directly - transform it for the template
+            report_data = self._transform_enhanced_data(None, data)
+            # Try to get wizard for docs, but don't fail if not found
+            active_model = self.env.context.get('active_model', 'ops.general.ledger.wizard.enhanced')
+            if active_model == 'ops.general.ledger.wizard.enhanced':
+                wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(docids)
+            else:
+                wizard = self.env['ops.financial.report.wizard'].browse(docids)
+            return {
+                'doc_ids': docids,
+                'doc_model': active_model,
+                'docs': wizard if wizard.exists() else self.env[active_model],
+                'report_data': report_data,
+            }
+
+        # Detect which wizard model to use based on context
         active_model = self.env.context.get('active_model', 'ops.financial.report.wizard')
 
         # Try enhanced wizard first if indicated
@@ -30,6 +47,15 @@ class OpsFinancialReportParser(models.AbstractModel):
             wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(docids)
             if wizard.exists():
                 return self._get_enhanced_wizard_values(wizard, docids, data)
+
+        # If no wizard found at all, return empty data
+        if not wizard.exists():
+            return {
+                'doc_ids': docids,
+                'doc_model': active_model,
+                'docs': wizard,
+                'report_data': {},
+            }
 
         report_data = self._get_report_data(wizard)
         return {
@@ -58,7 +84,7 @@ class OpsFinancialReportParser(models.AbstractModel):
 
     def _transform_enhanced_data(self, wizard, data):
         """Transform enhanced wizard data to template format."""
-        if not wizard or not data:
+        if not data:
             return {}
 
         report_type = data.get('report_type', 'gl')
