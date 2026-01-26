@@ -24,29 +24,44 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="ops_matrix_accounting.ops_external_layout">
-                    <div class="page ops-report-container">
+                    <!-- Dynamic Company Colors -->
+                    <t t-set="primary_color" t-value="o.company_id.primary_color or '#1a2744'"/>
+                    <t t-set="secondary_color" t-value="o.company_id.secondary_color or '#3b82f6'"/>
+                    <t t-set="primary_dark" t-value="'#0a1628'"/>
+                    <t t-set="success_color" t-value="'#059669'"/>
+                    <t t-set="danger_color" t-value="'#dc2626'"/>
 
-                        <!-- Page Header -->
-                        <table class="ops-page-header">
-                            <tr>
-                                <td class="ops-page-header-left">
-                                    <span class="ops-header-logo"><t t-esc="(o.company_id.name or 'C')[0]"/></span>
-                                    <span class="ops-header-info">
-                                        <span class="ops-header-company"><t t-esc="o.company_id.name"/></span><br/>
-                                        <span class="ops-header-subtitle">Consolidated Financial Statements</span>
-                                    </span>
-                                </td>
-                                <td class="ops-page-number-box">
-                                    <span class="ops-page-number">Company Consolidation</span><br/>
-                                    <span class="ops-page-date"><t t-esc="o.date_to"/></span>
-                                </td>
-                            </tr>
-                        </table>
+                    <div class="page ops-report-container" style="background: #ffffff !important; -webkit-print-color-adjust: exact !important;">
+
+                        <!-- Executive Header Band -->
+                        <div t-attf-style="background: #{primary_dark} !important; padding: 20px 25px !important; margin: -10mm -10mm 0 -10mm !important; -webkit-print-color-adjust: exact !important;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="vertical-align: middle;">
+                                        <span t-attf-style="display: inline-block; width: 50px; height: 50px; background: linear-gradient(135deg, #{primary_color} 0%, #{secondary_color} 100%); border-radius: 10px; text-align: center; line-height: 50px; font-size: 24px; font-weight: bold; color: #ffffff; margin-right: 15px; -webkit-print-color-adjust: exact !important;">
+                                            <t t-esc="(o.company_id.name or 'C')[0]"/>
+                                        </span>
+                                        <span style="display: inline-block; vertical-align: middle;">
+                                            <span style="display: block; font-size: 20px; font-weight: 700; color: #ffffff;"><t t-esc="o.company_id.name"/></span>
+                                            <span style="display: block; font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px;">Consolidated Financial Statements</span>
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 15px; display: inline-block;">
+                                            <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Report Period</div>
+                                            <div style="font-size: 14px; font-weight: 600; color: #ffffff;"><t t-esc="o.date_to"/></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- Accent Bar -->
+                        <div t-attf-style="height: 4px; background: linear-gradient(90deg, #{primary_color} 0%, #{secondary_color} 50%, #{success_color} 100%); margin: 0 -10mm 20px -10mm; -webkit-print-color-adjust: exact !important;"></div>
 
                         <!-- Statement Title Section -->
-                        <div class="ops-statement-title-section">
-                            <h2 class="ops-statement-title">Consolidated P&amp;L Report</h2>
-                            <p class="ops-statement-subtitle">Company-Wide Financial Performance</p>
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <h2 t-attf-style="font-size: 28px; font-weight: 700; color: #{primary_color}; margin: 0 0 8px 0;">Consolidated P&amp;L Report</h2>
+                            <p style="font-size: 14px; color: #64748b; margin: 0;">Company-Wide Financial Performance</p>
                             <span class="ops-statement-period">
                                 For the Period <t t-esc="o.date_from"/> to <t t-esc="o.date_to"/>
                             </span>

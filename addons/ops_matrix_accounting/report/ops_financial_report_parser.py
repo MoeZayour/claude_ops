@@ -3,9 +3,92 @@ from odoo import models, api
 
 
 class OpsFinancialReportParser(models.AbstractModel):
-    """Financial Report Parser - Fixed for Odoo 19 CE."""
+    """Financial Report Parser - Fixed for Odoo 19 CE.
+
+    v19.4.0: Added dynamic company color support for branded reports.
+    Colors are derived from res.company primary_color and secondary_color fields,
+    allowing each company to have their branded financial reports.
+    """
     _name = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Financial Report Parser'
+
+    def _get_company_colors(self, company):
+        """
+        Get company branding colors with intelligent fallbacks.
+
+        Returns a dict with:
+        - primary: Main brand color (used for headers, titles)
+        - secondary: Accent color (used for highlights)
+        - success: Green for positive values
+        - danger: Red for negative values
+        - muted: Gray for zero/neutral values
+        - text: Primary text color
+        - text_secondary: Secondary text color
+        - border: Border color
+        - background: Background color
+        """
+        # Default professional color palette
+        colors = {
+            'primary': '#1a2744',      # Navy blue - professional default
+            'secondary': '#3b82f6',     # Blue accent
+            'success': '#059669',       # Emerald green - positive
+            'danger': '#dc2626',        # Red - negative
+            'warning': '#d97706',       # Amber - warning
+            'muted': '#94a3b8',         # Slate gray - zero/neutral
+            'text': '#1e293b',          # Dark slate - primary text
+            'text_secondary': '#64748b', # Slate - secondary text
+            'border': '#e2e8f0',        # Light slate - borders
+            'background': '#f8fafc',    # Very light - backgrounds
+            'white': '#ffffff',
+        }
+
+        if company:
+            # Get company primary/secondary colors
+            primary = company.primary_color
+            secondary = company.secondary_color
+
+            if primary:
+                colors['primary'] = primary
+                # Derive darker variant for headers
+                colors['primary_dark'] = self._darken_color(primary, 0.2)
+            else:
+                colors['primary_dark'] = '#0a1628'
+
+            if secondary:
+                colors['secondary'] = secondary
+
+        else:
+            colors['primary_dark'] = '#0a1628'
+
+        return colors
+
+    def _darken_color(self, hex_color, factor=0.2):
+        """Darken a hex color by a factor (0-1)."""
+        try:
+            hex_color = hex_color.lstrip('#')
+            r = int(hex_color[0:2], 16)
+            g = int(hex_color[2:4], 16)
+            b = int(hex_color[4:6], 16)
+            r = max(0, int(r * (1 - factor)))
+            g = max(0, int(g * (1 - factor)))
+            b = max(0, int(b * (1 - factor)))
+            return f'#{r:02x}{g:02x}{b:02x}'
+        except (ValueError, IndexError):
+            return '#0a1628'  # Fallback to dark navy
+
+    def _lighten_color(self, hex_color, factor=0.2):
+        """Lighten a hex color by a factor (0-1)."""
+        try:
+            hex_color = hex_color.lstrip('#')
+            r = int(hex_color[0:2], 16)
+            g = int(hex_color[2:4], 16)
+            b = int(hex_color[4:6], 16)
+            r = min(255, int(r + (255 - r) * factor))
+            g = min(255, int(g + (255 - g) * factor))
+            b = min(255, int(b + (255 - b) * factor))
+            return f'#{r:02x}{g:02x}{b:02x}'
+        except (ValueError, IndexError):
+            return '#f8fafc'  # Fallback to light gray
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -122,14 +205,27 @@ class OpsFinancialReportParser(models.AbstractModel):
 
         report_type = data.get('report_type', 'gl')
 
+        # Get company for colors
+        company = None
+        if wizard and hasattr(wizard, 'company_id') and wizard.company_id:
+            company = wizard.company_id
+        else:
+            company = self.env.company
+
+        # Get dynamic company colors
+        colors = self._get_company_colors(company)
+
         result = {
             'title': data.get('report_title', 'Financial Report'),
-            'company': data.get('company_name', ''),
+            'company': data.get('company_name', '') or (company.name if company else ''),
             'branch': ', '.join(data.get('filters', {}).get('branch_names', [])) or 'All Branches',
             'user': self.env.user.name,
             'date_from': data.get('date_from'),
             'date_to': data.get('date_to'),
             'target_move': data.get('filters', {}).get('target_move', 'posted'),
+            'currency_symbol': company.currency_id.symbol if company else '',
+            # Dynamic company colors
+            'colors': colors,
         }
 
         if report_type == 'gl':
@@ -407,19 +503,29 @@ class OpsFinancialReportParser(models.AbstractModel):
     def _get_report_data(self, wizard):
         wizard.ensure_one()
         domain = wizard._get_domain()
+
+        # Get base report data based on type
         if wizard.report_type == 'pl':
-            return self._process_pl_data(wizard, domain)
+            report_data = self._process_pl_data(wizard, domain)
         elif wizard.report_type == 'bs':
-            return self._process_bs_data(wizard, domain)
+            report_data = self._process_bs_data(wizard, domain)
         elif wizard.report_type == 'gl':
-            return self._process_gl_data(wizard, domain)
+            report_data = self._process_gl_data(wizard, domain)
         elif wizard.report_type == 'aged':
-            return self._process_aged_data(wizard, domain)
+            report_data = self._process_aged_data(wizard, domain)
         elif wizard.report_type == 'tb':
-            return self._process_tb_data(wizard, domain)
+            report_data = self._process_tb_data(wizard, domain)
         elif wizard.report_type == 'cf':
-            return self._process_cf_data(wizard, domain)
-        return {}
+            report_data = self._process_cf_data(wizard, domain)
+        else:
+            report_data = {}
+
+        # Add company colors to all reports
+        company = wizard.company_id if wizard.company_id else self.env.company
+        report_data['colors'] = self._get_company_colors(company)
+        report_data['currency_symbol'] = company.currency_id.symbol if company else ''
+
+        return report_data
 
     def _process_gl_data(self, wizard, domain):
         lines_data = self.env['account.move.line'].search_read(
