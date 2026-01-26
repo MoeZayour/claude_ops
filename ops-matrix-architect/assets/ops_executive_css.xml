@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    OPS Matrix Executive CSS Template - GOLDEN MASTER
+    =================================================
+    Version: 19.5.0
+    Purpose: Reference template for all PDF reports
+
+    CRITICAL RULES:
+    - NO Flexbox (display: flex)
+    - NO CSS Grid (display: grid)
+    - NO CSS Variables (var(--color))
+    - Table-based layouts ONLY
+    - Direct hex color codes ONLY
+    - System fonts ONLY (DejaVu Sans, Georgia, Courier)
+    - ALWAYS use -webkit-print-color-adjust: exact on colored backgrounds
+
+    COLOR PALETTE:
+    - Primary Dark: #0a1628
+    - Primary: #1a2744
+    - Secondary: #3b82f6
+    - Success: #059669
+    - Danger: #dc2626
+    - Warning: #d97706
+    - Muted: #94a3b8
+    - Text: #1e293b
+    - Border: #e2e8f0
+
+    Copy this template when creating new reports.
+-->
+<odoo>
+    <!-- ================================================
+         OPS EXECUTIVE STYLES TEMPLATE
+         Golden Master for PDF-Safe CSS
+         ================================================ -->
+    <template id="ops_executive_styles_template">
+        <style type="text/css">
+            /* ============================================
+               BASE RESET &amp; PRINT COLORS
+               ============================================ */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* ============================================
+               TYPOGRAPHY - System Fonts Only
+               ============================================ */
+            body, .page {
+                font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif;
+                font-size: 10pt;
+                line-height: 1.5;
+                color: #1e293b;
+                background-color: #ffffff !important;
+            }
+
+            .ops-serif {
+                font-family: Georgia, 'Times New Roman', serif;
+            }
+
+            .ops-mono {
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+            }
+
+            .ops-uppercase {
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            /* ============================================
+               VALUE COLORING SYSTEM
+               ============================================ */
+            .ops-value-positive {
+                color: #059669 !important;
+            }
+
+            .ops-value-negative {
+                color: #dc2626 !important;
+            }
+
+            .ops-value-zero {
+                color: #94a3b8 !important;
+            }
+
+            .ops-value-neutral {
+                color: #1e293b !important;
+            }
+
+            /* ============================================
+               COVER PAGE ELEMENTS
+               ============================================ */
+            .ops-cover-page {
+                min-height: 100%;
+                background: #ffffff !important;
+                page-break-after: always;
+            }
+
+            .ops-cover-header-band {
+                padding: 35px 45px;
+                background: #0a1628 !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-cover-accent-bar {
+                height: 5px;
+                background: linear-gradient(90deg, #1a2744 0%, #3b82f6 50%, #059669 100%);
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-cover-logo-box {
+                display: inline-block;
+                width: 48px;
+                height: 48px;
+                border-radius: 8px;
+                text-align: center;
+                line-height: 48px;
+                font-family: Georgia, serif;
+                font-size: 24px;
+                font-weight: bold;
+                color: #ffffff;
+                background: linear-gradient(135deg, #1a2744 0%, #3b82f6 100%);
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-cover-title-area {
+                padding: 50px 45px 35px 45px;
+                background: #0a1628 !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-cover-doc-type {
+                font-size: 10px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                color: #3b82f6;
+                margin-bottom: 10px;
+            }
+
+            .ops-cover-main-title {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 32px;
+                font-weight: bold;
+                color: #ffffff;
+                line-height: 1.2;
+                margin: 0;
+            }
+
+            .ops-cover-content {
+                padding: 40px 45px;
+            }
+
+            /* ============================================
+               KPI CARDS - Table-Based Layout
+               ============================================ */
+            .ops-kpi-card {
+                background: #ffffff !important;
+                border: 1px solid #e2e8f0;
+                border-left-width: 4px;
+                padding: 18px;
+                -webkit-print-color-adjust: exact !important;
+                page-break-inside: avoid;
+            }
+
+            .ops-kpi-card.success { border-left-color: #059669 !important; }
+            .ops-kpi-card.danger { border-left-color: #dc2626 !important; }
+            .ops-kpi-card.warning { border-left-color: #d97706 !important; }
+            .ops-kpi-card.neutral { border-left-color: #2563eb !important; }
+
+            .ops-kpi-label {
+                font-size: 9px;
+                font-weight: 600;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .ops-kpi-value {
+                font-size: 22px;
+                font-weight: bold;
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                margin-top: 4px;
+            }
+
+            .ops-kpi-change {
+                font-size: 10px;
+                font-weight: 600;
+                margin-top: 4px;
+            }
+
+            .ops-kpi-change.positive { color: #059669 !important; }
+            .ops-kpi-change.negative { color: #dc2626 !important; }
+
+            /* ============================================
+               PAGE HEADER
+               ============================================ */
+            .ops-page-header {
+                width: 100%;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #1a2744;
+                margin-bottom: 20px;
+            }
+
+            .ops-header-logo {
+                display: inline-block;
+                width: 32px;
+                height: 32px;
+                border-radius: 5px;
+                text-align: center;
+                line-height: 32px;
+                font-size: 16px;
+                font-weight: bold;
+                color: #ffffff;
+                background: linear-gradient(135deg, #1a2744 0%, #3b82f6 100%);
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-header-company {
+                font-size: 13px;
+                font-weight: bold;
+                color: #1a2744;
+            }
+
+            .ops-header-subtitle {
+                font-size: 9px;
+                color: #94a3b8;
+            }
+
+            /* ============================================
+               SECTION BLOCKS
+               ============================================ */
+            .ops-section-block {
+                margin-bottom: 20px;
+            }
+
+            .ops-section-header-bar {
+                padding: 10px 14px;
+                border-radius: 4px 4px 0 0;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* Section Header Colors */
+            .ops-section-header-bar.revenue { background: #059669 !important; }
+            .ops-section-header-bar.expense { background: #dc2626 !important; }
+            .ops-section-header-bar.asset { background: #2563eb !important; }
+            .ops-section-header-bar.liability { background: #d97706 !important; }
+            .ops-section-header-bar.equity { background: #059669 !important; }
+            .ops-section-header-bar.neutral { background: #1a2744 !important; }
+
+            .ops-section-title-text {
+                font-size: 11pt;
+                font-weight: 700;
+                color: #ffffff !important;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .ops-section-amount {
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                font-size: 12pt;
+                font-weight: 700;
+                color: #ffffff !important;
+                text-align: right;
+            }
+
+            /* ============================================
+               DATA TABLES
+               ============================================ */
+            .ops-data-table {
+                width: 100%;
+                border-collapse: collapse;
+                background: #ffffff;
+                font-size: 10pt;
+            }
+
+            .ops-data-table thead th {
+                padding: 10px 8px;
+                text-align: left;
+                font-size: 9pt;
+                font-weight: 600;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                border-bottom: 2px solid #1e293b !important;
+            }
+
+            .ops-data-table thead th.text-end {
+                text-align: right;
+            }
+
+            .ops-data-table tbody td {
+                padding: 8px;
+                font-size: 10pt;
+                color: #1e293b;
+                border-bottom: 1px solid #f1f5f9;
+            }
+
+            .ops-data-table tbody td.text-end {
+                text-align: right;
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                font-size: 9pt;
+            }
+
+            /* Indentation levels */
+            .ops-data-table .indent-1 { padding-left: 20px !important; }
+            .ops-data-table .indent-2 { padding-left: 35px !important; font-size: 9pt; color: #64748b; }
+            .ops-data-table .indent-3 { padding-left: 50px !important; font-size: 8pt; color: #94a3b8; }
+
+            /* Subtotal row */
+            .ops-data-table tr.subtotal td {
+                border-top: 1px solid #94a3b8 !important;
+                font-weight: 600;
+                background: #fafafa !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* Total row */
+            .ops-data-table tr.total-row td {
+                border-top: 2px solid #1e293b !important;
+                border-bottom: 3px double #1e293b !important;
+                font-weight: 700;
+                font-size: 11pt;
+            }
+
+            /* Grand total row - dark background */
+            .ops-data-table tr.grand-total td {
+                background: #0a1628 !important;
+                color: #ffffff !important;
+                font-weight: 700;
+                font-size: 11pt;
+                padding: 12px 8px;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* ============================================
+               SECTION TABLE (Inside Section Blocks)
+               ============================================ */
+            .ops-section-table {
+                width: 100%;
+                border-collapse: collapse;
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-top: none;
+            }
+
+            .ops-section-table th {
+                padding: 8px 14px;
+                text-align: left;
+                font-size: 8pt;
+                font-weight: 600;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                background: #f8fafc !important;
+                border-bottom: 1px solid #e2e8f0;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-section-table th.text-end { text-align: right; }
+
+            .ops-section-table td {
+                padding: 8px 14px;
+                font-size: 10pt;
+                color: #1e293b;
+                border-bottom: 1px dotted #e2e8f0;
+            }
+
+            .ops-section-table td.text-end {
+                text-align: right;
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                font-size: 9pt;
+            }
+
+            .ops-section-table .subtotal td {
+                background: #f8fafc !important;
+                font-weight: 600;
+                border-top: 1px solid #cbd5e1;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* ============================================
+               SUMMARY BOXES
+               ============================================ */
+            .ops-summary-box {
+                margin-top: 20px;
+                border-radius: 6px;
+                padding: 18px 22px;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-summary-box.success { background: #047857 !important; }
+            .ops-summary-box.loss { background: #991b1b !important; }
+            .ops-summary-box.neutral { background: #0a1628 !important; }
+
+            .ops-summary-label {
+                font-size: 9pt;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.65);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .ops-summary-equation {
+                font-size: 10pt;
+                color: rgba(255, 255, 255, 0.8);
+                margin-top: 2px;
+            }
+
+            .ops-summary-value {
+                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+                font-size: 24pt;
+                font-weight: 700;
+                color: #ffffff !important;
+                text-align: center;
+            }
+
+            .ops-summary-badge {
+                background: rgba(255, 255, 255, 0.12);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                padding: 8px 14px;
+                border-radius: 5px;
+                text-align: center;
+            }
+
+            .ops-summary-badge-icon {
+                display: inline-block;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                text-align: center;
+                line-height: 18px;
+                color: #ffffff;
+                font-size: 11px;
+                font-weight: bold;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-summary-badge-icon.success { background: #059669 !important; }
+            .ops-summary-badge-icon.warning { background: #d97706 !important; }
+            .ops-summary-badge-icon.danger { background: #dc2626 !important; }
+
+            /* ============================================
+               STATUS PILLS AND BADGES
+               ============================================ */
+            .ops-status-pill {
+                display: inline-block;
+                padding: 6px 14px;
+                border-radius: 4px;
+                font-size: 10pt;
+                font-weight: 600;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-status-pill.excellent { background: #dcfce7 !important; color: #059669 !important; }
+            .ops-status-pill.healthy { background: #dbeafe !important; color: #2563eb !important; }
+            .ops-status-pill.acceptable { background: #f1f5f9 !important; color: #64748b !important; }
+            .ops-status-pill.warning { background: #fef3c7 !important; color: #d97706 !important; }
+            .ops-status-pill.loss { background: #fee2e2 !important; color: #dc2626 !important; }
+
+            .ops-badge {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 3px;
+                font-size: 8pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-badge.success { background: #059669 !important; color: #ffffff; }
+            .ops-badge.warning { background: #d97706 !important; color: #ffffff; }
+            .ops-badge.danger { background: #dc2626 !important; color: #ffffff; }
+            .ops-badge.info { background: #2563eb !important; color: #ffffff; }
+            .ops-badge.muted { background: #94a3b8 !important; color: #ffffff; }
+
+            /* ============================================
+               ALERT BANNERS
+               ============================================ */
+            .ops-alert {
+                padding: 12px 14px;
+                border-radius: 4px;
+                margin: 14px 0;
+                border-left: 4px solid;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-alert.success {
+                background-color: rgba(5, 150, 105, 0.1) !important;
+                border-color: #059669 !important;
+                color: #065f46;
+            }
+
+            .ops-alert.warning {
+                background-color: rgba(217, 119, 6, 0.1) !important;
+                border-color: #d97706 !important;
+                color: #92400e;
+            }
+
+            .ops-alert.danger {
+                background-color: rgba(220, 38, 38, 0.1) !important;
+                border-color: #dc2626 !important;
+                color: #991b1b;
+            }
+
+            .ops-alert.info {
+                background-color: rgba(37, 99, 235, 0.1) !important;
+                border-color: #2563eb !important;
+                color: #1e40af;
+            }
+
+            /* ============================================
+               NOTES SECTION
+               ============================================ */
+            .ops-notes-section {
+                margin-top: 20px;
+                padding: 14px 18px;
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0;
+                border-left: 4px solid #2563eb !important;
+                border-radius: 0 5px 5px 0;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .ops-notes-title {
+                font-size: 9pt;
+                font-weight: 600;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                margin-bottom: 6px;
+            }
+
+            .ops-notes-list {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .ops-notes-list li {
+                font-size: 9pt;
+                color: #64748b;
+                padding: 2px 0 2px 14px;
+                position: relative;
+            }
+
+            .ops-notes-list li:before {
+                content: "\2022";
+                position: absolute;
+                left: 0;
+                color: #2563eb;
+                font-weight: bold;
+            }
+
+            /* ============================================
+               PAGE FOOTER
+               ============================================ */
+            .ops-page-footer {
+                margin-top: 25px;
+                padding-top: 10px;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .ops-footer-text {
+                font-size: 8pt;
+                color: #94a3b8;
+            }
+
+            .ops-footer-confidential {
+                font-size: 7pt;
+                font-weight: 600;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 3px 8px;
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0;
+                border-radius: 3px;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* ============================================
+               UTILITY CLASSES
+               ============================================ */
+            .text-end { text-align: right !important; }
+            .text-center { text-align: center !important; }
+            .text-left { text-align: left !important; }
+            .font-bold { font-weight: 700; }
+            .font-semibold { font-weight: 600; }
+
+            /* Table-based column system */
+            .row { display: table; width: 100%; }
+            .row:after { content: ""; display: table; clear: both; }
+            .col-6 { display: table-cell; width: 50%; vertical-align: top; }
+            .col-4 { display: table-cell; width: 33.33%; vertical-align: top; }
+            .col-3 { display: table-cell; width: 25%; vertical-align: top; }
+            .col-12 { display: block; width: 100%; }
+
+            /* Print Styles */
+            @media print {
+                .ops-no-print { display: none !important; }
+                body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            }
+        </style>
+    </template>
+
+    <!-- ================================================
+         EXAMPLE USAGE TEMPLATE
+         Copy this structure for new reports
+         ================================================ -->
+    <template id="ops_report_example_structure" name="OPS Report Example (DO NOT USE IN PRODUCTION)">
+        <!--
+        This is a reference template showing the proper structure.
+        Copy and modify for your actual reports.
+
+        USAGE:
+        1. Copy this template
+        2. Change the template ID
+        3. Update the t-call references
+        4. Add your data processing
+        -->
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <!-- Include the executive styles -->
+                <t t-call="ops_matrix_architect.ops_executive_styles_template"/>
+
+                <!-- COVER PAGE -->
+                <div class="page ops-cover-page">
+                    <div class="ops-cover-header-band">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="vertical-align: middle;">
+                                    <span class="ops-cover-logo-box">O</span>
+                                    <span style="display: inline-block; vertical-align: middle; margin-left: 12px;">
+                                        <span style="font-size: 18px; font-weight: bold; color: #ffffff;">Company Name</span>
+                                    </span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <!-- Period badge -->
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="ops-cover-accent-bar"></div>
+                    <div class="ops-cover-title-area">
+                        <div class="ops-cover-doc-type">Financial Statement</div>
+                        <h1 class="ops-cover-main-title">Report Title</h1>
+                    </div>
+                    <div class="ops-cover-content">
+                        <!-- KPI Cards using TABLE layout -->
+                        <table style="width: 100%; border-collapse: separate; border-spacing: 12px 0;">
+                            <tr>
+                                <td style="width: 33%; vertical-align: top;">
+                                    <div class="ops-kpi-card success">
+                                        <div class="ops-kpi-label">KPI Label</div>
+                                        <div class="ops-kpi-value ops-value-positive">1,000.00</div>
+                                    </div>
+                                </td>
+                                <td style="width: 33%; vertical-align: top;">
+                                    <div class="ops-kpi-card danger">
+                                        <div class="ops-kpi-label">KPI Label</div>
+                                        <div class="ops-kpi-value ops-value-negative">500.00</div>
+                                    </div>
+                                </td>
+                                <td style="width: 33%; vertical-align: top;">
+                                    <div class="ops-kpi-card neutral">
+                                        <div class="ops-kpi-label">KPI Label</div>
+                                        <div class="ops-kpi-value">500.00</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- DETAIL PAGE -->
+                <div class="page">
+                    <!-- Page Header -->
+                    <table class="ops-page-header">
+                        <tr>
+                            <td style="width: 65%; vertical-align: middle;">
+                                <span class="ops-header-logo">O</span>
+                                <span style="display: inline-block; vertical-align: middle; margin-left: 10px;">
+                                    <span class="ops-header-company">Company Name</span><br/>
+                                    <span class="ops-header-subtitle">Financial Report</span>
+                                </span>
+                            </td>
+                            <td style="width: 35%; text-align: right; vertical-align: middle;">
+                                <span style="font-size: 10px; color: #94a3b8;">Page Info</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Section Block -->
+                    <div class="ops-section-block">
+                        <div class="ops-section-header-bar revenue">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td class="ops-section-title-text">Section Title</td>
+                                    <td class="ops-section-amount">1,000.00</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <table class="ops-section-table">
+                            <thead>
+                                <tr>
+                                    <th>Column 1</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Item Name</td>
+                                    <td class="text-end ops-value-positive">500.00</td>
+                                </tr>
+                                <tr class="subtotal">
+                                    <td>Total</td>
+                                    <td class="text-end" style="font-weight: 700;">1,000.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Summary Box -->
+                    <div class="ops-summary-box success">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 35%; vertical-align: middle;">
+                                    <div class="ops-summary-label">Result</div>
+                                    <div class="ops-summary-equation">Formula</div>
+                                </td>
+                                <td style="width: 40%; text-align: center; vertical-align: middle;">
+                                    <div class="ops-summary-value">500.00</div>
+                                </td>
+                                <td style="width: 25%; text-align: right; vertical-align: middle;">
+                                    <div class="ops-summary-badge">
+                                        <div class="ops-summary-badge-icon success">+</div>
+                                        <div style="font-size: 10pt; font-weight: 600; color: #ffffff; margin-top: 3px;">
+                                            Status
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="ops-notes-section">
+                        <div class="ops-notes-title">Notes</div>
+                        <ul class="ops-notes-list">
+                            <li>Note item 1</li>
+                            <li>Note item 2</li>
+                        </ul>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="ops-page-footer">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td class="ops-footer-text">
+                                    Prepared by: User | Generated: Date
+                                </td>
+                                <td style="text-align: right;">
+                                    <span class="ops-footer-confidential">Confidential</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
