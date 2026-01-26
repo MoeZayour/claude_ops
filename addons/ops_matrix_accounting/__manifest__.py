@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.15.0.0",
+    "version": "19.0.3.4.0",
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -39,6 +39,7 @@
         "data/templates/ops_budget_templates.xml",
         "data/report_templates.xml",
         "data/report_templates_extra.xml",
+        "data/ops_paperformat.xml",
 
         # Views
         "views/ops_asset_category_views.xml",

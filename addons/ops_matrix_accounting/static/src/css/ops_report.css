@@ -1,32 +1,44 @@
 /*
  * OPS Matrix - Executive Financial Statement Design System
  * =========================================================
- * v19.3.2.0: Phase 16 - VOGUE Update (PDF-Safe Premium Styling)
+ * v19.3.4.0: PHASE 18 - Hybrid Executive Dashboard Style
+ * Mixes "Minimalist Data" with "Color-Coded Insights"
  *
  * CRITICAL: PDF reports use INLINE STYLES for wkhtmltopdf compatibility.
  * This CSS file is for browser preview and reference only.
+ *
+ * DESIGN PHILOSOPHY:
+ * - Accent Cards: White background + thick colored LEFT border (5px)
+ * - Enterprise Tables: Sharp header line + clean white rows + double-line totals
+ * - Color-coded values for instant insight
  *
  * PDF Compatibility Rules Applied:
  * - NO CSS Variables (literal hex codes used)
  * - NO Remote Fonts (system fonts only)
  * - Force Print Colors (-webkit-print-color-adjust: exact !important)
- * - Table-based layouts for wkhtmltopdf
+ * - Float/inline-block layouts for wkhtmltopdf (no flexbox gaps)
  *
- * Color Palette:
- * - Primary Deep: #0f172a
- * - Primary: #1e293b
- * - Primary Light: #334155
- * - Gold: #d97706
- * - Gold Light: #f59e0b
- * - Accent Blue: #3b82f6
- * - Success: #059669
- * - Danger: #dc2626
- * - Background: #ffffff
+ * Phase 18 Color Palette (Hardcoded):
+ * - Primary Text: #1e293b
+ * - Secondary Text: #64748b
+ * - Green (Success/Income): #059669
+ * - Red (Danger/Expense): #dc2626
+ * - Blue (Accent/Neutral): #2563eb
+ * - Border Light: #e2e8f0
+ * - Border Dark: #1e293b
+ * - Row Separator: #f1f5f9
+ * - Background Subtle: #f8fafc
+ *
+ * Legacy Theme Color Palette (Preserved):
+ * - Primary Deep: #0a1628
+ * - Primary: #1a2744
+ * - Gold: #b8860b
+ * - Gold Light: #d4a017
  *
  * Typography:
  * - Titles: Georgia, 'Times New Roman', serif
  * - Body: 'DejaVu Sans', Helvetica, Arial, sans-serif
- * - Numbers: 'DejaVu Sans Mono', 'Courier New', monospace
+ * - Numbers: 'Courier New', monospace (PDF safe)
  */
 
 /* ============================================
@@ -42,21 +54,467 @@
 /* Base Typography - System Fonts Only */
 body, .page {
     font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif;
-    font-size: 11px;
+    font-size: 10pt;
     line-height: 1.5;
-    color: #1e293b;
+    color: #1a2744;
     background-color: #ffffff !important;
     -webkit-print-color-adjust: exact !important;
 }
 
 .ops-report,
-.ops-report-container {
+.ops-report-container,
+.ops-financial-report {
     font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif;
-    font-size: 11px;
+    font-size: 10pt;
     line-height: 1.5;
-    color: #1e293b;
+    color: #1a2744;
     background-color: #ffffff !important;
     -webkit-print-color-adjust: exact !important;
+}
+
+/* ============================================
+   PHASE 18: HYBRID ACCENT CARDS
+   Float-based layout for wkhtmltopdf
+   ============================================ */
+
+/* KPI Container with Float Clearfix */
+.ops-kpi-container {
+    width: 100%;
+    margin-bottom: 30px;
+    overflow: hidden;  /* Clearfix for floats */
+}
+
+/* Individual Accent Card - White BG + Colored Left Border */
+.ops-accent-card {
+    width: 30%;
+    float: left;
+    margin-right: 3%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left-width: 5px;
+    padding: 20px;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    page-break-inside: avoid;
+}
+
+.ops-accent-card:last-child {
+    margin-right: 0;
+}
+
+/* Card Variants - Left Border Colors */
+.ops-accent-card.success,
+.ops-accent-card.income {
+    border-left-color: #059669 !important;
+}
+
+.ops-accent-card.danger,
+.ops-accent-card.expense {
+    border-left-color: #dc2626 !important;
+}
+
+.ops-accent-card.neutral,
+.ops-accent-card.profit {
+    border-left-color: #2563eb !important;
+}
+
+.ops-accent-card.assets {
+    border-left-color: #2563eb !important;
+}
+
+.ops-accent-card.liabilities {
+    border-left-color: #dc2626 !important;
+}
+
+.ops-accent-card.equity {
+    border-left-color: #059669 !important;
+}
+
+/* Card Label */
+.ops-accent-card-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+/* Card Value */
+.ops-accent-card-value {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    margin-top: 5px;
+}
+
+/* Value Text Colors */
+.ops-text-green {
+    color: #059669 !important;
+    -webkit-print-color-adjust: exact !important;
+}
+
+.ops-text-red {
+    color: #dc2626 !important;
+    -webkit-print-color-adjust: exact !important;
+}
+
+.ops-text-blue {
+    color: #2563eb !important;
+    -webkit-print-color-adjust: exact !important;
+}
+
+.ops-text-dark {
+    color: #1e293b !important;
+    -webkit-print-color-adjust: exact !important;
+}
+
+.ops-text-muted {
+    color: #64748b !important;
+}
+
+/* Card Description */
+.ops-accent-card-desc {
+    font-size: 10px;
+    color: #64748b;
+    margin-top: 6px;
+}
+
+/* ============================================
+   PHASE 18: ENTERPRISE CLEAN TABLES
+   Sharp header line + double-line totals
+   ============================================ */
+
+/* Clean Table Base */
+table.ops-clean-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    margin-top: 0;
+}
+
+/* Table Header - Sharp Line */
+table.ops-clean-table th {
+    padding: 12px 8px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #1e293b !important;
+    -webkit-print-color-adjust: exact !important;
+}
+
+table.ops-clean-table th:last-child {
+    text-align: right;
+}
+
+/* Table Body Rows - Clean White */
+table.ops-clean-table td {
+    padding: 10px 8px;
+    font-size: 12px;
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+table.ops-clean-table td:last-child {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+}
+
+/* Subtotal Row */
+tr.ops-subtotal td {
+    border-top: 1px solid #64748b !important;
+    font-weight: bold;
+    -webkit-print-color-adjust: exact !important;
+}
+
+/* Total Row - Double Line Bottom */
+tr.ops-total td {
+    border-top: 2px solid #1e293b !important;
+    border-bottom: 4px double #1e293b !important;
+    font-weight: 900;
+    font-size: 14px;
+    -webkit-print-color-adjust: exact !important;
+}
+
+/* Section Title with Accent Border */
+.ops-section-title-accent {
+    padding: 8px 0;
+    margin-bottom: 0;
+    -webkit-print-color-adjust: exact !important;
+}
+
+.ops-section-title-accent.income {
+    border-bottom: 2px solid #059669 !important;
+}
+
+.ops-section-title-accent.expense {
+    border-bottom: 2px solid #dc2626 !important;
+}
+
+.ops-section-title-accent.assets {
+    border-bottom: 2px solid #2563eb !important;
+}
+
+.ops-section-title-accent.liabilities {
+    border-bottom: 2px solid #dc2626 !important;
+}
+
+.ops-section-title-accent.equity {
+    border-bottom: 2px solid #059669 !important;
+}
+
+/* ============================================
+   PHASE 18: STATUS BADGES (Minimal Style)
+   ============================================ */
+
+.ops-status-pill {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    -webkit-print-color-adjust: exact !important;
+}
+
+.ops-status-pill.excellent {
+    background: #dcfce7 !important;
+    color: #059669 !important;
+}
+
+.ops-status-pill.healthy {
+    background: #dcfce7 !important;
+    color: #059669 !important;
+}
+
+.ops-status-pill.acceptable {
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+}
+
+.ops-status-pill.low {
+    background: #fef3c7 !important;
+    color: #b45309 !important;
+}
+
+.ops-status-pill.loss {
+    background: #fee2e2 !important;
+    color: #dc2626 !important;
+}
+
+.ops-status-pill.balanced {
+    background: #dcfce7 !important;
+    color: #059669 !important;
+}
+
+.ops-status-pill.unbalanced {
+    background: #fee2e2 !important;
+    color: #dc2626 !important;
+}
+
+/* ============================================
+   REPORT TITLE SECTION
+   ============================================ */
+.ops-report-title-section {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #1a2744;
+}
+
+.ops-report-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 24pt;
+    font-weight: 700;
+    color: #1a2744;
+    margin: 0 0 6px 0;
+}
+
+.ops-report-subtitle {
+    font-size: 11pt;
+    color: #475569;
+    margin: 0;
+}
+
+.ops-report-period-badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 6px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 10pt;
+    font-weight: 500;
+    color: #475569;
+}
+
+/* ============================================
+   KPI SUMMARY CARDS
+   ============================================ */
+.ops-kpi-grid {
+    display: table;
+    width: 100%;
+    margin-bottom: 24px;
+    border-spacing: 12px;
+}
+
+.ops-kpi-card {
+    display: table-cell;
+    width: 33.33%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    vertical-align: top;
+    position: relative;
+    -webkit-print-color-adjust: exact !important;
+}
+
+.ops-kpi-card.revenue {
+    border-top: 4px solid #2563eb !important;
+}
+
+.ops-kpi-card.expenses {
+    border-top: 4px solid #dc2626 !important;
+}
+
+.ops-kpi-card.profit {
+    border-top: 4px solid #059669 !important;
+}
+
+.ops-kpi-card.assets {
+    border-top: 4px solid #2563eb !important;
+}
+
+.ops-kpi-card.liabilities {
+    border-top: 4px solid #b8860b !important;
+}
+
+.ops-kpi-card.equity {
+    border-top: 4px solid #059669 !important;
+}
+
+.ops-kpi-label {
+    font-size: 9pt;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.ops-kpi-value {
+    font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+    font-size: 20pt;
+    font-weight: 700;
+    color: #1a2744;
+}
+
+.ops-kpi-description {
+    font-size: 9pt;
+    color: #475569;
+    margin-top: 6px;
+}
+
+.ops-kpi-description.success {
+    color: #059669;
+    font-weight: 600;
+}
+
+/* ============================================
+   PERFORMANCE ALERT BANNER
+   ============================================ */
+.ops-performance-alert {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.12), rgba(16, 185, 129, 0.05));
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    border-left: 4px solid #059669;
+    border-radius: 0 10px 10px 0;
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    -webkit-print-color-adjust: exact !important;
+}
+
+.ops-performance-alert.warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(251, 191, 36, 0.05)) !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+    border-left-color: #f59e0b !important;
+}
+
+.ops-performance-alert.danger {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.12), rgba(239, 68, 68, 0.05)) !important;
+    border-color: rgba(220, 38, 38, 0.3) !important;
+    border-left-color: #dc2626 !important;
+}
+
+.ops-alert-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #059669;
+    margin: 0 0 2px 0;
+}
+
+.ops-alert-text {
+    font-size: 10pt;
+    color: #475569;
+    margin: 0;
+}
+
+/* ============================================
+   SECTION HEADERS
+   ============================================ */
+.ops-section-header {
+    display: table;
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 8px 8px 0 0;
+    margin-top: 20px;
+    -webkit-print-color-adjust: exact !important;
+}
+
+.ops-section-header.revenue {
+    background: linear-gradient(135deg, #1e40af, #2563eb) !important;
+}
+
+.ops-section-header.expenses {
+    background: linear-gradient(135deg, #991b1b, #dc2626) !important;
+}
+
+.ops-section-header.profit {
+    background: linear-gradient(135deg, #065f46, #059669) !important;
+}
+
+.ops-section-header.assets {
+    background: linear-gradient(135deg, #1e40af, #3b82f6) !important;
+}
+
+.ops-section-header.liabilities {
+    background: linear-gradient(135deg, #92400e, #b45309) !important;
+}
+
+.ops-section-header.equity {
+    background: linear-gradient(135deg, #065f46, #059669) !important;
+}
+
+.ops-section-title {
+    display: table-cell;
+    font-size: 10pt;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    vertical-align: middle;
+}
+
+.ops-section-total {
+    display: table-cell;
+    text-align: right;
+    font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+    font-size: 12pt;
+    font-weight: 700;
+    color: #ffffff;
+    vertical-align: middle;
 }
 
 /* ============================================
@@ -70,7 +528,7 @@ body, .page {
 }
 
 .ops-cover-header-band {
-    background: #0f172a !important;
+    background: #0a1628 !important;
     padding: 40px 50px;
     position: relative;
     -webkit-print-color-adjust: exact !important;
@@ -78,7 +536,7 @@ body, .page {
 
 .ops-cover-accent-bar {
     height: 6px;
-    background: linear-gradient(90deg, #d97706 0%, #f59e0b 30%, #3b82f6 70%, #60a5fa 100%);
+    background: linear-gradient(90deg, #b8860b 0%, #d4a017 30%, #2563eb 70%, #3b82f6 100%);
     -webkit-print-color-adjust: exact !important;
 }
 
@@ -86,7 +544,7 @@ body, .page {
     display: inline-block;
     width: 52px;
     height: 52px;
-    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    background: linear-gradient(135deg, #b8860b 0%, #d4a017 100%);
     border-radius: 10px;
     text-align: center;
     line-height: 52px;
@@ -114,14 +572,14 @@ body, .page {
 
 .ops-cover-title-area {
     padding: 60px 50px 40px 50px;
-    background: #0f172a !important;
+    background: #0a1628 !important;
     -webkit-print-color-adjust: exact !important;
 }
 
 .ops-cover-doc-type {
     font-size: 11px;
     font-weight: 600;
-    color: #f59e0b;
+    color: #d4a017;
     text-transform: uppercase;
     letter-spacing: 3px;
     margin-bottom: 12px;
@@ -146,7 +604,7 @@ body, .page {
 }
 
 .ops-cover-kpi-card.revenue {
-    border-top: 4px solid #3b82f6 !important;
+    border-top: 4px solid #2563eb !important;
 }
 
 .ops-cover-kpi-card.profit {
@@ -158,7 +616,7 @@ body, .page {
 }
 
 .ops-cover-kpi-card.assets {
-    border-top: 4px solid #d97706 !important;
+    border-top: 4px solid #b8860b !important;
 }
 
 .ops-cover-kpi-label {
@@ -173,12 +631,12 @@ body, .page {
 .ops-cover-kpi-value {
     font-size: 26px;
     font-weight: bold;
-    color: #0f172a;
+    color: #0a1628;
     font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
 }
 
 .ops-cover-stamp {
-    background: #0f172a !important;
+    background: #0a1628 !important;
     color: #ffffff;
     padding: 6px 14px;
     border-radius: 4px;
@@ -195,7 +653,7 @@ body, .page {
 .ops-page-header {
     width: 100%;
     padding-bottom: 12px;
-    border-bottom: 3px solid #1e293b;
+    border-bottom: 3px solid #1a2744;
     margin-bottom: 25px;
     -webkit-print-color-adjust: exact !important;
 }
@@ -204,7 +662,7 @@ body, .page {
     display: inline-block;
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    background: linear-gradient(135deg, #b8860b 0%, #d4a017 100%);
     border-radius: 6px;
     text-align: center;
     line-height: 36px;
@@ -219,7 +677,7 @@ body, .page {
 .ops-header-company {
     font-size: 14px;
     font-weight: bold;
-    color: #1e293b;
+    color: #1a2744;
 }
 
 .ops-header-subtitle {
@@ -250,7 +708,7 @@ body, .page {
     font-family: Georgia, 'Times New Roman', serif;
     font-size: 24px;
     font-weight: bold;
-    color: #1e293b;
+    color: #1a2744;
     margin: 0 0 5px 0;
 }
 
@@ -280,14 +738,14 @@ body, .page {
     background-color: #f8fafc !important;
     padding: 15px 18px;
     border-radius: 5px;
-    border-left: 4px solid #d97706 !important;
+    border-left: 4px solid #b8860b !important;
     margin-bottom: 20px;
     -webkit-print-color-adjust: exact !important;
 }
 
 .ops-info-label {
     font-weight: bold;
-    color: #1e293b;
+    color: #1a2744;
     display: inline-block;
     min-width: 100px;
 }
@@ -306,12 +764,12 @@ body, .page {
     border-radius: 8px;
     padding: 18px;
     text-align: center;
-    border-top: 3px solid #3b82f6 !important;
+    border-top: 3px solid #2563eb !important;
     -webkit-print-color-adjust: exact !important;
 }
 
 .ops-highlight-card.revenue {
-    border-top-color: #3b82f6 !important;
+    border-top-color: #2563eb !important;
 }
 
 .ops-highlight-card.profit {
@@ -323,7 +781,7 @@ body, .page {
 }
 
 .ops-highlight-card.assets {
-    border-top-color: #d97706 !important;
+    border-top-color: #b8860b !important;
 }
 
 .ops-highlight-card.margin {
@@ -342,7 +800,7 @@ body, .page {
 .ops-highlight-value {
     font-size: 22px;
     font-weight: bold;
-    color: #1e293b;
+    color: #1a2744;
     font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
 }
 
@@ -370,7 +828,7 @@ body, .page {
 }
 
 .ops-section-header-row {
-    background: #1e293b !important;
+    background: #1a2744 !important;
     padding: 10px 15px;
     border-radius: 6px 6px 0 0;
     -webkit-print-color-adjust: exact !important;
@@ -435,31 +893,33 @@ body, .page {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-top: none;
+    margin-bottom: 4px;
 }
 
 .ops-financial-table thead th {
-    padding: 10px 15px;
+    padding: 10px 20px;
     text-align: left;
-    font-size: 9px;
-    font-weight: bold;
+    font-size: 8pt;
+    font-weight: 700;
     color: #94a3b8;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: #f8fafc !important;
+    background: #f1f5f9 !important;
     border-bottom: 1px solid #e2e8f0;
     -webkit-print-color-adjust: exact !important;
 }
 
 .ops-financial-table thead th:last-child,
-.ops-financial-table thead th.text-end {
+.ops-financial-table thead th.text-end,
+.ops-financial-table thead th.amount {
     text-align: right;
 }
 
 .ops-financial-table tbody td {
-    padding: 10px 15px;
-    font-size: 11px;
-    color: #1e293b;
-    border-bottom: 1px dotted #cbd5e1;
+    padding: 12px 20px;
+    font-size: 10pt;
+    color: #1a2744;
+    border-bottom: 1px dashed #e2e8f0;
 }
 
 .ops-financial-table tbody tr:last-child td {
@@ -467,10 +927,23 @@ body, .page {
 }
 
 .ops-financial-table tbody td:last-child,
-.ops-financial-table tbody td.text-end {
+.ops-financial-table tbody td.text-end,
+.ops-financial-table tbody td.amount {
     text-align: right;
     font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
-    font-size: 10px;
+    font-size: 10pt;
+}
+
+/* Account Code Badges */
+.ops-account-code {
+    display: inline-block;
+    font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+    font-size: 8pt;
+    color: #94a3b8;
+    background: #f8fafc;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 10px;
 }
 
 /* Indentation */
@@ -502,29 +975,30 @@ body, .page {
 }
 
 /* Subtotal Row */
-.ops-financial-table .subtotal-row td {
+.ops-financial-table .subtotal-row td,
+.ops-subtotal-row td {
     background: #f8fafc !important;
-    font-weight: bold;
-    border-bottom: 2px solid #cbd5e1;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    font-weight: 600;
+    border-top: 2px solid #cbd5e1;
+    border-bottom: none;
+    padding: 14px 20px;
     -webkit-print-color-adjust: exact !important;
 }
 
 /* Total Row */
-.ops-financial-table .total-row td {
-    background: #1e293b !important;
+.ops-financial-table .total-row td,
+.ops-total-row td {
+    background: #1a2744 !important;
     color: #ffffff !important;
     font-weight: bold;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    border-bottom: none;
+    padding: 14px 20px;
+    border: none;
     -webkit-print-color-adjust: exact !important;
 }
 
 /* Grand Total Row - Dark Premium Style */
 .ops-financial-table .grand-total-row td {
-    background: #0f172a !important;
+    background: #0a1628 !important;
     color: #ffffff !important;
     font-weight: bold;
     font-size: 12px;
@@ -543,6 +1017,7 @@ body, .page {
 .ops-amount-positive,
 .ops-number-positive {
     color: #059669 !important;
+    font-weight: 600;
     -webkit-print-color-adjust: exact !important;
 }
 
@@ -550,7 +1025,62 @@ body, .page {
 .ops-amount-negative,
 .ops-number-negative {
     color: #dc2626 !important;
+    font-weight: 600;
     -webkit-print-color-adjust: exact !important;
+}
+
+.ops-amount-zero {
+    color: #cbd5e1 !important;
+}
+
+/* ============================================
+   GRAND TOTAL SECTION
+   ============================================ */
+.ops-grand-total {
+    background: linear-gradient(135deg, #0a1628, #1a2744) !important;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-top: 24px;
+    display: table;
+    width: 100%;
+    -webkit-print-color-adjust: exact !important;
+}
+
+.ops-grand-total-label {
+    display: table-cell;
+    vertical-align: middle;
+    width: 30%;
+}
+
+.ops-grand-total-label-title {
+    font-size: 9pt;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ops-grand-total-label-subtitle {
+    font-size: 10pt;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 4px;
+}
+
+.ops-grand-total-value {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+    font-size: 28pt;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.ops-grand-total-badge {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: right;
+    width: 25%;
 }
 
 /* ============================================
@@ -558,7 +1088,7 @@ body, .page {
    ============================================ */
 .ops-totals-summary {
     margin-top: 25px;
-    background: #0f172a !important;
+    background: #0a1628 !important;
     border-radius: 8px;
     padding: 20px 25px;
     -webkit-print-color-adjust: exact !important;
@@ -605,6 +1135,38 @@ body, .page {
     vertical-align: middle;
 }
 
+/* Status Badges */
+.ops-status-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 16px;
+    border-radius: 8px;
+}
+
+.ops-status-badge.healthy {
+    color: #10b981;
+}
+
+.ops-status-badge.warning {
+    color: #fbbf24;
+}
+
+.ops-status-badge.danger {
+    color: #ef4444;
+}
+
+.ops-status-icon {
+    font-size: 14pt;
+    margin-right: 6px;
+}
+
+.ops-status-text {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #ffffff;
+}
+
 .ops-badge-icon {
     display: inline-block;
     width: 20px;
@@ -620,7 +1182,7 @@ body, .page {
 }
 
 .ops-badge-icon.warning {
-    background: #d97706 !important;
+    background: #b8860b !important;
 }
 
 .ops-badge-icon.danger {
@@ -632,6 +1194,60 @@ body, .page {
     font-weight: bold;
     color: #ffffff;
     margin-top: 4px;
+}
+
+/* ============================================
+   MARGIN SUMMARY BOX
+   ============================================ */
+.ops-margin-summary {
+    margin-top: 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px 28px;
+    display: table;
+    width: 100%;
+}
+
+.ops-margin-info {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.ops-margin-info h4 {
+    font-size: 10pt;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 4px 0;
+}
+
+.ops-margin-info p {
+    font-size: 9pt;
+    color: #475569;
+    margin: 0;
+}
+
+.ops-margin-value {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+}
+
+.ops-margin-percentage {
+    font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
+    font-size: 32pt;
+    font-weight: 700;
+    color: #059669;
+}
+
+.ops-margin-percentage.warning {
+    color: #f59e0b;
+}
+
+.ops-margin-percentage.danger {
+    color: #dc2626;
 }
 
 /* ============================================
@@ -652,8 +1268,8 @@ body, .page {
 }
 
 .ops-alert-warning {
-    background-color: rgba(217, 119, 6, 0.1) !important;
-    border-color: #d97706 !important;
+    background-color: rgba(184, 134, 11, 0.1) !important;
+    border-color: #b8860b !important;
     color: #92400e;
 }
 
@@ -664,8 +1280,8 @@ body, .page {
 }
 
 .ops-alert-info {
-    background-color: rgba(59, 130, 246, 0.1) !important;
-    border-color: #3b82f6 !important;
+    background-color: rgba(37, 99, 235, 0.1) !important;
+    border-color: #2563eb !important;
     color: #1e40af;
 }
 
@@ -673,22 +1289,22 @@ body, .page {
    NOTES SECTION
    ============================================ */
 .ops-notes-section {
-    margin-top: 25px;
-    padding: 15px 20px;
-    background: #f8fafc !important;
-    border: 1px solid #e2e8f0;
-    border-left: 4px solid #3b82f6 !important;
-    border-radius: 0 6px 6px 0;
+    margin-top: 24px;
+    background: rgba(37, 99, 235, 0.08) !important;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-left: 4px solid #2563eb !important;
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
     -webkit-print-color-adjust: exact !important;
 }
 
 .ops-notes-title {
-    font-size: 10px;
-    font-weight: bold;
-    color: #94a3b8;
+    font-size: 9pt;
+    font-weight: 700;
+    color: #2563eb;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .ops-notes-list {
@@ -698,18 +1314,37 @@ body, .page {
 }
 
 .ops-notes-list li {
-    font-size: 10px;
+    font-size: 9pt;
     color: #475569;
-    padding: 3px 0 3px 15px;
+    padding: 4px 0 4px 16px;
     position: relative;
+    line-height: 1.5;
 }
 
 .ops-notes-list li:before {
-    content: "\2022";
+    content: "";
     position: absolute;
     left: 0;
-    color: #3b82f6;
-    font-weight: bold;
+    top: 10px;
+    width: 5px;
+    height: 5px;
+    background: #2563eb;
+    border-radius: 50%;
+}
+
+/* ============================================
+   CONFIDENTIAL BADGE
+   ============================================ */
+.ops-confidential-badge {
+    display: inline-block;
+    background: #1a2744;
+    color: #ffffff;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* ============================================
@@ -766,7 +1401,7 @@ body, .page {
 }
 
 .threshold-acceptable {
-    color: #d97706 !important;
+    color: #b8860b !important;
     font-weight: bold;
     -webkit-print-color-adjust: exact !important;
 }
@@ -788,7 +1423,7 @@ body, .page {
 }
 
 .ops_table_matrix thead tr {
-    background-color: #1e293b !important;
+    background-color: #1a2744 !important;
     color: #ffffff;
     -webkit-print-color-adjust: exact !important;
 }
@@ -797,8 +1432,8 @@ body, .page {
     padding: 10px 8px;
     font-weight: bold;
     text-align: left;
-    border: 1px solid #0f172a;
-    background-color: #1e293b !important;
+    border: 1px solid #0a1628;
+    background-color: #1a2744 !important;
     color: #ffffff !important;
     -webkit-print-color-adjust: exact !important;
 }
@@ -828,7 +1463,7 @@ body, .page {
 }
 
 .ops-grand-total {
-    background: #0f172a !important;
+    background: #0a1628 !important;
     color: #ffffff !important;
     font-weight: bold;
     -webkit-print-color-adjust: exact !important;
@@ -841,7 +1476,7 @@ body, .page {
 .ops-report-header {
     text-align: center;
     padding: 20px;
-    background: #1e293b !important;
+    background: #1a2744 !important;
     color: #ffffff;
     border-radius: 8px 8px 0 0;
     margin-bottom: 20px;
@@ -866,7 +1501,7 @@ body, .page {
     padding: 12px;
     background-color: #f8fafc !important;
     border-radius: 5px;
-    border-top: 2px solid #1e293b;
+    border-top: 2px solid #1a2744;
     font-size: 10px;
     color: #94a3b8;
     -webkit-print-color-adjust: exact !important;
@@ -894,7 +1529,7 @@ body, .page {
 }
 
 .ops-badge-warning {
-    background: #d97706 !important;
+    background: #b8860b !important;
     color: #ffffff;
 }
 
@@ -904,7 +1539,7 @@ body, .page {
 }
 
 .ops-badge-info {
-    background: #3b82f6 !important;
+    background: #2563eb !important;
     color: #ffffff;
 }
 
@@ -914,7 +1549,7 @@ body, .page {
 }
 
 .ops-badge-primary {
-    background: #1e293b !important;
+    background: #1a2744 !important;
     color: #ffffff;
 }
 
@@ -934,7 +1569,7 @@ body, .page {
 
 /* Section Headers */
 .ops-section-header {
-    background-color: #1e293b !important;
+    background-color: #1a2744 !important;
     color: #ffffff;
     padding: 10px 12px;
     border-radius: 4px 4px 0 0;
@@ -965,7 +1600,7 @@ body, .page {
 }
 
 .ops-signature-box {
-    border-top: 1px solid #1e293b;
+    border-top: 1px solid #1a2744;
     padding-top: 5px;
     margin-top: 40px;
     text-align: center;
@@ -986,6 +1621,41 @@ strong {
     font-weight: bold;
 }
 
+/* Row/Column helpers using tables */
+.row {
+    display: table;
+    width: 100%;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.col-6 {
+    display: table-cell;
+    width: 50%;
+    vertical-align: top;
+}
+
+.col-3 {
+    display: table-cell;
+    width: 25%;
+    vertical-align: top;
+}
+
+.col-4 {
+    display: table-cell;
+    width: 33.33%;
+    vertical-align: top;
+}
+
+.col-12 {
+    display: block;
+    width: 100%;
+}
+
 /* Print Styles - Force Color Printing */
 @media print {
     .ops-no-print {
@@ -998,6 +1668,16 @@ strong {
     }
 
     * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .ops-financial-report,
+    .ops-section-header,
+    .ops-grand-total,
+    .ops-kpi-card,
+    .ops-performance-alert,
+    .ops-notes-section {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
