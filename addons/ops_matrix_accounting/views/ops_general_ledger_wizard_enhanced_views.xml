@@ -279,6 +279,6 @@
               parent="account.menu_finance_reports"
               action="action_ops_general_ledger_wizard_enhanced"
               sequence="1"
-              groups="account.group_account_user"/>
+              groups="base.group_system,account.group_account_user"/>
 
 </odoo>

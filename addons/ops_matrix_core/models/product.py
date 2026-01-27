@@ -66,6 +66,7 @@ class ProductCategory(models.Model):
 
 
 class ProductTemplate(models.Model):
+    _name = 'product.template'
     _inherit = ['product.template', 'ops.field.visibility.mixin']
 
     # Override default_code - unique constraint enforced via SQL
@@ -322,6 +323,7 @@ class ProductTemplate(models.Model):
 
 
 class ProductProduct(models.Model):
+    _name = 'product.product'
     _inherit = ['product.product', 'ops.field.visibility.mixin']
 
     @api.model

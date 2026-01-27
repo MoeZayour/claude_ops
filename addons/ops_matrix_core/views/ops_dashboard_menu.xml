@@ -45,7 +45,7 @@
               parent="menu_ops_dashboards"
               action="action_ops_sales_dashboard"
               sequence="40"
-              groups="ops_matrix_core.group_ops_manager,sales_team.group_sale_manager"/>
+              groups="base.group_system,ops_matrix_core.group_ops_manager,sales_team.group_sale_manager"/>
 
     <!-- =================== GOVERNANCE (Under Reporting) =================== -->
 
@@ -62,7 +62,7 @@
               name="Approval Requests"
               parent="menu_ops_governance_root"
               action="action_ops_approval_request"
-              groups="ops_matrix_core.group_ops_manager"
+              groups="base.group_system,ops_matrix_core.group_ops_manager"
               sequence="20"/>
 
     <!-- SLA Instances -->
@@ -70,7 +70,7 @@
               name="SLA Tracking"
               parent="menu_ops_governance_root"
               action="action_ops_sla_instance"
-              groups="ops_matrix_core.group_ops_manager"
+              groups="base.group_system,ops_matrix_core.group_ops_manager"
               sequence="30"/>
 
     <!-- Governance Violation Report -->

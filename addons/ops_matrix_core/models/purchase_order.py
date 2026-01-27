@@ -6,6 +6,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class PurchaseOrder(models.Model):
+    _name = 'purchase.order'
     _inherit = ['purchase.order', 'ops.governance.mixin', 'ops.approval.mixin', 'ops.segregation.of.duties.mixin']
     
     # OPS Matrix Fields

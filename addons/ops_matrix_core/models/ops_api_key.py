@@ -101,13 +101,17 @@ class OpsApiKey(models.Model):
     )
     
     # ========================================================================
-    # CONSTRAINTS
+    # ORM CONSTRAINTS (Odoo 19 syntax)
     # ========================================================================
-    
-    _sql_constraints = [
-        ('unique_key', 'UNIQUE(key)', 'API Key must be unique!'),
-        ('check_usage_count', 'CHECK(usage_count >= 0)', 'Usage count cannot be negative!')
-    ]
+
+    _unique_key = models.Constraint(
+        'UNIQUE(key)',
+        'API Key must be unique!'
+    )
+    _check_usage_count = models.Constraint(
+        'CHECK(usage_count >= 0)',
+        'Usage count cannot be negative!'
+    )
     
     # ========================================================================
     # ORM METHODS

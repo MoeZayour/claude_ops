@@ -75,13 +75,12 @@ class ResCompany(models.Model):
             company.branch_count = len(company.branch_ids)
 
     # ---------------------------------------------------------
-    # SQL Constraints
+    # ORM Constraints (Odoo 19 syntax)
     # ---------------------------------------------------------
-    _sql_constraints = [
-        ('ops_code_unique',
-         'UNIQUE(ops_code)',
-         'OPS Code must be unique across all companies!')
-    ]
+    _ops_code_unique = models.Constraint(
+        'UNIQUE(ops_code)',
+        'OPS Code must be unique across all companies!'
+    )
 
     # ---------------------------------------------------------
     # CRUD & Sequence Generation

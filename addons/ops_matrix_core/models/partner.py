@@ -36,13 +36,12 @@ class ResPartner(models.Model):
              'Only authorized users (Finance/Manager) can toggle this flag.'
     )
 
-    # SQL Constraint for CR Number uniqueness (NULL allowed for leads/individuals)
+    # ORM Constraint for CR Number uniqueness (NULL allowed for leads/individuals)
     # Note: PostgreSQL UNIQUE constraint allows multiple NULL values by design
-    _sql_constraints = [
-        ('ops_cr_number_unique',
-         'UNIQUE(ops_cr_number)',
-         'Company Registration Number must be unique! Another customer already has this CR Number.'),
-    ]
+    _ops_cr_number_unique = models.Constraint(
+        'UNIQUE(ops_cr_number)',
+        'Company Registration Number must be unique! Another customer already has this CR Number.'
+    )
 
     # Stewardship State for Partner Governance
     ops_state = fields.Selection([

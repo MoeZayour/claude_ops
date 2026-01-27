@@ -16,6 +16,7 @@ _logger = logging.getLogger(__name__)
 
 
 class StockMove(models.Model):
+    _name = 'stock.move'
     _inherit = ['stock.move', 'ops.field.visibility.mixin']
 
     # ==========================================================================

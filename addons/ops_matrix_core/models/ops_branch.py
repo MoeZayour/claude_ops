@@ -188,13 +188,12 @@ class OpsBranch(models.Model):
     )
 
     # ---------------------------------------------------------
-    # SQL Constraints
+    # ORM Constraints (Odoo 19 syntax)
     # ---------------------------------------------------------
-    _sql_constraints = [
-        ('code_company_unique',
-         'UNIQUE(code, company_id)',
-         'Branch Code must be unique per company!')
-    ]
+    _code_company_unique = models.Constraint(
+        'UNIQUE(code, company_id)',
+        'Branch Code must be unique per company!'
+    )
 
     # ---------------------------------------------------------
     # Computed Methods

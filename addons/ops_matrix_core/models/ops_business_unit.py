@@ -211,11 +211,11 @@ class OpsBusinessUnit(models.Model):
                     "Primary branch '%s' must be in the list of operating branches."
                 ) % bu.primary_branch_id.name)
 
-    _sql_constraints = [
-        ('code_unique',
-         'UNIQUE(code)',
-         'Business Unit Code must be unique!')
-    ]
+    # ORM Constraints (Odoo 19 syntax)
+    _code_unique = models.Constraint(
+        'UNIQUE(code)',
+        'Business Unit Code must be unique!'
+    )
 
     # ---------------------------------------------------------
     # CRUD & Analytic Sync

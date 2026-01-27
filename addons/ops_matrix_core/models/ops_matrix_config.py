@@ -156,10 +156,11 @@ class OpsMatrixConfig(models.Model):
                     'Single dimension weight must be between 0 and 100. Current value: %.2f'
                 ) % config.single_dimension_weight)
     
-    _sql_constraints = [
-        ('company_unique', 'UNIQUE(company_id)',
-         'Only one configuration record per company is allowed!')
-    ]
+    # ORM Constraints (Odoo 19 syntax)
+    _company_unique = models.Constraint(
+        'UNIQUE(company_id)',
+        'Only one configuration record per company is allowed!'
+    )
     
     # =========================================================================
     # Helper Methods

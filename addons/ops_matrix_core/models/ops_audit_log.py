@@ -172,15 +172,17 @@ class OpsAuditLog(models.Model):
             record.date = record.timestamp.date() if record.timestamp else False
     
     # ========================================================================
-    # CONSTRAINTS
+    # ORM CONSTRAINTS (Odoo 19 syntax)
     # ========================================================================
-    
-    _sql_constraints = [
-        ('check_status_code', 'CHECK(status_code >= 100 AND status_code < 600)', 
-         'Invalid HTTP status code!'),
-        ('check_response_time', 'CHECK(response_time >= 0)', 
-         'Response time cannot be negative!')
-    ]
+
+    _check_status_code = models.Constraint(
+        'CHECK(status_code >= 100 AND status_code < 600)',
+        'Invalid HTTP status code!'
+    )
+    _check_response_time = models.Constraint(
+        'CHECK(response_time >= 0)',
+        'Response time cannot be negative!'
+    )
     
     # ========================================================================
     # ORM METHODS
