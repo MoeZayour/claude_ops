@@ -3,712 +3,574 @@
     <!--
         OPS Matrix Corporate Report Layout
         ==================================
-        v19.4.0: PREMIUM EXECUTIVE SUITE with Dynamic Company Colors
+        PHASE 24: THE MERIDIAN NATIVE (wkhtmltopdf)
 
-        This layout creates professional financial reports that:
-        - Derive colors from company's primary_color and secondary_color
-        - Use smart color coding (green=good, red=bad, muted=zero)
-        - Follow executive dashboard styling patterns
-        - Are fully PDF-safe with wkhtmltopdf compatibility
+        DESIGN PHILOSOPHY:
+        - "Meridian Executive" aesthetic - Management Consulting feel
+        - High contrast: Deep Black (#000000) + Executive Gold (#c9a962) + Red (#DA291C)
+        - TABLE-BASED LAYOUTS ONLY (wkhtmltopdf compatible)
+        - NO Flexbox, NO Grid, NO CSS Variables
+        - Inline CSS preferred for reliability
 
-        CRITICAL PDF COMPATIBILITY RULES:
-        - NO CSS Variables (use literal hex codes passed from Python)
-        - NO Remote Fonts (use system fonts only)
-        - FORCE Print Colors (-webkit-print-color-adjust: exact !important)
-        - Float/inline-block layouts (no flexbox gaps)
+        TYPOGRAPHY:
+        - Primary: Georgia (serif for elegance)
+        - Sans: Arial, Helvetica (headers)
+        - Monospace: Consolas (numbers)
 
-        COLOR STRATEGY:
-        - Company Primary: Headers, titles, section accents
-        - Company Secondary: Highlights, badges
-        - Success (#059669): Positive values, profits, revenue
-        - Danger (#dc2626): Negative values, losses, expenses
-        - Muted (#94a3b8): Zero values, secondary text
+        VALUE DISPLAY:
+        - Zeros: Show as "0.00" in Light Grey (#cccccc)
+        - Negatives: Red (#DA291C) with parentheses
+        - Positives: Black
+
+        WKHTMLTOPDF COMPATIBILITY:
+        - Uses basic CSS2.1 properties
+        - Table-based layouts
+        - Inline styles for reliability
+        - No modern CSS features
     -->
 
-    <!-- OPS Matrix Report Styles (PDF-Safe Embedded CSS) -->
+    <!-- ============================================
+         THE MERIDIAN NATIVE - MASTER STYLESHEET
+         ============================================ -->
     <template id="ops_report_styles">
         <style type="text/css">
             /* ============================================
-               OPS PREMIUM EXECUTIVE SUITE v19.4.0
-               Dynamic Company Colors + Smart Value Coloring
+               PHASE 24: THE MERIDIAN NATIVE
+               wkhtmltopdf-Compatible Design System
                ============================================ */
 
-            /* Force all colors to print */
+            /* === PAGE SETUP === */
+            @page {
+                size: A4 portrait;
+                margin: 15mm 15mm 20mm 15mm;
+            }
+
+            /* === FORCE PRINT COLORS === */
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
 
-            /* Base Typography - System Fonts Only */
-            body, .page {
-                font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif;
+            /* === BASE TYPOGRAPHY === */
+            body, html {
+                font-family: Arial, Helvetica, sans-serif;
                 font-size: 10pt;
-                line-height: 1.5;
-                color: #1e293b;
-                background-color: #ffffff !important;
-                -webkit-print-color-adjust: exact !important;
+                line-height: 1.4;
+                color: #000000;
+                background-color: #ffffff;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* === THE MERIDIAN PAGE CONTAINER === */
+            .ops-meridian-page {
+                background: #ffffff;
+                padding: 0;
+                margin: 0;
             }
 
             .ops-report,
-            .ops-report-container {
-                font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif;
-                font-size: 10pt;
-                line-height: 1.5;
-                color: #1e293b;
-                background-color: #ffffff !important;
-                -webkit-print-color-adjust: exact !important;
+            .ops-report-container,
+            .ops-consulting-page {
+                background: #ffffff;
             }
 
             /* ============================================
-               TYPOGRAPHY SYSTEM
+               MERIDIAN HEADER SYSTEM (Table-Based)
                ============================================ */
-            .ops-title-serif {
+
+            /* The iconic gold top border */
+            .ops-meridian-accent {
+                height: 4px;
+                background-color: #c9a962;
+                border: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Master header table */
+            .ops-header-master {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            .ops-header-master td {
+                vertical-align: top;
+                padding: 0;
+            }
+
+            /* Report title styling */
+            .ops-title-main {
+                font-size: 32px;
+                font-weight: 300;
                 font-family: Georgia, 'Times New Roman', serif;
+                color: #000000;
+                margin: 0;
+                padding: 0;
+                line-height: 1.1;
             }
 
-            .ops-mono {
-                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
-            }
-
-            .ops-uppercase {
-                text-transform: uppercase;
-                letter-spacing: 1px;
-            }
-
-            .ops-small-caps {
-                font-variant: small-caps;
-                letter-spacing: 0.5px;
-            }
-
-            /* ============================================
-               VALUE COLORING SYSTEM
-               Smart colors for financial values
-               ============================================ */
-            .ops-value-positive {
-                color: #059669 !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-value-negative {
-                color: #dc2626 !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-value-zero {
-                color: #94a3b8 !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-value-neutral {
-                color: #1e293b !important;
-            }
-
-            /* Revenue/Income - Always positive context */
-            .ops-value-revenue {
-                color: #059669 !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            /* Expense/Cost - Always negative context */
-            .ops-value-expense {
-                color: #dc2626 !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            /* Asset context */
-            .ops-value-asset {
-                color: #2563eb !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            /* ============================================
-               PREMIUM COVER PAGE
-               ============================================ */
-            .ops-cover-page {
-                min-height: 100%;
-                background: #ffffff !important;
-                page-break-after: always;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-cover-header-band {
-                padding: 35px 45px;
-                position: relative;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-cover-accent-bar {
-                height: 5px;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-cover-logo-box {
-                display: inline-block;
-                width: 48px;
-                height: 48px;
-                border-radius: 8px;
-                text-align: center;
-                line-height: 48px;
-                font-family: Georgia, serif;
-                font-size: 24px;
-                font-weight: bold;
-                color: #ffffff;
-                vertical-align: middle;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-cover-company-name {
-                display: inline-block;
-                vertical-align: middle;
-                margin-left: 12px;
-            }
-
-            .ops-cover-company-text {
-                font-size: 18px;
-                font-weight: bold;
-                color: #ffffff;
-                letter-spacing: -0.3px;
-            }
-
-            .ops-cover-tagline {
-                font-size: 10px;
-                color: rgba(255, 255, 255, 0.6);
-                font-weight: 500;
-                letter-spacing: 0.5px;
-            }
-
-            .ops-cover-fiscal-box {
-                background: rgba(255, 255, 255, 0.1);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                padding: 8px 16px;
-                border-radius: 6px;
-                text-align: right;
-            }
-
-            .ops-cover-fiscal-label {
-                font-size: 9px;
+            .ops-title-company {
+                font-size: 14px;
                 font-weight: 600;
-                color: rgba(255, 255, 255, 0.6);
-                text-transform: uppercase;
-                letter-spacing: 1px;
-            }
-
-            .ops-cover-fiscal-year {
-                font-size: 16px;
-                font-weight: bold;
-                color: #ffffff;
-                margin-top: 2px;
-            }
-
-            .ops-cover-title-area {
-                padding: 50px 45px 35px 45px;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-cover-doc-type {
-                font-size: 10px;
-                font-weight: 600;
+                color: #666666;
                 text-transform: uppercase;
                 letter-spacing: 2px;
-                margin-bottom: 10px;
-            }
-
-            .ops-cover-main-title {
-                font-family: Georgia, 'Times New Roman', serif;
-                font-size: 32px;
-                font-weight: bold;
-                color: #ffffff;
-                line-height: 1.2;
-                margin: 0;
-            }
-
-            .ops-cover-subtitle {
-                font-size: 13px;
-                color: rgba(255, 255, 255, 0.75);
-                margin-top: 10px;
-            }
-
-            .ops-cover-content {
-                padding: 40px 45px;
-            }
-
-            /* ============================================
-               KPI ACCENT CARDS (Premium Executive Style)
-               ============================================ */
-            .ops-kpi-container {
-                width: 100%;
-                margin-bottom: 25px;
-                overflow: hidden;
-            }
-
-            .ops-kpi-card {
-                background: #ffffff !important;
-                border: 1px solid #e2e8f0;
-                border-left-width: 4px;
-                padding: 18px;
-                -webkit-print-color-adjust: exact !important;
-                page-break-inside: avoid;
-            }
-
-            .ops-kpi-card.success { border-left-color: #059669 !important; }
-            .ops-kpi-card.danger { border-left-color: #dc2626 !important; }
-            .ops-kpi-card.neutral { border-left-color: #2563eb !important; }
-            .ops-kpi-card.warning { border-left-color: #d97706 !important; }
-
-            .ops-kpi-label {
-                font-size: 9px;
-                font-weight: 600;
-                color: #64748b;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
-            .ops-kpi-value {
-                font-size: 22px;
-                font-weight: bold;
-                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
-                margin-top: 4px;
-            }
-
-            .ops-kpi-change {
-                font-size: 10px;
-                font-weight: 600;
-                margin-top: 4px;
-            }
-
-            .ops-kpi-change.positive { color: #059669 !important; }
-            .ops-kpi-change.negative { color: #dc2626 !important; }
-
-            /* ============================================
-               PAGE HEADER
-               ============================================ */
-            .ops-page-header {
-                width: 100%;
-                padding-bottom: 10px;
-                border-bottom: 2px solid;
-                margin-bottom: 20px;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-page-header-left {
-                vertical-align: middle;
-                width: 65%;
-            }
-
-            .ops-page-number-box {
-                vertical-align: middle;
-                text-align: right;
-                width: 35%;
-            }
-
-            .ops-header-logo {
-                display: inline-block;
-                width: 32px;
-                height: 32px;
-                border-radius: 5px;
-                text-align: center;
-                line-height: 32px;
-                font-size: 16px;
-                font-weight: bold;
-                color: #ffffff;
-                vertical-align: middle;
-                margin-right: 10px;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-header-info {
-                display: inline-block;
-                vertical-align: middle;
-            }
-
-            .ops-header-company {
-                font-size: 13px;
-                font-weight: bold;
-            }
-
-            .ops-header-subtitle {
-                font-size: 9px;
-                color: #94a3b8;
-            }
-
-            .ops-page-number {
-                font-size: 10px;
-                font-weight: 500;
-                color: #94a3b8;
-            }
-
-            .ops-page-date {
-                font-size: 9px;
-                color: #94a3b8;
-            }
-
-            /* ============================================
-               STATEMENT TITLE SECTION
-               ============================================ */
-            .ops-statement-title-section {
-                margin-bottom: 20px;
-                text-align: center;
-            }
-
-            .ops-statement-title {
-                font-family: Georgia, 'Times New Roman', serif;
-                font-size: 22px;
-                font-weight: bold;
-                margin: 0 0 4px 0;
-            }
-
-            .ops-statement-subtitle {
-                font-size: 11px;
-                color: #64748b;
-                margin: 0;
-            }
-
-            .ops-statement-period {
-                display: inline-block;
                 margin-top: 8px;
-                padding: 4px 14px;
-                background: #f8fafc;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
+            }
+
+            .ops-title-date {
                 font-size: 10px;
-                font-weight: 500;
-                color: #64748b;
-                -webkit-print-color-adjust: exact !important;
+                color: #999999;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            /* Black separator line */
+            .ops-header-separator {
+                height: 2px;
+                background-color: #000000;
+                border: none;
+                margin: 15px 0 20px 0;
             }
 
             /* ============================================
-               PREMIUM DATA TABLES
+               ACCOUNTING EQUATION BAR (Balance Sheet)
                ============================================ */
-            table.ops-data-table {
+            .ops-equation-bar {
+                width: 100%;
+                text-align: center;
+                padding: 20px 0;
+                border-bottom: 1px solid #eeeeee;
+                margin-bottom: 25px;
+            }
+
+            .ops-equation-text {
+                font-size: 20px;
+                font-family: Georgia, 'Times New Roman', serif;
+                color: #000000;
+            }
+
+            .ops-equation-symbol {
+                color: #cccccc;
+                margin: 0 15px;
+            }
+
+            /* ============================================
+               META INFO BAR
+               ============================================ */
+            .ops-meta-bar {
+                background-color: #f8f9fa;
+                border: 1px solid #e5e7eb;
+                padding: 12px 16px;
+                margin-bottom: 25px;
+            }
+
+            .ops-meta-bar table {
                 width: 100%;
                 border-collapse: collapse;
-                background: #ffffff;
-                font-size: 10pt;
             }
 
-            table.ops-data-table thead th {
-                padding: 10px 8px;
-                text-align: left;
-                font-size: 9pt;
+            .ops-meta-bar td {
+                padding: 4px 8px;
+                vertical-align: top;
+            }
+
+            .ops-meta-label {
                 font-weight: 600;
-                color: #64748b;
+                color: #374151;
                 text-transform: uppercase;
                 letter-spacing: 0.3px;
-                border-bottom: 2px solid #1e293b !important;
-                -webkit-print-color-adjust: exact !important;
+                font-size: 8pt;
             }
 
-            table.ops-data-table thead th.text-end {
-                text-align: right;
-            }
-
-            table.ops-data-table tbody td {
-                padding: 8px;
-                font-size: 10pt;
-                color: #1e293b;
-                border-bottom: 1px solid #f1f5f9;
-            }
-
-            table.ops-data-table tbody td.text-end {
-                text-align: right;
-                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
-                font-size: 9pt;
-            }
-
-            table.ops-data-table tbody td.label-col {
+            .ops-meta-value {
+                color: #000000;
                 font-weight: 500;
-            }
-
-            /* Indentation levels */
-            table.ops-data-table .indent-1 { padding-left: 20px !important; }
-            table.ops-data-table .indent-2 { padding-left: 35px !important; font-size: 9pt; color: #64748b; }
-            table.ops-data-table .indent-3 { padding-left: 50px !important; font-size: 8pt; color: #94a3b8; }
-
-            /* Subtotal row */
-            table.ops-data-table tr.subtotal-row td {
-                border-top: 1px solid #94a3b8 !important;
-                font-weight: 600;
-                background: #fafafa !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            /* Total row */
-            table.ops-data-table tr.total-row td {
-                border-top: 2px solid #1e293b !important;
-                border-bottom: 3px double #1e293b !important;
-                font-weight: 700;
-                font-size: 11pt;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            /* Grand total row - dark background */
-            table.ops-data-table tr.grand-total-row td {
-                color: #ffffff !important;
-                font-weight: 700;
-                font-size: 11pt;
-                padding: 12px 8px;
-                border-bottom: none;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            /* Section header row */
-            table.ops-data-table tr.section-header td {
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
                 font-size: 10pt;
-                padding-top: 14px;
-                border-bottom: 2px solid;
-                -webkit-print-color-adjust: exact !important;
             }
-
-            table.ops-data-table tr.section-header.revenue td { border-bottom-color: #059669 !important; color: #059669 !important; }
-            table.ops-data-table tr.section-header.expense td { border-bottom-color: #dc2626 !important; color: #dc2626 !important; }
-            table.ops-data-table tr.section-header.asset td { border-bottom-color: #2563eb !important; color: #2563eb !important; }
-            table.ops-data-table tr.section-header.liability td { border-bottom-color: #d97706 !important; color: #d97706 !important; }
-            table.ops-data-table tr.section-header.equity td { border-bottom-color: #059669 !important; color: #059669 !important; }
 
             /* ============================================
-               SECTION BLOCKS WITH COLORED HEADERS
+               THE MERIDIAN TABLE (Core Data Table)
                ============================================ */
-            .ops-section-block {
+            .ops-native-table,
+            .ops-table-consulting {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 10pt;
                 margin-bottom: 20px;
             }
 
-            .ops-section-header-bar {
-                padding: 10px 14px;
-                border-radius: 4px 4px 0 0;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-section-header-bar table {
-                width: 100%;
-            }
-
-            .ops-section-title-text {
-                font-size: 11pt;
-                font-weight: 700;
-                color: #ffffff !important;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-
-            .ops-section-amount {
-                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
-                font-size: 12pt;
-                font-weight: 700;
-                color: #ffffff !important;
-                text-align: right;
-            }
-
-            .ops-section-table {
-                width: 100%;
-                border-collapse: collapse;
-                background: #ffffff;
-                border: 1px solid #e2e8f0;
-                border-top: none;
-            }
-
-            .ops-section-table th {
-                padding: 8px 14px;
+            /* Table Headers */
+            .ops-native-table thead th,
+            .ops-table-consulting thead th,
+            .ops-header-row th {
+                background-color: #f8f9fa;
+                padding: 12px 10px;
                 text-align: left;
                 font-size: 8pt;
                 font-weight: 600;
-                color: #94a3b8;
+                color: #374151;
                 text-transform: uppercase;
-                letter-spacing: 0.3px;
-                background: #f8fafc !important;
-                border-bottom: 1px solid #e2e8f0;
-                -webkit-print-color-adjust: exact !important;
+                letter-spacing: 0.5px;
+                border-bottom: 2px solid #000000;
             }
 
-            .ops-section-table th.text-end { text-align: right; }
-
-            .ops-section-table td {
-                padding: 8px 14px;
-                font-size: 10pt;
-                color: #1e293b;
-                border-bottom: 1px dotted #e2e8f0;
-            }
-
-            .ops-section-table td.text-end {
+            .ops-native-table thead th.text-end,
+            .ops-table-consulting thead th.text-end,
+            .ops-native-table thead th.num,
+            .ops-table-consulting thead th.num {
                 text-align: right;
-                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
-                font-size: 9pt;
             }
 
-            .ops-section-table tr:last-child td {
-                border-bottom: none;
+            /* Table Body Cells */
+            .ops-native-table tbody td,
+            .ops-table-consulting tbody td {
+                padding: 10px;
+                color: #000000;
+                border-bottom: 1px solid #e5e7eb;
+                vertical-align: middle;
             }
 
-            .ops-section-table .subtotal td {
-                background: #f8fafc !important;
+            .ops-native-table tbody td.text-end,
+            .ops-table-consulting tbody td.text-end,
+            .ops-native-table tbody td.num,
+            .ops-table-consulting tbody td.num,
+            .ops-value-cell {
+                text-align: right;
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 10pt;
+            }
+
+            /* === SECTION TITLES === */
+            .ops-section-title {
+                color: #DA291C;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                font-size: 11pt;
+                padding: 15px 10px 8px 10px;
+                border-bottom: 1px solid #cccccc;
+            }
+
+            /* === INDENTATION LEVELS === */
+            .indent-0, .level-0 {
+                padding-left: 10px;
+                font-weight: 700;
+            }
+
+            .indent-1, .level-1 {
+                padding-left: 25px;
                 font-weight: 600;
-                border-top: 1px solid #cbd5e1;
+            }
+
+            .indent-2, .level-2 {
+                padding-left: 45px;
+                font-weight: 400;
+            }
+
+            .indent-3, .level-3 {
+                padding-left: 65px;
+                font-weight: 400;
+                font-style: italic;
+                color: #4b5563;
+            }
+
+            /* === VALUE STYLING === */
+            .ops-value-zero {
+                color: #cccccc !important;
+            }
+
+            .ops-value-negative {
+                color: #DA291C !important;
+            }
+
+            .ops-value-positive {
+                color: #000000 !important;
+            }
+
+            .ops-value-revenue {
+                color: #059669 !important;
+            }
+
+            .ops-value-expense {
+                color: #DA291C !important;
+            }
+
+            /* === ROW TYPES === */
+            /* Section Header Row */
+            tr.section-header td,
+            .ops-native-table tr.section-header td,
+            .ops-table-consulting tr.section-header td {
+                font-weight: 700;
+                font-size: 11pt;
+                color: #000000;
+                padding-top: 18px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #9ca3af;
+                background-color: transparent;
+            }
+
+            /* Subtotal Row */
+            tr.subtotal-row td,
+            .ops-native-table tr.subtotal-row td,
+            .ops-table-consulting tr.subtotal-row td {
+                font-weight: 600;
+                border-top: 1px solid #000000;
+                background-color: #fafafa;
                 padding-top: 10px;
                 padding-bottom: 10px;
-                -webkit-print-color-adjust: exact !important;
+            }
+
+            /* Total Row - Single top, Double bottom */
+            tr.total-row td,
+            .ops-native-table tr.total-row td,
+            .ops-table-consulting tr.total-row td,
+            .ops-total-row td {
+                font-weight: 700;
+                font-size: 11pt;
+                border-top: 2px solid #000000;
+                border-bottom: 4px double #000000;
+                padding-top: 12px;
+                padding-bottom: 12px;
+                background-color: #ffffff;
+            }
+
+            /* Grand Total Row - Black background */
+            tr.grand-total-row td,
+            .ops-native-table tr.grand-total-row td,
+            .ops-table-consulting tr.grand-total-row td {
+                font-weight: 700;
+                font-size: 12pt;
+                background-color: #000000 !important;
+                color: #ffffff !important;
+                padding: 14px 10px;
+                border: none;
+            }
+
+            tr.grand-total-row td.num,
+            .ops-native-table tr.grand-total-row td.num,
+            .ops-table-consulting tr.grand-total-row td.num {
+                color: #ffffff !important;
+            }
+
+            /* Alternating row backgrounds */
+            .ops-native-table.striped tbody tr:nth-child(even) td,
+            .ops-table-consulting.striped tbody tr:nth-child(even) td {
+                background-color: #fafafa;
             }
 
             /* ============================================
-               SUMMARY BOX (Total/Result)
+               SECTION BLOCKS (Colored Headers)
                ============================================ */
-            .ops-summary-box {
-                margin-top: 20px;
-                border-radius: 6px;
-                padding: 18px 22px;
-                -webkit-print-color-adjust: exact !important;
+            .ops-section-block {
+                margin-bottom: 25px;
             }
 
-            .ops-summary-box.success { background: #047857 !important; }
-            .ops-summary-box.loss { background: #991b1b !important; }
-            .ops-summary-box.neutral { background: #0a1628 !important; }
+            .ops-section-header {
+                padding: 10px 14px;
+                color: #ffffff;
+                font-weight: 700;
+                font-size: 11pt;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .ops-section-header.revenue { background-color: #059669 !important; }
+            .ops-section-header.expense { background-color: #DA291C !important; }
+            .ops-section-header.asset { background-color: #2563eb !important; }
+            .ops-section-header.liability { background-color: #d97706 !important; }
+            .ops-section-header.equity { background-color: #059669 !important; }
+            .ops-section-header.neutral { background-color: #000000 !important; }
+
+            .ops-section-header table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .ops-section-header .section-title {
+                color: #ffffff;
+            }
+
+            .ops-section-header .section-amount {
+                text-align: right;
+                font-family: Georgia, 'Times New Roman', serif;
+                color: #ffffff;
+            }
+
+            /* ============================================
+               SUMMARY BOX (Results / Totals)
+               ============================================ */
+            .ops-summary-box {
+                margin-top: 25px;
+                padding: 20px 25px;
+            }
+
+            .ops-summary-box.profit {
+                background-color: #059669 !important;
+                color: #ffffff;
+            }
+
+            .ops-summary-box.loss {
+                background-color: #DA291C !important;
+                color: #ffffff;
+            }
+
+            .ops-summary-box.neutral {
+                background-color: #000000 !important;
+                color: #ffffff;
+            }
 
             .ops-summary-label {
                 font-size: 9pt;
                 font-weight: 600;
-                color: rgba(255, 255, 255, 0.65);
+                color: #ffffff;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .ops-summary-equation {
+                font-size: 9pt;
+                color: #cccccc;
+                margin-top: 3px;
+            }
+
+            .ops-summary-value {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 28pt;
+                font-weight: 700;
+                color: #ffffff;
+            }
+
+            .ops-summary-badge {
+                background-color: rgba(255, 255, 255, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                padding: 10px 16px;
+                text-align: center;
+            }
+
+            .ops-summary-badge-text {
+                font-size: 11pt;
+                font-weight: 600;
+                color: #ffffff;
+            }
+
+            /* ============================================
+               MARGIN / PERFORMANCE INDICATOR
+               ============================================ */
+            .ops-margin-card {
+                background-color: #ffffff;
+                border: 1px solid #e5e7eb;
+                border-left: 4px solid #000000;
+                padding: 16px 20px;
+                margin-top: 20px;
+            }
+
+            .ops-margin-card.excellent { border-left-color: #059669; }
+            .ops-margin-card.healthy { border-left-color: #2563eb; }
+            .ops-margin-card.warning { border-left-color: #d97706; }
+            .ops-margin-card.critical { border-left-color: #DA291C; }
+
+            .ops-margin-label {
+                font-size: 9pt;
+                font-weight: 600;
+                color: #374151;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
 
-            .ops-summary-equation {
-                font-size: 10pt;
-                color: rgba(255, 255, 255, 0.8);
+            .ops-margin-formula {
+                font-size: 9pt;
+                color: #6b7280;
                 margin-top: 2px;
             }
 
-            .ops-summary-value {
-                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
-                font-size: 24pt;
+            .ops-margin-value {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 32pt;
                 font-weight: 700;
-                color: #ffffff !important;
-                text-align: center;
-                vertical-align: middle;
             }
 
-            .ops-summary-badge {
-                background: rgba(255, 255, 255, 0.12);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                padding: 8px 14px;
-                border-radius: 5px;
-                text-align: center;
-                vertical-align: middle;
-            }
-
-            .ops-summary-badge-icon {
-                display: inline-block;
-                width: 18px;
-                height: 18px;
-                border-radius: 50%;
-                text-align: center;
-                line-height: 18px;
-                color: #ffffff;
-                font-size: 11px;
-                font-weight: bold;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-summary-badge-icon.success { background: #059669 !important; }
-            .ops-summary-badge-icon.warning { background: #d97706 !important; }
-            .ops-summary-badge-icon.danger { background: #dc2626 !important; }
-
-            .ops-summary-badge-text {
-                font-size: 10pt;
-                font-weight: 600;
-                color: #ffffff;
-                margin-top: 3px;
-            }
+            .ops-margin-value.excellent { color: #059669; }
+            .ops-margin-value.healthy { color: #2563eb; }
+            .ops-margin-value.warning { color: #d97706; }
+            .ops-margin-value.critical { color: #DA291C; }
 
             /* ============================================
-               STATUS PILLS AND BADGES
+               STATUS PILLS
                ============================================ */
             .ops-status-pill {
                 display: inline-block;
                 padding: 6px 14px;
-                border-radius: 4px;
-                font-size: 10pt;
-                font-weight: 600;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-status-pill.excellent { background: #dcfce7 !important; color: #059669 !important; }
-            .ops-status-pill.healthy { background: #dbeafe !important; color: #2563eb !important; }
-            .ops-status-pill.acceptable { background: #f1f5f9 !important; color: #64748b !important; }
-            .ops-status-pill.warning { background: #fef3c7 !important; color: #d97706 !important; }
-            .ops-status-pill.loss { background: #fee2e2 !important; color: #dc2626 !important; }
-
-            .ops-badge {
-                display: inline-block;
-                padding: 2px 8px;
-                border-radius: 3px;
-                font-size: 8pt;
+                font-size: 9pt;
                 font-weight: 600;
                 text-transform: uppercase;
-                -webkit-print-color-adjust: exact !important;
+                letter-spacing: 0.5px;
             }
 
-            .ops-badge.success { background: #059669 !important; color: #ffffff; }
-            .ops-badge.warning { background: #d97706 !important; color: #ffffff; }
-            .ops-badge.danger { background: #dc2626 !important; color: #ffffff; }
-            .ops-badge.info { background: #2563eb !important; color: #ffffff; }
-            .ops-badge.muted { background: #94a3b8 !important; color: #ffffff; }
+            .ops-status-pill.excellent { background-color: #d1fae5; color: #059669; }
+            .ops-status-pill.healthy { background-color: #dbeafe; color: #2563eb; }
+            .ops-status-pill.acceptable { background-color: #f3f4f6; color: #4b5563; }
+            .ops-status-pill.warning { background-color: #fef3c7; color: #d97706; }
+            .ops-status-pill.loss { background-color: #fee2e2; color: #DA291C; }
 
             /* ============================================
-               PERFORMANCE ALERT BANNERS
+               ALERT BANNERS
                ============================================ */
             .ops-alert {
-                padding: 12px 14px;
-                border-radius: 4px;
-                margin: 14px 0;
+                padding: 14px 18px;
+                margin: 15px 0;
                 border-left: 4px solid;
-                -webkit-print-color-adjust: exact !important;
+                font-size: 10pt;
             }
 
             .ops-alert.success {
-                background-color: rgba(5, 150, 105, 0.1) !important;
-                border-color: #059669 !important;
+                background-color: #ecfdf5;
+                border-color: #059669;
                 color: #065f46;
             }
 
             .ops-alert.warning {
-                background-color: rgba(217, 119, 6, 0.1) !important;
-                border-color: #d97706 !important;
+                background-color: #fffbeb;
+                border-color: #d97706;
                 color: #92400e;
             }
 
             .ops-alert.danger {
-                background-color: rgba(220, 38, 38, 0.1) !important;
-                border-color: #dc2626 !important;
+                background-color: #fef2f2;
+                border-color: #DA291C;
                 color: #991b1b;
             }
 
             .ops-alert.info {
-                background-color: rgba(37, 99, 235, 0.1) !important;
-                border-color: #2563eb !important;
+                background-color: #eff6ff;
+                border-color: #2563eb;
                 color: #1e40af;
+            }
+
+            .ops-alert strong {
+                font-weight: 700;
             }
 
             /* ============================================
                NOTES SECTION
                ============================================ */
             .ops-notes-section {
-                margin-top: 20px;
-                padding: 14px 18px;
-                background: #f8fafc !important;
-                border: 1px solid #e2e8f0;
-                border-left: 4px solid #2563eb !important;
-                border-radius: 0 5px 5px 0;
-                -webkit-print-color-adjust: exact !important;
+                margin-top: 30px;
+                padding: 16px 20px;
+                background-color: #f8f9fa;
+                border: 1px solid #e5e7eb;
+                border-left: 4px solid #000000;
             }
 
             .ops-notes-title {
                 font-size: 9pt;
-                font-weight: 600;
-                color: #94a3b8;
+                font-weight: 700;
+                color: #374151;
                 text-transform: uppercase;
-                letter-spacing: 0.3px;
-                margin-bottom: 6px;
+                letter-spacing: 0.5px;
+                margin-bottom: 10px;
             }
 
             .ops-notes-list {
@@ -719,8 +581,8 @@
 
             .ops-notes-list li {
                 font-size: 9pt;
-                color: #64748b;
-                padding: 2px 0 2px 14px;
+                color: #4b5563;
+                padding: 4px 0 4px 18px;
                 position: relative;
             }
 
@@ -728,7 +590,7 @@
                 content: "\2022";
                 position: absolute;
                 left: 0;
-                color: #2563eb;
+                color: #DA291C;
                 font-weight: bold;
             }
 
@@ -736,84 +598,192 @@
                PAGE FOOTER
                ============================================ */
             .ops-page-footer {
-                margin-top: 25px;
-                padding-top: 10px;
-                border-top: 1px solid #e2e8f0;
+                margin-top: 35px;
+                padding-top: 15px;
+                border-top: 1px solid #e5e7eb;
             }
 
             .ops-footer-text {
                 font-size: 8pt;
-                color: #94a3b8;
+                color: #6b7280;
             }
 
             .ops-footer-confidential {
                 font-size: 7pt;
-                font-weight: 600;
-                color: #94a3b8;
+                font-weight: 700;
+                color: #9ca3af;
                 text-transform: uppercase;
-                letter-spacing: 0.5px;
-                padding: 3px 8px;
-                background: #f8fafc !important;
-                border: 1px solid #e2e8f0;
-                border-radius: 3px;
-                text-align: right;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            /* ============================================
-               INFO BOX
-               ============================================ */
-            .ops-info-box {
-                background-color: #f8fafc !important;
-                padding: 14px 16px;
-                border-radius: 4px;
-                border-left: 4px solid;
-                margin-bottom: 18px;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .ops-info-label {
-                font-weight: 600;
-                color: #1e293b;
+                letter-spacing: 1px;
+                padding: 4px 10px;
+                background-color: #f3f4f6;
+                border: 1px solid #e5e7eb;
                 display: inline-block;
-                min-width: 90px;
-                font-size: 9pt;
-            }
-
-            .ops-info-value {
-                font-size: 9pt;
-                color: #64748b;
             }
 
             /* ============================================
-               MARGIN INDICATOR CARD
+               KPI CARDS (Cover Page)
                ============================================ */
-            .ops-margin-card {
-                background: #ffffff !important;
-                border: 1px solid #e2e8f0;
-                border-left-width: 4px;
-                padding: 16px 18px;
-                -webkit-print-color-adjust: exact !important;
+            .ops-kpi-grid {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 15px 0;
+                margin-bottom: 25px;
             }
 
-            .ops-margin-label {
-                font-size: 9pt;
+            .ops-kpi-card {
+                background-color: #ffffff;
+                border: 1px solid #e5e7eb;
+                border-left: 4px solid #000000;
+                padding: 18px 20px;
+                vertical-align: top;
+            }
+
+            .ops-kpi-card.revenue { border-left-color: #059669; }
+            .ops-kpi-card.expense { border-left-color: #DA291C; }
+            .ops-kpi-card.profit { border-left-color: #059669; }
+            .ops-kpi-card.loss { border-left-color: #DA291C; }
+            .ops-kpi-card.asset { border-left-color: #2563eb; }
+            .ops-kpi-card.neutral { border-left-color: #000000; }
+
+            .ops-kpi-label {
+                font-size: 8pt;
                 font-weight: 600;
-                color: #64748b;
+                color: #6b7280;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
 
-            .ops-margin-formula {
+            .ops-kpi-value {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 24pt;
+                font-weight: 700;
+                margin-top: 6px;
+                color: #000000;
+            }
+
+            .ops-kpi-value.revenue { color: #059669; }
+            .ops-kpi-value.expense { color: #DA291C; }
+            .ops-kpi-value.positive { color: #059669; }
+            .ops-kpi-value.negative { color: #DA291C; }
+
+            .ops-kpi-subtext {
                 font-size: 9pt;
-                color: #94a3b8;
+                color: #6b7280;
+                margin-top: 4px;
+            }
+
+            /* ============================================
+               COVER PAGE STYLING
+               ============================================ */
+            .ops-cover-page {
+                background-color: #ffffff;
+                min-height: 100%;
+            }
+
+            .ops-cover-header {
+                background-color: #000000;
+                padding: 30px 40px;
+                color: #ffffff;
+            }
+
+            .ops-cover-logo-initial {
+                display: inline-block;
+                width: 56px;
+                height: 56px;
+                background-color: #DA291C;
+                text-align: center;
+                line-height: 56px;
+                font-size: 28px;
+                font-weight: 700;
+                color: #ffffff;
+                vertical-align: middle;
+                margin-right: 15px;
+            }
+
+            .ops-cover-company-info {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .ops-cover-company-text {
+                font-size: 22pt;
+                font-weight: 700;
+                color: #ffffff;
+            }
+
+            .ops-cover-tagline {
+                font-size: 10pt;
+                color: #999999;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                margin-top: 4px;
+            }
+
+            .ops-cover-period-box {
+                background-color: #333333;
+                border: 1px solid #555555;
+                padding: 12px 20px;
+                text-align: right;
+            }
+
+            .ops-cover-period-label {
+                font-size: 8pt;
+                color: #999999;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .ops-cover-period-value {
+                font-size: 14pt;
+                font-weight: 600;
+                color: #ffffff;
                 margin-top: 3px;
             }
 
-            .ops-margin-value {
-                font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
-                font-size: 28pt;
-                font-weight: 700;
+            .ops-cover-accent {
+                height: 5px;
+                background-color: #c9a962;
+            }
+
+            .ops-cover-title-section {
+                padding: 50px 40px 40px 40px;
+                text-align: center;
+            }
+
+            .ops-cover-doc-type {
+                font-size: 10pt;
+                font-weight: 600;
+                color: #DA291C;
+                text-transform: uppercase;
+                letter-spacing: 3px;
+                margin-bottom: 12px;
+            }
+
+            .ops-cover-main-title {
+                font-size: 36pt;
+                font-weight: 300;
+                font-family: Georgia, 'Times New Roman', serif;
+                color: #000000;
+                text-transform: uppercase;
+                letter-spacing: 4px;
+                margin: 0;
+                line-height: 1.2;
+            }
+
+            .ops-cover-branch {
+                font-size: 12pt;
+                color: #6b7280;
+                margin-top: 15px;
+            }
+
+            .ops-cover-content {
+                padding: 0 40px 40px 40px;
+            }
+
+            .ops-cover-meta {
+                padding: 25px 40px;
+                border-top: 1px solid #e5e7eb;
+                margin-top: 40px;
             }
 
             /* ============================================
@@ -824,75 +794,290 @@
             .text-left { text-align: left !important; }
             .font-bold { font-weight: 700; }
             .font-semibold { font-weight: 600; }
+            .font-normal { font-weight: 400; }
+            .no-break { page-break-inside: avoid; }
 
-            /* Float-based column system */
-            .row { display: table; width: 100%; }
-            .row:after { content: ""; display: table; clear: both; }
-            .col-6 { display: table-cell; width: 50%; vertical-align: top; }
-            .col-4 { display: table-cell; width: 33.33%; vertical-align: top; }
-            .col-3 { display: table-cell; width: 25%; vertical-align: top; }
-            .col-12 { display: block; width: 100%; }
+            /* Font utilities */
+            .ops-font-tabular,
+            .ops-mono {
+                font-family: 'Consolas', 'Monaco', monospace;
+            }
+
+            .ops-uppercase {
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+            }
+
+            .ops-thin { font-weight: 300; }
+            .ops-bold { font-weight: 700; }
+            .ops-semibold { font-weight: 600; }
+
+            /* Page break control */
+            .page-break-before { page-break-before: always; }
+            .page-break-after { page-break-after: always; }
 
             /* Legacy compatibility */
-            .ops_table_matrix { width: 100%; border-collapse: collapse; font-size: 10pt; }
-            .ops_table_matrix th { padding: 8px; font-weight: 600; text-align: left; border-bottom: 2px solid #1e293b; }
-            .ops_table_matrix td { padding: 8px; border-bottom: 1px solid #f1f5f9; }
-            .ops-total-row { background-color: #f1f5f9 !important; font-weight: 600; -webkit-print-color-adjust: exact !important; }
-            .ops-grand-total { font-weight: 700; -webkit-print-color-adjust: exact !important; }
-            .ops-grand-total td { color: #ffffff !important; }
+            .ops_table_matrix { width: 100%; border-collapse: collapse; }
+            .ops-total-row { font-weight: 600; }
+            .ops-grand-total { font-weight: 700; }
 
-            /* Print Styles */
+            /* Print optimization */
             @media print {
+                body { background-color: #ffffff; }
                 .ops-no-print { display: none !important; }
-                body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            }
+
+            /* Two-column header compatibility */
+            .ops-header-split {
+                width: 100%;
+                padding-bottom: 15px;
+                margin-bottom: 0;
+            }
+
+            .ops-header-split-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .ops-header-left {
+                vertical-align: bottom;
+                text-align: left;
+                width: 50%;
+            }
+
+            .ops-header-right {
+                vertical-align: bottom;
+                text-align: right;
+                width: 50%;
+            }
+
+            .ops-company-name {
+                font-size: 18pt;
+                font-weight: 700;
+                color: #000000;
+                margin: 0;
+                line-height: 1.2;
+            }
+
+            .ops-department-name {
+                font-size: 9pt;
+                color: #666666;
+                margin-top: 4px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .ops-report-title {
+                font-size: 28pt;
+                font-weight: 300;
+                font-family: Georgia, 'Times New Roman', serif;
+                color: #DA291C;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                margin: 0;
+                line-height: 1.1;
+            }
+
+            .ops-report-subtitle {
+                font-size: 9pt;
+                color: #666666;
+                margin-top: 4px;
             }
         </style>
     </template>
 
-    <!-- OPS External Layout - Wrapper for all Matrix Reports -->
+    <!-- ============================================
+         LAYOUT WRAPPERS
+         ============================================ -->
+
+    <!-- OPS External Layout - Standard Wrapper -->
     <template id="ops_external_layout">
         <t t-call="ops_matrix_accounting.ops_report_styles"/>
         <t t-call="web.external_layout">
-            <div class="ops-report">
+            <div class="ops-report ops-meridian-page">
                 <t t-raw="0"/>
             </div>
         </t>
     </template>
 
-    <!-- OPS Minimal Layout - For reports that don't need full external layout -->
+    <!-- OPS Minimal Layout - No external header/footer -->
     <template id="ops_minimal_layout">
         <t t-call="ops_matrix_accounting.ops_report_styles"/>
-        <div class="ops-report">
+        <div class="ops-report ops-meridian-page">
             <t t-raw="0"/>
         </div>
     </template>
 
-    <!-- Helper template for standard report header -->
-    <template id="ops_report_header_template">
-        <div class="ops-report-header">
-            <h2><t t-esc="title"/></h2>
-            <p class="ops-subtitle" t-if="subtitle"><t t-esc="subtitle"/></p>
+    <!-- OPS Consulting Layout - Full standalone (Meridian) -->
+    <template id="ops_consulting_layout">
+        <t t-call="ops_matrix_accounting.ops_report_styles"/>
+        <div class="ops-meridian-page">
+            <t t-raw="0"/>
         </div>
     </template>
 
-    <!-- Helper template for info box -->
+    <!-- ============================================
+         HELPER TEMPLATES
+         ============================================ -->
+
+    <!-- Meridian Header Template (Table-Based) -->
+    <template id="ops_meridian_header_template">
+        <!-- Gold accent bar -->
+        <div style="height: 4px; background-color: #c9a962; margin-bottom: 20px;"></div>
+
+        <table width="100%" style="border-collapse: collapse;">
+            <tr>
+                <td width="60%" style="vertical-align: top;">
+                    <div style="font-size: 32px; font-weight: 300; font-family: Georgia, serif; margin: 0;">
+                        <t t-esc="report_title or 'Statement of Financial Position'"/>
+                    </div>
+                    <div style="font-size: 14px; font-weight: 600; color: #666666; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">
+                        <t t-esc="company_name or 'COMPANY'"/>
+                    </div>
+                </td>
+                <td width="40%" style="text-align: right; vertical-align: top;">
+                    <div style="font-size: 10px; color: #999999; text-transform: uppercase; letter-spacing: 1px;">
+                        <t t-if="date_to">AS AT <t t-esc="date_to"/></t>
+                        <t t-else="">AS AT CURRENT DATE</t>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div style="height: 2px; background-color: #000000; margin: 15px 0 20px 0;"></div>
+    </template>
+
+    <!-- Two-Column Header Template (Legacy Compatibility) -->
+    <template id="ops_header_split_template">
+        <div class="ops-header-split">
+            <table class="ops-header-split-table">
+                <tr>
+                    <td class="ops-header-left">
+                        <div class="ops-company-name"><t t-esc="company_name or 'Company'"/></div>
+                        <div class="ops-department-name"><t t-esc="department or 'Finance Department'"/></div>
+                    </td>
+                    <td class="ops-header-right">
+                        <div class="ops-report-title"><t t-esc="report_title or 'Report'"/></div>
+                        <div class="ops-report-subtitle"><t t-esc="report_subtitle or ''"/></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <hr class="ops-header-separator"/>
+    </template>
+
+    <!-- Accounting Equation Bar (Balance Sheet) -->
+    <template id="ops_equation_bar_template">
+        <div style="text-align: center; padding: 20px; border-bottom: 1px solid #eeeeee; margin-bottom: 25px;">
+            <span style="font-size: 20px; font-family: Georgia, serif;">Total Assets</span>
+            <span style="color: #cccccc; margin: 0 15px;">=</span>
+            <span style="font-size: 20px; font-family: Georgia, serif;">Equity</span>
+            <span style="color: #cccccc; margin: 0 15px;">+</span>
+            <span style="font-size: 20px; font-family: Georgia, serif;">Liabilities</span>
+        </div>
+    </template>
+
+    <!-- Meta Info Bar Template -->
+    <template id="ops_meta_bar_template">
+        <div class="ops-meta-bar">
+            <table>
+                <tr>
+                    <td style="width: 25%;">
+                        <span class="ops-meta-label">Period:</span><br/>
+                        <span class="ops-meta-value">
+                            <t t-if="date_from and date_to">
+                                <t t-esc="date_from"/> to <t t-esc="date_to"/>
+                            </t>
+                            <t t-else="">
+                                As of <t t-esc="date_to or 'Current'"/>
+                            </t>
+                        </span>
+                    </td>
+                    <td style="width: 25%;">
+                        <span class="ops-meta-label">Company:</span><br/>
+                        <span class="ops-meta-value"><t t-esc="company_name or 'N/A'"/></span>
+                    </td>
+                    <td style="width: 25%;">
+                        <span class="ops-meta-label">Target Moves:</span><br/>
+                        <span class="ops-meta-value"><t t-esc="target_move or 'Posted'"/></span>
+                    </td>
+                    <td style="width: 25%; text-align: right;">
+                        <span class="ops-meta-label">Generated:</span><br/>
+                        <span class="ops-meta-value"><t t-esc="generated_date or ''"/></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+    <!-- Number Formatting Helper -->
+    <template id="ops_format_amount">
+        <t t-if="value == 0">
+            <span class="ops-value-zero">0.00</span>
+        </t>
+        <t t-elif="value &lt; 0">
+            <span class="ops-value-negative">(<t t-esc="'{:,.2f}'.format(abs(value))"/>)</span>
+        </t>
+        <t t-else="">
+            <span class="ops-value-positive"><t t-esc="'{:,.2f}'.format(value)"/></span>
+        </t>
+    </template>
+
+    <!-- Report Footer Template -->
+    <template id="ops_report_footer_template">
+        <div class="ops-page-footer">
+            <table style="width: 100%;">
+                <tr>
+                    <td class="ops-footer-text">
+                        Prepared by: <t t-esc="prepared_by or 'System'"/> |
+                        Generated: <t t-esc="generated_date or ''"/>
+                    </td>
+                    <td style="text-align: right;">
+                        <span class="ops-footer-confidential">Confidential</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+    <!-- Notes Section Template -->
+    <template id="ops_notes_template">
+        <div class="ops-notes-section">
+            <div class="ops-notes-title">Notes to Financial Statements</div>
+            <ul class="ops-notes-list">
+                <li>This report was generated by the OPS Matrix Financial Reporting System</li>
+                <li>All figures are presented in the company's base currency<t t-if="currency"> (<t t-esc="currency"/>)</t></li>
+                <li>Values of zero are displayed as "0.00" for transparency</li>
+                <li>Negative values are shown in red with parentheses</li>
+                <li>Target Moves: <t t-esc="target_move or 'Posted entries only'"/></li>
+            </ul>
+        </div>
+    </template>
+
+    <!-- Legacy header template (for backwards compatibility) -->
+    <template id="ops_report_header_template">
+        <div class="ops-header-split">
+            <h2 style="margin: 0; font-size: 18pt;"><t t-esc="title"/></h2>
+            <p style="margin: 5px 0 0 0; color: #666666;" t-if="subtitle"><t t-esc="subtitle"/></p>
+        </div>
+    </template>
+
     <template id="ops_info_box_template">
-        <div class="ops-info-box">
+        <div class="ops-meta-bar">
             <table style="width: 100%;">
                 <tr>
                     <td style="width: 50%; vertical-align: top;">
-                        <span class="ops-info-label">Period:</span>
-                        <span class="ops-info-value"><t t-esc="date_from"/> to <t t-esc="date_to"/></span><br/>
-                        <span class="ops-info-label">Company:</span>
-                        <span class="ops-info-value"><t t-esc="company.name if company else '-'"/></span>
+                        <span class="ops-meta-label">Period:</span>
+                        <span class="ops-meta-value"><t t-esc="date_from"/> to <t t-esc="date_to"/></span><br/>
+                        <span class="ops-meta-label">Company:</span>
+                        <span class="ops-meta-value"><t t-esc="company.name if company else '-'"/></span>
                     </td>
                     <td style="width: 50%; vertical-align: top; text-align: right;">
-                        <span class="ops-info-label">Generated:</span>
-                        <span class="ops-info-value"><t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/></span><br/>
+                        <span class="ops-meta-label">Generated:</span>
+                        <span class="ops-meta-value"><t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/></span><br/>
                         <t t-if="extra_info">
-                            <span class="ops-info-label" t-esc="extra_info_label"/>:
-                            <span class="ops-info-value" t-esc="extra_info"/>
+                            <span class="ops-meta-label" t-esc="extra_info_label"/>:
+                            <span class="ops-meta-value" t-esc="extra_info"/>
                         </t>
                     </td>
                 </tr>
@@ -900,36 +1085,6 @@
         </div>
     </template>
 
-    <!-- Helper template for report footer -->
-    <template id="ops_report_footer_template">
-        <div class="ops-report-footer">
-            <p class="ops-footer-note">
-                <strong>Audit Trail:</strong>
-                <t t-if="footer_text" t-esc="footer_text"/>
-                <t t-else="">All data shown above is sourced from posted journal entries in the accounting system.</t>
-            </p>
-            <table style="width: 100%; margin-top: 6px;">
-                <tr>
-                    <td style="width: 50%; font-size: 8pt; color: #94a3b8;">
-                        Page <span class="page"/> of <span class="topage"/>
-                    </td>
-                    <td style="width: 50%; text-align: right; font-size: 8pt; color: #94a3b8; font-style: italic;">
-                        Generated by OPS Matrix
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </template>
-
-    <!-- Number formatting helper with smart coloring -->
-    <template id="ops_format_number">
-        <t t-set="num_class" t-value="'ops-value-positive' if value > 0 else 'ops-value-negative' if value &lt; 0 else 'ops-value-zero'"/>
-        <span t-attf-class="ops-mono #{num_class}">
-            <t t-esc="'{:,.2f}'.format(value)"/>
-        </span>
-    </template>
-
-    <!-- Legacy header template -->
     <template id="ops_legacy_header" inherit_id="ops_matrix_accounting.ops_report_header_template" primary="True">
     </template>
 
