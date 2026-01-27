@@ -567,20 +567,16 @@ class OpsTreasuryReportWizard(models.TransientModel):
         }
 
     def _return_report_action(self, data):
-        """Return appropriate report action."""
-        report_names = {
-            'registry': 'ops_matrix_accounting.report_treasury_registry',
-            'maturity': 'ops_matrix_accounting.report_treasury_maturity',
-            'on_hand': 'ops_matrix_accounting.report_treasury_on_hand',
+        """Return appropriate report action for PDF generation."""
+        report_refs = {
+            'registry': 'ops_matrix_accounting.report_treasury_registry_pdf',
+            'maturity': 'ops_matrix_accounting.report_treasury_maturity_pdf',
+            'on_hand': 'ops_matrix_accounting.report_treasury_on_hand_pdf',
         }
 
-        return {
-            'type': 'ir.actions.report',
-            'report_name': report_names.get(self.report_type, report_names['registry']),
-            'report_type': 'qweb-pdf',
-            'data': data,
-            'config': False,
-        }
+        report_ref = report_refs.get(self.report_type, report_refs['registry'])
+
+        return self.env.ref(report_ref).report_action(self)
 
     # ============================================
     # ACTION METHODS

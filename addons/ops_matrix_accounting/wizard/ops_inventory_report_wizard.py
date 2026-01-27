@@ -821,27 +821,17 @@ class OpsInventoryReportWizard(models.TransientModel):
         }
 
     def _return_report_action(self, data):
-        """Return appropriate report action."""
-        # For now, return a tree view of stock.quant with filters
-        # In future, this can be extended to PDF/Excel reports
-
-        domain = self._build_quant_domain()
-        if self.ops_branch_ids:
-            branch_locations = self._get_branch_locations()
-            if branch_locations:
-                domain.append(('location_id', 'in', branch_locations))
-
-        return {
-            'name': self.report_title,
-            'type': 'ir.actions.act_window',
-            'res_model': 'stock.quant',
-            'view_mode': 'list,pivot,graph',
-            'domain': domain,
-            'context': {
-                'search_default_internal_loc': 1,
-                'report_data': data,
-            },
+        """Return appropriate report action for PDF generation."""
+        report_names = {
+            'valuation': 'ops_matrix_accounting.report_inventory_valuation_pdf',
+            'aging': 'ops_matrix_accounting.report_inventory_aging_pdf',
+            'negative': 'ops_matrix_accounting.report_inventory_negative_pdf',
+            'movement': 'ops_matrix_accounting.report_inventory_movement_pdf',
         }
+
+        report_name = report_names.get(self.report_type, report_names['valuation'])
+
+        return self.env.ref(report_name).report_action(self)
 
     # ============================================
     # ACTION METHODS

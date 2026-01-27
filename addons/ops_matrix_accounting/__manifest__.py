@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.8.0.0",
+    "version": "19.0.9.0.0",
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -21,12 +21,10 @@
         "account",
         "stock",
         "ops_matrix_core",
-        "report_xlsx",
         "analytic",
     ],
-    "external_dependencies": {
-        "python": ["xlsxwriter"],
-    },
+    # Note: report_xlsx dependency removed (module unavailable)
+    # Excel export features will use xlsxwriter directly when needed
     "data": [
         # Security
         "security/ir.model.access.csv",
@@ -75,6 +73,8 @@
         "report/ops_consolidated_report_templates.xml",
         "report/ops_financial_report_template.xml",
         "report/ops_general_ledger_template.xml",
+        "report/ops_inventory_report_templates.xml",  # Inventory Intelligence Reports
+        "report/ops_treasury_report_templates.xml",   # Treasury Intelligence Reports
 
         # Menus
         # "views/ops_report_menu.xml",  # Disabled - references missing model

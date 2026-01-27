@@ -1,0 +1,720 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        OPS Matrix Treasury Report Templates - Premium Executive Suite
+        ===============================================================
+        v19.0.1: Treasury Intelligence Engine PDF Reports
+
+        DESIGN PHILOSOPHY:
+        - Dynamic colors from company primary_color/secondary_color
+        - Smart value coloring: Green=Inbound, Orange=Outbound, Blue=Net
+        - Executive dashboard styling with KPI cards
+        - TABLE-BASED layouts (wkhtmltopdf compatible)
+        - Georgia serif for numbers, Arial for text
+
+        REPORTS:
+        1. PDC Registry Report
+        2. PDC Maturity Analysis Report
+        3. PDCs in Hand Report
+    -->
+
+    <!-- ========================================
+         PDC REGISTRY REPORT
+         ======================================== -->
+    <record id="report_treasury_registry_pdf" model="ir.actions.report">
+        <field name="name">PDC Registry Report</field>
+        <field name="model">ops.treasury.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_treasury_registry_document</field>
+        <field name="report_file">ops_matrix_accounting.report_treasury_registry_document</field>
+        <field name="binding_model_id" ref="model_ops_treasury_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_treasury_registry_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="wizard">
+                <t t-call="ops_matrix_accounting.ops_external_layout">
+                    <t t-set="data" t-value="wizard._get_report_data()"/>
+
+                    <!-- Dynamic Company Colors -->
+                    <t t-set="company" t-value="wizard.company_id or env.company"/>
+                    <t t-set="primary_color" t-value="company.primary_color or '#1a2744'"/>
+                    <t t-set="secondary_color" t-value="company.secondary_color or '#3b82f6'"/>
+                    <t t-set="primary_dark" t-value="'#0a1628'"/>
+                    <t t-set="gold_color" t-value="'#C9A962'"/>
+                    <t t-set="inbound_color" t-value="'#059669'"/>
+                    <t t-set="outbound_color" t-value="'#d97706'"/>
+
+                    <div class="page ops-report-container" style="background: #ffffff !important; -webkit-print-color-adjust: exact !important;">
+
+                        <!-- Executive Header Band -->
+                        <div t-attf-style="background: #{primary_dark} !important; padding: 20px 25px !important; margin: -10mm -10mm 0 -10mm !important; -webkit-print-color-adjust: exact !important;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="vertical-align: middle;">
+                                        <span t-attf-style="display: inline-block; width: 50px; height: 50px; background: linear-gradient(135deg, #{primary_color} 0%, #{secondary_color} 100%); border-radius: 10px; text-align: center; line-height: 50px; font-size: 24px; font-weight: bold; color: #ffffff; margin-right: 15px; -webkit-print-color-adjust: exact !important;">
+                                            <t t-esc="(data.get('company_name', 'C') or 'C')[0]"/>
+                                        </span>
+                                        <span style="display: inline-block; vertical-align: middle;">
+                                            <span style="display: block; font-size: 20px; font-weight: 700; color: #ffffff;"><t t-esc="data.get('company_name', 'Company')"/></span>
+                                            <span style="display: block; font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px;">Treasury Intelligence</span>
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 15px; display: inline-block;">
+                                            <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Net Position</div>
+                                            <t t-set="net_pos" t-value="data.get('totals', {}).get('net_position', 0)"/>
+                                            <div t-attf-style="font-size: 16px; font-weight: 600; color: #{net_pos >= 0 and '#10b981' or '#f87171'};">
+                                                <t t-if="net_pos &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(net_pos))"/>)</t>
+                                                <t t-else=""><t t-esc="'{:,.0f}'.format(net_pos)"/></t>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Gold Accent Bar -->
+                        <div t-attf-style="height: 4px; background: linear-gradient(90deg, #{gold_color} 0%, #{inbound_color} 50%, #{outbound_color} 100%); margin: 0 -10mm 20px -10mm; -webkit-print-color-adjust: exact !important;"></div>
+
+                        <!-- Report Title Section -->
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <h2 t-attf-style="font-size: 28px; font-weight: 700; color: #{primary_color}; margin: 0 0 8px 0;">PDC Registry</h2>
+                            <p style="font-size: 14px; color: #64748b; margin: 0;">Post-Dated Check Management Report</p>
+                        </div>
+
+                        <!-- KPI Summary Cards -->
+                        <div style="margin-bottom: 25px;">
+                            <table style="width: 100%; border-collapse: separate; border-spacing: 10px 0;">
+                                <tr>
+                                    <td style="width: 25%; vertical-align: top;">
+                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{inbound_color}; -webkit-print-color-adjust: exact !important;">
+                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Receivable PDCs</div>
+                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{inbound_color}; font-family: Georgia, serif;"><t t-esc="'{:,.0f}'.format(data.get('totals', {}).get('inbound_total', 0))"/></div>
+                                            <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;"><t t-esc="data.get('inbound', {}).get('count', 0)"/> checks</div>
+                                        </div>
+                                    </td>
+                                    <td style="width: 25%; vertical-align: top;">
+                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{outbound_color}; -webkit-print-color-adjust: exact !important;">
+                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Payable PDCs</div>
+                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{outbound_color}; font-family: Georgia, serif;"><t t-esc="'{:,.0f}'.format(data.get('totals', {}).get('outbound_total', 0))"/></div>
+                                            <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;"><t t-esc="data.get('outbound', {}).get('count', 0)"/> checks</div>
+                                        </div>
+                                    </td>
+                                    <td style="width: 25%; vertical-align: top;">
+                                        <t t-set="net_pos" t-value="data.get('totals', {}).get('net_position', 0)"/>
+                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{net_pos >= 0 and '#059669' or '#dc2626'}; -webkit-print-color-adjust: exact !important;">
+                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Net Position</div>
+                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{net_pos >= 0 and '#059669' or '#dc2626'}; font-family: Georgia, serif;">
+                                                <t t-if="net_pos &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(net_pos))"/>)</t>
+                                                <t t-else=""><t t-esc="'{:,.0f}'.format(net_pos)"/></t>
+                                            </div>
+                                            <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;">Inbound - Outbound</div>
+                                        </div>
+                                    </td>
+                                    <td style="width: 25%; vertical-align: top;">
+                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{secondary_color}; -webkit-print-color-adjust: exact !important;">
+                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Total Checks</div>
+                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{secondary_color}; font-family: Georgia, serif;"><t t-esc="data.get('totals', {}).get('total_count', 0)"/></div>
+                                            <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;">All PDCs</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- INBOUND PDCs Section -->
+                        <t t-if="data.get('pdc_type') in ('inbound', 'both') and data.get('inbound', {}).get('data')">
+                            <div t-attf-style="padding: 10px 14px; background-color: #{inbound_color} !important; color: #ffffff; font-weight: 700; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 15px; -webkit-print-color-adjust: exact !important;">
+                                <table width="100%">
+                                    <tr>
+                                        <td>Receivable PDCs (From Customers)</td>
+                                        <td style="text-align: right; font-family: Georgia, serif;"><t t-esc="'{:,.0f}'.format(data.get('inbound', {}).get('total', 0))"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                                <thead>
+                                    <tr style="background: #ecfdf5; -webkit-print-color-adjust: exact !important;">
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Reference</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Partner</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Check #</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Bank</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Maturity</th>
+                                        <th style="padding: 8px 6px; text-align: right; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Amount</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="data.get('inbound', {}).get('data', [])" t-as="pdc">
+                                        <tr t-attf-style="background: #{pdc_odd and '#ffffff' or '#f0fdf4'}; -webkit-print-color-adjust: exact !important;">
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; color: #1e293b; font-weight: 500;"><t t-esc="pdc.get('name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; color: #1e293b;"><t t-esc="pdc.get('partner_name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; color: #64748b;"><t t-esc="pdc.get('check_number', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; color: #64748b;"><t t-esc="pdc.get('bank_name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; text-align: center; color: #64748b;"><t t-esc="pdc.get('maturity_date', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; text-align: right; font-family: Georgia, serif; font-weight: 600; color: #059669;">
+                                                <t t-esc="'{:,.2f}'.format(pdc.get('amount', 0))"/>
+                                            </td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; text-align: center;">
+                                                <t t-set="state" t-value="pdc.get('state', 'draft')"/>
+                                                <t t-set="state_color" t-value="state == 'cleared' and '#059669' or state == 'bounced' and '#dc2626' or state == 'deposited' and '#3b82f6' or '#d97706'"/>
+                                                <span t-attf-style="display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8px; font-weight: 600; color: #ffffff; background: #{state_color}; -webkit-print-color-adjust: exact !important;">
+                                                    <t t-esc="pdc.get('state_label', state)"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background: #065f46; -webkit-print-color-adjust: exact !important;">
+                                        <td colspan="5" style="padding: 10px 6px; text-align: right; font-weight: 700; color: #ffffff; border-top: 2px solid #059669;">SUBTOTAL RECEIVABLE</td>
+                                        <td style="padding: 10px 6px; text-align: right; font-weight: 700; color: #ffffff; border-top: 2px solid #059669; font-family: Georgia, serif;">
+                                            <t t-esc="'{:,.2f}'.format(data.get('inbound', {}).get('total', 0))"/>
+                                        </td>
+                                        <td style="border-top: 2px solid #059669;"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </t>
+
+                        <!-- OUTBOUND PDCs Section -->
+                        <t t-if="data.get('pdc_type') in ('outbound', 'both') and data.get('outbound', {}).get('data')">
+                            <div t-attf-style="padding: 10px 14px; background-color: #{outbound_color} !important; color: #ffffff; font-weight: 700; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 20px; -webkit-print-color-adjust: exact !important;">
+                                <table width="100%">
+                                    <tr>
+                                        <td>Payable PDCs (To Vendors)</td>
+                                        <td style="text-align: right; font-family: Georgia, serif;"><t t-esc="'{:,.0f}'.format(data.get('outbound', {}).get('total', 0))"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                                <thead>
+                                    <tr style="background: #fffbeb; -webkit-print-color-adjust: exact !important;">
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Reference</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Partner</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Check #</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Bank</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Maturity</th>
+                                        <th style="padding: 8px 6px; text-align: right; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Amount</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="data.get('outbound', {}).get('data', [])" t-as="pdc">
+                                        <tr t-attf-style="background: #{pdc_odd and '#ffffff' or '#fffbeb'}; -webkit-print-color-adjust: exact !important;">
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; color: #1e293b; font-weight: 500;"><t t-esc="pdc.get('name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; color: #1e293b;"><t t-esc="pdc.get('partner_name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; color: #64748b;"><t t-esc="pdc.get('check_number', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; color: #64748b;"><t t-esc="pdc.get('bank_name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; text-align: center; color: #64748b;"><t t-esc="pdc.get('maturity_date', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; text-align: right; font-family: Georgia, serif; font-weight: 600; color: #d97706;">
+                                                <t t-esc="'{:,.2f}'.format(pdc.get('amount', 0))"/>
+                                            </td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; text-align: center;">
+                                                <t t-set="state" t-value="pdc.get('state', 'draft')"/>
+                                                <t t-set="state_color" t-value="state == 'cleared' and '#059669' or state == 'presented' and '#3b82f6' or state == 'issued' and '#d97706' or '#94a3b8'"/>
+                                                <span t-attf-style="display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8px; font-weight: 600; color: #ffffff; background: #{state_color}; -webkit-print-color-adjust: exact !important;">
+                                                    <t t-esc="pdc.get('state_label', state)"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background: #92400e; -webkit-print-color-adjust: exact !important;">
+                                        <td colspan="5" style="padding: 10px 6px; text-align: right; font-weight: 700; color: #ffffff; border-top: 2px solid #d97706;">SUBTOTAL PAYABLE</td>
+                                        <td style="padding: 10px 6px; text-align: right; font-weight: 700; color: #ffffff; border-top: 2px solid #d97706; font-family: Georgia, serif;">
+                                            <t t-esc="'{:,.2f}'.format(data.get('outbound', {}).get('total', 0))"/>
+                                        </td>
+                                        <td style="border-top: 2px solid #d97706;"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </t>
+
+                        <!-- Net Position Summary -->
+                        <t t-set="net_pos" t-value="data.get('totals', {}).get('net_position', 0)"/>
+                        <div t-attf-style="margin-top: 25px; padding: 20px 25px; background-color: #{net_pos >= 0 and '#059669' or '#dc2626'} !important; color: #ffffff; -webkit-print-color-adjust: exact !important;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 35%; vertical-align: middle;">
+                                        <div style="font-size: 9pt; font-weight: 600; color: #ffffff; text-transform: uppercase; letter-spacing: 1px;">Net PDC Position</div>
+                                        <div style="font-size: 9pt; color: rgba(255,255,255,0.8); margin-top: 3px;">Receivable - Payable</div>
+                                    </td>
+                                    <td style="width: 40%; text-align: center; vertical-align: middle;">
+                                        <div style="font-family: Georgia, serif; font-size: 28pt; font-weight: 700; color: #ffffff;">
+                                            <t t-if="net_pos &lt; 0">(<t t-esc="'{:,.2f}'.format(abs(net_pos))"/>)</t>
+                                            <t t-else=""><t t-esc="'{:,.2f}'.format(net_pos)"/></t>
+                                        </div>
+                                    </td>
+                                    <td style="width: 25%; text-align: right; vertical-align: middle;">
+                                        <div style="background-color: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); padding: 10px 16px; text-align: center; display: inline-block;">
+                                            <div style="font-size: 11pt; font-weight: 600; color: #ffffff;">
+                                                <t t-if="net_pos >= 0">Favorable</t>
+                                                <t t-else="">Unfavorable</t>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Report Footer -->
+                        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                            <table style="width: 100%; font-size: 10px; color: #64748b;">
+                                <tr>
+                                    <td style="width: 70%;">
+                                        <strong style="color: #1e293b;">Notes:</strong> Net Position = Receivable PDCs - Payable PDCs. Positive = more incoming funds.
+                                    </td>
+                                    <td style="width: 30%; text-align: right;">
+                                        <span style="color: #94a3b8;">Generated by OPS Matrix</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- ========================================
+         PDC MATURITY ANALYSIS REPORT
+         ======================================== -->
+    <record id="report_treasury_maturity_pdf" model="ir.actions.report">
+        <field name="name">PDC Maturity Analysis</field>
+        <field name="model">ops.treasury.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_treasury_maturity_document</field>
+        <field name="report_file">ops_matrix_accounting.report_treasury_maturity_document</field>
+        <field name="binding_model_id" ref="model_ops_treasury_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_treasury_maturity_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="wizard">
+                <t t-call="ops_matrix_accounting.ops_external_layout">
+                    <t t-set="data" t-value="wizard._get_report_data()"/>
+
+                    <!-- Dynamic Company Colors -->
+                    <t t-set="company" t-value="wizard.company_id or env.company"/>
+                    <t t-set="primary_color" t-value="company.primary_color or '#1a2744'"/>
+                    <t t-set="secondary_color" t-value="company.secondary_color or '#3b82f6'"/>
+                    <t t-set="primary_dark" t-value="'#0a1628'"/>
+                    <t t-set="gold_color" t-value="'#C9A962'"/>
+                    <t t-set="inbound_color" t-value="'#059669'"/>
+                    <t t-set="outbound_color" t-value="'#d97706'"/>
+
+                    <!-- Maturity color scale -->
+                    <t t-set="maturity_colors" t-value="['#dc2626', '#059669', '#3b82f6', '#8b5cf6', '#d97706', '#ec4899', '#94a3b8']"/>
+
+                    <div class="page ops-report-container" style="background: #ffffff !important; -webkit-print-color-adjust: exact !important;">
+
+                        <!-- Executive Header Band -->
+                        <div t-attf-style="background: #{primary_dark} !important; padding: 20px 25px !important; margin: -10mm -10mm 0 -10mm !important; -webkit-print-color-adjust: exact !important;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="vertical-align: middle;">
+                                        <span t-attf-style="display: inline-block; width: 50px; height: 50px; background: linear-gradient(135deg, #{primary_color} 0%, #{secondary_color} 100%); border-radius: 10px; text-align: center; line-height: 50px; font-size: 24px; font-weight: bold; color: #ffffff; margin-right: 15px; -webkit-print-color-adjust: exact !important;">
+                                            <t t-esc="(data.get('company_name', 'C') or 'C')[0]"/>
+                                        </span>
+                                        <span style="display: inline-block; vertical-align: middle;">
+                                            <span style="display: block; font-size: 20px; font-weight: 700; color: #ffffff;"><t t-esc="data.get('company_name', 'Company')"/></span>
+                                            <span style="display: block; font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px;">PDC Maturity Analysis</span>
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 15px; display: inline-block;">
+                                            <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">As of Date</div>
+                                            <div style="font-size: 14px; font-weight: 600; color: #ffffff;"><t t-esc="data.get('as_of_date', '')"/></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Gold Accent Bar -->
+                        <div t-attf-style="height: 4px; background: linear-gradient(90deg, #dc2626 0%, #{gold_color} 25%, #{inbound_color} 50%, #{secondary_color} 75%, #94a3b8 100%); margin: 0 -10mm 20px -10mm; -webkit-print-color-adjust: exact !important;"></div>
+
+                        <!-- Report Title Section -->
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <h2 t-attf-style="font-size: 28px; font-weight: 700; color: #{primary_color}; margin: 0 0 8px 0;">PDC Maturity Analysis</h2>
+                            <p style="font-size: 14px; color: #64748b; margin: 0;">Cash Flow Projection from Post-Dated Checks</p>
+                        </div>
+
+                        <!-- KPI Summary Cards -->
+                        <div style="margin-bottom: 25px;">
+                            <table style="width: 100%; border-collapse: separate; border-spacing: 10px 0;">
+                                <tr>
+                                    <td style="width: 33%; vertical-align: top;">
+                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{inbound_color}; -webkit-print-color-adjust: exact !important;">
+                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Total Inbound</div>
+                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{inbound_color}; font-family: Georgia, serif;"><t t-esc="'{:,.0f}'.format(data.get('totals', {}).get('inbound_total', 0))"/></div>
+                                        </div>
+                                    </td>
+                                    <td style="width: 33%; vertical-align: top;">
+                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{outbound_color}; -webkit-print-color-adjust: exact !important;">
+                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Total Outbound</div>
+                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{outbound_color}; font-family: Georgia, serif;"><t t-esc="'{:,.0f}'.format(data.get('totals', {}).get('outbound_total', 0))"/></div>
+                                        </div>
+                                    </td>
+                                    <td style="width: 33%; vertical-align: top;">
+                                        <t t-set="net_pos" t-value="data.get('totals', {}).get('net_position', 0)"/>
+                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{net_pos >= 0 and '#059669' or '#dc2626'}; -webkit-print-color-adjust: exact !important;">
+                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Net Cash Flow</div>
+                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{net_pos >= 0 and '#059669' or '#dc2626'}; font-family: Georgia, serif;">
+                                                <t t-if="net_pos &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(net_pos))"/>)</t>
+                                                <t t-else=""><t t-esc="'{:,.0f}'.format(net_pos)"/></t>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Maturity Buckets Table -->
+                        <div style="padding: 10px 14px; background-color: #1a1a1a !important; color: #ffffff; font-weight: 700; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.5px; -webkit-print-color-adjust: exact !important;">
+                            <table width="100%">
+                                <tr>
+                                    <td>PDC Maturity Schedule</td>
+                                    <td style="text-align: right; font-family: Georgia, serif;">Period: <t t-esc="data.get('period_length', 30)"/> days</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                            <thead>
+                                <tr style="background: #f1f5f9; -webkit-print-color-adjust: exact !important;">
+                                    <th style="padding: 10px 8px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Period</th>
+                                    <th style="padding: 10px 8px; text-align: right; font-weight: 600; color: #059669; border-bottom: 2px solid #e2e8f0;">Inbound</th>
+                                    <th style="padding: 10px 8px; text-align: center; font-weight: 600; color: #059669; border-bottom: 2px solid #e2e8f0;">#</th>
+                                    <th style="padding: 10px 8px; text-align: right; font-weight: 600; color: #d97706; border-bottom: 2px solid #e2e8f0;">Outbound</th>
+                                    <th style="padding: 10px 8px; text-align: center; font-weight: 600; color: #d97706; border-bottom: 2px solid #e2e8f0;">#</th>
+                                    <th style="padding: 10px 8px; text-align: right; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Net Flow</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="data.get('aging_buckets', [])" t-as="bucket">
+                                    <t t-set="bucket_color" t-value="bucket_index &lt; len(maturity_colors) and maturity_colors[bucket_index] or '#94a3b8'"/>
+                                    <t t-set="net_flow" t-value="bucket.get('inbound', 0) - bucket.get('outbound', 0)"/>
+
+                                    <tr t-attf-style="background: #{bucket_odd and '#ffffff' or '#f8fafc'}; -webkit-print-color-adjust: exact !important;">
+                                        <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">
+                                            <span t-attf-style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #{bucket_color}; margin-right: 8px; -webkit-print-color-adjust: exact !important;"></span>
+                                            <t t-esc="bucket.get('label', '-')"/>
+                                        </td>
+                                        <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-family: Georgia, serif; color: #059669; font-weight: 500;">
+                                            <t t-if="bucket.get('inbound', 0) == 0"><span style="color: #94a3b8;">—</span></t>
+                                            <t t-else=""><t t-esc="'{:,.0f}'.format(bucket.get('inbound', 0))"/></t>
+                                        </td>
+                                        <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center; color: #64748b;">
+                                            <t t-esc="bucket.get('inbound_count', 0)"/>
+                                        </td>
+                                        <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-family: Georgia, serif; color: #d97706; font-weight: 500;">
+                                            <t t-if="bucket.get('outbound', 0) == 0"><span style="color: #94a3b8;">—</span></t>
+                                            <t t-else=""><t t-esc="'{:,.0f}'.format(bucket.get('outbound', 0))"/></t>
+                                        </td>
+                                        <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center; color: #64748b;">
+                                            <t t-esc="bucket.get('outbound_count', 0)"/>
+                                        </td>
+                                        <td t-attf-style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-family: Georgia, serif; font-weight: 700; color: #{net_flow >= 0 and '#059669' or '#dc2626'};">
+                                            <t t-if="net_flow == 0"><span style="color: #94a3b8;">—</span></t>
+                                            <t t-elif="net_flow &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(net_flow))"/>)</t>
+                                            <t t-else=""><t t-esc="'{:,.0f}'.format(net_flow)"/></t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background: #1a1a1a; -webkit-print-color-adjust: exact !important;">
+                                    <td style="padding: 12px 8px; font-weight: 700; color: #ffffff; border-top: 2px solid #000;">TOTAL</td>
+                                    <td style="padding: 12px 8px; text-align: right; font-weight: 700; color: #10b981; border-top: 2px solid #000; font-family: Georgia, serif;">
+                                        <t t-esc="'{:,.0f}'.format(data.get('totals', {}).get('inbound_total', 0))"/>
+                                    </td>
+                                    <td style="border-top: 2px solid #000;"></td>
+                                    <td style="padding: 12px 8px; text-align: right; font-weight: 700; color: #fbbf24; border-top: 2px solid #000; font-family: Georgia, serif;">
+                                        <t t-esc="'{:,.0f}'.format(data.get('totals', {}).get('outbound_total', 0))"/>
+                                    </td>
+                                    <td style="border-top: 2px solid #000;"></td>
+                                    <t t-set="net_total" t-value="data.get('totals', {}).get('net_position', 0)"/>
+                                    <td t-attf-style="padding: 12px 8px; text-align: right; font-weight: 700; color: #{net_total >= 0 and '#10b981' or '#f87171'}; border-top: 2px solid #000; font-family: Georgia, serif;">
+                                        <t t-if="net_total &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(net_total))"/>)</t>
+                                        <t t-else=""><t t-esc="'{:,.0f}'.format(net_total)"/></t>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- Overdue Alert -->
+                        <t t-set="overdue_bucket" t-value="data.get('aging_buckets', [{}])[0] if data.get('aging_buckets') else {}"/>
+                        <t t-if="overdue_bucket.get('label', '').lower() == 'overdue' and (overdue_bucket.get('inbound', 0) > 0 or overdue_bucket.get('outbound', 0) > 0)">
+                            <div style="padding: 14px 18px; margin: 20px 0; border-left: 4px solid #dc2626; background-color: #fef2f2; color: #991b1b; font-size: 10pt; -webkit-print-color-adjust: exact !important;">
+                                <strong>Overdue Alert:</strong>
+                                <t t-if="overdue_bucket.get('inbound', 0) > 0">
+                                    <t t-esc="'{:,.0f}'.format(overdue_bucket.get('inbound', 0))"/> in overdue receivable PDCs.
+                                </t>
+                                <t t-if="overdue_bucket.get('outbound', 0) > 0">
+                                    <t t-esc="'{:,.0f}'.format(overdue_bucket.get('outbound', 0))"/> in overdue payable PDCs.
+                                </t>
+                            </div>
+                        </t>
+
+                        <!-- Report Footer -->
+                        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                            <table style="width: 100%; font-size: 10px; color: #64748b;">
+                                <tr>
+                                    <td style="width: 70%;">
+                                        <strong style="color: #1e293b;">Notes:</strong> Net Flow = Inbound - Outbound. Positive net flow indicates expected cash inflow.
+                                    </td>
+                                    <td style="width: 30%; text-align: right;">
+                                        <span style="color: #94a3b8;">Generated by OPS Matrix</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- ========================================
+         PDCs IN HAND REPORT
+         ======================================== -->
+    <record id="report_treasury_on_hand_pdf" model="ir.actions.report">
+        <field name="name">PDCs in Hand</field>
+        <field name="model">ops.treasury.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_treasury_on_hand_document</field>
+        <field name="report_file">ops_matrix_accounting.report_treasury_on_hand_document</field>
+        <field name="binding_model_id" ref="model_ops_treasury_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_treasury_on_hand_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="wizard">
+                <t t-call="ops_matrix_accounting.ops_external_layout">
+                    <t t-set="data" t-value="wizard._get_report_data()"/>
+
+                    <!-- Dynamic Company Colors -->
+                    <t t-set="company" t-value="wizard.company_id or env.company"/>
+                    <t t-set="primary_color" t-value="company.primary_color or '#1a2744'"/>
+                    <t t-set="secondary_color" t-value="company.secondary_color or '#3b82f6'"/>
+                    <t t-set="primary_dark" t-value="'#0a1628'"/>
+                    <t t-set="gold_color" t-value="'#C9A962'"/>
+                    <t t-set="inbound_color" t-value="'#059669'"/>
+                    <t t-set="outbound_color" t-value="'#d97706'"/>
+
+                    <div class="page ops-report-container" style="background: #ffffff !important; -webkit-print-color-adjust: exact !important;">
+
+                        <!-- Executive Header Band -->
+                        <div t-attf-style="background: #{primary_dark} !important; padding: 20px 25px !important; margin: -10mm -10mm 0 -10mm !important; -webkit-print-color-adjust: exact !important;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="vertical-align: middle;">
+                                        <span t-attf-style="display: inline-block; width: 50px; height: 50px; background: linear-gradient(135deg, #{primary_color} 0%, #{secondary_color} 100%); border-radius: 10px; text-align: center; line-height: 50px; font-size: 24px; font-weight: bold; color: #ffffff; margin-right: 15px; -webkit-print-color-adjust: exact !important;">
+                                            <t t-esc="(data.get('company_name', 'C') or 'C')[0]"/>
+                                        </span>
+                                        <span style="display: inline-block; vertical-align: middle;">
+                                            <span style="display: block; font-size: 20px; font-weight: 700; color: #ffffff;"><t t-esc="data.get('company_name', 'Company')"/></span>
+                                            <span style="display: block; font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px;">PDCs in Hand</span>
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 15px; display: inline-block;">
+                                            <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">As of Date</div>
+                                            <div style="font-size: 14px; font-weight: 600; color: #ffffff;"><t t-esc="data.get('as_of_date', '')"/></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Gold Accent Bar -->
+                        <div t-attf-style="height: 4px; background: linear-gradient(90deg, #{gold_color} 0%, #{inbound_color} 50%, #{outbound_color} 100%); margin: 0 -10mm 20px -10mm; -webkit-print-color-adjust: exact !important;"></div>
+
+                        <!-- Report Title Section -->
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <h2 t-attf-style="font-size: 28px; font-weight: 700; color: #{primary_color}; margin: 0 0 8px 0;">PDCs in Hand</h2>
+                            <p style="font-size: 14px; color: #64748b; margin: 0;">Open Post-Dated Checks Inventory</p>
+                        </div>
+
+                        <!-- KPI Summary Cards -->
+                        <div style="margin-bottom: 25px;">
+                            <table style="width: 100%; border-collapse: separate; border-spacing: 10px 0;">
+                                <tr>
+                                    <td style="width: 33%; vertical-align: top;">
+                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{inbound_color}; -webkit-print-color-adjust: exact !important;">
+                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Receivable in Hand</div>
+                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{inbound_color}; font-family: Georgia, serif;"><t t-esc="'{:,.0f}'.format(data.get('inbound', {}).get('total', 0))"/></div>
+                                            <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;"><t t-esc="data.get('inbound', {}).get('count', 0)"/> checks</div>
+                                        </div>
+                                    </td>
+                                    <td style="width: 33%; vertical-align: top;">
+                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{outbound_color}; -webkit-print-color-adjust: exact !important;">
+                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Payable in Hand</div>
+                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{outbound_color}; font-family: Georgia, serif;"><t t-esc="'{:,.0f}'.format(data.get('outbound', {}).get('total', 0))"/></div>
+                                            <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;"><t t-esc="data.get('outbound', {}).get('count', 0)"/> checks</div>
+                                        </div>
+                                    </td>
+                                    <td style="width: 33%; vertical-align: top;">
+                                        <t t-set="net_pos" t-value="data.get('totals', {}).get('net_position', 0)"/>
+                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{net_pos >= 0 and '#059669' or '#dc2626'}; -webkit-print-color-adjust: exact !important;">
+                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Net Position</div>
+                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{net_pos >= 0 and '#059669' or '#dc2626'}; font-family: Georgia, serif;">
+                                                <t t-if="net_pos &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(net_pos))"/>)</t>
+                                                <t t-else=""><t t-esc="'{:,.0f}'.format(net_pos)"/></t>
+                                            </div>
+                                            <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;">Receivable - Payable</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- INBOUND PDCs in Hand -->
+                        <t t-if="data.get('pdc_type') in ('inbound', 'both') and data.get('inbound', {}).get('data')">
+                            <div t-attf-style="padding: 10px 14px; background-color: #{inbound_color} !important; color: #ffffff; font-weight: 700; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 15px; -webkit-print-color-adjust: exact !important;">
+                                <table width="100%">
+                                    <tr>
+                                        <td>Receivable PDCs in Hand</td>
+                                        <td style="text-align: right; font-family: Georgia, serif;"><t t-esc="data.get('inbound', {}).get('count', 0)"/> checks | <t t-esc="'{:,.0f}'.format(data.get('inbound', {}).get('total', 0))"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                                <thead>
+                                    <tr style="background: #ecfdf5; -webkit-print-color-adjust: exact !important;">
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Reference</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Customer</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Check #</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Bank</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Maturity</th>
+                                        <th style="padding: 8px 6px; text-align: right; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Amount</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 600; color: #065f46; border-bottom: 2px solid #059669;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="data.get('inbound', {}).get('data', [])" t-as="pdc">
+                                        <tr t-attf-style="background: #{pdc_odd and '#ffffff' or '#f0fdf4'}; -webkit-print-color-adjust: exact !important;">
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; color: #1e293b; font-weight: 500;"><t t-esc="pdc.get('name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; color: #1e293b;"><t t-esc="pdc.get('partner_name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; color: #64748b;"><t t-esc="pdc.get('check_number', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; color: #64748b;"><t t-esc="pdc.get('bank_name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; text-align: center; color: #64748b;"><t t-esc="pdc.get('maturity_date', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; text-align: right; font-family: Georgia, serif; font-weight: 600; color: #059669;">
+                                                <t t-esc="'{:,.2f}'.format(pdc.get('amount', 0))"/>
+                                            </td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #d1fae5; text-align: center;">
+                                                <t t-set="state" t-value="pdc.get('state', 'draft')"/>
+                                                <span t-attf-style="display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8px; font-weight: 600; color: #ffffff; background: #{state == 'deposited' and '#3b82f6' or '#059669'}; -webkit-print-color-adjust: exact !important;">
+                                                    <t t-esc="pdc.get('state_label', state)"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background: #065f46; -webkit-print-color-adjust: exact !important;">
+                                        <td colspan="5" style="padding: 10px 6px; text-align: right; font-weight: 700; color: #ffffff; border-top: 2px solid #059669;">SUBTOTAL</td>
+                                        <td style="padding: 10px 6px; text-align: right; font-weight: 700; color: #ffffff; border-top: 2px solid #059669; font-family: Georgia, serif;">
+                                            <t t-esc="'{:,.2f}'.format(data.get('inbound', {}).get('total', 0))"/>
+                                        </td>
+                                        <td style="border-top: 2px solid #059669;"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </t>
+
+                        <!-- OUTBOUND PDCs in Hand -->
+                        <t t-if="data.get('pdc_type') in ('outbound', 'both') and data.get('outbound', {}).get('data')">
+                            <div t-attf-style="padding: 10px 14px; background-color: #{outbound_color} !important; color: #ffffff; font-weight: 700; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 20px; -webkit-print-color-adjust: exact !important;">
+                                <table width="100%">
+                                    <tr>
+                                        <td>Payable PDCs in Hand</td>
+                                        <td style="text-align: right; font-family: Georgia, serif;"><t t-esc="data.get('outbound', {}).get('count', 0)"/> checks | <t t-esc="'{:,.0f}'.format(data.get('outbound', {}).get('total', 0))"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                                <thead>
+                                    <tr style="background: #fffbeb; -webkit-print-color-adjust: exact !important;">
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Reference</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Vendor</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Check #</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Bank</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Maturity</th>
+                                        <th style="padding: 8px 6px; text-align: right; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Amount</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 600; color: #92400e; border-bottom: 2px solid #d97706;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="data.get('outbound', {}).get('data', [])" t-as="pdc">
+                                        <tr t-attf-style="background: #{pdc_odd and '#ffffff' or '#fffbeb'}; -webkit-print-color-adjust: exact !important;">
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; color: #1e293b; font-weight: 500;"><t t-esc="pdc.get('name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; color: #1e293b;"><t t-esc="pdc.get('partner_name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; color: #64748b;"><t t-esc="pdc.get('check_number', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; color: #64748b;"><t t-esc="pdc.get('bank_name', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; text-align: center; color: #64748b;"><t t-esc="pdc.get('maturity_date', '-')"/></td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; text-align: right; font-family: Georgia, serif; font-weight: 600; color: #d97706;">
+                                                <t t-esc="'{:,.2f}'.format(pdc.get('amount', 0))"/>
+                                            </td>
+                                            <td style="padding: 6px; border-bottom: 1px solid #fef3c7; text-align: center;">
+                                                <t t-set="state" t-value="pdc.get('state', 'draft')"/>
+                                                <span t-attf-style="display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8px; font-weight: 600; color: #ffffff; background: #{state == 'issued' and '#d97706' or '#94a3b8'}; -webkit-print-color-adjust: exact !important;">
+                                                    <t t-esc="pdc.get('state_label', state)"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background: #92400e; -webkit-print-color-adjust: exact !important;">
+                                        <td colspan="5" style="padding: 10px 6px; text-align: right; font-weight: 700; color: #ffffff; border-top: 2px solid #d97706;">SUBTOTAL</td>
+                                        <td style="padding: 10px 6px; text-align: right; font-weight: 700; color: #ffffff; border-top: 2px solid #d97706; font-family: Georgia, serif;">
+                                            <t t-esc="'{:,.2f}'.format(data.get('outbound', {}).get('total', 0))"/>
+                                        </td>
+                                        <td style="border-top: 2px solid #d97706;"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </t>
+
+                        <!-- Empty State -->
+                        <t t-if="not data.get('inbound', {}).get('data') and not data.get('outbound', {}).get('data')">
+                            <div style="padding: 40px; text-align: center; color: #94a3b8; font-style: italic; border: 1px dashed #e2e8f0; border-radius: 8px;">
+                                No open PDCs found matching the criteria
+                            </div>
+                        </t>
+
+                        <!-- Report Footer -->
+                        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                            <table style="width: 100%; font-size: 10px; color: #64748b;">
+                                <tr>
+                                    <td style="width: 70%;">
+                                        <strong style="color: #1e293b;">Notes:</strong> PDCs in Hand = Open/Uncleared checks. These represent pending cash flows.
+                                    </td>
+                                    <td style="width: 30%; text-align: right;">
+                                        <span style="color: #94a3b8;">Generated by OPS Matrix</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -1,4 +1,0 @@
-"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-"access_report_certificate_public","report_certificate group_public","model_report_certificate","base.group_user",1,0,0,0
-"access_report_certificate_manager","report_certificate group_manager","model_report_certificate","base.group_erp_manager",1,1,1,1
-access_"model_report_certificate"_ops_admin_full,access_"model_report_certificate"_ops_admin_full,"model_report_certificate",ops_matrix_core.group_ops_admin_power,1,1,1,1
