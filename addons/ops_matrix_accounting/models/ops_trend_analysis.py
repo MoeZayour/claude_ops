@@ -448,6 +448,7 @@ class OpsTrendAnalysis(models.TransientModel):
         MoveLine = self.env['account.move.line']
 
         # Aggregate by account type
+        # Odoo 19 _read_group returns list of tuples: (group_value, agg1, agg2, ...)
         results = MoveLine._read_group(
             domain=domain,
             groupby=['account_id.account_type'],
@@ -457,9 +458,11 @@ class OpsTrendAnalysis(models.TransientModel):
         metrics = self._empty_metrics()
 
         for result in results:
-            account_type = result.get('account_id.account_type')
-            credit = result.get('credit', 0)
-            debit = result.get('debit', 0)
+            # Odoo 19: result is tuple (account_type, credit_sum, debit_sum, count)
+            account_type = result[0]
+            credit = result[1] or 0
+            debit = result[2] or 0
+            count = result[3] or 0
 
             if account_type in ['income', 'income_other']:
                 metrics['revenue'] += credit - debit
@@ -468,7 +471,7 @@ class OpsTrendAnalysis(models.TransientModel):
             elif account_type in ['expense', 'expense_depreciation']:
                 metrics['operating_expense'] += debit - credit
 
-            metrics['transaction_count'] += result.get('__count', 0)
+            metrics['transaction_count'] += count
 
         # Calculate derived metrics
         metrics['gross_profit'] = metrics['revenue'] - metrics['cogs']

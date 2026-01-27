@@ -24,6 +24,7 @@
         'stock',
         'stock_account',
         'hr',
+        'spreadsheet_dashboard',  # Native Dashboards app - OPS Dashboards integration
     ],
     'data': [
         # 1. Base Framework

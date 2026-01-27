@@ -4,16 +4,10 @@
          OPS DASHBOARDS MENU - ADDITIONAL DASHBOARD ENTRIES
 
          Main dashboard menus are defined in ops_dashboard_menu.xml.
-         This file provides additional dashboard menu entries that may
-         be needed for specific contexts (Settings overview, etc.)
+         OPS Dashboards are now under the native Dashboards app.
          ================================================================ -->
 
-    <!-- Quick Access: Executive Dashboard in Settings (for admins) -->
-    <menuitem id="menu_ops_executive_dashboard_settings"
-              name="Executive Dashboard"
-              parent="base.menu_administration"
-              action="action_ops_executive_dashboard"
-              sequence="5"
-              groups="ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_cfo,base.group_system"/>
+    <!-- REMOVED: Duplicate Executive Dashboard in Settings
+         Access via: Dashboards > OPS Matrix > Executive Dashboard -->
 
 </odoo>

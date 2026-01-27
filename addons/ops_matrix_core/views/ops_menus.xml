@@ -50,11 +50,12 @@
     </record>
 
     <!-- =================== 5. REPORTING APP (Seq 60) =================== -->
-    <!-- Root App: Visible to Managers, Executives, and native admin (group_system) -->
+    <!-- DISABLED: Reporting consolidated into Accounting > Reporting and Settings > OPS Framework -->
     <menuitem id="menu_ops_reporting"
               name="Reporting"
               web_icon="ops_matrix_core,static/description/reporting_icon.png"
               sequence="60"
+              active="False"
               groups="base.group_system,ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive"/>
 
     <!-- =================== 6-7. MORE STANDARD APPS =================== -->
@@ -74,31 +75,36 @@
               sequence="100"
               groups="base.group_system"/>
 
-    <!-- =================== REPORTING SUB-MENUS =================== -->
-    <!-- Dashboards section under Reporting app -->
+    <!-- =================== DASHBOARDS (Under Native Dashboards App) =================== -->
+    <!-- OPS Dashboards moved to native Dashboards app for better discoverability -->
     <menuitem id="menu_ops_dashboards"
-              name="Dashboards"
-              parent="menu_ops_reporting"
-              sequence="10"/>
+              name="OPS Matrix"
+              parent="spreadsheet_dashboard.spreadsheet_dashboard_menu_root"
+              sequence="10"
+              groups="base.group_system,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_user"/>
 
-    <!-- Financial Reports section under Reporting app -->
+    <!-- =================== DEPRECATED REPORTING SUB-MENUS =================== -->
+    <!-- Financial Reports - DISABLED (use Accounting > Reporting > Matrix Financial Intelligence) -->
     <menuitem id="menu_ops_financial_reports"
               name="Financial Reports"
               parent="menu_ops_reporting"
               sequence="20"
+              active="False"
               groups="base.group_system,ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive"/>
 
-    <!-- Operational Reports section under Reporting app -->
+    <!-- Operational Reports - DISABLED (use Accounting > Reporting) -->
     <menuitem id="menu_ops_operational_reports"
               name="Operational Reports"
               parent="menu_ops_reporting"
               sequence="30"
+              active="False"
               groups="base.group_system,ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive"/>
 
-    <!-- Governance section under Reporting app (System Admins and Managers) -->
+    <!-- =================== GOVERNANCE (Under OPS Framework in Settings) =================== -->
+    <!-- Governance relocated to Settings > OPS Framework -->
     <menuitem id="menu_ops_governance_root"
               name="Governance"
-              parent="menu_ops_reporting"
+              parent="menu_ops_settings_root"
               sequence="40"
               groups="base.group_system,ops_matrix_core.group_ops_manager"/>
 
