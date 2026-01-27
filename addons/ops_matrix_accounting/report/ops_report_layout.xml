@@ -62,7 +62,9 @@
                 padding: 0;
             }
 
-            /* === THE MERIDIAN PAGE CONTAINER === */
+            /* ============================================
+               THE MERIDIAN PAGE CONTAINER
+               ============================================ */
             .ops-meridian-page {
                 background: #ffffff;
                 padding: 0;
@@ -75,37 +77,74 @@
                 background: #ffffff;
             }
 
+            /* Meridian Page with padding (for content pages) */
+            .ops-meridian-page.padded {
+                padding: 40px;
+            }
+
+            /* ============================================
+               MERIDIAN DESIGN TOKENS (CSS2.1 Compatible)
+               ============================================
+               These are the core color constants used throughout:
+               - GOLD: #C9A962 (Executive Gold - Brand accent)
+               - BLACK: #1A1A1A (Primary Black - Text/headers)
+               - RED: #DA291C (Corporate Red - Negatives)
+               - MUTED: #FAFAFA (Light Grey - Backgrounds)
+               - ZERO: #cccccc (Zero values display)
+            ============================================ */
+
             /* ============================================
                MERIDIAN HEADER SYSTEM (Table-Based)
+               Two-Column Layout: Company Left, Report Details Right
                ============================================ */
 
-            /* The iconic gold top border */
+            /* The iconic gold top border - MERIDIAN GOLD #C9A962 */
             .ops-meridian-accent {
                 height: 4px;
-                background-color: #c9a962;
+                background-color: #C9A962;
                 border: none;
                 margin: 0;
                 padding: 0;
             }
 
-            /* Master header table */
-            .ops-header-master {
+            /* Gold accent bar with margin */
+            .ops-meridian-gold-bar {
+                height: 4px;
+                background-color: #C9A962;
+                margin-bottom: 20px;
+            }
+
+            /* Master header table - 2-column layout */
+            .ops-header-master,
+            .ops-meridian-header {
                 width: 100%;
                 border-collapse: collapse;
                 margin-top: 20px;
             }
 
-            .ops-header-master td {
+            .ops-header-master td,
+            .ops-meridian-header td {
                 vertical-align: top;
                 padding: 0;
             }
 
-            /* Report title styling */
+            .ops-meridian-header .left-col {
+                width: 60%;
+                vertical-align: top;
+            }
+
+            .ops-meridian-header .right-col {
+                width: 40%;
+                text-align: right;
+                vertical-align: top;
+            }
+
+            /* Report title styling - Georgia serif for elegance */
             .ops-title-main {
                 font-size: 32px;
                 font-weight: 300;
                 font-family: Georgia, 'Times New Roman', serif;
-                color: #000000;
+                color: #1A1A1A;
                 margin: 0;
                 padding: 0;
                 line-height: 1.1;
@@ -127,10 +166,10 @@
                 letter-spacing: 1px;
             }
 
-            /* Black separator line */
+            /* Black separator line - Primary Black #1A1A1A */
             .ops-header-separator {
                 height: 2px;
-                background-color: #000000;
+                background-color: #1A1A1A;
                 border: none;
                 margin: 15px 0 20px 0;
             }
@@ -193,20 +232,25 @@
 
             /* ============================================
                THE MERIDIAN TABLE (Core Data Table)
+               - Headers: Light grey bg (#FAFAFA), black bottom border
+               - Numbers: Georgia serif, right-aligned
+               - tr.total: Double bottom border
                ============================================ */
             .ops-native-table,
-            .ops-table-consulting {
+            .ops-table-consulting,
+            .ops-meridian-table {
                 width: 100%;
                 border-collapse: collapse;
                 font-size: 10pt;
                 margin-bottom: 20px;
             }
 
-            /* Table Headers */
+            /* Table Headers - Muted background with black border */
             .ops-native-table thead th,
             .ops-table-consulting thead th,
+            .ops-meridian-table thead th,
             .ops-header-row th {
-                background-color: #f8f9fa;
+                background-color: #FAFAFA;
                 padding: 12px 10px;
                 text-align: left;
                 font-size: 8pt;
@@ -214,30 +258,38 @@
                 color: #374151;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
-                border-bottom: 2px solid #000000;
+                border-bottom: 2px solid #1A1A1A;
+                font-family: Arial, Helvetica, sans-serif;
             }
 
             .ops-native-table thead th.text-end,
             .ops-table-consulting thead th.text-end,
+            .ops-meridian-table thead th.text-end,
             .ops-native-table thead th.num,
-            .ops-table-consulting thead th.num {
+            .ops-table-consulting thead th.num,
+            .ops-meridian-table thead th.num {
                 text-align: right;
             }
 
             /* Table Body Cells */
             .ops-native-table tbody td,
-            .ops-table-consulting tbody td {
+            .ops-table-consulting tbody td,
+            .ops-meridian-table tbody td {
                 padding: 10px;
-                color: #000000;
+                color: #1A1A1A;
                 border-bottom: 1px solid #e5e7eb;
                 vertical-align: middle;
             }
 
+            /* Number cells - Georgia serif font */
             .ops-native-table tbody td.text-end,
             .ops-table-consulting tbody td.text-end,
+            .ops-meridian-table tbody td.text-end,
             .ops-native-table tbody td.num,
             .ops-table-consulting tbody td.num,
-            .ops-value-cell {
+            .ops-meridian-table tbody td.num,
+            .ops-value-cell,
+            td.number {
                 text-align: right;
                 font-family: Georgia, 'Times New Roman', serif;
                 font-size: 10pt;
@@ -302,10 +354,11 @@
             /* Section Header Row */
             tr.section-header td,
             .ops-native-table tr.section-header td,
-            .ops-table-consulting tr.section-header td {
+            .ops-table-consulting tr.section-header td,
+            .ops-meridian-table tr.section-header td {
                 font-weight: 700;
                 font-size: 11pt;
-                color: #000000;
+                color: #1A1A1A;
                 padding-top: 18px;
                 padding-bottom: 8px;
                 border-bottom: 1px solid #9ca3af;
@@ -315,44 +368,55 @@
             /* Subtotal Row */
             tr.subtotal-row td,
             .ops-native-table tr.subtotal-row td,
-            .ops-table-consulting tr.subtotal-row td {
+            .ops-table-consulting tr.subtotal-row td,
+            .ops-meridian-table tr.subtotal-row td {
                 font-weight: 600;
-                border-top: 1px solid #000000;
-                background-color: #fafafa;
+                border-top: 1px solid #1A1A1A;
+                background-color: #FAFAFA;
                 padding-top: 10px;
                 padding-bottom: 10px;
             }
 
-            /* Total Row - Single top, Double bottom */
+            /* Total Row - Single top, DOUBLE bottom border (MERIDIAN STANDARD) */
             tr.total-row td,
+            tr.total td,
             .ops-native-table tr.total-row td,
             .ops-table-consulting tr.total-row td,
+            .ops-meridian-table tr.total-row td,
+            .ops-meridian-table tr.total td,
             .ops-total-row td {
                 font-weight: 700;
                 font-size: 11pt;
-                border-top: 2px solid #000000;
-                border-bottom: 4px double #000000;
+                border-top: 2px solid #1A1A1A;
+                border-bottom: 4px double #1A1A1A;
                 padding-top: 12px;
                 padding-bottom: 12px;
                 background-color: #ffffff;
             }
 
-            /* Grand Total Row - Black background */
+            /* Grand Total Row - Primary Black background */
             tr.grand-total-row td,
+            tr.grand-total td,
             .ops-native-table tr.grand-total-row td,
-            .ops-table-consulting tr.grand-total-row td {
+            .ops-table-consulting tr.grand-total-row td,
+            .ops-meridian-table tr.grand-total-row td,
+            .ops-meridian-table tr.grand-total td {
                 font-weight: 700;
                 font-size: 12pt;
-                background-color: #000000 !important;
+                background-color: #1A1A1A !important;
                 color: #ffffff !important;
                 padding: 14px 10px;
                 border: none;
             }
 
             tr.grand-total-row td.num,
+            tr.grand-total td.num,
             .ops-native-table tr.grand-total-row td.num,
-            .ops-table-consulting tr.grand-total-row td.num {
+            .ops-table-consulting tr.grand-total-row td.num,
+            .ops-meridian-table tr.grand-total-row td.num,
+            .ops-meridian-table tr.grand-total td.num {
                 color: #ffffff !important;
+                font-family: Georgia, 'Times New Roman', serif;
             }
 
             /* Alternating row backgrounds */
@@ -363,6 +427,12 @@
 
             /* ============================================
                SECTION BLOCKS (Colored Headers)
+               MERIDIAN COLOR ASSIGNMENTS:
+               - Revenue/Equity: Green (#059669)
+               - Expense: Red (#DA291C)
+               - Asset: Blue (#2563eb)
+               - Liability: Orange (#d97706)
+               - Neutral: Primary Black (#1A1A1A)
                ============================================ */
             .ops-section-block {
                 margin-bottom: 25px;
@@ -375,6 +445,7 @@
                 font-size: 11pt;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
+                font-family: Arial, Helvetica, sans-serif;
             }
 
             .ops-section-header.revenue { background-color: #059669 !important; }
@@ -382,7 +453,8 @@
             .ops-section-header.asset { background-color: #2563eb !important; }
             .ops-section-header.liability { background-color: #d97706 !important; }
             .ops-section-header.equity { background-color: #059669 !important; }
-            .ops-section-header.neutral { background-color: #000000 !important; }
+            .ops-section-header.neutral { background-color: #1A1A1A !important; }
+            .ops-section-header.gold { background-color: #C9A962 !important; }
 
             .ops-section-header table {
                 width: 100%;
@@ -821,10 +893,638 @@
             .ops-total-row { font-weight: 600; }
             .ops-grand-total { font-weight: 700; }
 
+            /* ============================================
+               MERIDIAN STANDARD - HIERARCHICAL ACCOUNT DISPLAY
+               For Chart of Accounts indentation in reports
+               ============================================ */
+            /* Level indicators with visual hierarchy */
+            tr.level-0 td:first-child { font-weight: 700; font-size: 11pt; color: #1A1A1A; }
+            tr.level-1 td:first-child { padding-left: 20px; font-weight: 600; color: #374151; }
+            tr.level-2 td:first-child { padding-left: 35px; font-weight: 500; color: #4b5563; }
+            tr.level-3 td:first-child { padding-left: 50px; font-weight: 400; color: #6b7280; font-style: italic; }
+            tr.level-4 td:first-child { padding-left: 65px; font-weight: 400; color: #9ca3af; font-style: italic; }
+
+            /* Account type row styling */
+            tr.account-group td { background-color: #f8f9fa; font-weight: 600; }
+            tr.account-detail td { font-weight: 400; }
+            tr.account-subtotal td { font-weight: 600; border-top: 1px solid #1A1A1A; }
+
+            /* ============================================
+               COMPARISON COLUMNS (Prior Year / Budget)
+               ============================================ */
+            .ops-compare-col {
+                background-color: #f8f9fa;
+            }
+
+            .ops-variance-positive {
+                color: #059669 !important;
+                font-weight: 600;
+            }
+
+            .ops-variance-negative {
+                color: #DA291C !important;
+                font-weight: 600;
+            }
+
+            .ops-variance-neutral {
+                color: #6b7280;
+            }
+
+            /* Variance percentage badge */
+            .ops-variance-badge {
+                display: inline-block;
+                padding: 2px 8px;
+                font-size: 8pt;
+                font-weight: 600;
+                border-radius: 2px;
+            }
+
+            .ops-variance-badge.positive {
+                background-color: #d1fae5;
+                color: #059669;
+            }
+
+            .ops-variance-badge.negative {
+                background-color: #fee2e2;
+                color: #DA291C;
+            }
+
+            /* ============================================
+               KPI DASHBOARD ROW
+               Horizontal metrics strip for executive summary
+               ============================================ */
+            .ops-kpi-strip {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 12px 0;
+                margin-bottom: 25px;
+            }
+
+            .ops-kpi-strip td {
+                background-color: #ffffff;
+                border: 1px solid #e5e7eb;
+                padding: 16px 18px;
+                vertical-align: top;
+            }
+
+            .ops-kpi-strip td.revenue { border-left: 4px solid #059669; }
+            .ops-kpi-strip td.expense { border-left: 4px solid #DA291C; }
+            .ops-kpi-strip td.asset { border-left: 4px solid #2563eb; }
+            .ops-kpi-strip td.liability { border-left: 4px solid #d97706; }
+            .ops-kpi-strip td.equity { border-left: 4px solid #059669; }
+            .ops-kpi-strip td.neutral { border-left: 4px solid #1A1A1A; }
+            .ops-kpi-strip td.gold { border-left: 4px solid #C9A962; }
+
+            /* ============================================
+               SPARKLINE / TREND INDICATOR
+               ============================================ */
+            .ops-trend-up {
+                color: #059669;
+            }
+
+            .ops-trend-up:before {
+                content: "\25B2 ";
+                font-size: 8pt;
+            }
+
+            .ops-trend-down {
+                color: #DA291C;
+            }
+
+            .ops-trend-down:before {
+                content: "\25BC ";
+                font-size: 8pt;
+            }
+
+            .ops-trend-flat {
+                color: #6b7280;
+            }
+
+            .ops-trend-flat:before {
+                content: "\25AC ";
+                font-size: 8pt;
+            }
+
+            /* ============================================
+               RATIO INDICATORS (Financial Metrics)
+               ============================================ */
+            .ops-ratio-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+            }
+
+            .ops-ratio-table td {
+                padding: 12px 16px;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .ops-ratio-name {
+                font-weight: 600;
+                color: #1A1A1A;
+            }
+
+            .ops-ratio-formula {
+                font-size: 9pt;
+                color: #6b7280;
+                font-style: italic;
+            }
+
+            .ops-ratio-value {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 18pt;
+                font-weight: 700;
+                text-align: right;
+            }
+
+            .ops-ratio-benchmark {
+                font-size: 9pt;
+                color: #6b7280;
+                text-align: right;
+            }
+
+            /* ============================================
+               WATERFALL CHART SIMULATION (Table-based)
+               For Cash Flow visualization
+               ============================================ */
+            .ops-waterfall-row td {
+                padding: 8px 12px;
+                vertical-align: middle;
+            }
+
+            .ops-waterfall-bar {
+                height: 24px;
+                min-width: 4px;
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .ops-waterfall-bar.positive {
+                background-color: #059669;
+            }
+
+            .ops-waterfall-bar.negative {
+                background-color: #DA291C;
+            }
+
+            .ops-waterfall-bar.neutral {
+                background-color: #2563eb;
+            }
+
+            /* ============================================
+               AGING BUCKET COLUMNS
+               For Aged Receivables/Payables
+               ============================================ */
+            .ops-aging-current { background-color: #d1fae5 !important; }
+            .ops-aging-30 { background-color: #dbeafe !important; }
+            .ops-aging-60 { background-color: #fef3c7 !important; }
+            .ops-aging-90 { background-color: #fed7aa !important; }
+            .ops-aging-over { background-color: #fee2e2 !important; }
+
+            /* ============================================
+               EXECUTIVE DASHBOARD CARD
+               For Cover Page / Summary sections
+               ============================================ */
+            .ops-exec-card {
+                background-color: #ffffff;
+                border: 1px solid #e5e7eb;
+                padding: 20px 24px;
+                margin-bottom: 15px;
+            }
+
+            .ops-exec-card.highlight {
+                border-left: 4px solid #C9A962;
+            }
+
+            .ops-exec-card-title {
+                font-size: 9pt;
+                font-weight: 600;
+                color: #6b7280;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 8px;
+            }
+
+            .ops-exec-card-value {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 28pt;
+                font-weight: 700;
+                color: #1A1A1A;
+                line-height: 1.1;
+            }
+
+            .ops-exec-card-subtitle {
+                font-size: 9pt;
+                color: #6b7280;
+                margin-top: 6px;
+            }
+
+            /* ============================================
+               SIGNATURE BLOCK
+               For approval signatures
+               ============================================ */
+            .ops-signature-block {
+                margin-top: 50px;
+                page-break-inside: avoid;
+            }
+
+            .ops-signature-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .ops-signature-table td {
+                padding: 15px 20px;
+                text-align: center;
+                vertical-align: top;
+            }
+
+            .ops-signature-line {
+                border-bottom: 1px solid #1A1A1A;
+                margin-bottom: 8px;
+                min-height: 50px;
+            }
+
+            .ops-signature-name {
+                font-weight: 600;
+                color: #1A1A1A;
+                margin-top: 8px;
+            }
+
+            .ops-signature-title {
+                font-size: 9pt;
+                color: #6b7280;
+            }
+
+            .ops-signature-date {
+                font-size: 9pt;
+                color: #6b7280;
+                margin-top: 4px;
+            }
+
             /* Print optimization */
             @media print {
                 body { background-color: #ffffff; }
                 .ops-no-print { display: none !important; }
+            }
+
+            /* ============================================
+               MERIDIAN STANDARD - TWO-COLUMN BALANCE SHEET
+               Equation Layout: Assets = Liabilities + Equity
+               wkhtmltopdf-compatible table-based layout
+               ============================================ */
+            .ops-bs-two-column {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 20px 0;
+            }
+
+            .ops-bs-two-column > tbody > tr > td {
+                width: 48%;
+                vertical-align: top;
+            }
+
+            .ops-bs-column {
+                vertical-align: top;
+            }
+
+            /* ============================================
+               MERIDIAN EQUATION BLOCK
+               Visual equation: Assets = Equity + Liabilities
+               ============================================ */
+            .ops-equation-block {
+                text-align: center;
+                padding: 20px 0;
+                margin: 20px 0;
+                border-top: 1px solid #e5e7eb;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .ops-equation-block table {
+                margin: 0 auto;
+                border-collapse: collapse;
+            }
+
+            .ops-equation-block td {
+                padding: 0 20px;
+                vertical-align: middle;
+            }
+
+            .ops-equation-item {
+                text-align: center;
+            }
+
+            .ops-equation-label {
+                font-size: 9pt;
+                color: #6b7280;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 4px;
+            }
+
+            .ops-equation-value {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 18pt;
+                font-weight: 600;
+                color: #1A1A1A;
+            }
+
+            .ops-equation-operator {
+                font-size: 18pt;
+                color: #cccccc;
+                font-weight: 300;
+            }
+
+            .ops-equation-status {
+                padding: 8px 16px;
+                background-color: #f3f4f6;
+                border-radius: 4px;
+            }
+
+            .ops-equation-status.balanced {
+                background-color: #d1fae5;
+            }
+
+            .ops-equation-status.unbalanced {
+                background-color: #fee2e2;
+            }
+
+            .ops-status-check {
+                font-size: 10pt;
+                font-weight: 600;
+            }
+
+            .ops-status-check.success {
+                color: #059669;
+            }
+
+            .ops-status-check.error {
+                color: #DA291C;
+            }
+
+            /* ============================================
+               MERIDIAN KPI BAR
+               Horizontal metrics strip for executive summary
+               ============================================ */
+            .ops-kpi-bar {
+                width: 100%;
+                background-color: #FAFAFA;
+                border: 1px solid #e5e7eb;
+                padding: 16px;
+                margin-bottom: 25px;
+            }
+
+            .ops-kpi-bar table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .ops-kpi-bar td {
+                text-align: center;
+                padding: 0 16px;
+                border-right: 1px solid #e5e7eb;
+            }
+
+            .ops-kpi-bar td:last-child {
+                border-right: none;
+            }
+
+            .ops-kpi-bar-label {
+                font-size: 8pt;
+                color: #6b7280;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 4px;
+            }
+
+            .ops-kpi-bar-value {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 16pt;
+                font-weight: 600;
+                color: #1A1A1A;
+            }
+
+            .ops-kpi-bar-value.revenue { color: #059669; }
+            .ops-kpi-bar-value.expense { color: #DA291C; }
+            .ops-kpi-bar-value.asset { color: #2563eb; }
+            .ops-kpi-bar-value.liability { color: #d97706; }
+            .ops-kpi-bar-value.equity { color: #059669; }
+
+            /* ============================================
+               MERIDIAN CASH FLOW SECTIONS
+               Operating / Investing / Financing layout
+               ============================================ */
+            .ops-cf-section {
+                margin-bottom: 25px;
+            }
+
+            .ops-cf-section-header {
+                padding: 10px 14px;
+                font-weight: 700;
+                font-size: 11pt;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #ffffff;
+            }
+
+            .ops-cf-section-header.operating {
+                background-color: #2563eb !important;
+            }
+
+            .ops-cf-section-header.investing {
+                background-color: #d97706 !important;
+            }
+
+            .ops-cf-section-header.financing {
+                background-color: #059669 !important;
+            }
+
+            .ops-cf-summary-row td {
+                font-weight: 600;
+                background-color: #FAFAFA;
+                border-top: 1px solid #1A1A1A;
+                padding: 10px;
+            }
+
+            /* ============================================
+               MERIDIAN COMPARISON COLUMNS
+               Prior Year / Budget variance display
+               ============================================ */
+            .ops-col-comparison {
+                background-color: #FAFAFA;
+            }
+
+            .ops-col-variance {
+                font-size: 9pt;
+                text-align: right;
+                width: 70px;
+            }
+
+            .ops-variance-up {
+                color: #059669;
+            }
+
+            .ops-variance-up:before {
+                content: "\25B2 ";
+                font-size: 8pt;
+            }
+
+            .ops-variance-down {
+                color: #DA291C;
+            }
+
+            .ops-variance-down:before {
+                content: "\25BC ";
+                font-size: 8pt;
+            }
+
+            .ops-variance-flat {
+                color: #6b7280;
+            }
+
+            /* ============================================
+               MERIDIAN PL STRUCTURE
+               Revenue -> COGS -> Gross Profit -> OpEx -> EBIT
+               ============================================ */
+            .ops-pnl-gross-row td {
+                font-weight: 700;
+                font-size: 11pt;
+                background-color: #FAFAFA;
+                border-top: 2px solid #1A1A1A;
+                border-bottom: 2px solid #1A1A1A;
+                padding: 12px 10px;
+            }
+
+            .ops-pnl-ebit-row td {
+                font-weight: 700;
+                font-size: 11pt;
+                background-color: #FAFAFA;
+                border-top: 2px solid #1A1A1A;
+                border-bottom: 2px solid #1A1A1A;
+                padding: 12px 10px;
+            }
+
+            .ops-pnl-margin-row td {
+                font-size: 9pt;
+                font-style: italic;
+                color: #6b7280;
+                padding-top: 4px;
+                padding-bottom: 16px;
+                border-bottom: none;
+            }
+
+            /* ============================================
+               MERIDIAN SIGNATURE BLOCK (Enhanced)
+               For Board/Management approval
+               ============================================ */
+            .ops-signature-grid {
+                width: 100%;
+                margin-top: 50px;
+                page-break-inside: avoid;
+            }
+
+            .ops-signature-grid td {
+                width: 33%;
+                padding: 15px 20px;
+                text-align: center;
+                vertical-align: top;
+            }
+
+            .ops-signature-box {
+                border-bottom: 1px solid #1A1A1A;
+                min-height: 50px;
+                margin-bottom: 8px;
+            }
+
+            .ops-signature-role {
+                font-size: 9pt;
+                font-weight: 600;
+                color: #1A1A1A;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .ops-signature-name {
+                font-size: 9pt;
+                color: #6b7280;
+                margin-top: 4px;
+            }
+
+            /* ============================================
+               MERIDIAN NOTES REFERENCE
+               Standard disclosure footer
+               ============================================ */
+            .ops-notes-reference {
+                font-size: 8pt;
+                color: #6b7280;
+                font-style: italic;
+                margin-top: 30px;
+                padding-top: 15px;
+                border-top: 1px solid #e5e7eb;
+            }
+
+            /* ============================================
+               MERIDIAN SUBSECTION HEADERS
+               For Non-Current/Current Assets etc.
+               ============================================ */
+            .ops-subsection-title {
+                font-size: 10pt;
+                font-weight: 600;
+                color: #374151;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 12px 10px 8px 10px;
+                background: transparent;
+                border-bottom: 1px solid #9ca3af;
+            }
+
+            /* ============================================
+               MERIDIAN REPORT TITLE BLOCK
+               Document type + Title + Meta info
+               ============================================ */
+            .ops-report-title-block {
+                margin-bottom: 25px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .ops-document-type {
+                font-size: 9pt;
+                color: #6b7280;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                margin-bottom: 8px;
+            }
+
+            .ops-report-main-title {
+                font-family: Georgia, 'Times New Roman', serif;
+                font-size: 28pt;
+                font-weight: 300;
+                color: #1A1A1A;
+                letter-spacing: -0.5px;
+                margin: 0 0 12px 0;
+                line-height: 1.1;
+            }
+
+            .ops-report-meta-row {
+                width: 100%;
+            }
+
+            .ops-report-meta-row td {
+                vertical-align: bottom;
+            }
+
+            .ops-report-period {
+                font-size: 10pt;
+                font-weight: 500;
+                color: #374151;
+            }
+
+            .ops-report-currency {
+                font-size: 10pt;
+                color: #6b7280;
+                font-style: italic;
+                text-align: right;
             }
 
             /* Two-column header compatibility */
@@ -920,31 +1620,43 @@
          HELPER TEMPLATES
          ============================================ -->
 
-    <!-- Meridian Header Template (Table-Based) -->
+    <!-- ============================================
+         MERIDIAN HEADER TEMPLATE (Table-Based)
+         2-Column Layout: Company Left, Report Details Right
+         COLORS: Gold #C9A962, Black #1A1A1A
+         ============================================ -->
     <template id="ops_meridian_header_template">
-        <!-- Gold accent bar -->
-        <div style="height: 4px; background-color: #c9a962; margin-bottom: 20px;"></div>
+        <!-- Gold accent bar - MERIDIAN GOLD #C9A962 -->
+        <div style="height: 4px; background-color: #C9A962; margin-bottom: 20px;"></div>
 
-        <table width="100%" style="border-collapse: collapse;">
+        <!-- 2-Column Header Table -->
+        <table width="100%" style="border-collapse: collapse;" class="ops-meridian-header">
             <tr>
-                <td width="60%" style="vertical-align: top;">
-                    <div style="font-size: 32px; font-weight: 300; font-family: Georgia, serif; margin: 0;">
-                        <t t-esc="report_title or 'Statement of Financial Position'"/>
+                <td width="60%" style="vertical-align: top;" class="left-col">
+                    <!-- Report Title - Georgia serif -->
+                    <div style="font-size: 32px; font-weight: 300; font-family: Georgia, 'Times New Roman', serif; color: #1A1A1A; margin: 0;">
+                        <t t-esc="report_title or 'Financial Statement'"/>
                     </div>
-                    <div style="font-size: 14px; font-weight: 600; color: #666666; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">
+                    <!-- Company Name - Arial/Helvetica -->
+                    <div style="font-size: 14px; font-weight: 600; color: #666666; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; font-family: Arial, Helvetica, sans-serif;">
                         <t t-esc="company_name or 'COMPANY'"/>
                     </div>
                 </td>
-                <td width="40%" style="text-align: right; vertical-align: top;">
-                    <div style="font-size: 10px; color: #999999; text-transform: uppercase; letter-spacing: 1px;">
-                        <t t-if="date_to">AS AT <t t-esc="date_to"/></t>
+                <td width="40%" style="text-align: right; vertical-align: top;" class="right-col">
+                    <!-- Date Range -->
+                    <div style="font-size: 10px; color: #999999; text-transform: uppercase; letter-spacing: 1px; font-family: Arial, Helvetica, sans-serif;">
+                        <t t-if="date_from and date_to">
+                            <t t-esc="date_from"/> TO <t t-esc="date_to"/>
+                        </t>
+                        <t t-elif="date_to">AS AT <t t-esc="date_to"/></t>
                         <t t-else="">AS AT CURRENT DATE</t>
                     </div>
                 </td>
             </tr>
         </table>
 
-        <div style="height: 2px; background-color: #000000; margin: 15px 0 20px 0;"></div>
+        <!-- Black separator - PRIMARY BLACK #1A1A1A -->
+        <div style="height: 2px; background-color: #1A1A1A; margin: 15px 0 20px 0;"></div>
     </template>
 
     <!-- Two-Column Header Template (Legacy Compatibility) -->

@@ -3,25 +3,39 @@
     <!--
         OPS Financial Report Template
         ==============================
-        PHASE 24: THE MERIDIAN NATIVE (wkhtmltopdf)
+        THE MERIDIAN STANDARD (wkhtmltopdf Native)
 
         DESIGN PHILOSOPHY:
         - "Meridian Executive" aesthetic - Management Consulting feel
-        - High contrast: Deep Black (#000000) + Executive Gold (#c9a962) + Red (#DA291C)
+        - Premium, high-contrast color palette
         - TABLE-BASED LAYOUTS ONLY (wkhtmltopdf compatible)
         - NO Flexbox, NO Grid, NO CSS Variables
         - Inline CSS for maximum reliability
 
-        VALUE DISPLAY:
-        - Zeros: Show as "0.00" in Light Grey (#cccccc)
-        - Negatives: Red (#DA291C) with parentheses
-        - Positives: Black
+        COLOR TOKENS (THE MERIDIAN PALETTE):
+        - Executive Gold: #C9A962 (Brand accent, headers)
+        - Primary Black: #1A1A1A (Text, borders)
+        - Corporate Red: #DA291C (Negatives, alerts)
+        - Muted Grey: #FAFAFA (Backgrounds)
+        - Zero Grey: #cccccc (Zero value display)
 
-        REPORTS INCLUDED:
-        - Profit & Loss Statement (pl)
-        - Balance Sheet (bs)
+        TYPOGRAPHY:
+        - Headers: Arial, Helvetica, sans-serif
+        - Numbers: Georgia, 'Times New Roman', serif
+        - Monospace: Consolas (tabular data)
+
+        VALUE DISPLAY RULES:
+        - Zeros: Show as "0.00" in Grey (#cccccc)
+        - Negatives: Red (#DA291C) with parentheses, e.g., "(1,234.56)"
+        - Positives: Black (#1A1A1A)
+
+        THE BIG 3 FINANCIAL REPORTS:
+        1. Balance Sheet (bs) - "Equation Layout" (Assets = Liab + Equity)
+        2. Profit & Loss (pl) - Vertical layout with sections
+        3. Cash Flow (cf) - Inflow/Outflow/Net format
+
+        ADDITIONAL REPORTS:
         - Trial Balance (tb)
-        - Cash Flow Statement (cf)
         - Aged Partner Balance (aged)
         - General Ledger (gl)
     -->
@@ -58,8 +72,8 @@
                      ================================================ -->
                 <div class="page ops-cover-page" style="padding: 0;">
 
-                    <!-- Cover Header - Black Bar -->
-                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #000000; padding: 30px 40px;">
+                    <!-- Cover Header - Primary Black #1A1A1A -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #1A1A1A; padding: 30px 40px;">
                         <tr>
                             <td style="vertical-align: middle;">
                                 <table cellpadding="0" cellspacing="0">
@@ -88,16 +102,16 @@
                         </tr>
                     </table>
 
-                    <!-- Gold Accent Bar -->
-                    <div style="height: 5px; background-color: #c9a962;"></div>
+                    <!-- Gold Accent Bar - MERIDIAN GOLD #C9A962 -->
+                    <div style="height: 5px; background-color: #C9A962;"></div>
 
                     <!-- Cover Title Section -->
                     <div style="padding: 50px 40px 40px 40px; text-align: center;">
-                        <div style="font-size: 10pt; font-weight: 600; color: #DA291C; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 12px;">Financial Statement</div>
-                        <h1 style="font-size: 36pt; font-weight: 300; font-family: Georgia, serif; color: #000000; text-transform: uppercase; letter-spacing: 4px; margin: 0; line-height: 1.2;">
+                        <div style="font-size: 10pt; font-weight: 600; color: #DA291C; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 12px; font-family: Arial, Helvetica, sans-serif;">Financial Statement</div>
+                        <h1 style="font-size: 36pt; font-weight: 300; font-family: Georgia, 'Times New Roman', serif; color: #1A1A1A; text-transform: uppercase; letter-spacing: 4px; margin: 0; line-height: 1.2;">
                             <t t-esc="report_title"/>
                         </h1>
-                        <div style="font-size: 12pt; color: #6b7280; margin-top: 15px;"><t t-esc="branch"/></div>
+                        <div style="font-size: 12pt; color: #6b7280; margin-top: 15px; font-family: Arial, Helvetica, sans-serif;"><t t-esc="branch"/></div>
                     </div>
 
                     <!-- Cover KPI Cards -->
@@ -218,21 +232,24 @@
 
                 <!-- ================================================
                      PAGE 2+: FINANCIAL STATEMENT DETAIL
+                     THE MERIDIAN STANDARD - wkhtmltopdf Native
                      ================================================ -->
                 <div class="page ops-meridian-page" style="padding: 40px;">
 
-                    <!-- Meridian Header - Gold Bar -->
-                    <div style="height: 4px; background-color: #c9a962; margin-bottom: 20px;"></div>
+                    <!-- Meridian Header - Gold Bar #C9A962 -->
+                    <div style="height: 4px; background-color: #C9A962; margin-bottom: 20px;"></div>
 
-                    <!-- Two-Column Header Table -->
-                    <table width="100%" style="border-collapse: collapse;">
+                    <!-- Two-Column Header Table (Company Left, Details Right) -->
+                    <table width="100%" style="border-collapse: collapse;" class="ops-meridian-header">
                         <tr>
                             <td width="60%" style="vertical-align: top;">
-                                <div style="font-size: 32px; font-weight: 300; font-family: Georgia, serif; margin: 0;"><t t-esc="report_title"/></div>
-                                <div style="font-size: 14px; font-weight: 600; color: #666666; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;"><t t-esc="company_name"/></div>
+                                <!-- Report Title - Georgia serif -->
+                                <div style="font-size: 32px; font-weight: 300; font-family: Georgia, 'Times New Roman', serif; color: #1A1A1A; margin: 0;"><t t-esc="report_title"/></div>
+                                <!-- Company Name - Arial -->
+                                <div style="font-size: 14px; font-weight: 600; color: #666666; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px; font-family: Arial, Helvetica, sans-serif;"><t t-esc="company_name"/></div>
                             </td>
                             <td width="40%" style="text-align: right; vertical-align: top;">
-                                <div style="font-size: 10px; color: #999999; text-transform: uppercase; letter-spacing: 1px;">
+                                <div style="font-size: 10px; color: #999999; text-transform: uppercase; letter-spacing: 1px; font-family: Arial, Helvetica, sans-serif;">
                                     <t t-if="date_from and date_to">
                                         <t t-esc="date_from"/> TO <t t-esc="date_to"/>
                                     </t>
@@ -242,8 +259,8 @@
                         </tr>
                     </table>
 
-                    <!-- Black Separator -->
-                    <div style="height: 2px; background-color: #000000; margin: 15px 0 20px 0;"></div>
+                    <!-- Black Separator - PRIMARY BLACK #1A1A1A -->
+                    <div style="height: 2px; background-color: #1A1A1A; margin: 15px 0 20px 0;"></div>
 
                     <!-- Meta Info Bar -->
                     <div style="background-color: #f8f9fa; border: 1px solid #e5e7eb; padding: 12px 16px; margin-bottom: 25px;">
@@ -269,7 +286,12 @@
                         </table>
                     </div>
 
-                    <!-- ====== PROFIT & LOSS STATEMENT ====== -->
+                    <!-- ====== PROFIT & LOSS STATEMENT ======
+                         MERIDIAN STANDARD: Vertical layout
+                         Revenue section (Green #059669)
+                         Expense section (Red #DA291C)
+                         Net Profit summary box
+                    ====== -->
                     <t t-if="doc.report_type == 'pl'">
                         <t t-set="income" t-value="report_data.get('income_total', 0)"/>
                         <t t-set="expense" t-value="report_data.get('expense_total', 0)"/>
@@ -441,20 +463,66 @@
                         </div>
                     </t>
 
-                    <!-- ====== BALANCE SHEET ====== -->
+                    <!-- ====== BALANCE SHEET ======
+                         MERIDIAN STANDARD: "Equation Layout"
+                         Assets = Liabilities + Equity
+                         Two-column: Assets (left) | Liabilities + Equity (right)
+                         Section colors: Asset (Blue), Liability (Orange), Equity (Green)
+                    ====== -->
                     <t t-if="doc.report_type == 'bs'">
                         <t t-set="assets" t-value="report_data.get('asset_total', 0)"/>
                         <t t-set="liabilities" t-value="report_data.get('liability_total', 0)"/>
                         <t t-set="equity" t-value="report_data.get('equity_total', 0)"/>
                         <t t-set="balance_check" t-value="assets - (abs(liabilities) + abs(equity))"/>
 
-                        <!-- Accounting Equation Bar -->
-                        <div style="text-align: center; padding: 20px; border-bottom: 1px solid #eeeeee; margin-bottom: 25px;">
-                            <span style="font-size: 20px; font-family: Georgia, serif;">Total Assets</span>
-                            <span style="color: #cccccc; margin: 0 15px;">=</span>
-                            <span style="font-size: 20px; font-family: Georgia, serif;">Equity</span>
-                            <span style="color: #cccccc; margin: 0 15px;">+</span>
-                            <span style="font-size: 20px; font-family: Georgia, serif;">Liabilities</span>
+                        <!-- MERIDIAN ACCOUNTING EQUATION BLOCK -->
+                        <div class="ops-equation-block" style="text-align: center; padding: 25px 0; margin: 20px 0; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; background-color: #FAFAFA;">
+                            <table style="margin: 0 auto; border-collapse: collapse;">
+                                <tr>
+                                    <!-- ASSETS -->
+                                    <td style="padding: 0 30px; text-align: center; vertical-align: middle;">
+                                        <div style="font-size: 9pt; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Total Assets</div>
+                                        <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22pt; font-weight: 600; color: #2563eb;">
+                                            <t t-esc="'{:,.2f}'.format(assets)"/>
+                                        </div>
+                                    </td>
+                                    <!-- = -->
+                                    <td style="padding: 0 15px; vertical-align: middle;">
+                                        <span style="font-size: 28pt; color: #9ca3af; font-weight: 300;">=</span>
+                                    </td>
+                                    <!-- LIABILITIES -->
+                                    <td style="padding: 0 30px; text-align: center; vertical-align: middle;">
+                                        <div style="font-size: 9pt; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Liabilities</div>
+                                        <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22pt; font-weight: 600; color: #d97706;">
+                                            <t t-esc="'{:,.2f}'.format(abs(liabilities))"/>
+                                        </div>
+                                    </td>
+                                    <!-- + -->
+                                    <td style="padding: 0 15px; vertical-align: middle;">
+                                        <span style="font-size: 28pt; color: #9ca3af; font-weight: 300;">+</span>
+                                    </td>
+                                    <!-- EQUITY -->
+                                    <td style="padding: 0 30px; text-align: center; vertical-align: middle;">
+                                        <div style="font-size: 9pt; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Equity</div>
+                                        <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 22pt; font-weight: 600; color: #059669;">
+                                            <t t-esc="'{:,.2f}'.format(abs(equity))"/>
+                                        </div>
+                                    </td>
+                                    <!-- STATUS CHECK -->
+                                    <td style="padding: 0 15px 0 30px; vertical-align: middle; border-left: 1px solid #e5e7eb;">
+                                        <t t-if="abs(balance_check) &lt; 0.01">
+                                            <div style="padding: 10px 18px; background-color: #d1fae5; border-radius: 4px; text-align: center;">
+                                                <span style="font-size: 10pt; font-weight: 600; color: #059669;">&#10003; Balanced</span>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="padding: 10px 18px; background-color: #fee2e2; border-radius: 4px; text-align: center;">
+                                                <span style="font-size: 10pt; font-weight: 600; color: #DA291C;">&#10007; Off by <t t-esc="'{:,.2f}'.format(abs(balance_check))"/></span>
+                                            </div>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
 
                         <!-- Two-Column Layout for Assets | Liabilities + Equity -->
@@ -602,8 +670,8 @@
                             </tr>
                         </table>
 
-                        <!-- BALANCE CHECK SUMMARY -->
-                        <div style="margin-top: 25px; padding: 20px 25px; background-color: #000000 !important; color: #ffffff;">
+                        <!-- BALANCE CHECK SUMMARY - Primary Black #1A1A1A -->
+                        <div style="margin-top: 25px; padding: 20px 25px; background-color: #1A1A1A !important; color: #ffffff;">
                             <table width="100%">
                                 <tr>
                                     <td style="width: 35%; vertical-align: middle;">
@@ -629,7 +697,7 @@
                     <!-- ====== TRIAL BALANCE ====== -->
                     <t t-if="doc.report_type == 'tb'">
                         <div style="margin-bottom: 25px;">
-                            <div style="padding: 10px 14px; background-color: #000000 !important; color: #ffffff; font-weight: 700; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <div style="padding: 10px 14px; background-color: #1A1A1A !important; color: #ffffff; font-weight: 700; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif;">
                                 <table width="100%">
                                     <tr>
                                         <td>Trial Balance</td>
@@ -674,11 +742,11 @@
                                 </tbody>
                             </table>
                         </div>
-                        <!-- Grand Total -->
+                        <!-- Grand Total - Primary Black #1A1A1A -->
                         <t t-set="total_debit" t-value="report_data.get('total_debit', 0)"/>
                         <t t-set="total_credit" t-value="report_data.get('total_credit', 0)"/>
                         <t t-set="tb_diff" t-value="total_debit - total_credit"/>
-                        <div style="margin-top: 25px; padding: 20px 25px; background-color: #000000 !important; color: #ffffff;">
+                        <div style="margin-top: 25px; padding: 20px 25px; background-color: #1A1A1A !important; color: #ffffff;">
                             <table width="100%">
                                 <tr>
                                     <td style="width: 30%; vertical-align: middle;">
@@ -705,9 +773,56 @@
                         </div>
                     </t>
 
-                    <!-- ====== CASH FLOW STATEMENT ====== -->
+                    <!-- ====== CASH FLOW STATEMENT ======
+                         MERIDIAN STANDARD: 3-Section Format
+                         - Operating Activities (Blue)
+                         - Investing Activities (Orange)
+                         - Financing Activities (Green)
+                         Each section: Inflows (Green) / Outflows (Red) / Net
+                    ====== -->
                     <t t-if="doc.report_type == 'cf'">
                         <t t-set="net_cf" t-value="report_data.get('net_cash_flow', 0)"/>
+                        <t t-set="operating_net" t-value="report_data.get('operating_net', 0)"/>
+                        <t t-set="investing_net" t-value="report_data.get('investing_net', 0)"/>
+                        <t t-set="financing_net" t-value="report_data.get('financing_net', 0)"/>
+                        <t t-set="opening_cash" t-value="report_data.get('opening_cash', 0)"/>
+                        <t t-set="closing_cash" t-value="report_data.get('closing_cash', 0)"/>
+
+                        <!-- KPI Summary Strip -->
+                        <table width="100%" style="border-collapse: separate; border-spacing: 12px 0; margin-bottom: 25px;">
+                            <tr>
+                                <td style="background-color: #ffffff; border: 1px solid #e5e7eb; border-left: 4px solid #2563eb; padding: 16px 18px; vertical-align: top; width: 25%;">
+                                    <div style="font-size: 8pt; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Operating</div>
+                                    <div t-attf-style="font-family: Georgia, serif; font-size: 18pt; font-weight: 700; color: #{operating_net >= 0 and '#059669' or '#DA291C'}; margin-top: 6px;">
+                                        <t t-if="operating_net &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(operating_net))"/>)</t>
+                                        <t t-else=""><t t-esc="'{:,.0f}'.format(operating_net)"/></t>
+                                    </div>
+                                </td>
+                                <td style="background-color: #ffffff; border: 1px solid #e5e7eb; border-left: 4px solid #d97706; padding: 16px 18px; vertical-align: top; width: 25%;">
+                                    <div style="font-size: 8pt; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Investing</div>
+                                    <div t-attf-style="font-family: Georgia, serif; font-size: 18pt; font-weight: 700; color: #{investing_net >= 0 and '#059669' or '#DA291C'}; margin-top: 6px;">
+                                        <t t-if="investing_net &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(investing_net))"/>)</t>
+                                        <t t-else=""><t t-esc="'{:,.0f}'.format(investing_net)"/></t>
+                                    </div>
+                                </td>
+                                <td style="background-color: #ffffff; border: 1px solid #e5e7eb; border-left: 4px solid #059669; padding: 16px 18px; vertical-align: top; width: 25%;">
+                                    <div style="font-size: 8pt; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Financing</div>
+                                    <div t-attf-style="font-family: Georgia, serif; font-size: 18pt; font-weight: 700; color: #{financing_net >= 0 and '#059669' or '#DA291C'}; margin-top: 6px;">
+                                        <t t-if="financing_net &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(financing_net))"/>)</t>
+                                        <t t-else=""><t t-esc="'{:,.0f}'.format(financing_net)"/></t>
+                                    </div>
+                                </td>
+                                <td t-attf-style="background-color: #ffffff; border: 1px solid #e5e7eb; border-left: 4px solid #{net_cf >= 0 and '#059669' or '#DA291C'}; padding: 16px 18px; vertical-align: top; width: 25%;">
+                                    <div style="font-size: 8pt; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Net Change</div>
+                                    <div t-attf-style="font-family: Georgia, serif; font-size: 18pt; font-weight: 700; color: #{net_cf >= 0 and '#059669' or '#DA291C'}; margin-top: 6px;">
+                                        <t t-if="net_cf &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(net_cf))"/>)</t>
+                                        <t t-else=""><t t-esc="'{:,.0f}'.format(net_cf)"/></t>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Main Cash Flow Table -->
                         <div style="margin-bottom: 25px;">
                             <div style="padding: 10px 14px; background-color: #2563eb !important; color: #ffffff; font-weight: 700; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.5px;">
                                 <table width="100%">
@@ -723,19 +838,25 @@
                             <table class="ops-native-table" width="100%">
                                 <thead>
                                     <tr>
-                                        <th style="background-color: #f8f9fa; padding: 12px 10px; text-align: left; font-size: 8pt; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000000;">Account</th>
+                                        <th style="background-color: #f8f9fa; padding: 12px 10px; text-align: left; font-size: 8pt; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000000;">Description</th>
                                         <th style="background-color: #f8f9fa; padding: 12px 10px; text-align: right; font-size: 8pt; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000000; width: 110px;">Inflow</th>
                                         <th style="background-color: #f8f9fa; padding: 12px 10px; text-align: right; font-size: 8pt; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000000; width: 110px;">Outflow</th>
                                         <th style="background-color: #f8f9fa; padding: 12px 10px; text-align: right; font-size: 8pt; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #000000; width: 110px;">Net</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <t t-foreach="report_data.get('lines', [])" t-as="line">
+                                    <!-- Operating Activities Section -->
+                                    <tr class="section-header">
+                                        <td colspan="4" style="font-weight: 700; font-size: 11pt; color: #2563eb; padding-top: 18px; padding-bottom: 8px; border-bottom: 1px solid #2563eb; background-color: transparent;">
+                                            Operating Activities
+                                        </td>
+                                    </tr>
+                                    <t t-foreach="report_data.get('operating_lines', report_data.get('lines', []))" t-as="line">
                                         <t t-set="inflow" t-value="line.get('inflow', 0)"/>
                                         <t t-set="outflow" t-value="line.get('outflow', 0)"/>
                                         <t t-set="net_flow" t-value="line.get('net', 0)"/>
                                         <tr>
-                                            <td style="padding: 10px; color: #000000; border-bottom: 1px solid #e5e7eb;"><t t-esc="line.get('account', '')"/></td>
+                                            <td style="padding: 10px; color: #000000; border-bottom: 1px solid #e5e7eb;"><t t-esc="line.get('account', line.get('name', ''))"/></td>
                                             <td style="padding: 10px; text-align: right; font-family: Georgia, serif; border-bottom: 1px solid #e5e7eb;">
                                                 <t t-if="inflow == 0"><span style="color: #cccccc;">0.00</span></t>
                                                 <t t-else=""><span style="color: #059669;"><t t-esc="'{:,.2f}'.format(inflow)"/></span></t>
@@ -751,19 +872,145 @@
                                             </td>
                                         </tr>
                                     </t>
-                                    <t t-if="not report_data.get('lines')">
+                                    <t t-if="not report_data.get('operating_lines') and not report_data.get('lines')">
                                         <tr><td colspan="4" style="padding: 10px; color: #cccccc; text-align: center; font-style: italic; border-bottom: 1px solid #e5e7eb;">No cash flow entries</td></tr>
                                     </t>
+                                    <!-- Operating Subtotal -->
+                                    <tr class="subtotal-row">
+                                        <td style="font-weight: 600; padding: 10px; border-top: 1px solid #1A1A1A; background-color: #FAFAFA;">Net Cash from Operating</td>
+                                        <td colspan="2" style="padding: 10px; background-color: #FAFAFA;"></td>
+                                        <td style="padding: 10px; text-align: right; font-family: Georgia, serif; font-weight: 700; border-top: 1px solid #1A1A1A; background-color: #FAFAFA;">
+                                            <t t-if="operating_net == 0"><span style="color: #cccccc;">0.00</span></t>
+                                            <t t-elif="operating_net &lt; 0"><span style="color: #DA291C;">(<t t-esc="'{:,.2f}'.format(abs(operating_net))"/>)</span></t>
+                                            <t t-else=""><span style="color: #059669;"><t t-esc="'{:,.2f}'.format(operating_net)"/></span></t>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Investing Activities Section (if data exists) -->
+                                    <t t-if="report_data.get('investing_lines')">
+                                        <tr class="section-header">
+                                            <td colspan="4" style="font-weight: 700; font-size: 11pt; color: #d97706; padding-top: 18px; padding-bottom: 8px; border-bottom: 1px solid #d97706; background-color: transparent;">
+                                                Investing Activities
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="report_data.get('investing_lines', [])" t-as="line">
+                                            <t t-set="inflow" t-value="line.get('inflow', 0)"/>
+                                            <t t-set="outflow" t-value="line.get('outflow', 0)"/>
+                                            <t t-set="net_flow" t-value="line.get('net', 0)"/>
+                                            <tr>
+                                                <td style="padding: 10px; color: #000000; border-bottom: 1px solid #e5e7eb;"><t t-esc="line.get('account', line.get('name', ''))"/></td>
+                                                <td style="padding: 10px; text-align: right; font-family: Georgia, serif; border-bottom: 1px solid #e5e7eb;">
+                                                    <t t-if="inflow == 0"><span style="color: #cccccc;">0.00</span></t>
+                                                    <t t-else=""><span style="color: #059669;"><t t-esc="'{:,.2f}'.format(inflow)"/></span></t>
+                                                </td>
+                                                <td style="padding: 10px; text-align: right; font-family: Georgia, serif; border-bottom: 1px solid #e5e7eb;">
+                                                    <t t-if="outflow == 0"><span style="color: #cccccc;">0.00</span></t>
+                                                    <t t-else=""><span style="color: #DA291C;">(<t t-esc="'{:,.2f}'.format(outflow)"/>)</span></t>
+                                                </td>
+                                                <td style="padding: 10px; text-align: right; font-family: Georgia, serif; font-weight: 600; border-bottom: 1px solid #e5e7eb;">
+                                                    <t t-if="net_flow == 0"><span style="color: #cccccc;">0.00</span></t>
+                                                    <t t-elif="net_flow &lt; 0"><span style="color: #DA291C;">(<t t-esc="'{:,.2f}'.format(abs(net_flow))"/>)</span></t>
+                                                    <t t-else=""><span style="color: #059669;"><t t-esc="'{:,.2f}'.format(net_flow)"/></span></t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr class="subtotal-row">
+                                            <td style="font-weight: 600; padding: 10px; border-top: 1px solid #1A1A1A; background-color: #FAFAFA;">Net Cash from Investing</td>
+                                            <td colspan="2" style="padding: 10px; background-color: #FAFAFA;"></td>
+                                            <td style="padding: 10px; text-align: right; font-family: Georgia, serif; font-weight: 700; border-top: 1px solid #1A1A1A; background-color: #FAFAFA;">
+                                                <t t-if="investing_net == 0"><span style="color: #cccccc;">0.00</span></t>
+                                                <t t-elif="investing_net &lt; 0"><span style="color: #DA291C;">(<t t-esc="'{:,.2f}'.format(abs(investing_net))"/>)</span></t>
+                                                <t t-else=""><span style="color: #059669;"><t t-esc="'{:,.2f}'.format(investing_net)"/></span></t>
+                                            </td>
+                                        </tr>
+                                    </t>
+
+                                    <!-- Financing Activities Section (if data exists) -->
+                                    <t t-if="report_data.get('financing_lines')">
+                                        <tr class="section-header">
+                                            <td colspan="4" style="font-weight: 700; font-size: 11pt; color: #059669; padding-top: 18px; padding-bottom: 8px; border-bottom: 1px solid #059669; background-color: transparent;">
+                                                Financing Activities
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="report_data.get('financing_lines', [])" t-as="line">
+                                            <t t-set="inflow" t-value="line.get('inflow', 0)"/>
+                                            <t t-set="outflow" t-value="line.get('outflow', 0)"/>
+                                            <t t-set="net_flow" t-value="line.get('net', 0)"/>
+                                            <tr>
+                                                <td style="padding: 10px; color: #000000; border-bottom: 1px solid #e5e7eb;"><t t-esc="line.get('account', line.get('name', ''))"/></td>
+                                                <td style="padding: 10px; text-align: right; font-family: Georgia, serif; border-bottom: 1px solid #e5e7eb;">
+                                                    <t t-if="inflow == 0"><span style="color: #cccccc;">0.00</span></t>
+                                                    <t t-else=""><span style="color: #059669;"><t t-esc="'{:,.2f}'.format(inflow)"/></span></t>
+                                                </td>
+                                                <td style="padding: 10px; text-align: right; font-family: Georgia, serif; border-bottom: 1px solid #e5e7eb;">
+                                                    <t t-if="outflow == 0"><span style="color: #cccccc;">0.00</span></t>
+                                                    <t t-else=""><span style="color: #DA291C;">(<t t-esc="'{:,.2f}'.format(outflow)"/>)</span></t>
+                                                </td>
+                                                <td style="padding: 10px; text-align: right; font-family: Georgia, serif; font-weight: 600; border-bottom: 1px solid #e5e7eb;">
+                                                    <t t-if="net_flow == 0"><span style="color: #cccccc;">0.00</span></t>
+                                                    <t t-elif="net_flow &lt; 0"><span style="color: #DA291C;">(<t t-esc="'{:,.2f}'.format(abs(net_flow))"/>)</span></t>
+                                                    <t t-else=""><span style="color: #059669;"><t t-esc="'{:,.2f}'.format(net_flow)"/></span></t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr class="subtotal-row">
+                                            <td style="font-weight: 600; padding: 10px; border-top: 1px solid #1A1A1A; background-color: #FAFAFA;">Net Cash from Financing</td>
+                                            <td colspan="2" style="padding: 10px; background-color: #FAFAFA;"></td>
+                                            <td style="padding: 10px; text-align: right; font-family: Georgia, serif; font-weight: 700; border-top: 1px solid #1A1A1A; background-color: #FAFAFA;">
+                                                <t t-if="financing_net == 0"><span style="color: #cccccc;">0.00</span></t>
+                                                <t t-elif="financing_net &lt; 0"><span style="color: #DA291C;">(<t t-esc="'{:,.2f}'.format(abs(financing_net))"/>)</span></t>
+                                                <t t-else=""><span style="color: #059669;"><t t-esc="'{:,.2f}'.format(financing_net)"/></span></t>
+                                            </td>
+                                        </tr>
+                                    </t>
+
+                                    <!-- Grand Total Row -->
+                                    <tr class="grand-total-row">
+                                        <td style="font-weight: 700; font-size: 12pt; background-color: #1A1A1A !important; color: #ffffff !important; padding: 14px 10px; border: none;">Net Change in Cash</td>
+                                        <td colspan="2" style="background-color: #1A1A1A !important; padding: 14px 10px; border: none;"></td>
+                                        <td style="text-align: right; font-family: Georgia, serif; font-weight: 700; font-size: 12pt; background-color: #1A1A1A !important; color: #ffffff !important; padding: 14px 10px; border: none;">
+                                            <t t-if="net_cf &lt; 0">(<t t-esc="'{:,.2f}'.format(abs(net_cf))"/>)</t>
+                                            <t t-else=""><t t-esc="'{:,.2f}'.format(net_cf)"/></t>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <!-- Net Cash Flow Summary -->
+
+                        <!-- Cash Position Summary -->
+                        <div style="margin-top: 25px; background-color: #f8f9fa; border: 1px solid #e5e7eb; padding: 20px;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 33%; text-align: center; border-right: 1px solid #e5e7eb;">
+                                        <div style="font-size: 8pt; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Opening Cash</div>
+                                        <div style="font-family: Georgia, serif; font-size: 20pt; font-weight: 700; color: #1A1A1A; margin-top: 6px;">
+                                            <t t-esc="'{:,.2f}'.format(opening_cash)"/>
+                                        </div>
+                                    </td>
+                                    <td style="width: 34%; text-align: center; border-right: 1px solid #e5e7eb;">
+                                        <div style="font-size: 8pt; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Net Change</div>
+                                        <div t-attf-style="font-family: Georgia, serif; font-size: 20pt; font-weight: 700; color: #{net_cf >= 0 and '#059669' or '#DA291C'}; margin-top: 6px;">
+                                            <t t-if="net_cf &lt; 0">(<t t-esc="'{:,.2f}'.format(abs(net_cf))"/>)</t>
+                                            <t t-else="">+<t t-esc="'{:,.2f}'.format(net_cf)"/></t>
+                                        </div>
+                                    </td>
+                                    <td style="width: 33%; text-align: center;">
+                                        <div style="font-size: 8pt; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Closing Cash</div>
+                                        <div style="font-family: Georgia, serif; font-size: 20pt; font-weight: 700; color: #1A1A1A; margin-top: 6px;">
+                                            <t t-esc="'{:,.2f}'.format(closing_cash)"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Net Cash Flow Summary Badge -->
                         <div t-attf-style="margin-top: 25px; padding: 20px 25px; background-color: #{net_cf >= 0 and '#059669' or '#DA291C'} !important; color: #ffffff;">
                             <table width="100%">
                                 <tr>
                                     <td style="width: 35%; vertical-align: middle;">
                                         <div style="font-size: 9pt; font-weight: 600; color: #ffffff; text-transform: uppercase; letter-spacing: 1px;">Net Cash Flow</div>
-                                        <div style="font-size: 9pt; color: #cccccc; margin-top: 3px;">Inflows - Outflows</div>
+                                        <div style="font-size: 9pt; color: #cccccc; margin-top: 3px;">Operating + Investing + Financing</div>
                                     </td>
                                     <td style="width: 40%; text-align: center; vertical-align: middle;">
                                         <div style="font-family: Georgia, serif; font-size: 28pt; font-weight: 700; color: #ffffff;">
@@ -787,7 +1034,7 @@
                     <!-- ====== GENERAL LEDGER ====== -->
                     <t t-if="doc.report_type == 'gl'">
                         <div style="margin-bottom: 25px;">
-                            <div style="padding: 10px 14px; background-color: #000000 !important; color: #ffffff; font-weight: 700; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <div style="padding: 10px 14px; background-color: #1A1A1A !important; color: #ffffff; font-weight: 700; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif;">
                                 <table width="100%">
                                     <tr>
                                         <td>General Ledger</td>
@@ -892,8 +1139,8 @@
                         </div>
                     </t>
 
-                    <!-- Notes Section -->
-                    <div style="margin-top: 30px; padding: 16px 20px; background-color: #f8f9fa; border: 1px solid #e5e7eb; border-left: 4px solid #000000;">
+                    <!-- Notes Section - Primary Black #1A1A1A accent -->
+                    <div style="margin-top: 30px; padding: 16px 20px; background-color: #FAFAFA; border: 1px solid #e5e7eb; border-left: 4px solid #1A1A1A;">
                         <div style="font-size: 9pt; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Notes to Financial Statements</div>
                         <ul style="list-style: none; margin: 0; padding: 0;">
                             <li style="font-size: 9pt; color: #4b5563; padding: 4px 0 4px 18px; position: relative;">
@@ -918,6 +1165,34 @@
                             </li>
                         </ul>
                     </div>
+
+                    <!-- MERIDIAN SIGNATURE BLOCK - For Management Approval -->
+                    <t t-if="doc.report_type in ('bs', 'pl', 'cf')">
+                        <div style="margin-top: 50px; page-break-inside: avoid;">
+                            <div style="font-size: 9pt; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Authorised Signatories</div>
+                            <table width="100%" style="border-collapse: collapse;">
+                                <tr>
+                                    <td width="30%" style="padding: 15px 25px 15px 0; text-align: center; vertical-align: top;">
+                                        <div style="border-bottom: 1px solid #1A1A1A; min-height: 50px; margin-bottom: 10px;"></div>
+                                        <div style="font-size: 9pt; font-weight: 600; color: #1A1A1A; text-transform: uppercase; letter-spacing: 0.5px;">Chief Executive Officer</div>
+                                        <div style="font-size: 8pt; color: #6b7280; margin-top: 4px;">Name / Date</div>
+                                    </td>
+                                    <td width="5%"></td>
+                                    <td width="30%" style="padding: 15px 25px; text-align: center; vertical-align: top;">
+                                        <div style="border-bottom: 1px solid #1A1A1A; min-height: 50px; margin-bottom: 10px;"></div>
+                                        <div style="font-size: 9pt; font-weight: 600; color: #1A1A1A; text-transform: uppercase; letter-spacing: 0.5px;">Chief Financial Officer</div>
+                                        <div style="font-size: 8pt; color: #6b7280; margin-top: 4px;">Name / Date</div>
+                                    </td>
+                                    <td width="5%"></td>
+                                    <td width="30%" style="padding: 15px 0 15px 25px; text-align: center; vertical-align: top;">
+                                        <div style="border-bottom: 1px solid #1A1A1A; min-height: 50px; margin-bottom: 10px;"></div>
+                                        <div style="font-size: 9pt; font-weight: 600; color: #1A1A1A; text-transform: uppercase; letter-spacing: 0.5px;">Board Director</div>
+                                        <div style="font-size: 8pt; color: #6b7280; margin-top: 4px;">Name / Date</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
 
                     <!-- Page Footer -->
                     <div style="margin-top: 35px; padding-top: 15px; border-top: 1px solid #e5e7eb;">

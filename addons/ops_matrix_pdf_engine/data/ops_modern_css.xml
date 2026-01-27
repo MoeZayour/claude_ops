@@ -1,0 +1,751 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        OPS Modern CSS Template for WeasyPrint
+        ======================================
+
+        This template provides modern CSS that ONLY works with WeasyPrint.
+        Features that are NOT supported by wkhtmltopdf:
+        - CSS Variables (Custom Properties)
+        - Flexbox (display: flex)
+        - Grid (display: grid)
+        - gap property
+        - Modern gradients
+
+        Use this template with ops.pdf.engine for modern PDF reports.
+    -->
+
+    <template id="ops_modern_css_template">
+        <t t-set="primary_color" t-value="company.primary_color or '#0a1628'"/>
+        <t t-set="secondary_color" t-value="company.secondary_color or '#3b82f6'"/>
+
+        /* ================================================
+           OPS MODERN CSS - WeasyPrint Engine v1.0
+           Full CSS3 Support (Flexbox, Grid, Variables)
+           ================================================ */
+
+        /* CSS Custom Properties (Variables) */
+        :root {
+            --ops-primary: <t t-esc="primary_color"/>;
+            --ops-secondary: <t t-esc="secondary_color"/>;
+            --ops-success: #059669;
+            --ops-danger: #dc2626;
+            --ops-warning: #d97706;
+            --ops-info: #2563eb;
+            --ops-muted: #94a3b8;
+            --ops-text-dark: #1e293b;
+            --ops-text-medium: #64748b;
+            --ops-text-light: #94a3b8;
+            --ops-border: #e2e8f0;
+            --ops-bg-light: #f8fafc;
+            --ops-bg-white: #ffffff;
+
+            /* Spacing scale */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --space-10: 40px;
+
+            /* Font families */
+            --font-sans: 'DejaVu Sans', Helvetica, Arial, sans-serif;
+            --font-serif: Georgia, 'Times New Roman', serif;
+            --font-mono: 'DejaVu Sans Mono', 'Courier New', monospace;
+        }
+
+        /* Page Setup */
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        @page :first {
+            margin-top: 0;
+        }
+
+        /* Reset and Base */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            font-size: 10pt;
+            line-height: 1.5;
+            color: var(--ops-text-dark);
+            background: var(--ops-bg-white);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ================================================
+           TYPOGRAPHY
+           ================================================ */
+        .ops-title-serif {
+            font-family: var(--font-serif);
+        }
+
+        .ops-mono {
+            font-family: var(--font-mono);
+        }
+
+        .ops-uppercase {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ops-small-caps {
+            font-variant: small-caps;
+            letter-spacing: 0.5px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-serif);
+            margin: 0 0 var(--space-4) 0;
+            line-height: 1.2;
+        }
+
+        h1 { font-size: 28pt; }
+        h2 { font-size: 22pt; }
+        h3 { font-size: 16pt; }
+        h4 { font-size: 14pt; }
+
+        /* ================================================
+           FLEXBOX UTILITIES
+           ================================================ */
+        .ops-flex { display: flex; }
+        .ops-flex-col { display: flex; flex-direction: column; }
+        .ops-flex-row { display: flex; flex-direction: row; }
+        .ops-flex-wrap { flex-wrap: wrap; }
+        .ops-flex-nowrap { flex-wrap: nowrap; }
+        .ops-flex-1 { flex: 1; }
+        .ops-flex-auto { flex: auto; }
+        .ops-flex-none { flex: none; }
+
+        .ops-justify-start { justify-content: flex-start; }
+        .ops-justify-end { justify-content: flex-end; }
+        .ops-justify-center { justify-content: center; }
+        .ops-justify-between { justify-content: space-between; }
+        .ops-justify-around { justify-content: space-around; }
+        .ops-justify-evenly { justify-content: space-evenly; }
+
+        .ops-align-start { align-items: flex-start; }
+        .ops-align-end { align-items: flex-end; }
+        .ops-align-center { align-items: center; }
+        .ops-align-stretch { align-items: stretch; }
+
+        .ops-gap-1 { gap: var(--space-1); }
+        .ops-gap-2 { gap: var(--space-2); }
+        .ops-gap-3 { gap: var(--space-3); }
+        .ops-gap-4 { gap: var(--space-4); }
+        .ops-gap-5 { gap: var(--space-5); }
+        .ops-gap-6 { gap: var(--space-6); }
+        .ops-gap-8 { gap: var(--space-8); }
+
+        /* ================================================
+           GRID UTILITIES
+           ================================================ */
+        .ops-grid { display: grid; }
+        .ops-grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+        .ops-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .ops-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .ops-grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+        .ops-grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+        .ops-grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+        .ops-col-span-2 { grid-column: span 2; }
+        .ops-col-span-3 { grid-column: span 3; }
+        .ops-col-span-full { grid-column: 1 / -1; }
+
+        /* ================================================
+           COVER PAGE (Modern Gradient)
+           ================================================ */
+        .ops-cover {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, var(--ops-primary) 0%, #1a2744 50%, var(--ops-secondary) 100%);
+            color: #ffffff;
+            page-break-after: always;
+            padding: 0;
+        }
+
+        .ops-cover-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-8) var(--space-10);
+        }
+
+        .ops-cover-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .ops-cover-logo-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-serif);
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .ops-cover-company-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ops-cover-company-name {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: -0.3px;
+        }
+
+        .ops-cover-tagline {
+            font-size: 11px;
+            opacity: 0.7;
+            letter-spacing: 0.5px;
+        }
+
+        .ops-cover-fiscal {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: var(--space-3) var(--space-4);
+            text-align: right;
+        }
+
+        .ops-cover-fiscal-label {
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+
+        .ops-cover-fiscal-year {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .ops-cover-accent {
+            height: 6px;
+            background: linear-gradient(90deg, var(--ops-secondary) 0%, var(--ops-success) 50%, var(--ops-warning) 100%);
+        }
+
+        .ops-cover-title-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--space-10);
+        }
+
+        .ops-cover-doc-type {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--ops-secondary);
+            margin-bottom: var(--space-3);
+        }
+
+        .ops-cover-main-title {
+            font-family: var(--font-serif);
+            font-size: 42px;
+            font-weight: bold;
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .ops-cover-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: var(--space-3);
+        }
+
+        .ops-cover-kpis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-4);
+            padding: var(--space-8) var(--space-10);
+            background: rgba(0,0,0,0.2);
+        }
+
+        .ops-cover-kpi {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: var(--space-4);
+        }
+
+        .ops-cover-kpi-label {
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
+
+        .ops-cover-kpi-value {
+            font-family: var(--font-mono);
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .ops-cover-footer {
+            padding: var(--space-6) var(--space-10);
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            opacity: 0.7;
+        }
+
+        /* ================================================
+           KPI CARDS (Grid Layout)
+           ================================================ */
+        .ops-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .ops-kpi-card {
+            background: var(--ops-bg-white);
+            border: 1px solid var(--ops-border);
+            border-left: 4px solid var(--ops-secondary);
+            border-radius: 6px;
+            padding: var(--space-4) var(--space-5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ops-kpi-card.success { border-left-color: var(--ops-success); }
+        .ops-kpi-card.danger { border-left-color: var(--ops-danger); }
+        .ops-kpi-card.warning { border-left-color: var(--ops-warning); }
+        .ops-kpi-card.info { border-left-color: var(--ops-info); }
+
+        .ops-kpi-label {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--ops-text-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ops-kpi-value {
+            font-family: var(--font-mono);
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: var(--space-1);
+            color: var(--ops-text-dark);
+        }
+
+        .ops-kpi-value.positive { color: var(--ops-success); }
+        .ops-kpi-value.negative { color: var(--ops-danger); }
+        .ops-kpi-value.zero { color: var(--ops-muted); }
+
+        .ops-kpi-change {
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: var(--space-1);
+        }
+
+        .ops-kpi-change.up { color: var(--ops-success); }
+        .ops-kpi-change.down { color: var(--ops-danger); }
+
+        /* ================================================
+           SECTION HEADERS (Flex Layout)
+           ================================================ */
+        .ops-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .ops-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3) var(--space-4);
+            border-radius: 6px 6px 0 0;
+            color: #ffffff;
+        }
+
+        .ops-section-header.success { background: var(--ops-success); }
+        .ops-section-header.danger { background: var(--ops-danger); }
+        .ops-section-header.warning { background: var(--ops-warning); }
+        .ops-section-header.info { background: var(--ops-info); }
+        .ops-section-header.neutral { background: var(--ops-primary); }
+
+        .ops-section-title {
+            font-size: 12pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ops-section-amount {
+            font-family: var(--font-mono);
+            font-size: 14pt;
+            font-weight: 700;
+        }
+
+        .ops-section-body {
+            border: 1px solid var(--ops-border);
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            overflow: hidden;
+        }
+
+        /* ================================================
+           DATA TABLES
+           ================================================ */
+        .ops-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+        }
+
+        .ops-table thead th {
+            padding: var(--space-3) var(--space-4);
+            text-align: left;
+            font-weight: 600;
+            color: var(--ops-text-medium);
+            text-transform: uppercase;
+            font-size: 9pt;
+            letter-spacing: 0.3px;
+            border-bottom: 2px solid var(--ops-text-dark);
+            background: var(--ops-bg-light);
+        }
+
+        .ops-table tbody td {
+            padding: var(--space-3) var(--space-4);
+            border-bottom: 1px solid var(--ops-border);
+            color: var(--ops-text-dark);
+        }
+
+        .ops-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ops-table .text-end {
+            text-align: right;
+        }
+
+        .ops-table .mono {
+            font-family: var(--font-mono);
+            font-size: 9pt;
+        }
+
+        .ops-table tr.subtotal td {
+            background: var(--ops-bg-light);
+            font-weight: 600;
+            border-top: 1px solid var(--ops-muted);
+        }
+
+        .ops-table tr.total td {
+            font-weight: 700;
+            font-size: 11pt;
+            border-top: 2px solid var(--ops-text-dark);
+            border-bottom: 3px double var(--ops-text-dark);
+        }
+
+        .ops-table tr.grand-total td {
+            background: var(--ops-primary);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 11pt;
+        }
+
+        /* Indentation */
+        .ops-table .indent-1 { padding-left: var(--space-6) !important; }
+        .ops-table .indent-2 { padding-left: var(--space-8) !important; font-size: 9pt; color: var(--ops-text-medium); }
+        .ops-table .indent-3 { padding-left: var(--space-10) !important; font-size: 8pt; color: var(--ops-text-light); }
+
+        /* ================================================
+           SUMMARY BOX (Flex Layout)
+           ================================================ */
+        .ops-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-5) var(--space-6);
+            border-radius: 8px;
+            margin-top: var(--space-6);
+            color: #ffffff;
+        }
+
+        .ops-summary.success {
+            background: linear-gradient(135deg, #047857 0%, var(--ops-success) 100%);
+        }
+
+        .ops-summary.loss {
+            background: linear-gradient(135deg, #991b1b 0%, var(--ops-danger) 100%);
+        }
+
+        .ops-summary.neutral {
+            background: linear-gradient(135deg, var(--ops-primary) 0%, #1a2744 100%);
+        }
+
+        .ops-summary-label-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ops-summary-label {
+            font-size: 10pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+        }
+
+        .ops-summary-equation {
+            font-size: 11pt;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
+        .ops-summary-value {
+            font-family: var(--font-mono);
+            font-size: 28pt;
+            font-weight: 700;
+        }
+
+        .ops-summary-badge {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 6px;
+            padding: var(--space-3) var(--space-4);
+            text-align: center;
+        }
+
+        .ops-summary-badge-text {
+            font-size: 11pt;
+            font-weight: 600;
+        }
+
+        /* ================================================
+           VALUE COLORS
+           ================================================ */
+        .text-positive, .ops-value-positive { color: var(--ops-success) !important; }
+        .text-negative, .ops-value-negative { color: var(--ops-danger) !important; }
+        .text-zero, .ops-value-zero { color: var(--ops-muted) !important; }
+        .text-warning { color: var(--ops-warning) !important; }
+        .text-info { color: var(--ops-info) !important; }
+        .text-muted { color: var(--ops-muted) !important; }
+
+        /* ================================================
+           STATUS PILLS
+           ================================================ */
+        .ops-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--space-1) var(--space-3);
+            border-radius: 4px;
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        .ops-pill.success { background: #dcfce7; color: var(--ops-success); }
+        .ops-pill.danger { background: #fee2e2; color: var(--ops-danger); }
+        .ops-pill.warning { background: #fef3c7; color: var(--ops-warning); }
+        .ops-pill.info { background: #dbeafe; color: var(--ops-info); }
+        .ops-pill.neutral { background: #f1f5f9; color: var(--ops-text-medium); }
+
+        /* ================================================
+           ALERTS
+           ================================================ */
+        .ops-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            border-radius: 6px;
+            border-left: 4px solid;
+            margin: var(--space-4) 0;
+        }
+
+        .ops-alert.success {
+            background: rgba(5, 150, 105, 0.1);
+            border-color: var(--ops-success);
+            color: #065f46;
+        }
+
+        .ops-alert.warning {
+            background: rgba(217, 119, 6, 0.1);
+            border-color: var(--ops-warning);
+            color: #92400e;
+        }
+
+        .ops-alert.danger {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: var(--ops-danger);
+            color: #991b1b;
+        }
+
+        .ops-alert.info {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: var(--ops-info);
+            color: #1e40af;
+        }
+
+        /* ================================================
+           NOTES SECTION
+           ================================================ */
+        .ops-notes {
+            margin-top: var(--space-6);
+            padding: var(--space-4) var(--space-5);
+            background: var(--ops-bg-light);
+            border: 1px solid var(--ops-border);
+            border-left: 4px solid var(--ops-info);
+            border-radius: 0 6px 6px 0;
+        }
+
+        .ops-notes-title {
+            font-size: 9pt;
+            font-weight: 600;
+            color: var(--ops-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: var(--space-2);
+        }
+
+        .ops-notes-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ops-notes-list li {
+            font-size: 9pt;
+            color: var(--ops-text-medium);
+            padding: var(--space-1) 0;
+            padding-left: var(--space-4);
+            position: relative;
+        }
+
+        .ops-notes-list li::before {
+            content: "\2022";
+            position: absolute;
+            left: 0;
+            color: var(--ops-info);
+            font-weight: bold;
+        }
+
+        /* ================================================
+           PAGE HEADER/FOOTER
+           ================================================ */
+        .ops-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: var(--space-3);
+            border-bottom: 2px solid var(--ops-primary);
+            margin-bottom: var(--space-5);
+        }
+
+        .ops-page-header-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .ops-page-header-logo-box {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: var(--ops-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-family: var(--font-serif);
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .ops-page-header-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ops-page-header-company {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--ops-text-dark);
+        }
+
+        .ops-page-header-subtitle {
+            font-size: 9px;
+            color: var(--ops-muted);
+        }
+
+        .ops-page-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--space-3);
+            border-top: 1px solid var(--ops-border);
+            margin-top: var(--space-6);
+            font-size: 8pt;
+            color: var(--ops-muted);
+        }
+
+        .ops-confidential {
+            font-size: 7pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: var(--space-1) var(--space-2);
+            background: var(--ops-bg-light);
+            border: 1px solid var(--ops-border);
+            border-radius: 3px;
+        }
+
+        /* ================================================
+           UTILITY CLASSES
+           ================================================ */
+        .text-end { text-align: right; }
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        .font-normal { font-weight: 400; }
+
+        .page-break { page-break-after: always; }
+        .no-break { page-break-inside: avoid; }
+
+        .mb-1 { margin-bottom: var(--space-1); }
+        .mb-2 { margin-bottom: var(--space-2); }
+        .mb-3 { margin-bottom: var(--space-3); }
+        .mb-4 { margin-bottom: var(--space-4); }
+        .mb-6 { margin-bottom: var(--space-6); }
+
+        .mt-1 { margin-top: var(--space-1); }
+        .mt-2 { margin-top: var(--space-2); }
+        .mt-3 { margin-top: var(--space-3); }
+        .mt-4 { margin-top: var(--space-4); }
+        .mt-6 { margin-top: var(--space-6); }
+
+        .p-2 { padding: var(--space-2); }
+        .p-3 { padding: var(--space-3); }
+        .p-4 { padding: var(--space-4); }
+        .p-6 { padding: var(--space-6); }
+    </template>
+
+</odoo>

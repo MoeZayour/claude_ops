@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        OPS Modern Report Templates (WeasyPrint)
+        =========================================
+
+        These templates use modern CSS features (Flexbox, Grid, Variables)
+        that ONLY work with WeasyPrint, NOT wkhtmltopdf.
+
+        Features Used:
+        - CSS Variables for theming
+        - Flexbox for flexible layouts
+        - Grid for complex grids
+        - Modern gradients
+    -->
+
+    <!-- Generic Modern Report Template -->
+    <template id="modern_generic_report_template">
+        <html>
+        <head>
+            <meta charset="utf-8"/>
+            <title><t t-esc="report_title or 'Report'"/></title>
+        </head>
+        <body>
+            <div class="ops-report-container">
+                <!-- Page Header -->
+                <div class="ops-page-header">
+                    <div class="ops-page-header-logo">
+                        <div class="ops-page-header-logo-box">
+                            <t t-esc="(company.name or 'O')[0]"/>
+                        </div>
+                        <div class="ops-page-header-info">
+                            <div class="ops-page-header-company"><t t-esc="company.name"/></div>
+                            <div class="ops-page-header-subtitle">Financial Intelligence</div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div style="font-size: 10pt; color: var(--ops-text-medium);">Generated</div>
+                        <div style="font-size: 11pt; font-weight: 600;"><t t-esc="timestamp"/></div>
+                    </div>
+                </div>
+
+                <!-- Report Title -->
+                <div class="mb-6 text-center">
+                    <h1 style="font-family: var(--font-serif); font-size: 24pt; margin: 0; color: var(--ops-primary);">
+                        <t t-esc="report_title"/>
+                    </h1>
+                    <t t-if="date_from and date_to">
+                        <div class="ops-pill neutral" style="margin-top: 8px;">
+                            Period: <t t-esc="date_from"/> to <t t-esc="date_to"/>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Content Area -->
+                <div class="ops-content">
+                    <t t-if="data">
+                        <t t-call="ops_matrix_pdf_engine.modern_data_table">
+                            <t t-set="table_data" t-value="data"/>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <div class="ops-alert info">
+                            <strong>Note:</strong> No data available for the selected filters.
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Page Footer -->
+                <div class="ops-page-footer">
+                    <div>Prepared by: <t t-esc="user_name"/> | <t t-esc="timestamp"/></div>
+                    <div class="ops-confidential">Confidential</div>
+                </div>
+            </div>
+        </body>
+        </html>
+    </template>
+
+    <!-- Modern Data Table Component -->
+    <template id="modern_data_table">
+        <table class="ops-table">
+            <thead>
+                <tr>
+                    <t t-foreach="table_data.get('headers', ['Item', 'Value'])" t-as="header">
+                        <th t-att-class="'text-end' if header_index > 0 and header in ['Amount', 'Debit', 'Credit', 'Balance'] else ''">
+                            <t t-esc="header"/>
+                        </th>
+                    </t>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="table_data.get('rows', [])" t-as="row">
+                    <tr t-att-class="row.get('row_class', '')">
+                        <t t-foreach="row.get('cells', [])" t-as="cell">
+                            <td t-att-class="cell.get('class', '')">
+                                <t t-if="cell.get('type') == 'currency'">
+                                    <span class="ops-mono" t-att-class="'text-positive' if cell.get('value', 0) > 0 else ('text-negative' if cell.get('value', 0) &lt; 0 else 'text-zero')">
+                                        <t t-esc="'{:,.2f}'.format(cell.get('value', 0))"/>
+                                    </span>
+                                </t>
+                                <t t-else="">
+                                    <t t-esc="cell.get('value', '')"/>
+                                </t>
+                            </td>
+                        </t>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </template>
+
+    <!-- Modern P&L Template -->
+    <template id="modern_profit_loss_template">
+        <html>
+        <head>
+            <meta charset="utf-8"/>
+            <title>Profit &amp; Loss Statement - <t t-esc="company.name"/></title>
+        </head>
+        <body>
+            <!-- Cover Page -->
+            <div class="ops-cover">
+                <div class="ops-cover-header">
+                    <div class="ops-cover-logo">
+                        <div class="ops-cover-logo-box">
+                            <t t-esc="(company.name or 'O')[0]"/>
+                        </div>
+                        <div class="ops-cover-company-info">
+                            <div class="ops-cover-company-name"><t t-esc="company.name"/></div>
+                            <div class="ops-cover-tagline">Financial Intelligence</div>
+                        </div>
+                    </div>
+                    <div class="ops-cover-fiscal">
+                        <div class="ops-cover-fiscal-label">Fiscal Period</div>
+                        <div class="ops-cover-fiscal-year">FY <t t-esc="date_to[:4] if date_to else ''"/></div>
+                    </div>
+                </div>
+
+                <div class="ops-cover-accent"></div>
+
+                <div class="ops-cover-title-area">
+                    <div class="ops-cover-doc-type">Financial Statement</div>
+                    <h1 class="ops-cover-main-title">Profit &amp; Loss Statement</h1>
+                    <div class="ops-cover-subtitle">
+                        For the period <t t-esc="date_from"/> to <t t-esc="date_to"/>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <t t-if="summary">
+                    <div class="ops-cover-kpis">
+                        <div class="ops-cover-kpi">
+                            <div class="ops-cover-kpi-label">Total Revenue</div>
+                            <div class="ops-cover-kpi-value">
+                                <t t-esc="'{:,.2f}'.format(summary.get('total_income', 0))"/>
+                            </div>
+                        </div>
+                        <div class="ops-cover-kpi">
+                            <div class="ops-cover-kpi-label">Gross Profit</div>
+                            <div class="ops-cover-kpi-value">
+                                <t t-esc="'{:,.2f}'.format(summary.get('gross_profit', 0))"/>
+                            </div>
+                        </div>
+                        <div class="ops-cover-kpi">
+                            <div class="ops-cover-kpi-label">Total Expenses</div>
+                            <div class="ops-cover-kpi-value">
+                                <t t-esc="'{:,.2f}'.format(summary.get('total_expense', 0))"/>
+                            </div>
+                        </div>
+                        <div class="ops-cover-kpi">
+                            <div class="ops-cover-kpi-label">Net Profit</div>
+                            <div class="ops-cover-kpi-value" t-att-style="'color: #059669;' if summary.get('net_income', 0) >= 0 else 'color: #dc2626;'">
+                                <t t-esc="'{:,.2f}'.format(summary.get('net_income', 0))"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <div class="ops-cover-footer">
+                    <div>Prepared by: <t t-esc="user_name"/></div>
+                    <div>Generated: <t t-esc="timestamp"/></div>
+                </div>
+            </div>
+
+            <!-- Detail Page -->
+            <div class="ops-report-container">
+                <div class="ops-page-header">
+                    <div class="ops-page-header-logo">
+                        <div class="ops-page-header-logo-box">
+                            <t t-esc="(company.name or 'O')[0]"/>
+                        </div>
+                        <div class="ops-page-header-info">
+                            <div class="ops-page-header-company"><t t-esc="company.name"/></div>
+                            <div class="ops-page-header-subtitle">Profit &amp; Loss Statement</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Section -->
+                <t t-foreach="sections or []" t-as="section">
+                    <t t-if="section.get('type', '').startswith('income')">
+                        <div class="ops-section mb-4">
+                            <div class="ops-section-header success">
+                                <div class="ops-section-title">
+                                    <t t-esc="section.get('label', 'Income')"/>
+                                </div>
+                                <div class="ops-section-amount">
+                                    <t t-esc="'{:,.2f}'.format(abs(section.get('total_balance', 0)))"/>
+                                </div>
+                            </div>
+                            <div class="ops-section-body">
+                                <table class="ops-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Account</th>
+                                            <th class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="section.get('accounts', [])" t-as="account">
+                                            <tr>
+                                                <td>
+                                                    <span class="text-muted" style="font-size: 9pt;"><t t-esc="account.get('account_code')"/></span>
+                                                    <t t-esc="account.get('account_name')"/>
+                                                </td>
+                                                <td class="text-end mono text-positive">
+                                                    <t t-esc="'{:,.2f}'.format(abs(account.get('balance', 0)))"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+
+                <!-- Expense Section -->
+                <t t-foreach="sections or []" t-as="section">
+                    <t t-if="section.get('type', '').startswith('expense')">
+                        <div class="ops-section mb-4">
+                            <div class="ops-section-header danger">
+                                <div class="ops-section-title">
+                                    <t t-esc="section.get('label', 'Expenses')"/>
+                                </div>
+                                <div class="ops-section-amount">
+                                    <t t-esc="'{:,.2f}'.format(section.get('total_balance', 0))"/>
+                                </div>
+                            </div>
+                            <div class="ops-section-body">
+                                <table class="ops-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Account</th>
+                                            <th class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="section.get('accounts', [])" t-as="account">
+                                            <tr>
+                                                <td>
+                                                    <span class="text-muted" style="font-size: 9pt;"><t t-esc="account.get('account_code')"/></span>
+                                                    <t t-esc="account.get('account_name')"/>
+                                                </td>
+                                                <td class="text-end mono text-negative">
+                                                    <t t-esc="'{:,.2f}'.format(account.get('balance', 0))"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+
+                <!-- Net Profit Summary -->
+                <t t-if="summary">
+                    <div t-att-class="'ops-summary ' + ('success' if summary.get('net_income', 0) >= 0 else 'loss')">
+                        <div class="ops-summary-label-group">
+                            <div class="ops-summary-label">Net Profit / (Loss)</div>
+                            <div class="ops-summary-equation">Revenue - Expenses</div>
+                        </div>
+                        <div class="ops-summary-value">
+                            <t t-esc="'{:,.2f}'.format(summary.get('net_income', 0))"/>
+                        </div>
+                        <div class="ops-summary-badge">
+                            <div class="ops-summary-badge-text">
+                                <t t-if="summary.get('total_income', 0) > 0">
+                                    <t t-esc="'{:.1f}%'.format((summary.get('net_income', 0) / summary.get('total_income', 1)) * 100)"/> Margin
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Footer -->
+                <div class="ops-page-footer">
+                    <div>Prepared by: <t t-esc="user_name"/> | Generated: <t t-esc="timestamp"/></div>
+                    <div class="ops-confidential">Confidential</div>
+                </div>
+            </div>
+        </body>
+        </html>
+    </template>
+
+    <!-- Placeholder templates for other report types -->
+    <template id="modern_balance_sheet_template" inherit_id="ops_matrix_pdf_engine.modern_generic_report_template" primary="True">
+        <!-- Balance Sheet specific content will go here -->
+    </template>
+
+    <template id="modern_trial_balance_template" inherit_id="ops_matrix_pdf_engine.modern_generic_report_template" primary="True">
+        <!-- Trial Balance specific content will go here -->
+    </template>
+
+    <template id="modern_general_ledger_template" inherit_id="ops_matrix_pdf_engine.modern_generic_report_template" primary="True">
+        <!-- General Ledger specific content will go here -->
+    </template>
+
+    <template id="modern_cash_flow_template" inherit_id="ops_matrix_pdf_engine.modern_generic_report_template" primary="True">
+        <!-- Cash Flow specific content will go here -->
+    </template>
+
+    <template id="modern_aged_balance_template" inherit_id="ops_matrix_pdf_engine.modern_generic_report_template" primary="True">
+        <!-- Aged Balance specific content will go here -->
+    </template>
+
+    <template id="modern_partner_ledger_template" inherit_id="ops_matrix_pdf_engine.modern_generic_report_template" primary="True">
+        <!-- Partner Ledger specific content will go here -->
+    </template>
+
+    <template id="modern_soa_template" inherit_id="ops_matrix_pdf_engine.modern_generic_report_template" primary="True">
+        <!-- Statement of Account specific content will go here -->
+    </template>
+
+    <!-- Default template for fallback -->
+    <template id="default_modern_report_template" inherit_id="ops_matrix_pdf_engine.modern_generic_report_template" primary="True">
+    </template>
+
+</odoo>

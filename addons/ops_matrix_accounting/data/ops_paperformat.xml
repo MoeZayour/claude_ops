@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        OPS Matrix Paper Format Configuration
+        =====================================
+        A4 Paper format optimized for financial reports with proper margins
+        to accommodate Odoo's external_layout header/footer.
+    -->
+
+    <!-- OPS A4 Financial Report Paper Format -->
+    <record id="paperformat_ops_a4_financial" model="report.paperformat">
+        <field name="name">OPS A4 Financial Report</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">30</field>
+        <field name="margin_left">15</field>
+        <field name="margin_right">15</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">35</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <!-- OPS A4 Landscape Paper Format (for wide reports) -->
+    <record id="paperformat_ops_a4_landscape" model="report.paperformat">
+        <field name="name">OPS A4 Financial Report (Landscape)</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">35</field>
+        <field name="margin_bottom">25</field>
+        <field name="margin_left">15</field>
+        <field name="margin_right">15</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">30</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <!-- OPS Letter Size Paper Format (US Standard) -->
+    <record id="paperformat_ops_letter" model="report.paperformat">
+        <field name="name">OPS Letter Financial Report</field>
+        <field name="default" eval="False"/>
+        <field name="format">Letter</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">30</field>
+        <field name="margin_left">15</field>
+        <field name="margin_right">15</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">35</field>
+        <field name="dpi">96</field>
+    </record>
+
+</odoo>

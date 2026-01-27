@@ -12,9 +12,44 @@ class OpsFinancialReportParser(models.AbstractModel):
     _name = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Financial Report Parser'
 
+    # ============================================
+    # MERIDIAN DESIGN SYSTEM COLOR TOKENS
+    # ============================================
+    # The "Meridian Standard" - Management Consulting aesthetic
+    # High contrast, executive-grade color palette
+    MERIDIAN_COLORS = {
+        # Primary Colors
+        'gold': '#C9A962',          # Executive Gold - Brand accent
+        'black': '#1A1A1A',         # Primary Black - Text & headers
+        'red': '#DA291C',           # Corporate Red - Negatives & alerts
+
+        # Semantic Colors
+        'success': '#059669',       # Emerald green - Positive values
+        'danger': '#DA291C',        # Red - Negative values
+        'warning': '#d97706',       # Amber - Warnings
+        'info': '#2563eb',          # Blue - Information
+
+        # Neutral Palette
+        'muted': '#FAFAFA',         # Muted Grey - Backgrounds
+        'zero': '#cccccc',          # Light Grey - Zero values
+        'border': '#e5e7eb',        # Border color
+        'text': '#1A1A1A',          # Primary text
+        'text_secondary': '#6b7280', # Secondary text
+
+        # Section Colors (Balance Sheet/P&L)
+        'asset': '#2563eb',         # Blue - Assets
+        'liability': '#d97706',     # Orange - Liabilities
+        'equity': '#059669',        # Green - Equity
+        'revenue': '#059669',       # Green - Revenue
+        'expense': '#DA291C',       # Red - Expenses
+    }
+
     def _get_company_colors(self, company):
         """
         Get company branding colors with intelligent fallbacks.
+
+        MERIDIAN STANDARD: If no company color is set, defaults to
+        Executive Gold (#C9A962) as the primary brand accent.
 
         Returns a dict with:
         - primary: Main brand color (used for headers, titles)
@@ -27,38 +62,53 @@ class OpsFinancialReportParser(models.AbstractModel):
         - border: Border color
         - background: Background color
         """
-        # Default professional color palette
+        # MERIDIAN STANDARD - Professional color palette
+        # Default to Executive Gold (#C9A962) for brand accent
         colors = {
-            'primary': '#1a2744',      # Navy blue - professional default
-            'secondary': '#3b82f6',     # Blue accent
-            'success': '#059669',       # Emerald green - positive
-            'danger': '#dc2626',        # Red - negative
-            'warning': '#d97706',       # Amber - warning
-            'muted': '#94a3b8',         # Slate gray - zero/neutral
-            'text': '#1e293b',          # Dark slate - primary text
-            'text_secondary': '#64748b', # Slate - secondary text
-            'border': '#e2e8f0',        # Light slate - borders
-            'background': '#f8fafc',    # Very light - backgrounds
+            'primary': '#C9A962',        # MERIDIAN GOLD - Executive accent
+            'secondary': '#1A1A1A',      # Primary Black - Headers
+            'success': '#059669',        # Emerald green - Positive values
+            'danger': '#DA291C',         # Corporate Red - Negatives
+            'warning': '#d97706',        # Amber - Warning
+            'muted': '#cccccc',          # Light Grey - Zero values
+            'zero': '#cccccc',           # Light Grey - Zero values (explicit)
+            'text': '#1A1A1A',           # Primary Black - Text
+            'text_secondary': '#6b7280', # Secondary text
+            'border': '#e5e7eb',         # Border color
+            'background': '#FAFAFA',     # Muted Grey - Backgrounds
             'white': '#ffffff',
+            # Section colors for financial reports
+            'asset': '#2563eb',          # Blue - Assets
+            'liability': '#d97706',      # Orange - Liabilities
+            'equity': '#059669',         # Green - Equity
+            'revenue': '#059669',        # Green - Revenue
+            'expense': '#DA291C',        # Red - Expenses
         }
 
         if company:
-            # Get company primary/secondary colors
+            # Get company primary/secondary colors (optional branding override)
             primary = company.primary_color
             secondary = company.secondary_color
 
             if primary:
+                # Company has custom branding - use it
                 colors['primary'] = primary
-                # Derive darker variant for headers
                 colors['primary_dark'] = self._darken_color(primary, 0.2)
             else:
-                colors['primary_dark'] = '#0a1628'
+                # MERIDIAN DEFAULT: Executive Gold with dark variant
+                colors['primary_dark'] = '#9A7A42'  # Darker gold
 
             if secondary:
                 colors['secondary'] = secondary
-
+            # Else keep Meridian Black as secondary
         else:
-            colors['primary_dark'] = '#0a1628'
+            # No company - use full Meridian defaults
+            colors['primary_dark'] = '#9A7A42'  # Darker gold
+
+        # Always include Meridian constants for template access
+        colors['meridian_gold'] = '#C9A962'
+        colors['meridian_black'] = '#1A1A1A'
+        colors['meridian_red'] = '#DA291C'
 
         return colors
 
@@ -89,6 +139,385 @@ class OpsFinancialReportParser(models.AbstractModel):
             return f'#{r:02x}{g:02x}{b:02x}'
         except (ValueError, IndexError):
             return '#f8fafc'  # Fallback to light gray
+
+    def _format_value(self, value, include_sign=True, decimals=2):
+        """
+        Format a numeric value according to the Meridian Standard.
+
+        MERIDIAN VALUE DISPLAY RULES:
+        - Zeros: Display as "0.00" with color class 'zero'
+        - Negatives: Red (#DA291C) with parentheses, e.g., "(1,234.56)"
+        - Positives: Black (#1A1A1A), e.g., "1,234.56"
+
+        Returns a dict with:
+        - formatted: The formatted string
+        - css_class: CSS class to apply (zero, negative, positive)
+        - raw: Original numeric value (passed through, never filtered)
+        """
+        # CRITICAL: Never filter out zero values - pass them through
+        if value is None:
+            value = 0.0
+
+        format_str = f"{{:,.{decimals}f}}"
+
+        if value == 0:
+            return {
+                'formatted': format_str.format(0),
+                'css_class': 'ops-value-zero',
+                'color': '#cccccc',
+                'raw': 0.0,
+                'is_zero': True,
+            }
+        elif value < 0:
+            if include_sign:
+                formatted = f"({format_str.format(abs(value))})"
+            else:
+                formatted = format_str.format(abs(value))
+            return {
+                'formatted': formatted,
+                'css_class': 'ops-value-negative',
+                'color': '#DA291C',
+                'raw': value,
+                'is_zero': False,
+            }
+        else:
+            return {
+                'formatted': format_str.format(value),
+                'css_class': 'ops-value-positive',
+                'color': '#000000',
+                'raw': value,
+                'is_zero': False,
+            }
+
+    def _calculate_variance(self, current, prior):
+        """
+        Calculate variance between current and prior period values.
+
+        MERIDIAN VARIANCE DISPLAY:
+        - Positive variance (improvement): Green with up arrow
+        - Negative variance (decline): Red with down arrow
+        - Zero/minimal change: Grey
+
+        Returns dict with:
+        - amount: Absolute variance
+        - percentage: Percentage change
+        - direction: 'up', 'down', or 'flat'
+        - css_class: Styling class
+        """
+        if prior is None:
+            prior = 0.0
+        if current is None:
+            current = 0.0
+
+        variance_amount = current - prior
+
+        # Calculate percentage (handle division by zero)
+        if prior != 0:
+            variance_pct = ((current - prior) / abs(prior)) * 100
+        elif current != 0:
+            variance_pct = 100.0  # New value from zero
+        else:
+            variance_pct = 0.0
+
+        # Determine direction
+        if abs(variance_pct) < 0.5:  # Less than 0.5% = flat
+            direction = 'flat'
+            css_class = 'ops-variance-neutral'
+        elif variance_amount > 0:
+            direction = 'up'
+            css_class = 'ops-variance-positive'
+        else:
+            direction = 'down'
+            css_class = 'ops-variance-negative'
+
+        return {
+            'amount': variance_amount,
+            'formatted_amount': self._format_value(variance_amount),
+            'percentage': variance_pct,
+            'formatted_pct': f"{variance_pct:+.1f}%",
+            'direction': direction,
+            'css_class': css_class,
+            'trend_class': f"ops-trend-{direction}",
+        }
+
+    def _calculate_ratio(self, numerator, denominator, as_percentage=True):
+        """
+        Calculate a financial ratio with proper handling.
+
+        MERIDIAN RATIO DISPLAY:
+        - Formatted with appropriate precision
+        - Color-coded based on threshold brackets
+        """
+        if denominator is None or denominator == 0:
+            return {
+                'value': 0.0,
+                'formatted': 'N/A',
+                'css_class': 'ops-variance-neutral',
+            }
+
+        ratio = (numerator or 0) / denominator
+        if as_percentage:
+            ratio *= 100
+            formatted = f"{ratio:.1f}%"
+        else:
+            formatted = f"{ratio:.2f}"
+
+        # Determine status based on value
+        if ratio >= 20:
+            css_class = 'ops-variance-positive'
+            status = 'excellent'
+        elif ratio >= 10:
+            css_class = 'ops-variance-positive'
+            status = 'healthy'
+        elif ratio >= 5:
+            css_class = 'ops-variance-neutral'
+            status = 'acceptable'
+        elif ratio >= 0:
+            css_class = 'ops-variance-neutral'
+            status = 'low'
+        else:
+            css_class = 'ops-variance-negative'
+            status = 'loss'
+
+        return {
+            'value': ratio,
+            'formatted': formatted,
+            'css_class': css_class,
+            'status': status,
+        }
+
+    def _get_aging_buckets(self, days_overdue):
+        """
+        Categorize a value into aging buckets.
+
+        MERIDIAN AGING BUCKETS:
+        - Current (0-30 days): Green
+        - 31-60 days: Blue
+        - 61-90 days: Yellow/Warning
+        - 91-120 days: Orange
+        - Over 120 days: Red/Critical
+        """
+        if days_overdue <= 0:
+            return {'bucket': 'current', 'label': 'Current', 'css_class': 'ops-aging-current'}
+        elif days_overdue <= 30:
+            return {'bucket': '1-30', 'label': '1-30 Days', 'css_class': 'ops-aging-current'}
+        elif days_overdue <= 60:
+            return {'bucket': '31-60', 'label': '31-60 Days', 'css_class': 'ops-aging-30'}
+        elif days_overdue <= 90:
+            return {'bucket': '61-90', 'label': '61-90 Days', 'css_class': 'ops-aging-60'}
+        elif days_overdue <= 120:
+            return {'bucket': '91-120', 'label': '91-120 Days', 'css_class': 'ops-aging-90'}
+        else:
+            return {'bucket': 'over120', 'label': '120+ Days', 'css_class': 'ops-aging-over'}
+
+    def _get_margin_status(self, margin_pct):
+        """
+        Get margin status classification for display.
+
+        MERIDIAN MARGIN THRESHOLDS:
+        - >= 20%: Excellent (Green)
+        - >= 10%: Healthy (Blue)
+        - >= 5%: Acceptable (Grey)
+        - >= 0%: Low (Warning)
+        - < 0%: Loss (Red)
+        """
+        if margin_pct >= 20:
+            return {
+                'status': 'excellent',
+                'label': 'Excellent',
+                'css_class': 'ops-status-pill excellent',
+                'color': '#059669',
+                'bg_color': '#d1fae5',
+                'border_color': '#059669',
+            }
+        elif margin_pct >= 10:
+            return {
+                'status': 'healthy',
+                'label': 'Healthy',
+                'css_class': 'ops-status-pill healthy',
+                'color': '#2563eb',
+                'bg_color': '#dbeafe',
+                'border_color': '#2563eb',
+            }
+        elif margin_pct >= 5:
+            return {
+                'status': 'acceptable',
+                'label': 'Acceptable',
+                'css_class': 'ops-status-pill acceptable',
+                'color': '#4b5563',
+                'bg_color': '#f3f4f6',
+                'border_color': '#6b7280',
+            }
+        elif margin_pct >= 0:
+            return {
+                'status': 'low',
+                'label': 'Low',
+                'css_class': 'ops-status-pill warning',
+                'color': '#d97706',
+                'bg_color': '#fef3c7',
+                'border_color': '#d97706',
+            }
+        else:
+            return {
+                'status': 'loss',
+                'label': 'Loss',
+                'css_class': 'ops-status-pill loss',
+                'color': '#DA291C',
+                'bg_color': '#fee2e2',
+                'border_color': '#DA291C',
+            }
+
+    def _get_balance_sheet_equation(self, assets, liabilities, equity):
+        """
+        Validate the accounting equation: Assets = Liabilities + Equity
+
+        MERIDIAN STANDARD: The Balance Sheet MUST balance.
+        Returns a dict with verification status and display values.
+        """
+        # Ensure proper sign handling (liabilities and equity are typically credit balances)
+        liab_equity_total = abs(liabilities) + abs(equity)
+        difference = assets - liab_equity_total
+        is_balanced = abs(difference) < 0.01  # Allow for rounding
+
+        return {
+            'assets': assets,
+            'liabilities': abs(liabilities),
+            'equity': abs(equity),
+            'liab_plus_equity': liab_equity_total,
+            'difference': difference,
+            'is_balanced': is_balanced,
+            'status_class': 'balanced' if is_balanced else 'unbalanced',
+            'status_text': 'Balanced' if is_balanced else f'Difference: {difference:,.2f}',
+            'status_icon': '✓' if is_balanced else '✗',
+        }
+
+    def _get_pnl_kpis(self, revenue, cogs, expenses, net_profit):
+        """
+        Calculate P&L KPIs for the Meridian Standard reports.
+
+        Returns a dict with:
+        - Gross margin %
+        - Operating margin %
+        - Net profit margin %
+        - Status indicators
+        """
+        gross_profit = revenue - cogs if cogs else revenue
+        operating_profit = gross_profit - (expenses - cogs) if cogs else revenue - expenses
+
+        # Calculate margins
+        gross_margin = (gross_profit / revenue * 100) if revenue > 0 else 0
+        operating_margin = (operating_profit / revenue * 100) if revenue > 0 else 0
+        net_margin = (net_profit / revenue * 100) if revenue > 0 else 0
+
+        return {
+            'revenue': self._format_value(revenue),
+            'gross_profit': self._format_value(gross_profit),
+            'operating_profit': self._format_value(operating_profit),
+            'net_profit': self._format_value(net_profit),
+            'gross_margin': {
+                'value': gross_margin,
+                'formatted': f'{gross_margin:.1f}%',
+                'status': self._get_margin_status(gross_margin),
+            },
+            'operating_margin': {
+                'value': operating_margin,
+                'formatted': f'{operating_margin:.1f}%',
+                'status': self._get_margin_status(operating_margin),
+            },
+            'net_margin': {
+                'value': net_margin,
+                'formatted': f'{net_margin:.1f}%',
+                'status': self._get_margin_status(net_margin),
+            },
+        }
+
+    def _get_cash_flow_summary(self, operating, investing, financing, opening_cash=0):
+        """
+        Calculate Cash Flow summary for the Meridian Standard 3-section layout.
+
+        Returns a dict with section totals and overall cash position.
+        """
+        net_change = operating + investing + financing
+        closing_cash = opening_cash + net_change
+
+        # Determine cash flow health
+        if net_change > 0:
+            status = 'positive'
+            status_class = 'ops-variance-positive'
+        elif net_change < 0:
+            status = 'negative'
+            status_class = 'ops-variance-negative'
+        else:
+            status = 'neutral'
+            status_class = 'ops-variance-neutral'
+
+        return {
+            'operating_net': self._format_value(operating),
+            'investing_net': self._format_value(investing),
+            'financing_net': self._format_value(financing),
+            'net_change': self._format_value(net_change),
+            'opening_cash': self._format_value(opening_cash),
+            'closing_cash': self._format_value(closing_cash),
+            'status': status,
+            'status_class': status_class,
+            'raw': {
+                'operating': operating,
+                'investing': investing,
+                'financing': financing,
+                'net_change': net_change,
+                'opening_cash': opening_cash,
+                'closing_cash': closing_cash,
+            },
+        }
+
+    def _build_hierarchy(self, lines, parent_field='parent_id', sort_by='code'):
+        """
+        Build hierarchical structure from flat account list.
+
+        Used for Chart of Accounts display with proper indentation.
+        Returns list of dicts with 'level' field indicating depth.
+        """
+        if not lines:
+            return []
+
+        # Group by parent
+        by_parent = {}
+        root_items = []
+
+        for line in lines:
+            parent_id = line.get(parent_field)
+            if parent_id:
+                if parent_id not in by_parent:
+                    by_parent[parent_id] = []
+                by_parent[parent_id].append(line)
+            else:
+                root_items.append(line)
+
+        # Sort root items
+        if sort_by:
+            root_items.sort(key=lambda x: x.get(sort_by, ''))
+
+        # Build flattened hierarchy
+        result = []
+
+        def add_with_children(item, level=0):
+            item['level'] = level
+            item['row_class'] = f"level-{level}"
+            result.append(item)
+
+            # Add children
+            item_id = item.get('id') or item.get('account_id')
+            if item_id and item_id in by_parent:
+                children = by_parent[item_id]
+                if sort_by:
+                    children.sort(key=lambda x: x.get(sort_by, ''))
+                for child in children:
+                    add_with_children(child, level + 1)
+
+        for root in root_items:
+            add_with_children(root)
+
+        return result
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -301,6 +730,18 @@ class OpsFinancialReportParser(models.AbstractModel):
                     })
 
             summary = data.get('summary', {})
+            total_income = summary.get('total_income', hierarchy.get('income_total', 0))
+            total_expense = summary.get('total_expense', hierarchy.get('expense_total', 0))
+            cogs_total = summary.get('cogs_total', 0)
+            net_profit = summary.get('net_income', hierarchy.get('net_profit', 0))
+
+            # Calculate margin and get status
+            margin_pct = (net_profit / total_income * 100) if total_income > 0 else 0
+            margin_status = self._get_margin_status(margin_pct)
+
+            # Get P&L KPIs using the helper
+            pnl_kpis = self._get_pnl_kpis(total_income, cogs_total, total_expense, net_profit)
+
             return {
                 'headers': ['Code', 'Account', 'Amount'],
                 # Phase 14: Hierarchical data for audit-grade rendering
@@ -310,12 +751,17 @@ class OpsFinancialReportParser(models.AbstractModel):
                 # Flat lines for backward compatibility
                 'income_lines': income_lines,
                 'expense_lines': expense_lines,
-                'income_total': summary.get('total_income', hierarchy.get('income_total', 0)),
-                'expense_total': summary.get('total_expense', hierarchy.get('expense_total', 0)),
-                'cogs_total': summary.get('cogs_total', 0),
+                'income_total': total_income,
+                'expense_total': total_expense,
+                'cogs_total': cogs_total,
                 'gross_profit': summary.get('gross_profit', 0),
-                'net_profit': summary.get('net_income', hierarchy.get('net_profit', 0)),
+                'net_profit': net_profit,
                 'lines': income_lines + expense_lines,
+                # Meridian Standard: Margin analysis
+                'margin_pct': margin_pct,
+                'margin_status': margin_status,
+                'margin_formatted': self._format_value(net_profit),
+                'pnl_kpis': pnl_kpis,
             }
 
         # Original flat structure (backward compatibility)
@@ -340,17 +786,33 @@ class OpsFinancialReportParser(models.AbstractModel):
                         cogs_total += line['amount']
 
         summary = data.get('summary', {})
+        net_profit = summary.get('net_income', income_total - expense_total)
+        total_income = summary.get('total_income', income_total)
+        total_expense = summary.get('total_expense', expense_total)
+
+        # Calculate margin and get status
+        margin_pct = (net_profit / total_income * 100) if total_income > 0 else 0
+        margin_status = self._get_margin_status(margin_pct)
+
+        # Get P&L KPIs using the helper
+        pnl_kpis = self._get_pnl_kpis(total_income, cogs_total, total_expense, net_profit)
+
         return {
             'headers': ['Account', 'Amount'],
             'income_lines': income_lines,
             'expense_lines': expense_lines,
-            'income_total': summary.get('total_income', income_total),
-            'expense_total': summary.get('total_expense', expense_total),
+            'income_total': total_income,
+            'expense_total': total_expense,
             'cogs_total': cogs_total,
-            'gross_profit': summary.get('total_income', income_total) - cogs_total,
-            'net_profit': summary.get('net_income', income_total - expense_total),
+            'gross_profit': total_income - cogs_total,
+            'net_profit': net_profit,
             'lines': income_lines + expense_lines,
             'use_hierarchy': False,
+            # Meridian Standard: Margin analysis
+            'margin_pct': margin_pct,
+            'margin_status': margin_status,
+            'margin_formatted': self._format_value(net_profit),
+            'pnl_kpis': pnl_kpis,
         }
 
     def _transform_bs_from_enhanced(self, data):
@@ -393,6 +855,18 @@ class OpsFinancialReportParser(models.AbstractModel):
                     })
 
             summary = data.get('summary', {})
+            asset_total = summary.get('total_assets', hierarchy.get('asset_total', 0))
+            liability_total = summary.get('total_liabilities', hierarchy.get('liability_total', 0))
+            equity_total = summary.get('total_equity', hierarchy.get('equity_total', 0))
+
+            # Meridian Standard: Accounting equation check
+            # Assets = Liabilities + Equity
+            balance_check = asset_total - (abs(liability_total) + abs(equity_total))
+            is_balanced = abs(balance_check) < 0.01
+
+            # Get equation verification using the helper
+            equation = self._get_balance_sheet_equation(asset_total, liability_total, equity_total)
+
             return {
                 'headers': ['Code', 'Account', 'Amount'],
                 # Phase 14: Hierarchical data for audit-grade rendering
@@ -404,10 +878,15 @@ class OpsFinancialReportParser(models.AbstractModel):
                 'asset_lines': asset_lines,
                 'liability_lines': liability_lines,
                 'equity_lines': equity_lines,
-                'asset_total': summary.get('total_assets', hierarchy.get('asset_total', 0)),
-                'liability_total': summary.get('total_liabilities', hierarchy.get('liability_total', 0)),
-                'equity_total': summary.get('total_equity', hierarchy.get('equity_total', 0)),
+                'asset_total': asset_total,
+                'liability_total': liability_total,
+                'equity_total': equity_total,
                 'lines': asset_lines + liability_lines + equity_lines,
+                # Meridian Standard: Balance verification
+                'equation': equation,
+                'balance_check': equation['difference'],
+                'is_balanced': equation['is_balanced'],
+                'liab_plus_equity': equation['liab_plus_equity'],
             }
 
         # Original flat structure (backward compatibility)
@@ -428,16 +907,28 @@ class OpsFinancialReportParser(models.AbstractModel):
                     equity_lines.append(line)
 
         summary = data.get('summary', {})
+        asset_total = summary.get('total_assets', 0)
+        liability_total = summary.get('total_liabilities', 0)
+        equity_total = summary.get('total_equity', 0)
+
+        # Meridian Standard: Accounting equation check using helper
+        equation = self._get_balance_sheet_equation(asset_total, liability_total, equity_total)
+
         return {
             'headers': ['Account', 'Amount'],
             'asset_lines': asset_lines,
             'liability_lines': liability_lines,
             'equity_lines': equity_lines,
-            'asset_total': summary.get('total_assets', 0),
-            'liability_total': summary.get('total_liabilities', 0),
-            'equity_total': summary.get('total_equity', 0),
+            'asset_total': asset_total,
+            'liability_total': liability_total,
+            'equity_total': equity_total,
             'lines': asset_lines + liability_lines + equity_lines,
             'use_hierarchy': False,
+            # Meridian Standard: Balance verification
+            'equation': equation,
+            'balance_check': equation['difference'],
+            'is_balanced': equation['is_balanced'],
+            'liab_plus_equity': equation['liab_plus_equity'],
         }
 
     def _transform_tb_from_enhanced(self, data):
@@ -461,19 +952,105 @@ class OpsFinancialReportParser(models.AbstractModel):
         }
 
     def _transform_cf_from_enhanced(self, data):
-        """Transform Cash Flow data from enhanced wizard."""
-        lines = []
-        for section_data in data.get('sections', {}).values():
-            for line in section_data.get('lines', []):
-                lines.append({
-                    'account': f"{line.get('account_code', '')} - {line.get('account_name', '')}",
-                    'inflow': line.get('inflow', 0), 'outflow': line.get('outflow', 0), 'net': line.get('net', 0),
-                })
+        """
+        Transform Cash Flow data from enhanced wizard.
+
+        MERIDIAN STANDARD: 3-Section Cash Flow Statement
+        - Operating Activities (core business cash flows)
+        - Investing Activities (asset purchases/sales)
+        - Financing Activities (debt/equity transactions)
+        """
+        operating_lines = []
+        investing_lines = []
+        financing_lines = []
+        all_lines = []
+
+        sections = data.get('sections', {})
+
+        # Process Operating section
+        operating_data = sections.get('operating', {})
+        for line in operating_data.get('lines', []):
+            line_data = {
+                'account': f"{line.get('account_code', '')} - {line.get('account_name', '')}",
+                'name': line.get('name', line.get('account_name', '')),
+                'inflow': line.get('inflow', 0),
+                'outflow': line.get('outflow', 0),
+                'net': line.get('net', 0),
+            }
+            operating_lines.append(line_data)
+            all_lines.append(line_data)
+
+        # Process Investing section
+        investing_data = sections.get('investing', {})
+        for line in investing_data.get('lines', []):
+            line_data = {
+                'account': f"{line.get('account_code', '')} - {line.get('account_name', '')}",
+                'name': line.get('name', line.get('account_name', '')),
+                'inflow': line.get('inflow', 0),
+                'outflow': line.get('outflow', 0),
+                'net': line.get('net', 0),
+            }
+            investing_lines.append(line_data)
+            all_lines.append(line_data)
+
+        # Process Financing section
+        financing_data = sections.get('financing', {})
+        for line in financing_data.get('lines', []):
+            line_data = {
+                'account': f"{line.get('account_code', '')} - {line.get('account_name', '')}",
+                'name': line.get('name', line.get('account_name', '')),
+                'inflow': line.get('inflow', 0),
+                'outflow': line.get('outflow', 0),
+                'net': line.get('net', 0),
+            }
+            financing_lines.append(line_data)
+            all_lines.append(line_data)
+
+        # If no sections, fall back to flat lines
+        if not all_lines:
+            for section_data in sections.values() if isinstance(sections, dict) else []:
+                for line in section_data.get('lines', []) if isinstance(section_data, dict) else []:
+                    line_data = {
+                        'account': f"{line.get('account_code', '')} - {line.get('account_name', '')}",
+                        'name': line.get('name', line.get('account_name', '')),
+                        'inflow': line.get('inflow', 0),
+                        'outflow': line.get('outflow', 0),
+                        'net': line.get('net', 0),
+                    }
+                    operating_lines.append(line_data)  # Default to operating
+                    all_lines.append(line_data)
+
         summary = data.get('summary', {})
+        operating_net = summary.get('total_operating', operating_data.get('total', 0))
+        investing_net = summary.get('total_investing', investing_data.get('total', 0))
+        financing_net = summary.get('total_financing', financing_data.get('total', 0))
+        opening_cash = summary.get('opening_cash', 0)
+
+        # Get Cash Flow summary using the helper
+        cf_summary = self._get_cash_flow_summary(
+            operating_net, investing_net, financing_net, opening_cash
+        )
+
         return {
-            'headers': ['Account', 'Inflow', 'Outflow', 'Net'], 'lines': lines,
-            'total_inflow': summary.get('total_operating', 0), 'total_outflow': 0,
-            'net_cash_flow': summary.get('net_change', 0),
+            'headers': ['Account', 'Inflow', 'Outflow', 'Net'],
+            # Section-based lines (Meridian Standard)
+            'operating_lines': operating_lines,
+            'investing_lines': investing_lines,
+            'financing_lines': financing_lines,
+            # Section totals
+            'operating_net': operating_net,
+            'investing_net': investing_net,
+            'financing_net': financing_net,
+            # Overall totals
+            'lines': all_lines,
+            'total_inflow': summary.get('total_inflow', 0),
+            'total_outflow': summary.get('total_outflow', 0),
+            'net_cash_flow': cf_summary['raw']['net_change'],
+            # Cash position
+            'opening_cash': opening_cash,
+            'closing_cash': cf_summary['raw']['closing_cash'],
+            # Meridian Standard: Formatted summary
+            'cf_summary': cf_summary,
         }
 
     def _transform_aged_from_enhanced(self, data):
@@ -742,32 +1319,63 @@ class OpsFinancialReportParser(models.AbstractModel):
         }
 
     def _process_cf_data(self, wizard, domain):
-        # Simplified Cash Flow: Filter by liquidity accounts
-        cf_domain = domain + [('account_id.account_type', '=', 'asset_cash')]
+        """
+        Process Cash Flow data.
+
+        MERIDIAN STANDARD: 3-Section Cash Flow Statement
+        - Operating: Cash from core business (cash accounts)
+        - Investing: Asset purchases/sales (fixed asset accounts)
+        - Financing: Debt/equity transactions (liability/equity related)
+        """
         MoveLine = self.env['account.move.line']
-        grouped_data = MoveLine._read_group(
-            domain=cf_domain,
+
+        # Operating Activities - Cash accounts
+        cf_operating_domain = domain + [('account_id.account_type', '=', 'asset_cash')]
+        operating_data = MoveLine._read_group(
+            domain=cf_operating_domain,
             groupby=['account_id'],
             aggregates=['debit:sum', 'credit:sum', 'balance:sum']
         )
-        lines = []
-        total_inflow = 0.0
-        total_outflow = 0.0
-        for result in grouped_data:
+
+        operating_lines = []
+        operating_inflow = 0.0
+        operating_outflow = 0.0
+
+        for result in operating_data:
             account = result[0] if result else None
             debit_sum = result[1] if len(result) > 1 else 0.0
             credit_sum = result[2] if len(result) > 2 else 0.0
             balance_sum = result[3] if len(result) > 3 else 0.0
             if not account:
                 continue
-            lines.append({
+            operating_lines.append({
                 'account': f"{account.code} - {account.name}",
+                'name': account.name,
                 'inflow': debit_sum or 0.0,
                 'outflow': credit_sum or 0.0,
                 'net': balance_sum or 0.0,
             })
-            total_inflow += debit_sum or 0.0
-            total_outflow += credit_sum or 0.0
+            operating_inflow += debit_sum or 0.0
+            operating_outflow += credit_sum or 0.0
+
+        operating_net = operating_inflow - operating_outflow
+
+        # For now, investing and financing are empty (requires more complex logic)
+        # In a full implementation, these would query fixed asset and financing accounts
+        investing_lines = []
+        investing_net = 0.0
+
+        financing_lines = []
+        financing_net = 0.0
+
+        # Calculate totals
+        total_inflow = operating_inflow
+        total_outflow = operating_outflow
+        net_cash_flow = operating_net + investing_net + financing_net
+
+        # All lines combined for backward compatibility
+        all_lines = operating_lines + investing_lines + financing_lines
+
         return {
             'title': 'Cash Flow Statement',
             'date_from': wizard.date_from,
@@ -777,8 +1385,20 @@ class OpsFinancialReportParser(models.AbstractModel):
             'user': self.env.user.name,
             'target_move': dict(wizard._fields['target_move'].selection).get(wizard.target_move),
             'headers': ['Account', 'Inflow', 'Outflow', 'Net'],
-            'lines': lines,
+            # Section-based lines (Meridian Standard)
+            'operating_lines': operating_lines,
+            'investing_lines': investing_lines,
+            'financing_lines': financing_lines,
+            # Section totals
+            'operating_net': operating_net,
+            'investing_net': investing_net,
+            'financing_net': financing_net,
+            # Overall totals
+            'lines': all_lines,
             'total_inflow': total_inflow,
             'total_outflow': total_outflow,
-            'net_cash_flow': total_inflow - total_outflow,
+            'net_cash_flow': net_cash_flow,
+            # Cash position (would need opening balance calculation in full implementation)
+            'opening_cash': 0.0,
+            'closing_cash': net_cash_flow,
         }

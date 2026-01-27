@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        OPS PDF Engine - Wizard Button Extensions
+        =========================================
+
+        Adds "Modern PDF" button to report wizards that support WeasyPrint generation.
+    -->
+
+    <!-- Extend the Matrix Financial Intelligence wizard to add Modern PDF button -->
+    <record id="view_ops_general_ledger_wizard_enhanced_modern_pdf" model="ir.ui.view">
+        <field name="name">ops.general.ledger.wizard.enhanced.modern.pdf</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="inherit_id" ref="ops_matrix_accounting.view_ops_general_ledger_wizard_enhanced_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <!-- Add Modern PDF button after Generate Report button -->
+            <button name="action_generate_report" position="after">
+                <button name="action_print_modern_pdf"
+                        string="Modern PDF (WeasyPrint)"
+                        type="object"
+                        class="btn-success"
+                        icon="fa-magic"
+                        invisible="not date_from or not date_to"
+                        title="Generate PDF using WeasyPrint with modern CSS (Flexbox, Grid, Variables)"/>
+            </button>
+        </field>
+    </record>
+
+</odoo>
