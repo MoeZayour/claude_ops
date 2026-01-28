@@ -495,3 +495,83 @@ class OpsBaseReportWizard(models.AbstractModel):
             ('is_global', '=', True),
             ('user_id', '=', self.env.uid)
         ]
+
+    # ============================================
+    # NUMBER FORMATTING HELPERS
+    # ============================================
+
+    @staticmethod
+    def _format_amount(value):
+        """
+        Format amount with proper negative handling for minimal report styling.
+
+        Args:
+            value: Numeric value to format
+
+        Returns:
+            dict: {
+                'value': Formatted string,
+                'class': CSS class ('ops-zero', 'ops-negative', or 'ops-positive')
+            }
+        """
+        if value == 0:
+            return {'value': '0.00', 'class': 'ops-zero'}
+        elif value < 0:
+            return {'value': f"({abs(value):,.2f})", 'class': 'ops-negative'}
+        else:
+            return {'value': f"{value:,.2f}", 'class': 'ops-positive'}
+
+    @staticmethod
+    def _format_amount_no_decimals(value):
+        """
+        Format amount without decimals for minimal report styling.
+
+        Args:
+            value: Numeric value to format
+
+        Returns:
+            dict: {
+                'value': Formatted string (no decimals),
+                'class': CSS class ('ops-zero', 'ops-negative', or 'ops-positive')
+            }
+        """
+        if value == 0:
+            return {'value': '0', 'class': 'ops-zero'}
+        elif value < 0:
+            return {'value': f"({abs(value):,.0f})", 'class': 'ops-negative'}
+        else:
+            return {'value': f"{value:,.0f}", 'class': 'ops-positive'}
+
+    @staticmethod
+    def _format_percentage(value, decimals=1):
+        """
+        Format percentage with proper styling.
+
+        Args:
+            value: Numeric value (0.15 = 15%)
+            decimals: Number of decimal places (default 1)
+
+        Returns:
+            dict: {
+                'value': Formatted percentage string,
+                'class': CSS class
+            }
+        """
+        pct = value * 100
+        format_str = f"{{:,.{decimals}f}}%"
+        if pct == 0:
+            return {'value': format_str.format(0), 'class': 'ops-zero'}
+        elif pct < 0:
+            return {'value': f"({format_str.format(abs(pct))})", 'class': 'ops-negative'}
+        else:
+            return {'value': format_str.format(pct), 'class': 'ops-positive'}
+
+    def _get_company_primary_color(self):
+        """
+        Get company's primary color for report accent.
+
+        Returns:
+            str: Hex color code (defaults to #C9A962 gold)
+        """
+        company = getattr(self, 'company_id', None) or self.env.company
+        return getattr(company, 'primary_color', None) or '#C9A962'

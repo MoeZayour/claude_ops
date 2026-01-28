@@ -11,10 +11,6 @@
     </record>
     
     <!-- Menu under Accounting → Reporting -->
-    <menuitem id="menu_ops_pdc_reports"
-              name="PDC Reports"
-              parent="account.menu_finance_reports"
-              action="action_ops_pdc_reports"
-              sequence="90"/>
-    
+    <!-- MOVED: Menu consolidated in accounting_menus.xml as menu_reporting_pdc_reports -->
+
 </odoo>

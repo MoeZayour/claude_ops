@@ -69,6 +69,9 @@
 
         # Reports
         "report/ops_report_layout.xml",  # Corporate branding & shared styles
+        "report/ops_report_minimal_styles.xml",  # Minimal report styling system
+        "report/ops_general_ledger_minimal.xml",  # Minimal General Ledger
+        "report/ops_financial_report_minimal.xml",  # Minimal Financial Reports
         "report/ops_asset_report_templates.xml",
         "report/ops_consolidated_report_templates.xml",
         "report/ops_financial_report_template.xml",

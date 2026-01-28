@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        General Ledger Report - MINIMAL DESIGN
+        ======================================
+        Design Philosophy: Invisible Design - Data Speaks
+
+        - No decorative elements
+        - Typography creates hierarchy
+        - One dynamic accent: Company's primary color
+        - Color = Meaning only: Black for normal, Red for negatives
+    -->
+
+    <template id="report_general_ledger_minimal">
+        <t t-call="web.html_container">
+            <t t-call="ops_matrix_accounting.ops_minimal_report_styles"/>
+
+            <!-- Get company info and primary color -->
+            <t t-set="company" t-value="env.company"/>
+            <t t-set="company_name" t-value="company.name"/>
+            <t t-set="primary_color" t-value="company.primary_color or '#C9A962'"/>
+            <t t-set="currency_symbol" t-value="company.currency_id.symbol or ''"/>
+
+            <!-- Safe defaults for data -->
+            <t t-set="accounts_list" t-value="accounts or []"/>
+            <t t-set="totals" t-value="grand_total or {}"/>
+
+            <div class="ops-report" style="padding: 20px;">
+
+                <!-- HEADER: Title + Accent Line -->
+                <h1 class="ops-title">General Ledger</h1>
+                <div class="ops-subtitle"><t t-esc="company_name"/></div>
+                <div class="ops-accent-line" t-attf-style="background-color: #{primary_color};"/>
+
+                <!-- META INFO -->
+                <div class="ops-meta">
+                    <span class="ops-meta-item">Period: <strong><t t-esc="date_from or '-'"/> to <t t-esc="date_to or '-'"/></strong></span>
+                    <span class="ops-meta-item">Currency: <strong><t t-esc="currency_symbol"/></strong></span>
+                    <span class="ops-meta-item">Accounts: <strong><t t-esc="len(accounts_list)"/></strong></span>
+                </div>
+
+                <!-- GRAND TOTALS SUMMARY -->
+                <div class="ops-kpi-row">
+                    <table>
+                        <tr>
+                            <td style="width: 33%;">
+                                <div class="ops-kpi-label">Total Debit</div>
+                                <div class="ops-kpi-value ops-positive"><t t-esc="'{:,.2f}'.format(totals.get('debit', 0))"/></div>
+                            </td>
+                            <td style="width: 33%;">
+                                <div class="ops-kpi-label">Total Credit</div>
+                                <div class="ops-kpi-value ops-positive"><t t-esc="'{:,.2f}'.format(totals.get('credit', 0))"/></div>
+                            </td>
+                            <td style="width: 34%;">
+                                <t t-set="net_bal" t-value="totals.get('balance', 0)"/>
+                                <div class="ops-kpi-label">Net Balance</div>
+                                <div t-attf-class="ops-kpi-value #{net_bal &lt; 0 and 'ops-negative' or 'ops-positive'}">
+                                    <t t-if="net_bal &lt; 0">(<t t-esc="'{:,.2f}'.format(abs(net_bal))"/>)</t>
+                                    <t t-else=""><t t-esc="'{:,.2f}'.format(net_bal)"/></t>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="ops-spacer"/>
+
+                <!-- ACCOUNT DETAILS -->
+                <t t-foreach="accounts_list" t-as="account">
+                    <div class="no-break" style="margin-bottom: 24px;">
+
+                        <!-- Account Header -->
+                        <div class="ops-section">
+                            <t t-esc="account['account_code']"/> - <t t-esc="account['account_name']"/>
+                        </div>
+
+                        <!-- Transaction Table -->
+                        <table class="ops-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 70px;">Date</th>
+                                    <th style="width: 60px;">Journal</th>
+                                    <th>Partner</th>
+                                    <th>Label</th>
+                                    <th class="num" style="width: 90px;">Debit</th>
+                                    <th class="num" style="width: 90px;">Credit</th>
+                                    <th class="num" style="width: 100px;">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="account['lines']" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="line['move_date']"/></td>
+                                        <td><t t-esc="line['journal']"/></td>
+                                        <td><t t-esc="line['partner'] or '-'"/></td>
+                                        <td><t t-esc="line['label']"/></td>
+                                        <!-- Debit -->
+                                        <td class="num">
+                                            <t t-if="line['debit'] == 0">
+                                                <span class="ops-zero">0.00</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="ops-positive"><t t-esc="'{:,.2f}'.format(line['debit'])"/></span>
+                                            </t>
+                                        </td>
+                                        <!-- Credit -->
+                                        <td class="num">
+                                            <t t-if="line['credit'] == 0">
+                                                <span class="ops-zero">0.00</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="ops-positive"><t t-esc="'{:,.2f}'.format(line['credit'])"/></span>
+                                            </t>
+                                        </td>
+                                        <!-- Balance -->
+                                        <td class="num" style="font-weight: 600;">
+                                            <t t-if="line['balance'] == 0">
+                                                <span class="ops-zero">0.00</span>
+                                            </t>
+                                            <t t-elif="line['balance'] &lt; 0">
+                                                <span class="ops-negative">(<t t-esc="'{:,.2f}'.format(abs(line['balance']))"/>)</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="ops-positive"><t t-esc="'{:,.2f}'.format(line['balance'])"/></span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <!-- Empty state -->
+                                <t t-if="not account['lines']">
+                                    <tr>
+                                        <td colspan="7" class="ops-zero" style="text-align: center; font-style: italic; padding: 16px;">
+                                            No transactions in this period
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <!-- Account Total Footer -->
+                            <tfoot>
+                                <tr class="subtotal">
+                                    <td colspan="4" style="text-align: right; font-weight: 600;">Account Total:</td>
+                                    <td class="num">
+                                        <t t-if="account['total_debit'] == 0">
+                                            <span class="ops-zero">0.00</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="ops-positive"><t t-esc="'{:,.2f}'.format(account['total_debit'])"/></span>
+                                        </t>
+                                    </td>
+                                    <td class="num">
+                                        <t t-if="account['total_credit'] == 0">
+                                            <span class="ops-zero">0.00</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="ops-positive"><t t-esc="'{:,.2f}'.format(account['total_credit'])"/></span>
+                                        </t>
+                                    </td>
+                                    <td class="num" style="font-weight: 700;">
+                                        <t t-if="account['total_balance'] == 0">
+                                            <span class="ops-zero">0.00</span>
+                                        </t>
+                                        <t t-elif="account['total_balance'] &lt; 0">
+                                            <span class="ops-negative">(<t t-esc="'{:,.2f}'.format(abs(account['total_balance']))"/>)</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="ops-positive"><t t-esc="'{:,.2f}'.format(account['total_balance'])"/></span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+
+                <!-- GRAND TOTAL ROW -->
+                <div class="ops-spacer"/>
+                <table class="ops-table">
+                    <tr class="total">
+                        <td style="font-weight: 700;">GRAND TOTAL (<t t-esc="len(accounts_list)"/> Accounts)</td>
+                        <td class="num" style="width: 90px;">
+                            <span class="ops-positive"><t t-esc="'{:,.2f}'.format(totals.get('debit', 0))"/></span>
+                        </td>
+                        <td class="num" style="width: 90px;">
+                            <span class="ops-positive"><t t-esc="'{:,.2f}'.format(totals.get('credit', 0))"/></span>
+                        </td>
+                        <td class="num" style="width: 100px;">
+                            <t t-set="net_bal" t-value="totals.get('balance', 0)"/>
+                            <t t-if="net_bal &lt; 0">
+                                <span class="ops-negative">(<t t-esc="'{:,.2f}'.format(abs(net_bal))"/>)</span>
+                            </t>
+                            <t t-else="">
+                                <span class="ops-positive"><t t-esc="'{:,.2f}'.format(net_bal)"/></span>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- NOTES -->
+                <div class="ops-notes">
+                    <div class="ops-notes-title">Notes</div>
+                    <ul>
+                        <li>All transactions are sourced from posted journal entries</li>
+                        <li>Values of zero are displayed as "0.00" for transparency</li>
+                        <li>Negative values are shown in red with parentheses</li>
+                        <li>Account balances are cumulative through the reporting period</li>
+                    </ul>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="ops-footer">
+                    <span>Generated: <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/></span>
+                    <span class="ops-footer-brand" t-attf-style="color: #{primary_color};">OPS Framework</span>
+                </div>
+
+            </div>
+        </t>
+    </template>
+
+    <!-- Report Action for Minimal General Ledger -->
+    <record id="action_report_general_ledger_minimal" model="ir.actions.report">
+        <field name="name">General Ledger (Minimal)</field>
+        <field name="model">ops.general.ledger.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_general_ledger_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_general_ledger_minimal</field>
+        <field name="binding_model_id" ref="model_ops_general_ledger_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

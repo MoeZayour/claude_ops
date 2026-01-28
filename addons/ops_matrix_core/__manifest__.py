@@ -124,6 +124,7 @@
         'wizard/apply_report_template_wizard_views.xml',
         'wizard/ops_sale_order_import_wizard_views.xml',
         'wizard/ops_purchase_order_import_wizard_views.xml',
+        'wizard/ops_secure_export_wizard_views.xml',
         'views/sale_order_import_wizard_views.xml',
 
         # Phase 13: UAT Fixes

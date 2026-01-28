@@ -147,38 +147,87 @@ class OpsBudget(models.Model):
         self.write({'state': 'draft'})
 
     @api.model
-    def check_budget_availability(self, account_id, ops_branch_id, ops_business_unit_id, amount):
+    def check_budget_availability(self, branch_id=None, business_unit_id=None, amount=0.0,
+                                   date=None, account_id=None, ops_branch_id=None,
+                                   ops_business_unit_id=None):
         """Check if sufficient budget is available for a planned expense.
-        
+
         Args:
-            account_id: The expense account to check
-            ops_branch_id: The branch requesting the expense
-            ops_business_unit_id: The business unit requesting the expense
+            branch_id: The branch requesting the expense (preferred)
+            business_unit_id: The business unit requesting the expense (preferred)
             amount: The amount to check
-            
+            date: Date to check budget for (defaults to today)
+            account_id: Optional - specific expense account to check
+            ops_branch_id: Legacy param - alias for branch_id
+            ops_business_unit_id: Legacy param - alias for business_unit_id
+
         Returns:
-            bool: True if sufficient budget exists, False otherwise
+            dict: {
+                'available': bool - whether budget is available,
+                'remaining': float - remaining budget amount,
+                'over_amount': float - amount over budget (if any),
+                'budget_id': int - ID of the applicable budget,
+                'budget_name': str - name of the applicable budget,
+                'message': str - human-readable message
+            }
         """
+        # Handle legacy parameter names
+        branch_id = branch_id or ops_branch_id
+        business_unit_id = business_unit_id or ops_business_unit_id
+        check_date = date or fields.Date.today()
+
+        result = {
+            'available': True,
+            'remaining': 0.0,
+            'over_amount': 0.0,
+            'budget_id': False,
+            'budget_name': '',
+            'message': ''
+        }
+
+        if not branch_id or not business_unit_id:
+            result['message'] = 'No branch or business unit specified'
+            return result
+
         domain = [
             ('state', '=', 'confirmed'),
-            ('ops_branch_id', '=', ops_branch_id),
-            ('ops_business_unit_id', '=', ops_business_unit_id),
-            ('date_from', '<=', fields.Date.today()),
-            ('date_to', '>=', fields.Date.today())
+            ('ops_branch_id', '=', branch_id),
+            ('ops_business_unit_id', '=', business_unit_id),
+            ('date_from', '<=', check_date),
+            ('date_to', '>=', check_date)
         ]
-        
+
         active_budget = self.search(domain, limit=1)
         if not active_budget:
-            return False
-            
-        budget_line = active_budget.line_ids.filtered(
-            lambda l: l.general_account_id.id == account_id
-        )
-        if not budget_line:
-            return False
-            
-        available = budget_line.planned_amount - budget_line.practical_amount - budget_line.committed_amount
-        return available >= amount
+            result['message'] = 'No active budget found for this period'
+            return result
+
+        result['budget_id'] = active_budget.id
+        result['budget_name'] = active_budget.name
+
+        # If specific account requested, check that line
+        if account_id:
+            budget_line = active_budget.line_ids.filtered(
+                lambda l: l.general_account_id.id == account_id
+            )
+            if not budget_line:
+                result['message'] = 'No budget line for specified account'
+                return result
+            available = budget_line.available_amount
+        else:
+            # Check overall budget
+            available = active_budget.available_balance
+
+        result['remaining'] = available
+
+        if available < amount:
+            result['available'] = False
+            result['over_amount'] = amount - available
+            result['message'] = f'Budget exceeded by {result["over_amount"]:.2f}'
+        else:
+            result['message'] = f'Budget available: {available:.2f} remaining'
+
+        return result
 
 
 class OpsBudgetLine(models.Model):

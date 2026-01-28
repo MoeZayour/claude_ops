@@ -65,11 +65,82 @@
 
     <!-- =================== FINANCIAL REPORTS =================== -->
 
-    <!-- Reporting Main Menu moved to Reporting App -->
+    <!-- DISABLED: Financial Analysis now accessed via Accounting > Reporting -->
+    <!-- Use: Matrix Financial Intelligence, Treasury Intelligence, Asset Intelligence -->
     <menuitem
         id="menu_ops_accounting_reports"
         name="Financial Analysis"
         parent="ops_matrix_core.menu_ops_reporting"
-        sequence="20"/>
+        sequence="20"
+        active="False"/>
+
+    <!-- =================== HIDE NATIVE ODOO REPORTING SUBMENUS =================== -->
+    <!-- Hide all native Odoo subheaders to get a flat menu structure -->
+    <record id="account.account_reports_partners_reports_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.account_reports_taxes_and_fiscal_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.account_reports_management_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.account_reports_legal_statements_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- =================== CONSOLIDATED REPORTING MENUS =================== -->
+    <!--
+    All reporting menus under Accounting > Reporting
+    Flat structure with sequential ordering:
+    - Matrix Financial Intelligence (seq 10)
+    - Treasury Intelligence (seq 20)
+    - Asset Intelligence (seq 30)
+    - Invoice Analysis (seq 40)
+    - Analytic Report (seq 50)
+    - PDC Reports (seq 60)
+    -->
+
+    <!-- 1. Matrix Financial Intelligence -->
+    <menuitem id="menu_reporting_financial_intelligence"
+              name="Matrix Financial Intelligence"
+              parent="account.menu_finance_reports"
+              action="action_ops_general_ledger_wizard_enhanced"
+              sequence="10"/>
+
+    <!-- 2. Treasury Intelligence -->
+    <menuitem id="menu_reporting_treasury_intelligence"
+              name="Treasury Intelligence"
+              parent="account.menu_finance_reports"
+              action="action_ops_treasury_report_wizard"
+              sequence="20"/>
+
+    <!-- 3. Asset Intelligence -->
+    <menuitem id="menu_reporting_asset_intelligence"
+              name="Asset Intelligence"
+              parent="account.menu_finance_reports"
+              action="action_ops_asset_report_wizard"
+              sequence="30"/>
+
+    <!-- 4. Invoice Analysis (Native Odoo Action) -->
+    <menuitem id="menu_reporting_invoice_analysis"
+              name="Invoice Analysis"
+              parent="account.menu_finance_reports"
+              action="account.action_account_invoice_report_all"
+              sequence="40"/>
+
+    <!-- 5. Analytic Report (Native Odoo Action) -->
+    <menuitem id="menu_reporting_analytic_report"
+              name="Analytic Report"
+              parent="account.menu_finance_reports"
+              action="account.action_analytic_reporting"
+              sequence="50"/>
+
+    <!-- 6. PDC Reports -->
+    <menuitem id="menu_reporting_pdc_reports"
+              name="PDC Reports"
+              parent="account.menu_finance_reports"
+              action="action_ops_pdc_reports"
+              sequence="60"/>
 
 </odoo>

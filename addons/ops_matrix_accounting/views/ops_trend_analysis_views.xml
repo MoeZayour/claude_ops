@@ -137,12 +137,15 @@
         <field name="view_id" ref="view_ops_trend_analysis_form"/>
     </record>
 
-    <!-- Menu Item -->
+    <!-- Menu Item - Disabled (not in required structure) -->
+    <!-- Access via Matrix Financial Intelligence instead -->
     <menuitem
         id="menu_ops_trend_analysis"
         name="Trend Analysis"
-        parent="ops_matrix_core.menu_ops_reporting"
+        parent="account.menu_finance_reports"
         action="action_ops_trend_analysis"
-        sequence="15"/>
+        sequence="70"
+        groups="account.group_account_user"
+        active="False"/>
 
 </odoo>

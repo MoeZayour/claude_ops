@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-from datetime import datetime
+from datetime import datetime, timedelta
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class OpsPersonaDelegation(models.Model):
     """Model to track persona delegation history."""
@@ -315,14 +318,14 @@ class OpsPersonaDelegation(models.Model):
     
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to log delegation creation."""
+        """Override create to log delegation creation with full audit trail."""
         delegations = super().create(vals_list)
-        
+
         for delegation in delegations:
             # Send notification to delegate
             delegation._notify_delegation_created()
-            
-            # Log creation
+
+            # Log creation to chatter
             delegation.message_post(
                 body=_('Delegation created: %(delegator)s delegated persona %(persona)s to %(delegate)s.') % {
                     'delegator': delegation.delegator_id.name,
@@ -330,32 +333,122 @@ class OpsPersonaDelegation(models.Model):
                     'delegate': delegation.delegate_id.name
                 }
             )
-        
+
+            # Log to security audit
+            try:
+                self.env['ops.security.audit'].sudo().log_delegation_change(
+                    delegation_id=delegation.id,
+                    action='created',
+                    details=_(
+                        "Delegation created: %(delegator)s delegated persona '%(persona)s' "
+                        "to %(delegate)s (%(start)s to %(end)s). Reason: %(reason)s"
+                    ) % {
+                        'delegator': delegation.delegator_id.name,
+                        'persona': delegation.persona_id.name,
+                        'delegate': delegation.delegate_id.name,
+                        'start': delegation.start_date,
+                        'end': delegation.end_date,
+                        'reason': delegation.reason or _('No reason provided'),
+                    }
+                )
+            except Exception as e:
+                _logger.warning("Failed to log delegation creation to audit: %s", str(e))
+
         return delegations
     
     def write(self, vals):
-        """Override write to track changes."""
+        """Override write to track changes with full audit trail."""
+        # Capture old values for audit logging
+        old_values = {}
+        for rec in self:
+            old_values[rec.id] = {
+                'delegate': rec.delegate_id.name,
+                'start_date': str(rec.start_date) if rec.start_date else None,
+                'end_date': str(rec.end_date) if rec.end_date else None,
+                'active': rec.active,
+                'reason': rec.reason,
+            }
+
         result = super().write(vals)
-        
+
         # If dates changed, log it
         if 'start_date' in vals or 'end_date' in vals:
             for delegation in self:
                 delegation.message_post(
                     body=_('Delegation dates updated.')
                 )
-        
+
+        # Log all modifications to security audit
+        for delegation in self:
+            try:
+                old = old_values.get(delegation.id, {})
+                changes = []
+
+                if 'delegate_id' in vals:
+                    changes.append(f"delegate: {old.get('delegate')} -> {delegation.delegate_id.name}")
+                if 'start_date' in vals:
+                    changes.append(f"start_date: {old.get('start_date')} -> {delegation.start_date}")
+                if 'end_date' in vals:
+                    changes.append(f"end_date: {old.get('end_date')} -> {delegation.end_date}")
+                if 'active' in vals:
+                    changes.append(f"active: {old.get('active')} -> {delegation.active}")
+
+                if changes:
+                    self.env['ops.security.audit'].sudo().log_delegation_change(
+                        delegation_id=delegation.id,
+                        action='modified',
+                        details=_(
+                            "Delegation modified for persona '%(persona)s' "
+                            "(%(delegator)s -> %(delegate)s). Changes: %(changes)s"
+                        ) % {
+                            'persona': delegation.persona_id.name,
+                            'delegator': delegation.delegator_id.name,
+                            'delegate': delegation.delegate_id.name,
+                            'changes': '; '.join(changes),
+                        }
+                    )
+            except Exception as e:
+                _logger.warning("Failed to log delegation modification to audit: %s", str(e))
+
         # If revoked, notify
         if 'active' in vals and not vals['active']:
             for delegation in self:
-                delegation.write({'revoked_date': fields.Datetime.now()})
+                # Note: Avoid recursive write by using sudo with context
+                if not delegation.revoked_date:
+                    delegation.with_context(skip_audit=True).sudo().write({
+                        'revoked_date': fields.Datetime.now()
+                    })
                 delegation._notify_delegation_revoked()
-        
+
         return result
-    
+
+    def unlink(self):
+        """Override unlink to log delegation deletion with full audit trail."""
+        for delegation in self:
+            try:
+                self.env['ops.security.audit'].sudo().log_delegation_change(
+                    delegation_id=delegation.id,
+                    action='deleted',
+                    details=_(
+                        "Delegation deleted: %(delegator)s -> %(delegate)s "
+                        "(persona: %(persona)s, dates: %(start)s to %(end)s)"
+                    ) % {
+                        'delegator': delegation.delegator_id.name,
+                        'delegate': delegation.delegate_id.name,
+                        'persona': delegation.persona_id.name,
+                        'start': delegation.start_date,
+                        'end': delegation.end_date,
+                    }
+                )
+            except Exception as e:
+                _logger.warning("Failed to log delegation deletion to audit: %s", str(e))
+
+        return super().unlink()
+
     # ============================================
     # BUSINESS METHODS
     # ============================================
-    
+
     def action_activate(self):
         """Manually activate a delegation."""
         self.ensure_one()

@@ -145,3 +145,5 @@ access_ops_matrix_config_account_invoice,ops.matrix.config.account.invoice,model
 access_ops_matrix_config_system,ops.matrix.config.system,model_ops_matrix_config,base.group_system,1,1,1,1
 access_ops_dashboard_widget_base_user,ops.dashboard.widget.base.user,model_ops_dashboard_widget,base.group_user,1,0,0,0
 access_ops_report_template_base_read,ops.report.template.base.read,model_ops_report_template,base.group_user,1,0,0,0
+access_ops_secure_export_wizard_exporter,ops.secure.export.wizard.exporter,model_ops_secure_export_wizard,group_ops_can_export,1,1,1,1
+access_ops_secure_export_wizard_system,ops.secure.export.wizard.system,model_ops_secure_export_wizard,base.group_system,1,1,1,1

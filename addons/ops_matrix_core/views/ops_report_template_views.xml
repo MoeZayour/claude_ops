@@ -62,10 +62,11 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- Menu Item -->
+    <!-- Menu Item - Now under Settings > OPS Framework -->
     <menuitem id="menu_report_template"
               name="Report Templates"
-              parent="ops_matrix_core.menu_ops_reporting"
+              parent="ops_matrix_core.menu_ops_settings_root"
               action="action_report_template"
-              sequence="90"/>
+              sequence="50"
+              groups="base.group_system"/>
 </odoo>

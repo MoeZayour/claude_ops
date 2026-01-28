@@ -330,101 +330,101 @@
         </t>
     </template>
 
-    <!-- Report Actions -->
+    <!-- Report Actions - MINIMAL DESIGN -->
     <record id="action_report_general_ledger" model="ir.actions.report">
         <field name="name">General Ledger</field>
         <field name="model">ops.general.ledger.wizard</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_general_ledger</field>
-        <field name="report_file">ops_matrix_accounting.report_general_ledger</field>
+        <field name="report_name">ops_matrix_accounting.report_general_ledger_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_general_ledger_minimal</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard"/>
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Enhanced General Ledger Report with Matrix Dimensions -->
+    <!-- Enhanced General Ledger Report with Matrix Dimensions - MINIMAL DESIGN -->
     <record id="report_general_ledger_matrix" model="ir.actions.report">
         <field name="name">General Ledger (Matrix Enhanced)</field>
         <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_general_ledger</field>
-        <field name="report_file">ops_matrix_accounting.report_general_ledger</field>
+        <field name="report_name">ops_matrix_accounting.report_general_ledger_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_general_ledger_minimal</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Trial Balance Report (Matrix Enhanced) -->
+    <!-- Trial Balance Report (Matrix Enhanced) - MINIMAL DESIGN -->
     <record id="report_trial_balance_matrix" model="ir.actions.report">
         <field name="name">Trial Balance (Matrix Enhanced)</field>
         <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_ops_financial_document</field>
-        <field name="report_file">ops_matrix_accounting.report_ops_financial_document</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Profit & Loss Report (Matrix Enhanced) -->
+    <!-- Profit & Loss Report (Matrix Enhanced) - MINIMAL DESIGN -->
     <record id="report_profit_loss_matrix" model="ir.actions.report">
         <field name="name">Profit &amp; Loss (Matrix Enhanced)</field>
         <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_ops_financial_document</field>
-        <field name="report_file">ops_matrix_accounting.report_ops_financial_document</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Balance Sheet Report (Matrix Enhanced) -->
+    <!-- Balance Sheet Report (Matrix Enhanced) - MINIMAL DESIGN -->
     <record id="report_balance_sheet_matrix" model="ir.actions.report">
         <field name="name">Balance Sheet (Matrix Enhanced)</field>
         <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_ops_financial_document</field>
-        <field name="report_file">ops_matrix_accounting.report_ops_financial_document</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Cash Flow Report (Matrix Enhanced) -->
+    <!-- Cash Flow Report (Matrix Enhanced) - MINIMAL DESIGN -->
     <record id="report_cash_flow_matrix" model="ir.actions.report">
         <field name="name">Cash Flow (Matrix Enhanced)</field>
         <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_ops_financial_document</field>
-        <field name="report_file">ops_matrix_accounting.report_ops_financial_document</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Aged Partner Balance Report (Matrix Enhanced) -->
+    <!-- Aged Partner Balance Report (Matrix Enhanced) - MINIMAL DESIGN -->
     <record id="report_aged_partner_matrix" model="ir.actions.report">
         <field name="name">Aged Partner Balance (Matrix Enhanced)</field>
         <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_ops_financial_document</field>
-        <field name="report_file">ops_matrix_accounting.report_ops_financial_document</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Partner Ledger Report (Matrix Enhanced) -->
+    <!-- Partner Ledger Report (Matrix Enhanced) - MINIMAL DESIGN -->
     <record id="report_partner_ledger_matrix" model="ir.actions.report">
         <field name="name">Partner Ledger (Matrix Enhanced)</field>
         <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_ops_financial_document</field>
-        <field name="report_file">ops_matrix_accounting.report_ops_financial_document</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Statement of Account Report (Matrix Enhanced) -->
+    <!-- Statement of Account Report (Matrix Enhanced) - MINIMAL DESIGN -->
     <record id="report_statement_of_account_matrix" model="ir.actions.report">
         <field name="name">Statement of Account (Matrix Enhanced)</field>
         <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_ops_financial_document</field>
-        <field name="report_file">ops_matrix_accounting.report_ops_financial_document</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>

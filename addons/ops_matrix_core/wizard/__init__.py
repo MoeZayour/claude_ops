@@ -5,3 +5,4 @@ from . import sale_order_import_wizard
 from . import ops_sale_order_import_wizard
 from . import ops_purchase_order_import_wizard
 from . import apply_report_template_wizard
+from . import ops_secure_export_wizard

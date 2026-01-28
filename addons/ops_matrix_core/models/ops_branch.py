@@ -105,10 +105,10 @@ class OpsBranch(models.Model):
     address = fields.Text(
         string='Physical Address',
         help='Complete physical address of this branch location. '
-             'Include: Slistt, City, State/Province, ZIP/Postal Code, Country. '
+             'Include: Street, City, State/Province, ZIP/Postal Code, Country. '
              'Used in: Customer-facing documents (invoices, delivery notes), shipping labels, branch reports. '
              'Format: Use line breaks for readability. '
-             'Example: "123 Main Slistt\\nSuite 400\\nSeattle, WA 98101\\nUnited States". '
+             'Example: "123 Main Street\\nSuite 400\\nSeattle, WA 98101\\nUnited States". '
              'Best Practice: Keep updated for accurate shipping and legal compliance.'
     )
     phone = fields.Char(
@@ -199,11 +199,26 @@ class OpsBranch(models.Model):
     # Computed Methods
     # ---------------------------------------------------------
     def _compute_business_unit_count(self) -> None:
-        """Count business units operating in this branch."""
+        """Count business units operating in this branch (single query for performance)."""
+        if not self.ids:
+            for branch in self:
+                branch.business_unit_count = 0
+            return
+
+        # Use search + mapped for efficient counting
+        # This is more efficient than calling search_count in a loop
+        BU = self.env['ops.business.unit']
+        all_bus = BU.search([('branch_ids', 'in', self.ids)])
+
+        # Build counts dict by iterating once
+        counts = {branch_id: 0 for branch_id in self.ids}
+        for bu in all_bus:
+            for branch_id in bu.branch_ids.ids:
+                if branch_id in counts:
+                    counts[branch_id] += 1
+
         for branch in self:
-            branch.business_unit_count = self.env['ops.business.unit'].search_count([
-                ('branch_ids', 'in', branch.id)
-            ])
+            branch.business_unit_count = counts.get(branch.id, 0)
 
     # ---------------------------------------------------------
     # Constraints & Validation
@@ -297,6 +312,9 @@ class OpsBranch(models.Model):
     # ---------------------------------------------------------
     @api.depends('code', 'name')
     def _compute_display_name(self):
-        """Display as '[CODE] Name'."""
+        """Display as '[CODE] Name' or just 'Name' if code is empty."""
         for branch in self:
-            branch.display_name = f"[{branch.code}] {branch.name}"
+            if branch.code and branch.code != 'New':
+                branch.display_name = f"[{branch.code}] {branch.name}"
+            else:
+                branch.display_name = branch.name or ''

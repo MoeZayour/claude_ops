@@ -138,11 +138,12 @@
         </field>
     </record>
 
-    <!-- Menu Item (under Accounting > Reporting) -->
+    <!-- Menu Item - DISABLED (now accessed via Settings > OPS Framework > Report Templates) -->
     <menuitem id="menu_ops_report_templates"
               name="Report Templates"
               parent="ops_matrix_accounting.menu_ops_financial_reports"
               action="action_ops_report_template"
-              sequence="99"/>
+              sequence="99"
+              active="False"/>
 
 </odoo>

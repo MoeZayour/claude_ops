@@ -672,17 +672,17 @@
         </record>
         
         <!-- BU Leader: All Branches in BU - Sales Orders -->
-        <!-- DISABLED: res.users has no business_unit_id attribute -->
+        <!-- ENABLED: Uses ops_allowed_business_unit_ids for cross-branch BU access -->
         <record id="rule_sale_order_bu_leader_isolation" model="ir.rule">
-            <field name="name">BU Leader: All BU Sales Orders</field>
+            <field name="name">Sale Order: BU Leader Cross-Branch Access</field>
             <field name="model_id" ref="sale.model_sale_order"/>
             <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_bu_leader'))]"/>
-            <field name="domain_force">[('ops_branch_id.business_unit_id', '=', user.business_unit_id.id)]</field>
+            <field name="domain_force">[('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
-            <field name="active" eval="False"/>
+            <field name="active" eval="True"/>
         </record>
         
         <!-- Branch Manager: Own Branch Only - Purchase Orders -->
@@ -698,17 +698,17 @@
         </record>
         
         <!-- BU Leader: All Branches in BU - Purchase Orders -->
-        <!-- DISABLED: res.users has no business_unit_id attribute -->
+        <!-- ENABLED: Uses ops_allowed_business_unit_ids for cross-branch BU access -->
         <record id="rule_purchase_order_bu_leader_isolation" model="ir.rule">
-            <field name="name">BU Leader: All BU Purchase Orders</field>
+            <field name="name">Purchase Order: BU Leader Cross-Branch Access</field>
             <field name="model_id" ref="purchase.model_purchase_order"/>
             <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_bu_leader'))]"/>
-            <field name="domain_force">[('ops_branch_id.business_unit_id', '=', user.business_unit_id.id)]</field>
+            <field name="domain_force">[('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
-            <field name="active" eval="False"/>
+            <field name="active" eval="True"/>
         </record>
         
     </data>

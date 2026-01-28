@@ -29,20 +29,32 @@ class OpsSoDMixin(models.AbstractModel):
     def _check_sod_violation(self, action):
         """
         Check if current action violates SoD rules.
-        
+
         Args:
             action (str): The action being performed (confirm, post, validate, etc.)
-        
+
         Raises:
             UserError: If SoD violation is detected and block_violation=True
-        
+
         Returns:
             None
         """
         self.ensure_one()
-        
-        # Skip checks for superuser/admin
+
+        # Skip checks for superuser/admin but log the bypass
         if self.env.su or self.env.user.has_group('base.group_system'):
+            try:
+                self.env['ops.security.audit'].sudo().log_security_override(
+                    model_name=self._name,
+                    record_id=self.id,
+                    reason=f'Admin bypass used to skip SoD check for action: {action}'
+                )
+                _logger.warning(
+                    "Admin SoD bypass: %s skipped SoD check on %s (ID: %s) for action '%s'",
+                    self.env.user.name, self._name, self.id, action
+                )
+            except Exception as e:
+                _logger.debug("Failed to log admin SoD bypass: %s", str(e))
             return
         
         _logger.info(

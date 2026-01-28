@@ -115,12 +115,13 @@
 
     <!-- =================== MENU STRUCTURE =================== -->
 
-    <!-- Main Inventory Intelligence Menu under Accounting > Reporting -->
+    <!-- Main Inventory Intelligence Menu under Inventory > Reporting -->
     <menuitem
         id="menu_ops_inventory_intelligence"
         name="Inventory Intelligence"
-        parent="ops_matrix_core.menu_ops_reporting"
-        sequence="30"/>
+        parent="stock.menu_stock_root"
+        sequence="50"
+        groups="stock.group_stock_manager"/>
 
     <!-- Main Wizard Entry -->
     <menuitem

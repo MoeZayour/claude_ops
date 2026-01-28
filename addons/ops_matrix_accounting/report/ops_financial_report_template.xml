@@ -40,13 +40,13 @@
         - General Ledger (gl)
     -->
 
-    <!-- Define the PDF Report Action -->
+    <!-- Define the PDF Report Action - MINIMAL DESIGN -->
     <record id="action_report_ops_financial" model="ir.actions.report">
         <field name="name">Financial Report</field>
         <field name="model">ops.financial.report.wizard</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_ops_financial_document</field>
-        <field name="report_file">ops_matrix_accounting.report_ops_financial_document</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
         <field name="print_report_name">'Financial_Report_%s_%s_%s' % (object.report_type, object.date_from, object.date_to)</field>
         <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_financial"/>
     </record>

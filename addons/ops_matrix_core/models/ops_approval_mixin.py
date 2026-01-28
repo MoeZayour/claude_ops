@@ -33,19 +33,32 @@ class OpsApprovalMixin(models.AbstractModel):
     
     def _check_approval_lock(self, operation='write'):
         """Check if operation is allowed on locked document.
-        
+
         Args:
             operation: 'write', 'unlink', or 'print'
-            
+
         Raises:
             UserError: If document is locked and user is not authorized
         """
         for record in self:
             if not record.approval_locked:
                 continue
-                
-            # System operations allowed
+
+            # System operations allowed but logged
             if self.env.su:
+                # Log admin bypass for audit trail
+                try:
+                    self.env['ops.security.audit'].sudo().log_security_override(
+                        model_name=record._name,
+                        record_id=record.id,
+                        reason=f'Admin bypass used on approval-locked document ({operation})'
+                    )
+                    _logger.warning(
+                        "Admin bypass: %s performed %s on locked %s (ID: %s)",
+                        self.env.user.name, operation, record._name, record.id
+                    )
+                except Exception as e:
+                    _logger.debug("Failed to log admin bypass: %s", str(e))
                 continue
                 
             # Approvers can modify approval_locked field itself (to unlock)

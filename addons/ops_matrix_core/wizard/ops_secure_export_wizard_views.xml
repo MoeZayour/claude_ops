@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Secure Export Wizard Form View -->
+    <record id="ops_secure_export_wizard_form" model="ir.ui.view">
+        <field name="name">ops.secure.export.wizard.form</field>
+        <field name="model">ops.secure.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Secure Data Export">
+                <group>
+                    <group>
+                        <field name="model_id" options="{'no_create': True}"/>
+                        <field name="model_name" invisible="1"/>
+                        <field name="format"/>
+                    </group>
+                    <group>
+                        <field name="record_count" readonly="1"/>
+                        <field name="include_ids"/>
+                    </group>
+                </group>
+                <group string="Filter">
+                    <field name="domain" widget="domain"
+                           options="{'model': 'model_name'}"
+                           placeholder="[]"/>
+                </group>
+                <group string="Fields to Export">
+                    <field name="field_ids" widget="many2many_tags"
+                           domain="[('model_id', '=', model_id), ('store', '=', True), ('ttype', 'not in', ['binary', 'one2many'])]"
+                           options="{'no_create': True}"
+                           placeholder="Leave empty to export all visible fields"/>
+                </group>
+                <div class="alert alert-info" role="status">
+                    <strong>Security Notice:</strong>
+                    <ul>
+                        <li>Export is filtered by your branch/business unit permissions</li>
+                        <li>Sensitive fields (cost, margin) are hidden based on your access</li>
+                        <li>All exports are logged for audit purposes</li>
+                    </ul>
+                </div>
+                <footer>
+                    <button name="action_export" string="Export" type="object"
+                            class="btn-primary" icon="fa-download"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open the wizard -->
+    <record id="action_ops_secure_export_wizard" model="ir.actions.act_window">
+        <field name="name">Secure Export</field>
+        <field name="res_model">ops.secure.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu item under Settings > OPS Framework -->
+    <menuitem id="menu_secure_export_wizard"
+              name="Secure Data Export"
+              action="action_ops_secure_export_wizard"
+              parent="ops_matrix_core.menu_ops_settings_root"
+              sequence="90"
+              groups="ops_matrix_core.group_ops_can_export"/>
+</odoo>

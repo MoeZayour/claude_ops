@@ -1,40 +1,10 @@
-# OPS Framework - Technical Documentation
+# How-To Guides & Tutorials
 
-## Module Architecture
+This directory contains goal-oriented instructions for completing specific common tasks within the OPS Framework. These guides are primarily aimed at developers and system administrators who need to extend or configure the system.
 
-### ops_matrix_core
-Core functionality including:
-- Business Unit management
-- Branch management
-- Persona system
-- Security framework
+## Index of Guides
 
-### ops_matrix_accounting
-Financial features including:
-- PDC (Post-Dated Checks) management
-- Three-way matching
-- SLA & approval workflows
+- [How to Add a Custom Governance Rule](./01_add_custom_governance_rule.md)
+- [How to Create a New Financial Report](./02_create_new_financial_report.md)
 
-### ops_matrix_reporting
-Reporting capabilities including:
-- Financial reports
-- Dashboards
-- Excel exports
-
-### ops_matrix_asset_management
-Asset tracking including:
-- Asset registration
-- Depreciation management
-- Budget control
-
-## Database Schema
-
-See individual module documentation for detailed schema information.
-
-## API Reference
-
-All modules follow Odoo 19 ORM patterns. See Odoo documentation for API details.
-
-## Development Guide
-
-For development guidelines, see _archive/development/ directory.
+If you have a common task that is not documented here, please consider contributing a new guide.
