@@ -143,4 +143,47 @@
               action="action_ops_pdc_reports"
               sequence="60"/>
 
+    <!-- =================== PERIOD END MANAGEMENT =================== -->
+
+    <!-- Period End Main Menu -->
+    <menuitem
+        id="menu_ops_period_end"
+        name="Period End"
+        parent="account.menu_finance"
+        sequence="25"/>
+
+    <!-- Fiscal Periods -->
+    <menuitem
+        id="menu_ops_fiscal_periods"
+        name="Fiscal Periods"
+        parent="menu_ops_period_end"
+        action="action_ops_fiscal_period"
+        sequence="10"/>
+
+    <!-- Close Period Checklist -->
+    <menuitem
+        id="menu_ops_period_checklist"
+        name="Close Checklist"
+        parent="menu_ops_period_end"
+        action="action_ops_period_checklist"
+        sequence="20"/>
+
+    <!-- Branch Period Locks -->
+    <menuitem
+        id="menu_ops_branch_period_locks"
+        name="Branch Period Locks"
+        parent="menu_ops_period_end"
+        action="action_ops_period_branch_lock"
+        sequence="30"/>
+
+    <!-- =================== CONFIGURATION - FISCAL PERIODS =================== -->
+
+    <!-- Fiscal Periods under Configuration -->
+    <menuitem
+        id="menu_ops_config_fiscal_periods"
+        name="Fiscal Periods"
+        parent="account.menu_finance_configuration"
+        action="action_ops_fiscal_period"
+        sequence="50"/>
+
 </odoo>

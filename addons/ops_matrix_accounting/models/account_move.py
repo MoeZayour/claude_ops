@@ -69,7 +69,11 @@ class AccountMove(models.Model):
                 }
 
     def action_post(self):
-        """Check budget before posting vendor bills/expenses."""
+        """Check period lock and budget before posting."""
+        # Check period locks first
+        self._check_period_lock()
+
+        # Then check budgets
         Budget = self.env['ops.budget']
 
         for move in self:
@@ -105,6 +109,81 @@ class AccountMove(models.Model):
                 })
 
         return super().action_post()
+
+    def _check_period_lock(self):
+        """Check if posting is blocked by period lock.
+
+        Raises:
+            ValidationError: If period is hard-locked
+        """
+        Period = self.env['ops.fiscal.period']
+
+        for move in self:
+            # Find applicable period for this move's date
+            period = Period.get_period_for_date(
+                move.date,
+                move.company_id.id
+            )
+
+            if not period:
+                # No period defined - allow posting
+                continue
+
+            # Check company-level lock first
+            if period.lock_state == 'hard_lock':
+                lock_info = ""
+                if period.locked_by and period.locked_date:
+                    lock_info = _('\nLocked by: %s on %s') % (
+                        period.locked_by.name,
+                        period.locked_date.strftime('%Y-%m-%d %H:%M')
+                    )
+                raise ValidationError(_(
+                    'Cannot post to period "%s" - it is hard locked.%s\n\n'
+                    'Please contact your accounting manager to unlock the period.'
+                ) % (period.name, lock_info))
+
+            elif period.lock_state == 'soft_lock':
+                # Log warning but allow posting
+                _logger.warning(
+                    'Posting to soft-locked period %s: %s (user: %s)',
+                    period.name, move.name, self.env.user.name
+                )
+                move.message_post(
+                    body=_(
+                        '<strong>Warning:</strong> Posted to soft-locked period "%s".<br/>'
+                        'This period is in soft-lock status. Please verify this posting is correct.'
+                    ) % period.name,
+                    message_type='notification'
+                )
+
+            # Check branch-level lock if applicable
+            if hasattr(move, 'ops_branch_id') and move.ops_branch_id:
+                branch_lock = period.branch_lock_ids.filtered(
+                    lambda l: l.ops_branch_id == move.ops_branch_id
+                )
+                if branch_lock and branch_lock.lock_state == 'hard_lock':
+                    lock_info = ""
+                    if branch_lock.locked_by and branch_lock.locked_date:
+                        lock_info = _('\nLocked by: %s on %s') % (
+                            branch_lock.locked_by.name,
+                            branch_lock.locked_date.strftime('%Y-%m-%d %H:%M')
+                        )
+                    raise ValidationError(_(
+                        'Cannot post to period "%s" - branch "%s" is hard locked.%s'
+                    ) % (period.name, move.ops_branch_id.name, lock_info))
+
+                elif branch_lock and branch_lock.lock_state == 'soft_lock':
+                    _logger.warning(
+                        'Posting to soft-locked branch %s in period %s: %s',
+                        move.ops_branch_id.name, period.name, move.name
+                    )
+                    move.message_post(
+                        body=_(
+                            '<strong>Warning:</strong> Posted to soft-locked branch "%s" '
+                            'in period "%s".'
+                        ) % (move.ops_branch_id.name, period.name),
+                        message_type='notification'
+                    )
 
     def button_cancel(self):
         # Override to prevent cancellation of asset-related moves

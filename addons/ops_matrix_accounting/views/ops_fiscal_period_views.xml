@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+    ====================================================
+    OPS Fiscal Period Views
+    - Form view with lock controls
+    - Tree view with status indicators
+    - Search view with filters
+    - Checklist and Branch Lock sub-views
+    ====================================================
+    -->
+
+    <!-- =================== FISCAL PERIOD FORM VIEW =================== -->
+    <record id="view_ops_fiscal_period_form" model="ir.ui.view">
+        <field name="name">ops.fiscal.period.form</field>
+        <field name="model">ops.fiscal.period</field>
+        <field name="arch" type="xml">
+            <form string="Fiscal Period">
+                <header>
+                    <button name="action_soft_lock"
+                            string="Soft Lock"
+                            type="object"
+                            class="btn-primary"
+                            invisible="lock_state != 'open'"
+                            confirm="Soft lock this period? Users will see a warning when posting."/>
+                    <button name="action_hard_lock"
+                            string="Hard Lock"
+                            type="object"
+                            class="btn-danger"
+                            invisible="lock_state == 'hard_lock'"
+                            confirm="Hard lock this period? No posting will be allowed."/>
+                    <button name="action_unlock"
+                            string="Unlock"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="lock_state == 'open'"
+                            groups="ops_matrix_core.group_ops_manager"
+                            confirm="Unlock this period? Posting will be allowed again."/>
+                    <button name="action_open_close_wizard"
+                            string="Close Period Wizard"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="lock_state == 'hard_lock'"/>
+                    <field name="lock_state" widget="statusbar"
+                           statusbar_visible="open,soft_lock,hard_lock"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_checklist"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-tasks">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="checklist_done_count"/>
+                                    /
+                                    <field name="checklist_count"/>
+                                </span>
+                                <span class="o_stat_text">Checklist</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g., January 2026"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Period Details">
+                            <field name="code" placeholder="e.g., 2026-01"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="fiscal_year"/>
+                        </group>
+                        <group string="Date Range">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <group string="Lock Information" invisible="lock_state == 'open'">
+                        <group>
+                            <field name="locked_by"/>
+                            <field name="locked_date"/>
+                        </group>
+                        <group>
+                            <field name="checklist_progress" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Checklist" name="checklist">
+                            <div class="mb-3">
+                                <button name="action_generate_checklist"
+                                        string="Generate Standard Checklist"
+                                        type="object"
+                                        class="btn-secondary"
+                                        invisible="checklist_count > 0"/>
+                                <button name="action_clear_checklist"
+                                        string="Clear Checklist"
+                                        type="object"
+                                        class="btn-link text-danger"
+                                        invisible="checklist_count == 0"
+                                        confirm="Clear all checklist items? This cannot be undone."/>
+                            </div>
+                            <field name="checklist_ids" nolabel="1">
+                                <list string="Checklist Items" editable="bottom" decoration-success="is_done">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="category"/>
+                                    <field name="name"/>
+                                    <field name="is_done"/>
+                                    <field name="done_by" readonly="1"/>
+                                    <field name="done_date" readonly="1"/>
+                                    <field name="notes"/>
+                                    <button name="action_mark_done"
+                                            string="Mark Done"
+                                            type="object"
+                                            icon="fa-check"
+                                            invisible="is_done"/>
+                                    <button name="action_mark_undone"
+                                            string="Undo"
+                                            type="object"
+                                            icon="fa-undo"
+                                            invisible="not is_done"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Branch Locks" name="branch_locks">
+                            <field name="branch_lock_ids" nolabel="1">
+                                <list string="Branch Locks" editable="bottom">
+                                    <field name="ops_branch_id"/>
+                                    <field name="lock_state"/>
+                                    <field name="locked_by" readonly="1"/>
+                                    <field name="locked_date" readonly="1"/>
+                                    <field name="notes"/>
+                                    <button name="action_soft_lock"
+                                            string="Soft Lock"
+                                            type="object"
+                                            icon="fa-lock"
+                                            invisible="lock_state != 'open'"/>
+                                    <button name="action_hard_lock"
+                                            string="Hard Lock"
+                                            type="object"
+                                            icon="fa-ban"
+                                            invisible="lock_state == 'hard_lock'"/>
+                                    <button name="action_unlock"
+                                            string="Unlock"
+                                            type="object"
+                                            icon="fa-unlock"
+                                            invisible="lock_state == 'open'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1" placeholder="Additional notes about this period..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- =================== FISCAL PERIOD TREE VIEW =================== -->
+    <record id="view_ops_fiscal_period_tree" model="ir.ui.view">
+        <field name="name">ops.fiscal.period.list</field>
+        <field name="model">ops.fiscal.period</field>
+        <field name="arch" type="xml">
+            <list string="Fiscal Periods"
+                  decoration-danger="lock_state == 'hard_lock'"
+                  decoration-warning="lock_state == 'soft_lock'"
+                  decoration-success="lock_state == 'open'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="fiscal_year"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="lock_state" widget="badge"
+                       decoration-danger="lock_state == 'hard_lock'"
+                       decoration-warning="lock_state == 'soft_lock'"
+                       decoration-success="lock_state == 'open'"/>
+                <field name="checklist_progress" widget="progressbar"/>
+                <field name="locked_by" optional="hide"/>
+                <field name="locked_date" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- =================== FISCAL PERIOD SEARCH VIEW =================== -->
+    <record id="view_ops_fiscal_period_search" model="ir.ui.view">
+        <field name="name">ops.fiscal.period.search</field>
+        <field name="model">ops.fiscal.period</field>
+        <field name="arch" type="xml">
+            <search string="Search Fiscal Periods">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="fiscal_year"/>
+                <separator/>
+                <filter string="Open" name="filter_open"
+                        domain="[('lock_state', '=', 'open')]"/>
+                <filter string="Soft Locked" name="filter_soft_lock"
+                        domain="[('lock_state', '=', 'soft_lock')]"/>
+                <filter string="Hard Locked" name="filter_hard_lock"
+                        domain="[('lock_state', '=', 'hard_lock')]"/>
+                <separator/>
+                <filter string="Current Year" name="filter_current_year"
+                        domain="[('fiscal_year', '=', str(context_today().year))]"/>
+                <filter string="Previous Year" name="filter_previous_year"
+                        domain="[('fiscal_year', '=', str(context_today().year - 1))]"/>
+                <separator/>
+                <filter string="Incomplete Checklist" name="filter_incomplete_checklist"
+                        domain="[('checklist_progress', '&lt;', 100)]"/>
+                <group>
+                    <filter string="Lock Status" name="group_lock_state"
+                            context="{'group_by': 'lock_state'}"/>
+                    <filter string="Fiscal Year" name="group_fiscal_year"
+                            context="{'group_by': 'fiscal_year'}"/>
+                    <filter string="Company" name="group_company"
+                            context="{'group_by': 'company_id'}"
+                            groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- =================== FISCAL PERIOD ACTION =================== -->
+    <record id="action_ops_fiscal_period" model="ir.actions.act_window">
+        <field name="name">Fiscal Periods</field>
+        <field name="res_model">ops.fiscal.period</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ops_fiscal_period_search"/>
+        <field name="context">{
+            'search_default_filter_current_year': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first fiscal period
+            </p>
+            <p>
+                Fiscal periods allow you to control when journal entries can be posted.
+                Use soft lock for warnings, hard lock to prevent posting.
+            </p>
+        </field>
+    </record>
+
+    <!-- =================== PERIOD CHECKLIST VIEWS =================== -->
+    <record id="view_ops_period_checklist_tree" model="ir.ui.view">
+        <field name="name">ops.period.close.checklist.list</field>
+        <field name="model">ops.period.close.checklist</field>
+        <field name="arch" type="xml">
+            <list string="Period Close Checklist"
+                  decoration-success="is_done"
+                  decoration-muted="period_lock_state == 'hard_lock'"
+                  editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="period_id" optional="show"/>
+                <field name="category"/>
+                <field name="name"/>
+                <field name="is_done"/>
+                <field name="done_by" readonly="1" optional="show"/>
+                <field name="done_date" readonly="1" optional="hide"/>
+                <field name="notes" optional="hide"/>
+                <field name="period_lock_state" column_invisible="1"/>
+                <button name="action_mark_done"
+                        string="Done"
+                        type="object"
+                        icon="fa-check"
+                        invisible="is_done or period_lock_state == 'hard_lock'"/>
+                <button name="action_mark_undone"
+                        string="Undo"
+                        type="object"
+                        icon="fa-undo"
+                        invisible="not is_done or period_lock_state == 'hard_lock'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_period_checklist_search" model="ir.ui.view">
+        <field name="name">ops.period.close.checklist.search</field>
+        <field name="model">ops.period.close.checklist</field>
+        <field name="arch" type="xml">
+            <search string="Search Checklist">
+                <field name="name"/>
+                <field name="period_id"/>
+                <separator/>
+                <filter string="Done" name="filter_done"
+                        domain="[('is_done', '=', True)]"/>
+                <filter string="Pending" name="filter_pending"
+                        domain="[('is_done', '=', False)]"/>
+                <separator/>
+                <filter string="Cutoff" name="filter_cutoff"
+                        domain="[('category', '=', 'cutoff')]"/>
+                <filter string="Reconciliation" name="filter_reconciliation"
+                        domain="[('category', '=', 'reconciliation')]"/>
+                <filter string="Accruals" name="filter_accruals"
+                        domain="[('category', '=', 'accruals')]"/>
+                <filter string="Review" name="filter_review"
+                        domain="[('category', '=', 'review')]"/>
+                <filter string="Reporting" name="filter_reporting"
+                        domain="[('category', '=', 'reporting')]"/>
+                <filter string="Approvals" name="filter_approval"
+                        domain="[('category', '=', 'approval')]"/>
+                <group>
+                    <filter string="Period" name="group_period"
+                            context="{'group_by': 'period_id'}"/>
+                    <filter string="Category" name="group_category"
+                            context="{'group_by': 'category'}"/>
+                    <filter string="Status" name="group_done"
+                            context="{'group_by': 'is_done'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ops_period_checklist" model="ir.actions.act_window">
+        <field name="name">Period Close Checklist</field>
+        <field name="res_model">ops.period.close.checklist</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_ops_period_checklist_search"/>
+        <field name="context">{'search_default_filter_pending': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No checklist items found
+            </p>
+            <p>
+                Generate a checklist from the Fiscal Period form to track
+                period-end close tasks.
+            </p>
+        </field>
+    </record>
+
+    <!-- =================== BRANCH LOCK VIEWS =================== -->
+    <record id="view_ops_period_branch_lock_tree" model="ir.ui.view">
+        <field name="name">ops.fiscal.period.branch.lock.list</field>
+        <field name="model">ops.fiscal.period.branch.lock</field>
+        <field name="arch" type="xml">
+            <list string="Branch Period Locks"
+                  decoration-danger="lock_state == 'hard_lock'"
+                  decoration-warning="lock_state == 'soft_lock'"
+                  decoration-success="lock_state == 'open'">
+                <field name="period_id"/>
+                <field name="ops_branch_id"/>
+                <field name="lock_state" widget="badge"
+                       decoration-danger="lock_state == 'hard_lock'"
+                       decoration-warning="lock_state == 'soft_lock'"
+                       decoration-success="lock_state == 'open'"/>
+                <field name="locked_by" optional="show"/>
+                <field name="locked_date" optional="show"/>
+                <field name="notes" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_period_branch_lock_search" model="ir.ui.view">
+        <field name="name">ops.fiscal.period.branch.lock.search</field>
+        <field name="model">ops.fiscal.period.branch.lock</field>
+        <field name="arch" type="xml">
+            <search string="Search Branch Locks">
+                <field name="period_id"/>
+                <field name="ops_branch_id"/>
+                <separator/>
+                <filter string="Open" name="filter_open"
+                        domain="[('lock_state', '=', 'open')]"/>
+                <filter string="Soft Locked" name="filter_soft_lock"
+                        domain="[('lock_state', '=', 'soft_lock')]"/>
+                <filter string="Hard Locked" name="filter_hard_lock"
+                        domain="[('lock_state', '=', 'hard_lock')]"/>
+                <group>
+                    <filter string="Period" name="group_period"
+                            context="{'group_by': 'period_id'}"/>
+                    <filter string="Branch" name="group_branch"
+                            context="{'group_by': 'ops_branch_id'}"/>
+                    <filter string="Lock Status" name="group_lock_state"
+                            context="{'group_by': 'lock_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ops_period_branch_lock" model="ir.actions.act_window">
+        <field name="name">Branch Period Locks</field>
+        <field name="res_model">ops.fiscal.period.branch.lock</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="view_ops_period_branch_lock_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No branch locks configured
+            </p>
+            <p>
+                Branch locks allow you to lock periods for specific branches
+                while keeping them open for others.
+            </p>
+        </field>
+    </record>
+
+</odoo>

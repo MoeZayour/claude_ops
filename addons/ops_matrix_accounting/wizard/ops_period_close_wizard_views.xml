@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+    ====================================================
+    OPS Period Close Wizard Views
+    Multi-step wizard for period close process
+    ====================================================
+    -->
+
+    <record id="view_ops_period_close_wizard_form" model="ir.ui.view">
+        <field name="name">ops.period.close.wizard.form</field>
+        <field name="model">ops.period.close.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Close Fiscal Period">
+                <field name="state" invisible="1"/>
+                <field name="checklist_count" invisible="1"/>
+                <field name="checklist_progress" invisible="1"/>
+
+                <!-- STEP 1: OVERVIEW -->
+                <div invisible="state != 'overview'">
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">Period Close Wizard</h4>
+                        <p>This wizard will guide you through closing the fiscal period.</p>
+                    </div>
+
+                    <group string="Period Information">
+                        <group>
+                            <field name="period_name" readonly="1"/>
+                            <field name="period_date_from" readonly="1"/>
+                            <field name="period_date_to" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="current_lock_state" readonly="1"
+                                   widget="badge"
+                                   decoration-danger="current_lock_state == 'hard_lock'"
+                                   decoration-warning="current_lock_state == 'soft_lock'"
+                                   decoration-success="current_lock_state == 'open'"/>
+                            <field name="pending_items" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Checklist Progress" invisible="checklist_count == 0">
+                        <field name="checklist_done_count" string="Completed Items"/>
+                        <field name="checklist_count" string="Total Items"/>
+                    </group>
+
+                    <div class="alert alert-warning" role="alert"
+                         invisible="pending_items == 0 or checklist_count == 0">
+                        <strong>Note:</strong> There are <field name="pending_items" class="oe_inline"/> pending checklist items.
+                        You can complete them in the next step.
+                    </div>
+
+                    <div class="alert alert-success" role="alert"
+                         invisible="pending_items != 0 or checklist_count == 0">
+                        All checklist items are complete!
+                    </div>
+                </div>
+
+                <!-- STEP 2: CHECKLIST -->
+                <div invisible="state != 'checklist'">
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">Complete Checklist Items</h4>
+                        <p>Review and mark pending items as done before locking the period.</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <button name="action_mark_all_done"
+                                string="Mark All Done"
+                                type="object"
+                                class="btn-primary me-2"
+                                invisible="pending_items == 0"/>
+                        <span class="text-muted">
+                            <field name="checklist_done_count" class="oe_inline"/>
+                            of
+                            <field name="checklist_count" class="oe_inline"/>
+                            items completed
+                        </span>
+                    </div>
+
+                    <field name="checklist_line_ids" nolabel="1" readonly="1">
+                        <list string="Checklist" decoration-success="is_done" decoration-muted="is_done">
+                            <field name="category"/>
+                            <field name="name"/>
+                            <field name="is_done"/>
+                            <field name="done_by"/>
+                            <button name="action_mark_done"
+                                    string="Mark Done"
+                                    type="object"
+                                    icon="fa-check"
+                                    invisible="is_done"/>
+                        </list>
+                    </field>
+                </div>
+
+                <!-- STEP 3: CONFIRM -->
+                <div invisible="state != 'confirm'">
+                    <div class="alert alert-warning" role="alert"
+                         invisible="pending_items == 0 or checklist_count == 0">
+                        <strong>Warning:</strong> There are still
+                        <field name="pending_items" class="oe_inline"/>
+                        uncompleted checklist items.
+                    </div>
+
+                    <group string="Lock Options">
+                        <field name="lock_action" widget="radio"/>
+                    </group>
+
+                    <div class="alert alert-info" role="alert">
+                        <p><strong>Soft Lock:</strong> Users will see a warning when posting to this period but can still post.</p>
+                        <p><strong>Hard Lock:</strong> No journal entries can be posted to this period. All checklist items must be complete.</p>
+                    </div>
+
+                    <group string="Close Notes">
+                        <field name="notes" nolabel="1" placeholder="Enter any notes about this period close..."/>
+                    </group>
+                </div>
+
+                <footer>
+                    <!-- Overview Step -->
+                    <button name="action_next_overview"
+                            string="Next"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'overview'"/>
+                    <button string="Cancel"
+                            special="cancel"
+                            class="btn-secondary"
+                            invisible="state != 'overview'"/>
+
+                    <!-- Checklist Step -->
+                    <button name="action_back_overview"
+                            string="Back"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state != 'checklist'"/>
+                    <button name="action_next_checklist"
+                            string="Next"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'checklist'"/>
+                    <button string="Cancel"
+                            special="cancel"
+                            class="btn-secondary"
+                            invisible="state != 'checklist'"/>
+
+                    <!-- Confirm Step -->
+                    <button name="action_back_checklist"
+                            string="Back"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state != 'confirm' or checklist_count == 0"/>
+                    <button name="action_back_overview"
+                            string="Back"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state != 'confirm' or checklist_count != 0"/>
+                    <button name="action_close_period"
+                            string="Close Period"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'confirm'"
+                            confirm="Are you sure you want to lock this period?"/>
+                    <button string="Cancel"
+                            special="cancel"
+                            class="btn-secondary"
+                            invisible="state != 'confirm'"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for direct wizard access -->
+    <record id="action_ops_period_close_wizard" model="ir.actions.act_window">
+        <field name="name">Close Period</field>
+        <field name="res_model">ops.period.close.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

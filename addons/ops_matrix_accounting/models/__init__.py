@@ -1,3 +1,5 @@
+from . import res_company
+from . import res_config_settings
 from . import ops_pdc
 from . import ops_budget
 from . import ops_product_category_defaults
@@ -8,6 +10,7 @@ from . import ops_trend_analysis
 from . import ops_asset_category
 from . import ops_asset
 from . import ops_asset_depreciation
+from . import ops_fiscal_period
 from . import account_move
 from . import purchase_order
 from . import ops_report_template

@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.9.0.0",
+    "version": "19.0.10.0.0",
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -28,6 +28,7 @@
     "data": [
         # Security
         "security/ir.model.access.csv",
+        "security/ops_accounting_rules.xml",
         "security/ops_asset_security.xml",
 
         # Data
@@ -45,9 +46,12 @@
         "views/ops_asset_depreciation_views.xml",
         "views/ops_budget_views.xml",
         "views/ops_pdc_views.xml",
+        "views/ops_fiscal_period_views.xml",
+        "views/account_move_views.xml",
         "views/ops_pdc_receivable_menus.xml",
         "views/ops_pdc_payable_menus.xml",
         "views/ops_pdc_reports_menus.xml",
+        "views/res_config_settings_views.xml",
         "views/accounting_menus.xml",
         "views/ops_financial_report_wizard_views.xml",
         "views/ops_general_ledger_wizard_enhanced_views.xml",
@@ -64,6 +68,7 @@
         "wizard/ops_asset_depreciation_wizard_views.xml",
         "wizard/ops_asset_disposal_wizard_views.xml",
         "wizard/ops_treasury_report_wizard_views.xml",
+        "wizard/ops_period_close_wizard_views.xml",
         "wizard/ops_asset_report_wizard_views.xml",
         # "wizard/ops_asset_report_wizard.xml",  # Disabled - references AbstractModel
 
