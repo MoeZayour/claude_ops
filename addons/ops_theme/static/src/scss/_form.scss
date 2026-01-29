@@ -1,0 +1,193 @@
+// =============================================================================
+// OPS THEME - FORM VIEW
+// =============================================================================
+
+.o_form_view {
+    background-color: var(--ops-bg-body);
+
+    // Status bar
+    .o_form_statusbar {
+        background-color: var(--ops-bg-card);
+        border-bottom: 1px solid var(--ops-border);
+        padding: 0.5rem 1rem;
+
+        // Status buttons (workflow states)
+        .o_statusbar_status {
+            .o_arrow_button {
+                background-color: transparent;
+                border: none;
+                color: var(--ops-text-secondary);
+                font-size: 0.875rem;
+                padding: 0.5rem 1rem;
+                position: relative;
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    right: -8px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    border: 6px solid transparent;
+                    border-left-color: var(--ops-border);
+                }
+
+                &.o_arrow_button_current {
+                    color: var(--ops-secondary);
+                    font-weight: 600;
+
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        height: 2px;
+                        background-color: var(--ops-secondary);
+                    }
+                }
+
+                &.disabled {
+                    color: var(--ops-text-disabled);
+                }
+            }
+        }
+
+        // Action buttons in status bar
+        .o_statusbar_buttons {
+            .btn {
+                margin-right: 0.5rem;
+            }
+        }
+    }
+
+    // Form sheet (main content card)
+    .o_form_sheet_bg {
+        padding: 1rem;
+
+        .o_form_sheet {
+            background-color: var(--ops-bg-card);
+            border-radius: var(--ops-radius-lg);
+            box-shadow: var(--ops-shadow-md);
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    }
+
+    // Form title (record name)
+    .oe_title {
+        .o_field_widget {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--ops-text-primary);
+
+            input {
+                font-size: inherit;
+                font-weight: inherit;
+            }
+        }
+    }
+
+    // Field groups
+    .o_group {
+        margin-bottom: 1rem;
+
+        .o_group_col_6 {
+            padding: 0 0.75rem;
+        }
+
+        // Group titles
+        .o_horizontal_separator {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--ops-text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            border-bottom: 1px solid var(--ops-border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+    }
+
+    // Labels
+    .o_form_label {
+        color: var(--ops-text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    // Input fields
+    .o_field_widget {
+        input.o_input,
+        textarea.o_input,
+        select.o_input {
+            background-color: var(--ops-bg-input);
+            border: 1px solid var(--ops-border);
+            border-radius: var(--ops-radius-md);
+            color: var(--ops-text-primary);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+            &:focus {
+                border-color: var(--ops-border-focus);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                outline: none;
+            }
+
+            &:disabled,
+            &[readonly] {
+                background-color: var(--ops-bg-hover);
+                color: var(--ops-text-disabled);
+            }
+        }
+
+        // Readonly text display
+        &.o_readonly_modifier span {
+            color: var(--ops-text-primary);
+        }
+    }
+
+    // Notebook (tabs)
+    .o_notebook {
+        margin-top: 1.5rem;
+
+        .nav-tabs {
+            border-bottom: 1px solid var(--ops-border);
+
+            .nav-link {
+                color: var(--ops-text-secondary);
+                border: none;
+                border-bottom: 2px solid transparent;
+                padding: 0.75rem 1rem;
+                font-weight: 500;
+                font-size: 0.875rem;
+
+                &:hover {
+                    color: var(--ops-secondary);
+                    border-bottom-color: var(--ops-border);
+                }
+
+                &.active {
+                    color: var(--ops-secondary);
+                    border-bottom-color: var(--ops-secondary);
+                    background-color: transparent;
+                }
+            }
+        }
+
+        .tab-content {
+            padding-top: 1rem;
+        }
+    }
+
+    // One2many / Many2many lists in form
+    .o_field_one2many,
+    .o_field_many2many {
+        .o_list_view {
+            border: 1px solid var(--ops-border);
+            border-radius: var(--ops-radius-md);
+            overflow: hidden;
+        }
+    }
+}

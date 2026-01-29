@@ -1,0 +1,158 @@
+// =============================================================================
+// OPS THEME - CONTROL PANEL
+// =============================================================================
+
+.o_control_panel {
+    background-color: var(--ops-bg-card);
+    border-bottom: 1px solid var(--ops-border);
+    padding: 0.75rem 1rem;
+
+    // Breadcrumb area
+    .o_control_panel_breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    // Action buttons area
+    .o_control_panel_actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    // Buttons styling
+    .btn {
+        border-radius: var(--ops-radius-md);
+        font-weight: 500;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s ease;
+
+        // Primary button
+        &.btn-primary {
+            background-color: var(--ops-secondary);
+            border-color: var(--ops-secondary);
+            color: var(--ops-text-inverse);
+
+            &:hover {
+                filter: brightness(1.1);
+            }
+        }
+
+        // Secondary/outline button
+        &.btn-secondary,
+        &.btn-outline-secondary {
+            background-color: transparent;
+            border-color: var(--ops-border);
+            color: var(--ops-text-primary);
+
+            &:hover {
+                background-color: var(--ops-bg-hover);
+                border-color: var(--ops-secondary);
+                color: var(--ops-secondary);
+            }
+        }
+
+        // Icon buttons
+        &.o_icon_button {
+            padding: 0.5rem;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    // Search view
+    .o_searchview {
+        background-color: var(--ops-bg-input);
+        border: 1px solid var(--ops-border);
+        border-radius: var(--ops-radius-md);
+        max-width: 400px;
+
+        &:focus-within {
+            border-color: var(--ops-border-focus);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .o_searchview_input {
+            background: transparent;
+            color: var(--ops-text-primary);
+
+            &::placeholder {
+                color: var(--ops-text-disabled);
+            }
+        }
+
+        // Search facets (active filters)
+        .o_searchview_facet {
+            background-color: var(--ops-secondary);
+            color: var(--ops-text-inverse);
+            border-radius: var(--ops-radius-sm);
+            padding: 0.125rem 0.5rem;
+            margin: 0.25rem;
+            font-size: 0.75rem;
+
+            .o_facet_remove {
+                color: var(--ops-text-inverse);
+                opacity: 0.7;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    // Filter/Group buttons
+    .o_filter_menu,
+    .o_group_by_menu,
+    .o_favorite_menu {
+        .dropdown-toggle {
+            background-color: transparent;
+            border: 1px solid var(--ops-border);
+            color: var(--ops-text-primary);
+            border-radius: var(--ops-radius-md);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+
+            &:hover {
+                background-color: var(--ops-bg-hover);
+                border-color: var(--ops-secondary);
+            }
+        }
+    }
+
+    // Pager
+    .o_pager {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.875rem;
+        color: var(--ops-text-secondary);
+
+        .o_pager_counter {
+            margin: 0 0.5rem;
+        }
+
+        button {
+            background: transparent;
+            border: 1px solid var(--ops-border);
+            border-radius: var(--ops-radius-sm);
+            padding: 0.25rem 0.5rem;
+            color: var(--ops-text-primary);
+
+            &:hover:not(:disabled) {
+                background-color: var(--ops-bg-hover);
+                border-color: var(--ops-secondary);
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
+    }
+}

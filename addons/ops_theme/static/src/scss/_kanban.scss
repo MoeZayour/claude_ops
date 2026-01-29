@@ -1,0 +1,216 @@
+// =============================================================================
+// OPS THEME - KANBAN VIEW
+// =============================================================================
+
+.o_kanban_view {
+    background-color: var(--ops-bg-body);
+    padding: 1rem;
+
+    // Kanban renderer (columns container)
+    .o_kanban_renderer {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+
+    // Kanban group (column)
+    .o_kanban_group {
+        background-color: var(--ops-bg-hover);
+        border-radius: var(--ops-radius-lg);
+        min-width: 280px;
+        max-width: 320px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+
+        // Column header
+        .o_kanban_header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--ops-border);
+
+            .o_kanban_header_title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                .o_column_title {
+                    font-weight: 600;
+                    font-size: 0.875rem;
+                    color: var(--ops-text-primary);
+                }
+
+                // Record count badge
+                .o_kanban_counter {
+                    background-color: var(--ops-secondary);
+                    color: var(--ops-text-inverse);
+                    padding: 0.125rem 0.5rem;
+                    border-radius: var(--ops-radius-sm);
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                }
+            }
+
+            // Column aggregates (totals)
+            .o_kanban_counter_side {
+                font-size: 0.75rem;
+                color: var(--ops-text-secondary);
+                margin-top: 0.25rem;
+            }
+        }
+
+        // Records container
+        .o_kanban_records {
+            padding: 0.5rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+    }
+
+    // Individual kanban card
+    .o_kanban_record {
+        background-color: var(--ops-bg-card);
+        border: 1px solid var(--ops-border);
+        border-radius: var(--ops-radius-md);
+        padding: 0.875rem;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--ops-shadow-md);
+            border-color: var(--ops-secondary);
+        }
+
+        // Card title
+        .o_kanban_record_title,
+        strong {
+            font-weight: 600;
+            color: var(--ops-text-primary);
+            font-size: 0.875rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        // Card subtitle / secondary info
+        .o_kanban_record_subtitle,
+        .text-muted {
+            font-size: 0.8125rem;
+            color: var(--ops-text-secondary);
+        }
+
+        // Card bottom (tags, avatar, etc.)
+        .o_kanban_record_bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--ops-border);
+
+            .oe_kanban_bottom_left {
+                display: flex;
+                gap: 0.5rem;
+            }
+
+            .oe_kanban_bottom_right {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+        }
+
+        // Priority stars
+        .o_priority_star {
+            color: var(--ops-text-disabled);
+
+            &.fa-star {
+                color: var(--ops-warning);
+            }
+        }
+
+        // User avatar
+        .o_kanban_image {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        // Activity indicator
+        .o_kanban_activity_btn {
+            color: var(--ops-text-secondary);
+
+            &.text-danger {
+                color: var(--ops-danger);
+            }
+
+            &.text-warning {
+                color: var(--ops-warning);
+            }
+
+            &.text-success {
+                color: var(--ops-success);
+            }
+        }
+    }
+
+    // Quick create
+    .o_kanban_quick_create {
+        background-color: var(--ops-bg-card);
+        border: 1px dashed var(--ops-border);
+        border-radius: var(--ops-radius-md);
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+
+        input {
+            background-color: var(--ops-bg-input);
+            border: 1px solid var(--ops-border);
+            border-radius: var(--ops-radius-md);
+            padding: 0.5rem;
+            width: 100%;
+            color: var(--ops-text-primary);
+
+            &:focus {
+                border-color: var(--ops-border-focus);
+                outline: none;
+            }
+        }
+
+        .o_kanban_add,
+        .o_kanban_edit {
+            margin-top: 0.5rem;
+        }
+    }
+
+    // Add column button
+    .o_kanban_group_add {
+        background-color: transparent;
+        border: 2px dashed var(--ops-border);
+        border-radius: var(--ops-radius-lg);
+        min-width: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ops-text-secondary);
+        cursor: pointer;
+        transition: border-color 0.2s ease, color 0.2s ease;
+
+        &:hover {
+            border-color: var(--ops-secondary);
+            color: var(--ops-secondary);
+        }
+    }
+}
+
+// Ungrouped kanban (grid layout)
+.o_kanban_view .o_kanban_renderer:not(.o_kanban_grouped) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+
+    .o_kanban_record {
+        margin-bottom: 0;
+    }
+}
