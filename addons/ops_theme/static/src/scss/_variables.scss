@@ -1,0 +1,123 @@
+// =============================================================================
+// OPS Theme - CSS Variables
+// =============================================================================
+// These variables provide fallback values when the dynamic CSS endpoint
+// is not yet loaded. They are overridden by /ops_theme/variables.css
+
+:root {
+    // =========================================================================
+    // Brand Colors
+    // =========================================================================
+    --ops-primary: #1e293b;
+    --ops-secondary: #3b82f6;
+    --ops-success: #10b981;
+    --ops-warning: #f59e0b;
+    --ops-danger: #ef4444;
+
+    // Derived colors
+    --ops-primary-hover: #0f172a;
+    --ops-secondary-hover: #2563eb;
+    --ops-primary-light: rgba(30, 41, 59, 0.1);
+    --ops-secondary-light: rgba(59, 130, 246, 0.1);
+
+    // =========================================================================
+    // Neutral Colors - Light Mode
+    // =========================================================================
+    --ops-bg-body: #f8fafc;
+    --ops-bg-card: #ffffff;
+    --ops-bg-input: #ffffff;
+    --ops-bg-hover: #f1f5f9;
+    --ops-bg-selected: #e2e8f0;
+
+    --ops-text-primary: #1e293b;
+    --ops-text-secondary: #64748b;
+    --ops-text-muted: #94a3b8;
+    --ops-text-inverse: #ffffff;
+
+    --ops-border: #e2e8f0;
+    --ops-border-focus: #3b82f6;
+
+    // =========================================================================
+    // Navbar
+    // =========================================================================
+    --ops-navbar-bg: #1f2937;
+    --ops-navbar-text: #ffffff;
+
+    // =========================================================================
+    // UI Elements
+    // =========================================================================
+    --ops-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --ops-border-radius: 8px;
+    --ops-radius-sm: 4px;
+    --ops-radius-md: 8px;
+    --ops-radius-lg: 12px;
+
+    // =========================================================================
+    // Report Styles
+    // =========================================================================
+    --ops-report-header-bg: #1e293b;
+
+    // =========================================================================
+    // Transitions
+    // =========================================================================
+    --ops-transition-fast: 150ms ease;
+    --ops-transition-normal: 250ms ease;
+}
+
+// =============================================================================
+// Dark Mode Colors
+// =============================================================================
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-mode="light"]) {
+        --ops-bg-body: #0f172a;
+        --ops-bg-card: #1e293b;
+        --ops-bg-input: #1e293b;
+        --ops-bg-hover: #334155;
+        --ops-bg-selected: #475569;
+
+        --ops-text-primary: #f1f5f9;
+        --ops-text-secondary: #94a3b8;
+        --ops-text-muted: #64748b;
+
+        --ops-border: #334155;
+
+        --ops-primary-light: rgba(30, 41, 59, 0.3);
+        --ops-secondary-light: rgba(59, 130, 246, 0.2);
+    }
+}
+
+// Force dark mode
+[data-color-mode="dark"] {
+    --ops-bg-body: #0f172a;
+    --ops-bg-card: #1e293b;
+    --ops-bg-input: #1e293b;
+    --ops-bg-hover: #334155;
+    --ops-bg-selected: #475569;
+
+    --ops-text-primary: #f1f5f9;
+    --ops-text-secondary: #94a3b8;
+    --ops-text-muted: #64748b;
+
+    --ops-border: #334155;
+
+    --ops-primary-light: rgba(30, 41, 59, 0.3);
+    --ops-secondary-light: rgba(59, 130, 246, 0.2);
+}
+
+// Force light mode
+[data-color-mode="light"] {
+    --ops-bg-body: #f8fafc;
+    --ops-bg-card: #ffffff;
+    --ops-bg-input: #ffffff;
+    --ops-bg-hover: #f1f5f9;
+    --ops-bg-selected: #e2e8f0;
+
+    --ops-text-primary: #1e293b;
+    --ops-text-secondary: #64748b;
+    --ops-text-muted: #94a3b8;
+
+    --ops-border: #e2e8f0;
+
+    --ops-primary-light: rgba(30, 41, 59, 0.1);
+    --ops-secondary-light: rgba(59, 130, 246, 0.1);
+}

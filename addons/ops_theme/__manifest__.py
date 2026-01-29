@@ -28,8 +28,17 @@ Features:
     ],
     'data': [
         'security/ir.model.access.csv',
+        'views/login_templates.xml',
     ],
-    'assets': {},
+    'assets': {
+        'web.assets_backend': [
+            'ops_theme/static/src/scss/theme.scss',
+        ],
+        'web.assets_frontend': [
+            'ops_theme/static/src/scss/_variables.scss',
+            'ops_theme/static/src/scss/_login.scss',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,

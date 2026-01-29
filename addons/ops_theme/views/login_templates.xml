@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ===================================================================== -->
+    <!-- Override login_layout to use split-screen design                      -->
+    <!-- ===================================================================== -->
+    <template id="login_layout" inherit_id="web.login_layout" name="OPS Login Layout">
+        <!-- Replace the container with our split-screen layout -->
+        <xpath expr="//div[hasclass('container')]" position="replace">
+            <t t-set="company" t-value="request.env.company"/>
+            <div class="ops-login-container">
+
+                <!-- Left Panel: Company Branding -->
+                <div t-attf-class="ops-login-brand #{company.ops_login_background and 'ops-login-brand--with-image' or ''}"
+                     t-attf-style="#{company.ops_login_background and 'background-image: url(/web/image/res.company/' + str(company.id) + '/ops_login_background);' or 'background-color: ' + (company.ops_primary_color or '#1e293b') + ';'}">
+
+                    <!-- Company Logo -->
+                    <t t-if="company.ops_login_show_logo != False">
+                        <img t-attf-src="/web/binary/company_logo?company={{ company.id }}"
+                             class="ops-login-logo"
+                             alt="Company Logo"/>
+                    </t>
+
+                    <!-- Tagline -->
+                    <h1 class="ops-login-tagline"
+                        t-esc="company.ops_login_tagline or 'Enterprise Resource Planning'"/>
+                </div>
+
+                <!-- Right Panel: Login Form -->
+                <div class="ops-login-form">
+                    <div class="ops-login-form-inner">
+                        <h2 class="ops-login-title">Sign In</h2>
+
+                        <!-- Original login content inserted here -->
+                        <t t-out="0"/>
+
+                        <!-- Powered by Footer (conditional) -->
+                        <t t-if="company.ops_powered_by_visible != False">
+                            <p class="ops-powered-by text-center">
+                                Powered by OPS Framework
+                            </p>
+                        </t>
+                    </div>
+                </div>
+
+            </div>
+        </xpath>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- Customize the login form - remove unwanted elements                   -->
+    <!-- ===================================================================== -->
+    <template id="login" inherit_id="web.login" name="OPS Login Form">
+        <!-- Remove oe_structure divs that add unwanted spacing -->
+        <xpath expr="//div[@id='oe_structure_login_top']" position="replace"/>
+        <xpath expr="//div[@id='oe_structure_login_bottom']" position="replace"/>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- Add color mode support and extra CSS for login                        -->
+    <!-- ===================================================================== -->
+    <template id="login_assets" inherit_id="web.login_layout" name="OPS Login Assets">
+        <xpath expr="//t[@t-call='web.frontend_layout']" position="inside">
+            <!-- Color mode detection script -->
+            <script type="text/javascript">
+                (function() {
+                    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.setAttribute('data-color-mode', prefersDark ? 'dark' : 'light');
+                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+                        document.documentElement.setAttribute('data-color-mode', e.matches ? 'dark' : 'light');
+                    });
+                })();
+            </script>
+            <!-- Inline critical CSS for login -->
+            <style type="text/css">
+                /* Hide default Odoo login styling */
+                .oe_login_form .card,
+                .o_database_list {
+                    background: transparent !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                    max-width: none !important;
+                }
+                .o_database_list .card-body {
+                    padding: 0 !important;
+                }
+                /* Hide default logo and footer in our layout */
+                .ops-login-form-inner .text-center.pb-3.border-bottom,
+                .ops-login-form-inner .text-center.small.border-top {
+                    display: none !important;
+                }
+            </style>
+        </xpath>
+    </template>
+
+</odoo>

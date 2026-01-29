@@ -1,0 +1,279 @@
+// =============================================================================
+// OPS Theme - Split-Screen Login Page
+// =============================================================================
+
+// Main container - full viewport, flex row
+.ops-login-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    // =========================================================================
+    // Left Panel - Company Branding
+    // =========================================================================
+    .ops-login-brand {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background-color: var(--ops-primary);
+        color: var(--ops-text-inverse);
+        position: relative;
+        overflow: hidden;
+
+        // Company logo
+        .ops-login-logo {
+            max-width: 280px;
+            max-height: 120px;
+            margin-bottom: 2rem;
+            object-fit: contain;
+            filter: brightness(0) invert(1); // Make logo white
+        }
+
+        // Tagline
+        .ops-login-tagline {
+            font-size: 1.5rem;
+            font-weight: 300;
+            text-align: center;
+            opacity: 0.9;
+            max-width: 400px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        // Decorative elements
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+    }
+
+    // Background image variant
+    .ops-login-brand--with-image {
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(0, 0, 0, 0.6) 0%,
+                rgba(0, 0, 0, 0.4) 100%
+            );
+            z-index: 0;
+        }
+
+        > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .ops-login-logo {
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        // Remove decorative gradient when using image
+        &::after {
+            display: none;
+        }
+    }
+
+    // =========================================================================
+    // Right Panel - Login Form
+    // =========================================================================
+    .ops-login-form {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background-color: var(--ops-bg-card);
+        position: relative;
+
+        // Form container
+        .ops-login-form-inner {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        // Form title
+        .ops-login-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--ops-text-primary);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        // Form labels
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--ops-text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        // Input fields
+        .form-control {
+            background-color: var(--ops-bg-input);
+            border: 1px solid var(--ops-border);
+            border-radius: var(--ops-radius-md);
+            padding: 0.75rem 1rem;
+            color: var(--ops-text-primary);
+            font-size: 1rem;
+            transition: border-color var(--ops-transition-fast),
+                        box-shadow var(--ops-transition-fast);
+
+            &::placeholder {
+                color: var(--ops-text-muted);
+            }
+
+            &:focus {
+                outline: none;
+                border-color: var(--ops-border-focus);
+                box-shadow: 0 0 0 3px var(--ops-secondary-light);
+            }
+        }
+
+        // Submit button
+        .btn-primary {
+            width: 100%;
+            background-color: var(--ops-secondary);
+            border: none;
+            border-radius: var(--ops-radius-md);
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+            cursor: pointer;
+            transition: filter var(--ops-transition-fast),
+                        transform var(--ops-transition-fast);
+
+            &:hover {
+                filter: brightness(1.1);
+            }
+
+            &:active {
+                transform: scale(0.98);
+            }
+
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px var(--ops-secondary-light);
+            }
+        }
+
+        // Error alert
+        .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--ops-danger);
+            border-radius: var(--ops-radius-md);
+            color: var(--ops-danger);
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        // Powered by footer
+        .ops-powered-by {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: var(--ops-text-muted);
+
+            a {
+                color: var(--ops-secondary);
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
+
+// =============================================================================
+// Mobile Responsive - Hide Left Panel
+// =============================================================================
+@media (max-width: 767.98px) {
+    .ops-login-container {
+        flex-direction: column;
+
+        .ops-login-brand {
+            display: none;
+        }
+
+        .ops-login-form {
+            min-height: 100vh;
+            padding: 1.5rem;
+
+            .ops-login-form-inner {
+                max-width: 100%;
+            }
+        }
+    }
+}
+
+// =============================================================================
+// Tablet - Adjust proportions
+// =============================================================================
+@media (min-width: 768px) and (max-width: 1023.98px) {
+    .ops-login-container {
+        .ops-login-brand {
+            flex: 0.8;
+
+            .ops-login-logo {
+                max-width: 200px;
+            }
+
+            .ops-login-tagline {
+                font-size: 1.25rem;
+            }
+        }
+
+        .ops-login-form {
+            flex: 1.2;
+        }
+    }
+}
+
+// =============================================================================
+// Override Odoo Default Login Styles
+// =============================================================================
+.oe_login_form {
+    // Reset Odoo's default styles when in our container
+    .ops-login-container & {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+    }
+}
+
+// Hide default Odoo login background
+body.oe_login {
+    background: none !important;
+}
+
+// Ensure our container takes full viewport
+html, body {
+    &:has(.ops-login-container) {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+}
