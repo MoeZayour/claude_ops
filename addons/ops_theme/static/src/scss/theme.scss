@@ -3,5 +3,14 @@
 // =============================================================================
 // This file imports all theme partials in the correct order.
 
+// Foundation
 @import 'variables';
+
+// Login
 @import 'login';
+
+// Navigation
+@import 'app_grid';
+@import 'navbar';
+@import 'menu_tabs';
+@import 'breadcrumb';

@@ -1,0 +1,133 @@
+// =============================================================================
+// OPS THEME - APP GRID (HOME MENU)
+// =============================================================================
+
+.o_home_menu {
+    background-color: var(--ops-bg-body);
+    min-height: 100vh;
+    padding: 2rem;
+
+    // Search bar
+    .o_home_menu_search {
+        max-width: 400px;
+        margin: 0 auto 2rem;
+        position: relative;
+
+        .o_home_menu_search_input {
+            background-color: var(--ops-bg-card);
+            border: 1px solid var(--ops-border);
+            border-radius: var(--ops-radius-lg);
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            color: var(--ops-text-primary);
+            width: 100%;
+            font-size: 1rem;
+            box-shadow: var(--ops-shadow-sm);
+
+            &::placeholder {
+                color: var(--ops-text-disabled);
+            }
+
+            &:focus {
+                outline: none;
+                border-color: var(--ops-secondary);
+                box-shadow: var(--ops-shadow-md);
+            }
+        }
+
+        .o_home_menu_search_icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ops-text-secondary);
+        }
+    }
+
+    // App grid container
+    .o_apps {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1.5rem;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 1rem;
+    }
+
+    // Individual app card
+    .o_app {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 1rem;
+        background-color: var(--ops-bg-card);
+        border-radius: var(--ops-radius-lg);
+        box-shadow: var(--ops-shadow-sm);
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+        border: 1px solid var(--ops-border);
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--ops-shadow-lg);
+            border-color: var(--ops-secondary);
+            text-decoration: none;
+        }
+
+        // App icon
+        .o_app_icon {
+            width: 56px;
+            height: 56px;
+            margin-bottom: 0.75rem;
+            border-radius: var(--ops-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border-radius: var(--ops-radius-md);
+            }
+        }
+
+        // App name
+        .o_caption {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--ops-text-primary);
+            text-align: center;
+            line-height: 1.3;
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 575.98px) {
+    .o_home_menu {
+        padding: 1rem;
+
+        .o_apps {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .o_app {
+            padding: 1rem 0.75rem;
+
+            .o_app_icon {
+                width: 48px;
+                height: 48px;
+            }
+        }
+    }
+}
+
+@media (min-width: 992px) {
+    .o_home_menu .o_apps {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}

@@ -1,0 +1,97 @@
+// =============================================================================
+// OPS THEME - NAVBAR
+// =============================================================================
+
+.o_main_navbar {
+    background-color: var(--ops-primary) !important;
+    border-bottom: none;
+    height: 46px;
+    min-height: 46px;
+
+    // Home menu button (grid icon)
+    .o_menu_toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        color: var(--ops-text-inverse);
+        opacity: 0.9;
+        transition: opacity 0.2s ease, background-color 0.2s ease;
+
+        &:hover {
+            opacity: 1;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        // Grid icon styling
+        .oi-apps {
+            font-size: 1.25rem;
+        }
+    }
+
+    // App name / brand
+    .o_menu_brand {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ops-text-inverse);
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        padding: 0 1rem;
+
+        &:hover {
+            color: var(--ops-text-inverse);
+            text-decoration: none;
+        }
+    }
+
+    // Right-side icons (notifications, user menu, settings)
+    .o_navbar_apps_menu,
+    .o_user_menu,
+    .o_mail_systray_item {
+        .dropdown-toggle {
+            color: var(--ops-text-inverse);
+            opacity: 0.9;
+            padding: 0.5rem 0.75rem;
+
+            &:hover {
+                opacity: 1;
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+    }
+
+    // Dropdown menus
+    .dropdown-menu {
+        background-color: var(--ops-bg-card);
+        border: 1px solid var(--ops-border);
+        border-radius: var(--ops-radius-md);
+        box-shadow: var(--ops-shadow-lg);
+        padding: 0.5rem 0;
+
+        .dropdown-item {
+            color: var(--ops-text-primary);
+            padding: 0.5rem 1rem;
+
+            &:hover {
+                background-color: var(--ops-bg-hover);
+            }
+
+            &.active,
+            &:active {
+                background-color: var(--ops-secondary);
+                color: var(--ops-text-inverse);
+            }
+        }
+
+        .dropdown-divider {
+            border-color: var(--ops-border);
+        }
+    }
+}
+
+// Dark navbar variant adjustments
+[data-color-mode="dark"] .o_main_navbar {
+    background-color: var(--ops-bg-card) !important;
+    border-bottom: 1px solid var(--ops-border);
+}

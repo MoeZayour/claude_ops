@@ -1,0 +1,105 @@
+// =============================================================================
+// OPS THEME - MENU TABS (Horizontal App Menus)
+// =============================================================================
+
+.o_menu_sections {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: 0.5rem;
+
+    // Individual menu tab
+    > .dropdown,
+    > .o_menu_entry {
+        height: 100%;
+
+        > a,
+        > button {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding: 0 1rem;
+            color: var(--ops-text-inverse);
+            opacity: 0.85;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            background: transparent;
+            transition: opacity 0.2s ease, background-color 0.2s ease;
+
+            &:hover {
+                opacity: 1;
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+            // Dropdown arrow
+            &::after {
+                margin-left: 0.375rem;
+                font-size: 0.625rem;
+            }
+        }
+
+        // Active state
+        &.show > a,
+        &.active > a {
+            opacity: 1;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+    }
+
+    // Dropdown menu styling
+    .dropdown-menu {
+        margin-top: 0;
+        border-radius: 0 0 var(--ops-radius-md) var(--ops-radius-md);
+        border-top: none;
+        min-width: 200px;
+
+        .dropdown-item {
+            font-size: 0.875rem;
+            padding: 0.625rem 1rem;
+
+            .oi {
+                margin-right: 0.5rem;
+                opacity: 0.7;
+            }
+        }
+    }
+}
+
+// Secondary menu bar (below navbar)
+.o_main_navbar + .o_menu_sections_bar {
+    background-color: var(--ops-bg-card);
+    border-bottom: 1px solid var(--ops-border);
+
+    .o_menu_sections {
+        > .dropdown > a,
+        > .o_menu_entry > a {
+            color: var(--ops-text-primary);
+            opacity: 1;
+
+            &:hover {
+                color: var(--ops-secondary);
+                background-color: var(--ops-bg-hover);
+            }
+        }
+
+        > .dropdown.show > a,
+        > .o_menu_entry.active > a {
+            color: var(--ops-secondary);
+            background-color: transparent;
+            border-bottom: 2px solid var(--ops-secondary);
+        }
+    }
+}
+
+// Mobile menu
+@media (max-width: 767.98px) {
+    .o_menu_sections {
+        display: none;
+    }
+
+    .o_menu_toggle_mobile {
+        display: flex;
+    }
+}

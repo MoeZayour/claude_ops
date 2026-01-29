@@ -47,10 +47,18 @@
     // UI Elements
     // =========================================================================
     --ops-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --ops-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --ops-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --ops-border-radius: 8px;
     --ops-radius-sm: 4px;
     --ops-radius-md: 8px;
     --ops-radius-lg: 12px;
+
+    // =========================================================================
+    // Text Disabled State
+    // =========================================================================
+    --ops-text-disabled: #cbd5e1;
 
     // =========================================================================
     // Report Styles
