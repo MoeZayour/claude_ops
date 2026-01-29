@@ -1,0 +1,238 @@
+// =============================================================================
+// OPS THEME - CHATTER
+// =============================================================================
+
+// Chatter container
+.o_FormRenderer_chatterContainer {
+    background-color: var(--ops-bg-card);
+    border-top: 1px solid var(--ops-border);
+}
+
+.o_ChatterContainer {
+    background-color: var(--ops-bg-card);
+}
+
+.o_Chatter {
+    padding: 1rem;
+
+    // Top bar with buttons
+    .o_Chatter_topbar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--ops-border);
+        margin-bottom: 1rem;
+
+        .btn {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--ops-radius-md);
+
+            &.btn-primary {
+                background-color: var(--ops-secondary);
+                border-color: var(--ops-secondary);
+            }
+
+            &.btn-secondary,
+            &.btn-outline-secondary {
+                background-color: transparent;
+                border-color: var(--ops-border);
+                color: var(--ops-text-primary);
+
+                &:hover {
+                    background-color: var(--ops-bg-hover);
+                    border-color: var(--ops-secondary);
+                }
+            }
+        }
+    }
+
+    // Followers
+    .o_Chatter_followers {
+        margin-left: auto;
+
+        .o_FollowerListMenu_buttonFollowers {
+            color: var(--ops-text-secondary);
+            font-size: 0.875rem;
+        }
+    }
+}
+
+// Messages thread
+.o_MessageList {
+    .o_Message {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--ops-border);
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        // Avatar
+        .o_Message_authorAvatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+        }
+
+        // Author name
+        .o_Message_authorName {
+            font-weight: 600;
+            color: var(--ops-text-primary);
+            font-size: 0.875rem;
+        }
+
+        // Timestamp
+        .o_Message_date {
+            color: var(--ops-text-secondary);
+            font-size: 0.75rem;
+        }
+
+        // Message content
+        .o_Message_content {
+            color: var(--ops-text-primary);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-top: 0.25rem;
+
+            // Tracking changes
+            .o_Message_trackingValues {
+                background-color: var(--ops-bg-hover);
+                border-radius: var(--ops-radius-md);
+                padding: 0.5rem 0.75rem;
+                margin-top: 0.5rem;
+                font-size: 0.8125rem;
+
+                .o_Message_trackingOldValue {
+                    color: var(--ops-danger);
+                    text-decoration: line-through;
+                }
+
+                .o_Message_trackingNewValue {
+                    color: var(--ops-success);
+                }
+            }
+        }
+
+        // Note style (internal)
+        &.o_Message_note {
+            background-color: rgba(245, 158, 11, 0.05);
+            border-left: 3px solid var(--ops-warning);
+            padding-left: 1rem;
+            margin-left: 0;
+        }
+    }
+}
+
+// Composer (message input)
+.o_Composer {
+    background-color: var(--ops-bg-card);
+    border: 1px solid var(--ops-border);
+    border-radius: var(--ops-radius-md);
+    padding: 0.75rem;
+
+    .o_Composer_input {
+        background-color: var(--ops-bg-input);
+        border: none;
+        color: var(--ops-text-primary);
+        font-size: 0.875rem;
+        resize: none;
+
+        &::placeholder {
+            color: var(--ops-text-disabled);
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .o_Composer_buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--ops-border);
+    }
+}
+
+// Activity scheduling
+.o_Activity {
+    padding: 0.75rem;
+    background-color: var(--ops-bg-hover);
+    border-radius: var(--ops-radius-md);
+    margin-bottom: 0.5rem;
+
+    &.o_Activity_overdue {
+        border-left: 3px solid var(--ops-danger);
+    }
+
+    &.o_Activity_today {
+        border-left: 3px solid var(--ops-warning);
+    }
+
+    &.o_Activity_planned {
+        border-left: 3px solid var(--ops-success);
+    }
+}
+
+// =============================================================================
+// CHATTER POSITION: BELOW (Default)
+// =============================================================================
+
+.o_form_view:not(.ops-chatter-right) {
+    .o_FormRenderer_chatterContainer {
+        width: 100%;
+        border-top: 1px solid var(--ops-border);
+        margin-top: 1rem;
+    }
+}
+
+// =============================================================================
+// CHATTER POSITION: RIGHT
+// =============================================================================
+
+.o_form_view.ops-chatter-right {
+    .o_content {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+    }
+
+    .o_form_sheet_bg {
+        flex: 1;
+        min-width: 0;
+        overflow-y: auto;
+    }
+
+    .o_FormRenderer_chatterContainer {
+        width: 350px;
+        min-width: 300px;
+        max-width: 400px;
+        border-left: 1px solid var(--ops-border);
+        border-top: none;
+        height: 100%;
+        overflow-y: auto;
+        flex-shrink: 0;
+    }
+}
+
+// Mobile: Always below
+@media (max-width: 991.98px) {
+    .o_form_view.ops-chatter-right {
+        .o_content {
+            flex-direction: column;
+        }
+
+        .o_FormRenderer_chatterContainer {
+            width: 100%;
+            max-width: none;
+            border-left: none;
+            border-top: 1px solid var(--ops-border);
+            height: auto;
+        }
+    }
+}

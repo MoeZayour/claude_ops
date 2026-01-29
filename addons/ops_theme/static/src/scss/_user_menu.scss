@@ -1,0 +1,164 @@
+// =============================================================================
+// OPS THEME - USER MENU
+// =============================================================================
+
+.o_user_menu {
+    .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+
+        .oe_topbar_avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .oe_topbar_name {
+            font-size: 0.875rem;
+            color: var(--ops-text-inverse);
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    // Dropdown menu
+    .dropdown-menu {
+        min-width: 260px;
+        padding: 0;
+        border-radius: var(--ops-radius-lg);
+        box-shadow: var(--ops-shadow-lg);
+        border: 1px solid var(--ops-border);
+        background-color: var(--ops-bg-card);
+        overflow: hidden;
+
+        // User info header
+        .ops-user-info {
+            padding: 1rem;
+            background-color: var(--ops-bg-hover);
+            border-bottom: 1px solid var(--ops-border);
+
+            .ops-user-name {
+                font-weight: 600;
+                color: var(--ops-text-primary);
+                font-size: 0.9375rem;
+            }
+
+            .ops-user-email {
+                font-size: 0.8125rem;
+                color: var(--ops-text-secondary);
+                margin-top: 0.125rem;
+            }
+        }
+
+        // Menu sections
+        .ops-menu-section {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--ops-border);
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            // Section label
+            .ops-menu-section-label {
+                padding: 0.5rem 1rem;
+                font-size: 0.6875rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--ops-text-secondary);
+            }
+        }
+
+        // Menu items
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+            color: var(--ops-text-primary);
+            transition: background-color 0.15s ease;
+
+            &:hover {
+                background-color: var(--ops-bg-hover);
+                color: var(--ops-text-primary);
+            }
+
+            .ops-menu-icon {
+                width: 20px;
+                text-align: center;
+                color: var(--ops-text-secondary);
+            }
+
+            // Logout special styling
+            &.ops-logout {
+                color: var(--ops-danger);
+
+                .ops-menu-icon {
+                    color: var(--ops-danger);
+                }
+
+                &:hover {
+                    background-color: rgba(239, 68, 68, 0.1);
+                }
+            }
+        }
+
+        // Toggle options (color mode, chatter position)
+        .ops-toggle-group {
+            padding: 0.5rem 1rem;
+
+            .ops-toggle-label {
+                font-size: 0.8125rem;
+                font-weight: 500;
+                color: var(--ops-text-primary);
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+
+                .ops-menu-icon {
+                    color: var(--ops-text-secondary);
+                }
+            }
+
+            .ops-toggle-options {
+                display: flex;
+                gap: 0.25rem;
+                background-color: var(--ops-bg-hover);
+                border-radius: var(--ops-radius-md);
+                padding: 0.25rem;
+
+                .ops-toggle-option {
+                    flex: 1;
+                    padding: 0.375rem 0.5rem;
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    text-align: center;
+                    border-radius: var(--ops-radius-sm);
+                    background-color: transparent;
+                    color: var(--ops-text-secondary);
+                    border: none;
+                    cursor: pointer;
+                    transition: all 0.15s ease;
+
+                    &:hover {
+                        color: var(--ops-text-primary);
+                    }
+
+                    &.active {
+                        background-color: var(--ops-bg-card);
+                        color: var(--ops-secondary);
+                        box-shadow: var(--ops-shadow-sm);
+                    }
+                }
+            }
+        }
+    }
+}

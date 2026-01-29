@@ -29,14 +29,20 @@ Features:
     'data': [
         'security/ir.model.access.csv',
         'views/login_templates.xml',
+        'views/webclient_templates.xml',
     ],
     'assets': {
-        'web.assets_backend': [
-            'ops_theme/static/src/scss/theme.scss',
-        ],
         'web.assets_frontend': [
             'ops_theme/static/src/scss/_variables.scss',
             'ops_theme/static/src/scss/_login.scss',
+            'ops_theme/static/src/js/theme_loader.js',
+        ],
+        'web.assets_backend': [
+            'ops_theme/static/src/scss/theme.scss',
+            'ops_theme/static/src/js/theme_loader.js',
+            'ops_theme/static/src/js/color_mode_toggle.js',
+            'ops_theme/static/src/js/chatter_toggle.js',
+            'ops_theme/static/src/xml/user_menu.xml',
         ],
     },
     'installable': True,

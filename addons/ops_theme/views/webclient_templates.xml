@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Add data-color-mode attribute to html element -->
+    <template id="ops_webclient_layout" inherit_id="web.layout" name="OPS Webclient Layout">
+        <xpath expr="//html" position="attributes">
+            <attribute name="data-color-mode">system</attribute>
+        </xpath>
+    </template>
+
+</odoo>

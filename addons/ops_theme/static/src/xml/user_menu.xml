@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Color Mode Toggle Template -->
+    <t t-name="ops_theme.ColorModeToggle">
+        <div class="ops-toggle-group">
+            <div class="ops-toggle-label">
+                <span class="ops-menu-icon fa fa-sun-o"/>
+                Color Mode
+            </div>
+            <div class="ops-toggle-options">
+                <button
+                    class="ops-toggle-option"
+                    t-att-class="{ active: isLight }"
+                    t-on-click="() => this.setMode('light')">
+                    Light
+                </button>
+                <button
+                    class="ops-toggle-option"
+                    t-att-class="{ active: isDark }"
+                    t-on-click="() => this.setMode('dark')">
+                    Dark
+                </button>
+                <button
+                    class="ops-toggle-option"
+                    t-att-class="{ active: isSystem }"
+                    t-on-click="() => this.setMode('system')">
+                    Auto
+                </button>
+            </div>
+        </div>
+    </t>
+
+    <!-- Chatter Position Toggle Template -->
+    <t t-name="ops_theme.ChatterToggle">
+        <div class="ops-toggle-group">
+            <div class="ops-toggle-label">
+                <span class="ops-menu-icon fa fa-comments-o"/>
+                Chatter Position
+            </div>
+            <div class="ops-toggle-options">
+                <button
+                    class="ops-toggle-option"
+                    t-att-class="{ active: isBelow }"
+                    t-on-click="() => this.setPosition('below')">
+                    Below
+                </button>
+                <button
+                    class="ops-toggle-option"
+                    t-att-class="{ active: isRight }"
+                    t-on-click="() => this.setPosition('right')">
+                    Right
+                </button>
+            </div>
+        </div>
+    </t>
+
+</templates>
