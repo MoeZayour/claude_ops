@@ -1584,10 +1584,11 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             for i, field in enumerate(groupby_fields):
                 val = item[i]
                 if hasattr(val, 'id'):
-                    key_parts.append(val.id)
+                    key_parts.append(str(val.id))
                 else:
-                    key_parts.append(val)
-            key = tuple(key_parts)
+                    key_parts.append(str(val) if val else '0')
+            # Use string key for JSON serialization compatibility
+            key = '_'.join(key_parts)
 
             # Get aggregates (after groupby fields)
             offset = len(groupby_fields)
@@ -1613,15 +1614,16 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
 
         grouped_data = {}
         for line in lines:
-            key_parts = [line.account_id.id]
+            key_parts = [str(line.account_id.id)]
             if self.consolidate_by_branch:
-                key_parts.append(line.ops_branch_id.id if line.ops_branch_id else False)
+                key_parts.append(str(line.ops_branch_id.id) if line.ops_branch_id else '0')
             if self.consolidate_by_bu:
-                key_parts.append(line.ops_business_unit_id.id if line.ops_business_unit_id else False)
+                key_parts.append(str(line.ops_business_unit_id.id) if line.ops_business_unit_id else '0')
             if self.consolidate_by_partner:
-                key_parts.append(line.partner_id.id if line.partner_id else False)
+                key_parts.append(str(line.partner_id.id) if line.partner_id else '0')
 
-            key = tuple(key_parts)
+            # Use string key for JSON serialization compatibility
+            key = '_'.join(key_parts)
 
             if key not in grouped_data:
                 grouped_data[key] = {
