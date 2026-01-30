@@ -433,5 +433,62 @@
             <field name="groups" eval="[(4, ref('base.group_system'))]"/>
         </record>
 
+        <!-- ============================================================ -->
+        <!-- IT ADMIN BLINDNESS RULES                                     -->
+        <!-- ============================================================ -->
+        <!-- Purpose: Block group_ops_it_admin from ALL accounting data   -->
+        <!-- Domain [('id', '=', 0)] = Zero records (no ID is ever 0)     -->
+        <!-- IT Admin can: manage users, configure system, view logs      -->
+        <!-- IT Admin cannot: see PDC, budgets, or any financial data     -->
+        <!-- ============================================================ -->
+
+        <!-- IT Admin Blindness: PDC Receivable - BLOCKED -->
+        <record id="rule_it_admin_blind_pdc_receivable" model="ir.rule">
+            <field name="name">IT Admin Blindness: PDC Receivable</field>
+            <field name="model_id" ref="model_ops_pdc_receivable"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- IT Admin Blindness: PDC Payable - BLOCKED -->
+        <record id="rule_it_admin_blind_pdc_payable" model="ir.rule">
+            <field name="name">IT Admin Blindness: PDC Payable</field>
+            <field name="model_id" ref="model_ops_pdc_payable"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- IT Admin Blindness: Budget - BLOCKED -->
+        <record id="rule_it_admin_blind_budget" model="ir.rule">
+            <field name="name">IT Admin Blindness: Budgets</field>
+            <field name="model_id" ref="model_ops_budget"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- IT Admin Blindness: Budget Line - BLOCKED -->
+        <record id="rule_it_admin_blind_budget_line" model="ir.rule">
+            <field name="name">IT Admin Blindness: Budget Lines</field>
+            <field name="model_id" ref="model_ops_budget_line"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
     </data>
 </odoo>

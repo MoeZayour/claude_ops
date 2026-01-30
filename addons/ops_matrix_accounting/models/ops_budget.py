@@ -99,10 +99,10 @@ class OpsBudget(models.Model):
         default=lambda self: self.env.company.currency_id
     )
 
-    _unique_matrix_budget = models.Constraint(
-        'unique(ops_branch_id, ops_business_unit_id, date_from, date_to)',
-        'A budget already exists for this Branch/Business Unit combination in the specified date range!'
-    )
+    _sql_constraints = [
+        ('unique_matrix_budget', 'unique(ops_branch_id, ops_business_unit_id, date_from, date_to)',
+         'A budget already exists for this Branch/Business Unit combination in the specified date range!')
+    ]
 
     @api.constrains('date_from', 'date_to')
     def _check_dates(self):
@@ -254,10 +254,10 @@ class OpsBudgetLine(models.Model):
     currency_id = fields.Many2one(related='budget_id.currency_id')
     company_id = fields.Many2one(related='budget_id.ops_branch_id')
 
-    _unique_account_per_budget = models.Constraint(
-        'unique(budget_id, general_account_id)',
-        'You can only have one budget line per account!'
-    )
+    _sql_constraints = [
+        ('unique_account_per_budget', 'unique(budget_id, general_account_id)',
+         'You can only have one budget line per account!')
+    ]
 
     @api.depends('planned_amount', 'practical_amount', 'committed_amount')
     def _compute_available_amount(self):
@@ -288,6 +288,7 @@ class OpsBudgetLine(models.Model):
                 FROM account_move_line aml
                 JOIN account_move am ON aml.move_id = am.id
                 WHERE aml.account_id = %s
+                  AND aml.ops_business_unit_id = %s
                   AND aml.ops_branch_id = %s
                   AND aml.date >= %s
                   AND aml.date <= %s
@@ -298,6 +299,7 @@ class OpsBudgetLine(models.Model):
 
             params = (
                 line.general_account_id.id,
+                line.budget_id.ops_business_unit_id.id,
                 line.budget_id.ops_branch_id.id,
                 line.budget_id.date_from,
                 line.budget_id.date_to,
@@ -346,6 +348,7 @@ class OpsBudgetLine(models.Model):
                 JOIN product_template pt ON pp.product_tmpl_id = pt.id
                 JOIN product_category pc ON pt.categ_id = pc.id
                 WHERE po.state IN ('purchase', 'done')
+                  AND po.ops_business_unit_id = %s
                   AND po.ops_branch_id = %s
                   AND po.date_order >= %s
                   AND po.date_order <= %s
@@ -354,6 +357,7 @@ class OpsBudgetLine(models.Model):
             """
 
             params = (
+                line.budget_id.ops_business_unit_id.id,
                 line.budget_id.ops_branch_id.id,
                 line.budget_id.date_from,
                 line.budget_id.date_to,

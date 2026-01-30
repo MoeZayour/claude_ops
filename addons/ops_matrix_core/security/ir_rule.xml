@@ -651,11 +651,6 @@
         </record>
         
         <!-- ============================================================ -->
-        <!-- 19. IT ADMIN BLIND RULES - REMOVED                           -->
-        <!-- NOTE: group_ops_it_admin does not exist in this codebase     -->
-        <!-- ============================================================ -->
-        
-        <!-- ============================================================ -->
         <!-- 20. BRANCH MANAGER & BU LEADER ISOLATION RULES               -->
         <!-- ============================================================ -->
         
@@ -710,6 +705,232 @@
             <field name="perm_unlink" eval="False"/>
             <field name="active" eval="True"/>
         </record>
-        
+
+        <!-- =========================================================== -->
+        <!-- IT ADMIN BLINDNESS RULES                                    -->
+        <!-- =========================================================== -->
+        <!-- Purpose: Block group_ops_it_admin from ALL business data    -->
+        <!-- Domain [(1,'=',0)] = Always FALSE = Zero records returned   -->
+        <!-- IT Admin can: manage users, configure system, view logs     -->
+        <!-- IT Admin cannot: see sales, purchases, invoices, payments   -->
+        <!-- =========================================================== -->
+
+        <!-- 1. Sale Order - BLOCKED -->
+        <record id="rule_it_admin_blind_sale_order" model="ir.rule">
+            <field name="name">IT Admin Blindness: Sale Orders</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 2. Sale Order Line - BLOCKED -->
+        <record id="rule_it_admin_blind_sale_order_line" model="ir.rule">
+            <field name="name">IT Admin Blindness: Sale Order Lines</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 3. Purchase Order - BLOCKED -->
+        <record id="rule_it_admin_blind_purchase_order" model="ir.rule">
+            <field name="name">IT Admin Blindness: Purchase Orders</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 4. Purchase Order Line - BLOCKED -->
+        <record id="rule_it_admin_blind_purchase_order_line" model="ir.rule">
+            <field name="name">IT Admin Blindness: Purchase Order Lines</field>
+            <field name="model_id" ref="purchase.model_purchase_order_line"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 5. Account Move (Invoices/Bills/Journal Entries) - BLOCKED -->
+        <record id="rule_it_admin_blind_account_move" model="ir.rule">
+            <field name="name">IT Admin Blindness: Invoices/Journal Entries</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 6. Account Move Line - BLOCKED -->
+        <record id="rule_it_admin_blind_account_move_line" model="ir.rule">
+            <field name="name">IT Admin Blindness: Journal Items</field>
+            <field name="model_id" ref="account.model_account_move_line"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 7. Account Payment - BLOCKED -->
+        <record id="rule_it_admin_blind_account_payment" model="ir.rule">
+            <field name="name">IT Admin Blindness: Payments</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 8. Bank Statement - BLOCKED -->
+        <record id="rule_it_admin_blind_bank_statement" model="ir.rule">
+            <field name="name">IT Admin Blindness: Bank Statements</field>
+            <field name="model_id" ref="account.model_account_bank_statement"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 9. Bank Statement Line - BLOCKED -->
+        <record id="rule_it_admin_blind_bank_statement_line" model="ir.rule">
+            <field name="name">IT Admin Blindness: Bank Statement Lines</field>
+            <field name="model_id" ref="account.model_account_bank_statement_line"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 10. Stock Valuation Layer - BLOCKED (Requires stock_account module)
+        <record id="rule_it_admin_blind_stock_valuation" model="ir.rule">
+            <field name="name">IT Admin Blindness: Stock Valuation</field>
+            <field name="model_id" ref="stock.model_stock_valuation_layer"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        -->
+
+        <!-- 11. Stock Picking - BLOCKED -->
+        <record id="rule_it_admin_blind_stock_picking" model="ir.rule">
+            <field name="name">IT Admin Blindness: Stock Transfers</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 12. Stock Move - BLOCKED -->
+        <record id="rule_it_admin_blind_stock_move" model="ir.rule">
+            <field name="name">IT Admin Blindness: Stock Moves</field>
+            <field name="model_id" ref="stock.model_stock_move"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 13. Stock Move Line - BLOCKED -->
+        <record id="rule_it_admin_blind_stock_move_line" model="ir.rule">
+            <field name="name">IT Admin Blindness: Stock Move Lines</field>
+            <field name="model_id" ref="stock.model_stock_move_line"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 14. CRM Lead/Opportunity - BLOCKED (Requires crm module)
+        <record id="rule_it_admin_blind_crm_lead" model="ir.rule">
+            <field name="name">IT Admin Blindness: CRM Leads</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        -->
+
+        <!-- 15. Product Pricelist - BLOCKED -->
+        <record id="rule_it_admin_blind_pricelist" model="ir.rule">
+            <field name="name">IT Admin Blindness: Pricelists</field>
+            <field name="model_id" ref="product.model_product_pricelist"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 16. Product Pricelist Item - BLOCKED -->
+        <record id="rule_it_admin_blind_pricelist_item" model="ir.rule">
+            <field name="name">IT Admin Blindness: Pricelist Items</field>
+            <field name="model_id" ref="product.model_product_pricelist_item"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 17. Account Analytic Line - BLOCKED -->
+        <record id="rule_it_admin_blind_analytic_line" model="ir.rule">
+            <field name="name">IT Admin Blindness: Analytic Lines</field>
+            <field name="model_id" ref="analytic.model_account_analytic_line"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- NOTE: PDC and Budget IT Admin Blindness rules are defined in ops_matrix_accounting
+             to avoid circular dependency issues -->
+
+        <!-- 18. PDC Receivable - MOVED TO ops_matrix_accounting -->
+        <!-- 19. PDC Payable - MOVED TO ops_matrix_accounting -->
+        <!-- 20. Budget - MOVED TO ops_matrix_accounting -->
+
+        <!-- =========================================================== -->
+        <!-- END OF IT ADMIN BLINDNESS RULES                             -->
+        <!-- =========================================================== -->
+
     </data>
 </odoo>
