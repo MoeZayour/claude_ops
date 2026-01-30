@@ -1,20 +1,15 @@
 // =============================================================================
 // OPS THEME - NAVBAR
 // =============================================================================
+// Force dark slate background (#1e293b) - NO Odoo purple allowed
+// =============================================================================
 
 .o_main_navbar {
-    background-color: var(--ops-primary) !important;
+    background-color: #1e293b !important;  // HARDCODED - kills all purple
     border-bottom: none;
-    height: 46px;
-    min-height: 46px;
 
-    // Home menu button (grid icon)
+    // Home menu button (grid icon) - SAFE: only colors
     .o_menu_toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 46px;
-        height: 46px;
         color: var(--ops-text-inverse);
         opacity: 0.9;
         transition: opacity 0.2s ease, background-color 0.2s ease;
@@ -22,11 +17,6 @@
         &:hover {
             opacity: 1;
             background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        // Grid icon styling
-        .oi-apps {
-            font-size: 1.25rem;
         }
     }
 
@@ -94,4 +84,44 @@
 [data-color-mode="dark"] .o_main_navbar {
     background-color: var(--ops-bg-card) !important;
     border-bottom: 1px solid var(--ops-border);
+}
+
+// =============================================================================
+// NAVBAR DROPDOWN FIXES (Odoo 19 OWL compatibility)
+// =============================================================================
+
+// Ensure navbar dropdowns have proper background
+.o_main_navbar .dropdown-menu,
+.o_main_navbar .o-dropdown--menu {
+    background-color: var(--ops-bg-card, #ffffff) !important;
+    border: 1px solid var(--ops-border, #e2e8f0) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+// App menu specific
+.o_navbar_apps_menu {
+    .dropdown-menu,
+    .o-dropdown--menu {
+        background-color: #ffffff !important;
+    }
+
+    .dropdown-item,
+    a {
+        color: #1e293b !important;
+    }
+}
+
+// User menu specific
+.o_user_menu,
+[class*="user_menu"],
+[class*="user-menu"] {
+    .dropdown-menu,
+    .o-dropdown--menu {
+        background-color: #ffffff !important;
+    }
+
+    .dropdown-item,
+    a {
+        color: #1e293b !important;
+    }
 }

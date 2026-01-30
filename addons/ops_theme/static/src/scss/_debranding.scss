@@ -10,17 +10,20 @@
 // =============================================================================
 :root {
     // Override Odoo's brand variables
-    --o-brand-primary: var(--ops-secondary, #3b82f6) !important;
-    --o-brand-odoo: var(--ops-secondary, #3b82f6) !important;
-    --primary: var(--ops-secondary, #3b82f6) !important;
-    --o-main-color: var(--ops-secondary, #3b82f6) !important;
-    --o-action-color: var(--ops-secondary, #3b82f6) !important;
-    --o-webclient-color-scheme: var(--ops-secondary, #3b82f6) !important;
+    // --o-brand-odoo: Used for NAVBAR background - must be dark slate
+    // --o-brand-primary: Used for buttons/links - stays blue
+    --o-brand-odoo: #1e293b !important;           // NAVBAR - dark slate (NOT purple!)
+    --o-brand-primary: #3b82f6 !important;        // Buttons - OPS blue
+    --primary: #3b82f6 !important;
+    --o-main-color: #3b82f6 !important;
+    --o-action-color: #3b82f6 !important;
+    --o-webclient-color-scheme: #1e293b !important;
+    --o-navbar-background: #1e293b !important;    // Force navbar bg
 
     // Override Bootstrap primary
-    --bs-primary: var(--ops-secondary, #3b82f6) !important;
+    --bs-primary: #3b82f6 !important;
     --bs-primary-rgb: 59, 130, 246 !important;
-    --bs-link-color: var(--ops-secondary, #3b82f6) !important;
+    --bs-link-color: #3b82f6 !important;
 }
 
 // =============================================================================
@@ -313,14 +316,24 @@ footer {
 }
 
 // =============================================================================
-// Navbar - Override any purple tints
+// Navbar - FORCE dark slate (#1e293b), KILL all purple
 // =============================================================================
 .o_main_navbar {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+
+    // Override any inline styles that might have purple
+    &[style] {
+        background: #1e293b !important;
+        background-color: #1e293b !important;
+    }
+
     a, button {
         color: rgba(255,255,255,0.9) !important;
 
         &:hover {
             color: #fff !important;
+            background-color: rgba(255,255,255,0.1) !important;
         }
     }
 
@@ -331,6 +344,26 @@ footer {
         background-color: rgba(255,255,255,0.15) !important;
         color: #fff !important;
     }
+
+    // All navbar children must inherit dark slate
+    * {
+        &[style*="#714B67"],
+        &[style*="#875A7B"],
+        &[style*="714B67"],
+        &[style*="875A7B"] {
+            background: #1e293b !important;
+            background-color: #1e293b !important;
+        }
+    }
+}
+
+// Target navbar specifically by element attributes
+nav.o_main_navbar,
+.o_main_navbar.navbar,
+header .o_main_navbar,
+[class*="navbar"][class*="main"] {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
 }
 
 // =============================================================================
