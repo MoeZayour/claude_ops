@@ -38,11 +38,13 @@
         <field name="binding_view_types">form</field>
     </record>
 
-    <!-- Basic GL hidden - users should use Enhanced version -->
+    <!-- DISABLED: Basic GL - users should use Enhanced version (Matrix Financial Intelligence) -->
+    <!--
     <menuitem id="menu_ops_general_ledger_report"
               name="General Ledger (Basic)"
               parent="menu_ops_accounting_reports"
               action="action_ops_general_ledger_wizard"
               sequence="99"
               active="False"/>
+    -->
 </odoo>

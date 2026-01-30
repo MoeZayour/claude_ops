@@ -213,6 +213,10 @@
     </record>
 
     <!-- ==================== MENU ITEM ==================== -->
-    <!-- MOVED: Menu consolidated in accounting_menus.xml as menu_reporting_asset_intelligence -->
+    <menuitem id="menu_reporting_asset_intelligence"
+              name="Asset Intelligence"
+              parent="account.menu_finance_reports"
+              action="action_ops_asset_report_wizard"
+              sequence="30"/>
 
 </odoo>

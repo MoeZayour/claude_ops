@@ -101,26 +101,12 @@
     - PDC Reports (seq 60)
     -->
 
-    <!-- 1. Matrix Financial Intelligence -->
-    <menuitem id="menu_reporting_financial_intelligence"
-              name="Matrix Financial Intelligence"
-              parent="account.menu_finance_reports"
-              action="action_ops_general_ledger_wizard_enhanced"
-              sequence="10"/>
+    <!-- NOTE: These menus moved to respective wizard view files to avoid circular dependency -->
+    <!-- See: ops_general_ledger_wizard_enhanced_views.xml, ops_treasury_report_wizard_views.xml, ops_asset_report_wizard_views.xml -->
 
-    <!-- 2. Treasury Intelligence -->
-    <menuitem id="menu_reporting_treasury_intelligence"
-              name="Treasury Intelligence"
-              parent="account.menu_finance_reports"
-              action="action_ops_treasury_report_wizard"
-              sequence="20"/>
-
-    <!-- 3. Asset Intelligence -->
-    <menuitem id="menu_reporting_asset_intelligence"
-              name="Asset Intelligence"
-              parent="account.menu_finance_reports"
-              action="action_ops_asset_report_wizard"
-              sequence="30"/>
+    <!-- 1. Matrix Financial Intelligence - MOVED to ops_general_ledger_wizard_enhanced_views.xml -->
+    <!-- 2. Treasury Intelligence - MOVED to ops_treasury_report_wizard_views.xml -->
+    <!-- 3. Asset Intelligence - MOVED to ops_asset_report_wizard_views.xml -->
 
     <!-- 4. Invoice Analysis (Native Odoo Action) -->
     <menuitem id="menu_reporting_invoice_analysis"

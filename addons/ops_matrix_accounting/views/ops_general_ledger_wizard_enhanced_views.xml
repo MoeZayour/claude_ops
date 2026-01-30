@@ -274,6 +274,10 @@
     </record>
 
     <!-- ==================== MENU ITEM ==================== -->
-    <!-- MOVED: Menu consolidated in accounting_menus.xml as menu_reporting_financial_intelligence -->
+    <menuitem id="menu_reporting_financial_intelligence"
+              name="Matrix Financial Intelligence"
+              parent="account.menu_finance_reports"
+              action="action_ops_general_ledger_wizard_enhanced"
+              sequence="10"/>
 
 </odoo>

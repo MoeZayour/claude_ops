@@ -206,6 +206,10 @@
     </record>
 
     <!-- ==================== MENU ITEM ==================== -->
-    <!-- MOVED: Menu consolidated in accounting_menus.xml as menu_reporting_treasury_intelligence -->
+    <menuitem id="menu_reporting_treasury_intelligence"
+              name="Treasury Intelligence"
+              parent="account.menu_finance_reports"
+              action="action_ops_treasury_report_wizard"
+              sequence="20"/>
 
 </odoo>

@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.16.1.0",
+    "version": "19.0.16.2.0",
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -76,7 +76,6 @@
         "views/ops_bank_reconciliation_views.xml",
         "views/ops_lease_views.xml",
         "views/ops_fx_revaluation_views.xml",
-        "views/accounting_menus.xml",
 
         # Wizards
         "wizard/ops_asset_depreciation_wizard_views.xml",
@@ -86,6 +85,9 @@
         "wizard/ops_asset_report_wizard_views.xml",
         "wizard/ops_three_way_match_override_wizard_views.xml",
         # "wizard/ops_asset_report_wizard.xml",  # Disabled - references AbstractModel
+
+        # Menus - must load AFTER all views/wizards that define actions
+        "views/accounting_menus.xml",
 
         # Reports
         "report/ops_report_layout.xml",  # Corporate branding & shared styles

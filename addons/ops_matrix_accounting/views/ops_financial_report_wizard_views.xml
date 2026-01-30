@@ -83,7 +83,9 @@
         <field name="context">{'default_report_type': 'cf'}</field>
     </record>
 
-    <!-- Specific Menus -->
+    <!-- DISABLED: These menus use a disabled parent (menu_ops_accounting_reports)
+         Reports are accessed via: Accounting > Reporting > Matrix Financial Intelligence -->
+    <!--
     <menuitem id="menu_ops_financial_report_pl"
               name="Profit and Loss"
               parent="menu_ops_accounting_reports"
@@ -113,4 +115,5 @@
               parent="menu_ops_accounting_reports"
               action="action_ops_financial_report_wizard"
               sequence="100"/>
+    -->
 </odoo>

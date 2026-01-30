@@ -260,11 +260,13 @@
         <field name="code">action = model.action_rebuild_last_year()</field>
     </record>
 
-    <!-- Menu -->
+    <!-- Menu - DISABLED: Uses disabled parent menu_ops_accounting_root -->
+    <!--
     <menuitem id="menu_ops_matrix_snapshot"
               name="Financial Snapshots"
               parent="ops_matrix_accounting.menu_ops_accounting_root"
               action="action_ops_matrix_snapshot"
               sequence="90"
               groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_admin_power"/>
+    -->
 </odoo>
