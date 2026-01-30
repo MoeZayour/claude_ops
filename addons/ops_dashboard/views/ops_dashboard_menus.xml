@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_ops_dashboard_root"
+              name="Dashboards"
+              sequence="5"
+              web_icon="ops_dashboard,static/description/icon.png"/>
+
+    <!-- OPS Analytics Submenu -->
+    <menuitem id="menu_ops_analytics"
+              name="OPS Analytics"
+              parent="menu_ops_dashboard_root"
+              sequence="10"/>
+
+    <!-- My Dashboards - Client Action -->
+    <menuitem id="menu_ops_dashboard_client"
+              name="My Dashboards"
+              parent="menu_ops_analytics"
+              action="action_ops_dashboard_client"
+              sequence="10"/>
+
+    <!-- Dashboard Management Submenu -->
+    <menuitem id="menu_ops_dashboard_config"
+              name="Configuration"
+              parent="menu_ops_dashboard_root"
+              groups="ops_dashboard.group_dashboard_manager"
+              sequence="90"/>
+
+    <!-- Dashboards List -->
+    <menuitem id="menu_ops_dashboard_list"
+              name="Dashboards"
+              parent="menu_ops_dashboard_config"
+              action="action_ops_dashboard"
+              sequence="10"/>
+
+    <!-- Widgets List -->
+    <menuitem id="menu_ops_dashboard_widgets"
+              name="Widgets"
+              parent="menu_ops_dashboard_config"
+              action="action_ops_dashboard_widget"
+              sequence="20"/>
+
+    <!-- KPI Definitions -->
+    <menuitem id="menu_ops_kpi"
+              name="KPI Definitions"
+              parent="menu_ops_dashboard_config"
+              action="action_ops_kpi"
+              sequence="30"/>
+</odoo>

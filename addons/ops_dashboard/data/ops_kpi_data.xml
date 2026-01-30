@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Sales KPIs -->
+        <record id="kpi_sales_total" model="ops.kpi">
+            <field name="name">Total Sales</field>
+            <field name="code">SALES_TOTAL</field>
+            <field name="description">Total value of confirmed sales orders</field>
+            <field name="sequence">10</field>
+            <field name="category">sales</field>
+            <field name="source_model">sale.order</field>
+            <field name="calculation_type">sum</field>
+            <field name="measure_field">amount_total</field>
+            <field name="domain_filter">[('state', 'in', ['sale', 'done'])]</field>
+            <field name="date_field">date_order</field>
+            <field name="default_period">this_month</field>
+            <field name="format_type">currency</field>
+            <field name="icon">fa-dollar-sign</field>
+            <field name="color">#10b981</field>
+            <field name="show_trend" eval="True"/>
+            <field name="trend_direction">up_good</field>
+        </record>
+
+        <record id="kpi_sales_count" model="ops.kpi">
+            <field name="name">Sales Orders</field>
+            <field name="code">SALES_COUNT</field>
+            <field name="description">Number of confirmed sales orders</field>
+            <field name="sequence">20</field>
+            <field name="category">sales</field>
+            <field name="source_model">sale.order</field>
+            <field name="calculation_type">count</field>
+            <field name="domain_filter">[('state', 'in', ['sale', 'done'])]</field>
+            <field name="date_field">date_order</field>
+            <field name="default_period">this_month</field>
+            <field name="format_type">integer</field>
+            <field name="icon">fa-file-invoice</field>
+            <field name="color">#3b82f6</field>
+            <field name="show_trend" eval="True"/>
+            <field name="trend_direction">up_good</field>
+        </record>
+
+        <record id="kpi_sales_draft" model="ops.kpi">
+            <field name="name">Draft Quotations</field>
+            <field name="code">SALES_DRAFT</field>
+            <field name="description">Number of draft quotations pending conversion</field>
+            <field name="sequence">30</field>
+            <field name="category">sales</field>
+            <field name="source_model">sale.order</field>
+            <field name="calculation_type">count</field>
+            <field name="domain_filter">[('state', 'in', ['draft', 'sent'])]</field>
+            <field name="date_field">create_date</field>
+            <field name="default_period">all_time</field>
+            <field name="format_type">integer</field>
+            <field name="icon">fa-file-alt</field>
+            <field name="color">#f59e0b</field>
+            <field name="show_trend" eval="False"/>
+            <field name="trend_direction">neutral</field>
+        </record>
+
+        <record id="kpi_sales_avg_order" model="ops.kpi">
+            <field name="name">Average Order Value</field>
+            <field name="code">SALES_AVG_ORDER</field>
+            <field name="description">Average value per sales order</field>
+            <field name="sequence">40</field>
+            <field name="category">sales</field>
+            <field name="source_model">sale.order</field>
+            <field name="calculation_type">average</field>
+            <field name="measure_field">amount_total</field>
+            <field name="domain_filter">[('state', 'in', ['sale', 'done'])]</field>
+            <field name="date_field">date_order</field>
+            <field name="default_period">this_month</field>
+            <field name="format_type">currency</field>
+            <field name="icon">fa-chart-line</field>
+            <field name="color">#8b5cf6</field>
+            <field name="show_trend" eval="True"/>
+            <field name="trend_direction">up_good</field>
+        </record>
+
+        <!-- Purchase KPIs -->
+        <record id="kpi_purchase_total" model="ops.kpi">
+            <field name="name">Total Purchases</field>
+            <field name="code">PURCHASE_TOTAL</field>
+            <field name="description">Total value of confirmed purchase orders</field>
+            <field name="sequence">50</field>
+            <field name="category">purchase</field>
+            <field name="source_model">purchase.order</field>
+            <field name="calculation_type">sum</field>
+            <field name="measure_field">amount_total</field>
+            <field name="domain_filter">[('state', 'in', ['purchase', 'done'])]</field>
+            <field name="date_field">date_order</field>
+            <field name="default_period">this_month</field>
+            <field name="format_type">currency</field>
+            <field name="icon">fa-shopping-cart</field>
+            <field name="color">#ef4444</field>
+            <field name="show_trend" eval="True"/>
+            <field name="trend_direction">down_good</field>
+            <field name="requires_cost_access" eval="True"/>
+        </record>
+
+        <record id="kpi_purchase_pending" model="ops.kpi">
+            <field name="name">Pending POs</field>
+            <field name="code">PURCHASE_PENDING</field>
+            <field name="description">Purchase orders waiting for receipt</field>
+            <field name="sequence">60</field>
+            <field name="category">purchase</field>
+            <field name="source_model">purchase.order</field>
+            <field name="calculation_type">count</field>
+            <field name="domain_filter">[('state', '=', 'purchase'), ('receipt_status', '!=', 'full')]</field>
+            <field name="date_field">create_date</field>
+            <field name="default_period">all_time</field>
+            <field name="format_type">integer</field>
+            <field name="icon">fa-clock</field>
+            <field name="color">#f97316</field>
+            <field name="show_trend" eval="False"/>
+            <field name="trend_direction">neutral</field>
+        </record>
+
+        <!-- Accounts Receivable KPIs -->
+        <record id="kpi_ar_total" model="ops.kpi">
+            <field name="name">Total Receivables</field>
+            <field name="code">AR_TOTAL</field>
+            <field name="description">Total outstanding customer invoices</field>
+            <field name="sequence">70</field>
+            <field name="category">receivable</field>
+            <field name="source_model">account.move</field>
+            <field name="calculation_type">sum</field>
+            <field name="measure_field">amount_residual</field>
+            <field name="domain_filter">[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ['not_paid', 'partial'])]</field>
+            <field name="date_field">invoice_date</field>
+            <field name="default_period">all_time</field>
+            <field name="format_type">currency</field>
+            <field name="icon">fa-hand-holding-usd</field>
+            <field name="color">#06b6d4</field>
+            <field name="show_trend" eval="True"/>
+            <field name="trend_direction">down_good</field>
+        </record>
+
+        <record id="kpi_ar_overdue" model="ops.kpi">
+            <field name="name">Overdue Receivables</field>
+            <field name="code">AR_OVERDUE</field>
+            <field name="description">Customer invoices past due date</field>
+            <field name="sequence">80</field>
+            <field name="category">receivable</field>
+            <field name="source_model">account.move</field>
+            <field name="calculation_type">sum</field>
+            <field name="measure_field">amount_residual</field>
+            <field name="domain_filter">[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ['not_paid', 'partial']), ('invoice_date_due', '&lt;', (context_today()).strftime('%Y-%m-%d'))]</field>
+            <field name="date_field">invoice_date</field>
+            <field name="default_period">all_time</field>
+            <field name="format_type">currency</field>
+            <field name="icon">fa-exclamation-triangle</field>
+            <field name="color">#dc2626</field>
+            <field name="show_trend" eval="True"/>
+            <field name="trend_direction">down_good</field>
+        </record>
+
+        <!-- Accounts Payable KPIs -->
+        <record id="kpi_ap_total" model="ops.kpi">
+            <field name="name">Total Payables</field>
+            <field name="code">AP_TOTAL</field>
+            <field name="description">Total outstanding vendor bills</field>
+            <field name="sequence">90</field>
+            <field name="category">payable</field>
+            <field name="source_model">account.move</field>
+            <field name="calculation_type">sum</field>
+            <field name="measure_field">amount_residual</field>
+            <field name="domain_filter">[('move_type', '=', 'in_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ['not_paid', 'partial'])]</field>
+            <field name="date_field">invoice_date</field>
+            <field name="default_period">all_time</field>
+            <field name="format_type">currency</field>
+            <field name="icon">fa-file-invoice-dollar</field>
+            <field name="color">#7c3aed</field>
+            <field name="show_trend" eval="True"/>
+            <field name="trend_direction">neutral</field>
+            <field name="requires_cost_access" eval="True"/>
+        </record>
+
+        <!-- Inventory KPIs -->
+        <record id="kpi_inventory_value" model="ops.kpi">
+            <field name="name">Inventory Value</field>
+            <field name="code">INVENTORY_VALUE</field>
+            <field name="description">Total value of stock on hand</field>
+            <field name="sequence">100</field>
+            <field name="category">inventory</field>
+            <field name="source_model">stock.quant</field>
+            <field name="calculation_type">sum</field>
+            <field name="measure_field">value</field>
+            <field name="domain_filter">[('location_id.usage', '=', 'internal')]</field>
+            <field name="date_field">create_date</field>
+            <field name="default_period">all_time</field>
+            <field name="format_type">currency</field>
+            <field name="icon">fa-warehouse</field>
+            <field name="color">#059669</field>
+            <field name="show_trend" eval="False"/>
+            <field name="trend_direction">neutral</field>
+            <field name="requires_cost_access" eval="True"/>
+        </record>
+    </data>
+</odoo>

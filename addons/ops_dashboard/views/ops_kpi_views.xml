@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- KPI Tree View -->
+    <record id="ops_kpi_view_tree" model="ir.ui.view">
+        <field name="name">ops.kpi.tree</field>
+        <field name="model">ops.kpi</field>
+        <field name="arch" type="xml">
+            <list string="KPIs" default_order="sequence, name">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category" optional="show"/>
+                <field name="source_model"/>
+                <field name="calculation_type"/>
+                <field name="format_type"/>
+                <field name="default_period" optional="hide"/>
+                <field name="requires_cost_access" optional="hide"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- KPI Form View -->
+    <record id="ops_kpi_view_form" model="ir.ui.view">
+        <field name="name">ops.kpi.form</field>
+        <field name="model">ops.kpi</field>
+        <field name="arch" type="xml">
+            <form string="KPI Definition">
+                <sheet>
+                    <widget name="web_ribbon" title="Inactive" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="KPI Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Identification">
+                            <field name="code"/>
+                            <field name="category"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Data Source">
+                            <field name="source_model"/>
+                            <field name="calculation_type"/>
+                            <field name="measure_field" invisible="calculation_type == 'count'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Filtering">
+                            <field name="domain_filter"/>
+                            <field name="date_field"/>
+                            <field name="default_period"/>
+                        </group>
+                        <group string="Display">
+                            <field name="format_type"/>
+                            <field name="icon"/>
+                            <field name="color" widget="color"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Trend">
+                            <field name="show_trend"/>
+                            <field name="trend_direction" invisible="not show_trend"/>
+                        </group>
+                        <group string="Security">
+                            <field name="requires_cost_access"/>
+                            <field name="requires_margin_access"/>
+                            <field name="visible_to_it_admin"/>
+                        </group>
+                    </group>
+                    <group string="Target Personas">
+                        <field name="persona_ids" widget="many2many_tags" nolabel="1"/>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1" placeholder="Describe what this KPI measures..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- KPI Search View -->
+    <record id="ops_kpi_view_search" model="ir.ui.view">
+        <field name="name">ops.kpi.search</field>
+        <field name="model">ops.kpi</field>
+        <field name="arch" type="xml">
+            <search string="Search KPIs">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="source_model"/>
+                <field name="category"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Sales" name="sales" domain="[('category', '=', 'sales')]"/>
+                <filter string="Purchase" name="purchase" domain="[('category', '=', 'purchase')]"/>
+                <filter string="Finance" name="finance" domain="[('category', 'in', ['finance', 'receivable', 'payable'])]"/>
+                <filter string="Inventory" name="inventory" domain="[('category', '=', 'inventory')]"/>
+                <separator/>
+                <filter string="Requires Cost Access" name="cost_access" domain="[('requires_cost_access', '=', True)]"/>
+                <separator/>
+                <filter string="Category" name="group_category" context="{'group_by': 'category'}"/>
+                <filter string="Source Model" name="group_model" context="{'group_by': 'source_model'}"/>
+                <filter string="Format" name="group_format" context="{'group_by': 'format_type'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- KPI Action -->
+    <record id="action_ops_kpi" model="ir.actions.act_window">
+        <field name="name">KPI Definitions</field>
+        <field name="res_model">ops.kpi</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define your first KPI
+            </p>
+            <p>
+                KPIs are the building blocks of dashboards.
+                Define metrics like Total Sales, Open Orders, etc.
+            </p>
+        </field>
+    </record>
+</odoo>

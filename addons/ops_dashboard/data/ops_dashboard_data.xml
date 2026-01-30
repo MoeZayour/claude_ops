@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Executive Dashboard -->
+        <record id="dashboard_executive" model="ops.dashboard">
+            <field name="name">Executive Dashboard</field>
+            <field name="code">EXEC</field>
+            <field name="description">High-level business overview for CEO/CFO</field>
+            <field name="sequence">10</field>
+            <field name="dashboard_type">executive</field>
+            <field name="auto_refresh" eval="True"/>
+            <field name="refresh_interval">120000</field>
+            <field name="columns">4</field>
+        </record>
+
+        <!-- Executive Dashboard Widgets -->
+        <record id="widget_exec_sales_total" model="ops.dashboard.widget">
+            <field name="name">Total Sales</field>
+            <field name="dashboard_id" ref="dashboard_executive"/>
+            <field name="sequence">10</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_sales_total"/>
+            <field name="position_x">0</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_exec_sales_count" model="ops.dashboard.widget">
+            <field name="name">Sales Orders</field>
+            <field name="dashboard_id" ref="dashboard_executive"/>
+            <field name="sequence">20</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_sales_count"/>
+            <field name="position_x">1</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_exec_ar_total" model="ops.dashboard.widget">
+            <field name="name">Receivables</field>
+            <field name="dashboard_id" ref="dashboard_executive"/>
+            <field name="sequence">30</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_ar_total"/>
+            <field name="position_x">2</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_exec_ar_overdue" model="ops.dashboard.widget">
+            <field name="name">Overdue AR</field>
+            <field name="dashboard_id" ref="dashboard_executive"/>
+            <field name="sequence">40</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_ar_overdue"/>
+            <field name="position_x">3</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_exec_purchase_total" model="ops.dashboard.widget">
+            <field name="name">Total Purchases</field>
+            <field name="dashboard_id" ref="dashboard_executive"/>
+            <field name="sequence">50</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_purchase_total"/>
+            <field name="position_x">0</field>
+            <field name="position_y">1</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_exec_ap_total" model="ops.dashboard.widget">
+            <field name="name">Payables</field>
+            <field name="dashboard_id" ref="dashboard_executive"/>
+            <field name="sequence">60</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_ap_total"/>
+            <field name="position_x">1</field>
+            <field name="position_y">1</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_exec_inventory" model="ops.dashboard.widget">
+            <field name="name">Inventory Value</field>
+            <field name="dashboard_id" ref="dashboard_executive"/>
+            <field name="sequence">70</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_inventory_value"/>
+            <field name="position_x">2</field>
+            <field name="position_y">1</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_exec_avg_order" model="ops.dashboard.widget">
+            <field name="name">Avg Order Value</field>
+            <field name="dashboard_id" ref="dashboard_executive"/>
+            <field name="sequence">80</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_sales_avg_order"/>
+            <field name="position_x">3</field>
+            <field name="position_y">1</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <!-- Sales Dashboard -->
+        <record id="dashboard_sales" model="ops.dashboard">
+            <field name="name">Sales Dashboard</field>
+            <field name="code">SALES</field>
+            <field name="description">Sales performance metrics</field>
+            <field name="sequence">20</field>
+            <field name="dashboard_type">sales</field>
+            <field name="auto_refresh" eval="True"/>
+            <field name="refresh_interval">60000</field>
+            <field name="columns">4</field>
+        </record>
+
+        <!-- Sales Dashboard Widgets -->
+        <record id="widget_sales_total" model="ops.dashboard.widget">
+            <field name="name">Total Sales</field>
+            <field name="dashboard_id" ref="dashboard_sales"/>
+            <field name="sequence">10</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_sales_total"/>
+            <field name="position_x">0</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_sales_count" model="ops.dashboard.widget">
+            <field name="name">Sales Orders</field>
+            <field name="dashboard_id" ref="dashboard_sales"/>
+            <field name="sequence">20</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_sales_count"/>
+            <field name="position_x">1</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_sales_draft" model="ops.dashboard.widget">
+            <field name="name">Draft Quotations</field>
+            <field name="dashboard_id" ref="dashboard_sales"/>
+            <field name="sequence">30</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_sales_draft"/>
+            <field name="position_x">2</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_sales_avg" model="ops.dashboard.widget">
+            <field name="name">Avg Order Value</field>
+            <field name="dashboard_id" ref="dashboard_sales"/>
+            <field name="sequence">40</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_sales_avg_order"/>
+            <field name="position_x">3</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <!-- Branch Dashboard -->
+        <record id="dashboard_branch" model="ops.dashboard">
+            <field name="name">Branch Dashboard</field>
+            <field name="code">BRANCH</field>
+            <field name="description">Branch-specific performance metrics</field>
+            <field name="sequence">30</field>
+            <field name="dashboard_type">branch</field>
+            <field name="auto_refresh" eval="True"/>
+            <field name="refresh_interval">120000</field>
+            <field name="columns">4</field>
+        </record>
+
+        <!-- Branch Dashboard Widgets -->
+        <record id="widget_branch_sales_total" model="ops.dashboard.widget">
+            <field name="name">Branch Sales</field>
+            <field name="dashboard_id" ref="dashboard_branch"/>
+            <field name="sequence">10</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_sales_total"/>
+            <field name="position_x">0</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_branch_sales_count" model="ops.dashboard.widget">
+            <field name="name">Branch Orders</field>
+            <field name="dashboard_id" ref="dashboard_branch"/>
+            <field name="sequence">20</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_sales_count"/>
+            <field name="position_x">1</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_branch_ar" model="ops.dashboard.widget">
+            <field name="name">Branch Receivables</field>
+            <field name="dashboard_id" ref="dashboard_branch"/>
+            <field name="sequence">30</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_ar_total"/>
+            <field name="position_x">2</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+
+        <record id="widget_branch_pending_po" model="ops.dashboard.widget">
+            <field name="name">Pending POs</field>
+            <field name="dashboard_id" ref="dashboard_branch"/>
+            <field name="sequence">40</field>
+            <field name="widget_type">kpi</field>
+            <field name="kpi_id" ref="kpi_purchase_pending"/>
+            <field name="position_x">3</field>
+            <field name="position_y">0</field>
+            <field name="width">1</field>
+            <field name="height">1</field>
+        </record>
+    </data>
+</odoo>
