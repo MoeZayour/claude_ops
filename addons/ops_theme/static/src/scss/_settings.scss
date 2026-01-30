@@ -1,0 +1,132 @@
+// =============================================================================
+// OPS Theme - Settings Page Styling
+// =============================================================================
+
+// Theme settings section in General Settings
+.o_base_settings {
+
+    // Theme configuration app section
+    .app_settings_block[data-key="ops_theme"] {
+
+        // Color picker fields
+        .o_field_color {
+            input[type="color"] {
+                width: 60px;
+                height: 36px;
+                padding: 2px;
+                border: 1px solid var(--ops-border);
+                border-radius: var(--ops-radius-md);
+                cursor: pointer;
+
+                &::-webkit-color-swatch-wrapper {
+                    padding: 2px;
+                }
+
+                &::-webkit-color-swatch {
+                    border-radius: var(--ops-radius-sm);
+                    border: none;
+                }
+            }
+        }
+
+        // Color preview swatch
+        .ops-color-preview {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: var(--ops-radius-sm);
+            border: 1px solid var(--ops-border);
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+
+        // Login background preview
+        .oe_avatar {
+            max-width: 200px;
+            max-height: 120px;
+            border-radius: var(--ops-radius-md);
+            border: 1px solid var(--ops-border);
+        }
+
+        // Section blocks
+        .o_setting_box {
+            border-bottom: 1px solid var(--ops-border);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+
+        // Action buttons
+        .btn-secondary {
+            background-color: var(--ops-bg-hover);
+            border-color: var(--ops-border);
+            color: var(--ops-text-primary);
+
+            &:hover {
+                background-color: var(--ops-border);
+                border-color: var(--ops-secondary);
+            }
+
+            .fa {
+                margin-right: 0.5rem;
+            }
+        }
+    }
+}
+
+// User preferences display section
+.o_form_view {
+    .o_group[name="ops_display_preferences"],
+    .o_group[name="ops_display"] {
+
+        // Radio button styling
+        .o_field_radio {
+            .o_radio_item {
+                display: inline-flex;
+                align-items: center;
+                margin-right: 1.5rem;
+
+                input[type="radio"] {
+                    margin-right: 0.5rem;
+                    accent-color: var(--ops-secondary);
+                }
+
+                label {
+                    margin-bottom: 0;
+                    cursor: pointer;
+                    font-weight: normal;
+                }
+            }
+        }
+    }
+}
+
+// Company form theme tab
+.o_form_view {
+    .o_notebook {
+        .tab-pane[name="ops_theme"] {
+
+            // Color picker in company form
+            .o_field_color {
+                input[type="color"] {
+                    width: 50px;
+                    height: 32px;
+                    padding: 2px;
+                    border: 1px solid var(--ops-border);
+                    border-radius: var(--ops-radius-sm);
+                    cursor: pointer;
+                }
+            }
+
+            // Theme image preview
+            .oe_avatar {
+                max-width: 150px;
+                max-height: 100px;
+                border-radius: var(--ops-radius-md);
+            }
+        }
+    }
+}

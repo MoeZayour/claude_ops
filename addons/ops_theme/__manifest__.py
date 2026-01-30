@@ -16,6 +16,9 @@ Features:
 - Chatter position toggle (below/right)
 - Complete Odoo debranding
 - PDF report theming
+- Theme configuration UI in Settings
+- Color pickers for brand customization
+- Theme presets (Corporate Blue, Modern Dark, etc.)
     """,
     'author': 'OPS Framework',
     'website': 'https://github.com/MoeZayour/claude_ops',
@@ -28,6 +31,9 @@ Features:
     ],
     'data': [
         'security/ir.model.access.csv',
+        'views/res_config_settings_views.xml',
+        'views/res_company_views.xml',
+        'views/res_users_views.xml',
         'views/login_templates.xml',
         'views/webclient_templates.xml',
         'views/debranding_templates.xml',

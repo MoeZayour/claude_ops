@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ===================================================================== -->
+    <!-- THEME CONFIGURATION IN GENERAL SETTINGS                               -->
+    <!-- ===================================================================== -->
+
+    <record id="res_config_settings_view_form_ops_theme" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.ops.theme</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+
+                <!-- Theme Configuration Section -->
+                <app data-string="Theme" string="Theme" name="ops_theme" groups="base.group_system">
+
+                    <!-- Theme Preset -->
+                    <block title="Theme Configuration" name="ops_theme_settings">
+                        <setting string="Theme Preset" help="Select a predefined color scheme or choose Custom for manual configuration">
+                            <field name="ops_theme_preset" class="w-50"/>
+                        </setting>
+                    </block>
+
+                    <!-- Brand Colors -->
+                    <block title="Brand Colors" name="ops_brand_colors">
+                        <setting string="Primary Color" help="Main brand color for navbar, headers, and primary elements">
+                            <field name="ops_primary_color" widget="color" class="w-25"/>
+                        </setting>
+
+                        <setting string="Secondary Color" help="Accent color for buttons, links, and highlights">
+                            <field name="ops_secondary_color" widget="color" class="w-25"/>
+                        </setting>
+
+                        <setting string="Success Color" help="Color for success states and positive values">
+                            <field name="ops_success_color" widget="color" class="w-25"/>
+                        </setting>
+
+                        <setting string="Warning Color" help="Color for warning states and alerts">
+                            <field name="ops_warning_color" widget="color" class="w-25"/>
+                        </setting>
+
+                        <setting string="Danger Color" help="Color for error states and negative values">
+                            <field name="ops_danger_color" widget="color" class="w-25"/>
+                        </setting>
+                    </block>
+
+                    <!-- Login Page -->
+                    <block title="Login Page" name="ops_login_settings">
+                        <setting string="Login Background" help="Custom background image for the login page (recommended: 1920x1080)">
+                            <field name="ops_login_background" widget="image" class="oe_avatar"/>
+                        </setting>
+
+                        <setting string="Login Tagline" help="Welcome message or company tagline shown on the login page">
+                            <field name="ops_login_tagline" class="w-50"/>
+                        </setting>
+
+                        <setting string="Show Logo on Login" help="Display company logo on the login page">
+                            <field name="ops_login_show_logo"/>
+                        </setting>
+                    </block>
+
+                    <!-- Layout Options -->
+                    <block title="Layout Options" name="ops_layout_settings">
+                        <setting string="Navbar Style" help="Color style for the top navigation bar">
+                            <field name="ops_navbar_style"/>
+                        </setting>
+
+                        <setting string="Card Shadow" help="Shadow intensity for cards and panels">
+                            <field name="ops_card_shadow"/>
+                        </setting>
+
+                        <setting string="Border Radius" help="Corner roundness for buttons and UI elements">
+                            <field name="ops_border_radius"/>
+                        </setting>
+                    </block>
+
+                    <!-- Reports -->
+                    <block title="Reports" name="ops_report_settings">
+                        <setting string="Report Header Color" help="Background color for PDF report headers">
+                            <field name="ops_report_header_bg" widget="color" class="w-25"/>
+                        </setting>
+
+                        <setting string="Logo Position" help="Position of company logo in PDF reports">
+                            <field name="ops_report_logo_position"/>
+                        </setting>
+                    </block>
+
+                    <!-- Attribution -->
+                    <block title="Attribution" name="ops_attribution_settings">
+                        <setting string="Show Attribution" help="Display 'Powered by OPS Framework' in the footer">
+                            <field name="ops_powered_by_visible"/>
+                        </setting>
+                    </block>
+
+                    <!-- Actions -->
+                    <block title="Actions" name="ops_theme_actions">
+                        <div class="mt-3">
+                            <button name="action_preview_theme" type="object"
+                                    string="Preview Theme" class="btn-secondary me-2"
+                                    icon="fa-external-link"/>
+                            <button name="action_reset_theme_defaults" type="object"
+                                    string="Reset to Defaults" class="btn-secondary"
+                                    icon="fa-refresh"
+                                    confirm="Are you sure you want to reset all theme settings to defaults?"/>
+                        </div>
+                    </block>
+
+                </app>
+
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

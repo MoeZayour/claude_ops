@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ===================================================================== -->
+    <!-- THEME TAB ON COMPANY FORM                                             -->
+    <!-- ===================================================================== -->
+
+    <record id="view_company_form_ops_theme" model="ir.ui.view">
+        <field name="name">res.company.form.inherit.ops.theme</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+
+                <page string="Theme" name="ops_theme" groups="base.group_system">
+
+                    <!-- Theme Preset -->
+                    <group string="Theme Preset">
+                        <group>
+                            <field name="ops_theme_preset"/>
+                        </group>
+                        <group/>
+                    </group>
+
+                    <!-- Brand Colors -->
+                    <group string="Brand Colors">
+                        <group>
+                            <field name="ops_primary_color" widget="color"/>
+                            <field name="ops_secondary_color" widget="color"/>
+                            <field name="ops_success_color" widget="color"/>
+                        </group>
+                        <group>
+                            <field name="ops_warning_color" widget="color"/>
+                            <field name="ops_danger_color" widget="color"/>
+                        </group>
+                    </group>
+
+                    <!-- Login Page -->
+                    <group string="Login Page">
+                        <group>
+                            <field name="ops_login_tagline"/>
+                            <field name="ops_login_show_logo"/>
+                        </group>
+                        <group>
+                            <field name="ops_login_background" widget="image" class="oe_avatar"/>
+                        </group>
+                    </group>
+
+                    <!-- Layout Options -->
+                    <group string="Layout">
+                        <group>
+                            <field name="ops_navbar_style"/>
+                            <field name="ops_card_shadow"/>
+                            <field name="ops_border_radius"/>
+                        </group>
+                        <group/>
+                    </group>
+
+                    <!-- Reports -->
+                    <group string="Reports">
+                        <group>
+                            <field name="ops_report_header_bg" widget="color"/>
+                            <field name="ops_report_logo_position"/>
+                        </group>
+                        <group/>
+                    </group>
+
+                    <!-- Attribution -->
+                    <group string="Attribution">
+                        <group>
+                            <field name="ops_powered_by_visible"/>
+                        </group>
+                        <group/>
+                    </group>
+
+                </page>
+
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -25,5 +25,8 @@
 @import 'chatter';
 @import 'user_menu';
 
+// Settings
+@import 'settings';
+
 // Debranding (load last to override Odoo styles)
 @import 'debranding';
