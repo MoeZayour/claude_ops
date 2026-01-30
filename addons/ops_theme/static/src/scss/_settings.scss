@@ -5,6 +5,47 @@
 // =============================================================================
 
 // =============================================================================
+// SELECTED TABS - Override Odoo's text-bg-primary (purple to blue)
+// DevTools shows: a.tab.selected.text-bg-primary.shadow-none
+// =============================================================================
+.o_setting_container .tab.selected,
+.settings_tab .tab.selected,
+a.tab.selected.text-bg-primary,
+.tab.selected.text-bg-primary,
+a.tab.text-bg-primary,
+.tab.text-bg-primary {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+// Settings horizontal tabs styling
+.o_setting_container .settings_tab .tab,
+div.settings_tab a.tab,
+.settings_tab a.tab {
+    color: #64748b !important;
+    background: transparent !important;
+    border-bottom: 2px solid transparent;
+    padding: 12px 20px;
+    transition: all 0.2s ease;
+}
+
+div.settings_tab a.tab:hover,
+.settings_tab a.tab:hover,
+.settings_tab .tab:hover {
+    color: #1e293b !important;
+    background: #f8fafc !important;
+}
+
+div.settings_tab a.tab.selected,
+.settings_tab .tab.selected,
+.settings_tab a.tab.selected,
+a.tab.selected {
+    color: #ffffff !important;
+    background-color: #3b82f6 !important;
+    border-radius: 6px;
+}
+
+// =============================================================================
 // GLOBAL SETTINGS PAGE - LIGHT MODE DEFAULT
 // =============================================================================
 .o_base_settings,
@@ -12,10 +53,12 @@
     background-color: #f1f5f9 !important;
     color: #1e293b !important;
 
-    // Settings panel/card
+    // Settings panel/card - FORCE white, NO gradient
     .o_setting_box,
     .o_settings_box {
+        background: #ffffff !important;
         background-color: #ffffff !important;
+        background-image: none !important;
         color: #1e293b !important;
         border: 1px solid #e2e8f0 !important;
         border-radius: 8px;
@@ -64,11 +107,12 @@
         }
     }
 
-    // Card containers - ensure white background, no blue tint
+    // Card containers - ensure white background, no gradient
     .card,
     .o_settings_container .card {
         background: #ffffff !important;
         background-color: #ffffff !important;
+        background-image: none !important;
         border: 1px solid #e2e8f0 !important;
     }
 
@@ -76,33 +120,41 @@
     .o_setting_left_pane {
         background: transparent !important;
         background-color: transparent !important;
+        background-image: none !important;
     }
 
-    // Section headers - remove any blue tint
+    // Section headers - remove any colored/gradient backgrounds
     h2,
     .o_app_settings_header {
         background: transparent !important;
         background-color: transparent !important;
+        background-image: none !important;
         border-bottom: 1px solid #e2e8f0;
         padding-bottom: 8px;
         margin-bottom: 16px;
     }
 
-    // Override any blue highlighted sections
+    // Override any highlighted/searchable sections - FORCE white
     .o_setting_box.o_searchable_setting,
-    .o_setting_box[style*="background"] {
+    .o_setting_box[style*="background"],
+    .o_setting_box.col-12,
+    .o_setting_box.col-lg-6,
+    div.o_setting_box {
         background: #ffffff !important;
         background-color: #ffffff !important;
+        background-image: none !important;
     }
 
-    // Sidebar/navigation
+    // Sidebar/navigation - vertical tabs
     .o_base_settings .settings_tab,
     .settings_tab {
         background-color: #ffffff !important;
 
-        .selected {
-            background-color: #eff6ff !important;
-            color: #3b82f6 !important;
+        .selected,
+        a.selected,
+        .tab.selected {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
         }
 
         a {
@@ -111,8 +163,40 @@
             &:hover {
                 background-color: #f8fafc !important;
             }
+
+            &.selected {
+                background-color: #3b82f6 !important;
+                color: #ffffff !important;
+            }
         }
     }
+}
+
+// =============================================================================
+// SETTINGS CARDS - Kill gradient/colored backgrounds globally
+// DevTools shows: div.o_setting_box.col-12.col-lg-6.o_searchable_setting
+// =============================================================================
+.o_setting_box,
+.o_setting_box.col-12,
+.o_setting_box.col-lg-6,
+.o_searchable_setting,
+div.o_setting_box,
+.o_setting_box.o_searchable_setting {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+// Settings container background
+.o_settings_container,
+.app_settings_block,
+div.app_settings_block {
+    background: #f8fafc !important;
+    background-image: none !important;
 }
 
 // =============================================================================

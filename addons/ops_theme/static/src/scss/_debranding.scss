@@ -27,6 +27,22 @@
 }
 
 // =============================================================================
+// Kill Odoo's Bootstrap primary color usage GLOBALLY
+// =============================================================================
+.text-bg-primary,
+.bg-primary,
+.btn-primary:not(.o_form_button_save):not(.o_form_button_create) {
+    --bs-primary: #3b82f6 !important;
+    --bs-primary-rgb: 59, 130, 246 !important;
+    background-color: #3b82f6 !important;
+}
+
+.text-bg-primary {
+    color: #ffffff !important;
+    background-color: #3b82f6 !important;
+}
+
+// =============================================================================
 // Primary Buttons - Override ALL purple buttons
 // =============================================================================
 .btn-primary,

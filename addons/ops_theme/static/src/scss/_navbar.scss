@@ -2,15 +2,28 @@
 // OPS THEME - NAVBAR
 // =============================================================================
 // Force dark slate background (#1e293b) - NO Odoo purple allowed
+// DevTools shows: nav.o_main_navbar.d-print-none
 // =============================================================================
 
+// Force navbar - all possible selectors
+nav.o_main_navbar,
+.o_main_navbar,
+nav.o_main_navbar.d-print-none,
+header.o_navbar,
+.o_navbar,
+.o_main_navbar[class] {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+}
+
 .o_main_navbar {
-    background-color: #1e293b !important;  // HARDCODED - kills all purple
+    background: #1e293b !important;
+    background-color: #1e293b !important;
     border-bottom: none;
 
     // Home menu button (grid icon) - SAFE: only colors
     .o_menu_toggle {
-        color: var(--ops-text-inverse);
+        color: var(--ops-text-inverse, #ffffff);
         opacity: 0.9;
         transition: opacity 0.2s ease, background-color 0.2s ease;
 
@@ -124,4 +137,49 @@
     a {
         color: #1e293b !important;
     }
+}
+
+// =============================================================================
+// MENU SECTIONS - Force consistent navbar appearance
+// =============================================================================
+div.o_menu_sections,
+.o_menu_sections,
+.o_menu_sections.d-flex {
+    background: transparent !important;
+}
+
+// Individual menu items in navbar
+.o_menu_sections .o-dropdown-item,
+.o_menu_sections a.o-navigable,
+.o_menu_sections button.o-dropdown,
+.o_menu_sections button,
+.o_menu_sections > button,
+.o_menu_sections > a {
+    color: rgba(255, 255, 255, 0.85) !important;
+    background: transparent !important;
+}
+
+.o_menu_sections .o-dropdown-item:hover,
+.o_menu_sections a.o-navigable:hover,
+.o_menu_sections button:hover,
+.o_menu_sections > button:hover,
+.o_menu_sections > a:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+
+// OPS Framework and other custom menu items
+button[data-menu-xmlid*="ops_matrix"],
+.o_menu_sections button[data-menu-xmlid*="ops"],
+.o_menu_sections [data-menu-xmlid] {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+// =============================================================================
+// NAVBAR ACTIVE/OPEN STATES
+// =============================================================================
+.o_main_navbar .dropdown.show,
+.o_main_navbar .o-dropdown.show,
+.o_main_navbar [aria-expanded="true"] {
+    background-color: rgba(255, 255, 255, 0.15) !important;
 }
