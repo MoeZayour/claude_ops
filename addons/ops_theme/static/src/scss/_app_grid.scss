@@ -2,8 +2,12 @@
 // OPS THEME - APP GRID (HOME MENU)
 // =============================================================================
 
+// Ensure home menu is visible and properly styled
 .o_home_menu {
-    background-color: var(--ops-bg-body);
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-color: var(--ops-bg-body, #f8fafc) !important;
     min-height: 100vh;
     padding: 2rem;
 
@@ -13,99 +17,126 @@
         margin: 0 auto 2rem;
         position: relative;
 
+        input,
         .o_home_menu_search_input {
-            background-color: var(--ops-bg-card);
-            border: 1px solid var(--ops-border);
-            border-radius: var(--ops-radius-lg);
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            color: var(--ops-text-primary);
             width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background-color: var(--ops-bg-card, #fff) !important;
+            border: 1px solid var(--ops-border, #e2e8f0) !important;
+            border-radius: 0.75rem;
             font-size: 1rem;
-            box-shadow: var(--ops-shadow-sm);
+            color: var(--ops-text-primary, #1e293b) !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 
             &::placeholder {
-                color: var(--ops-text-disabled);
+                color: var(--ops-text-disabled, #94a3b8) !important;
             }
 
             &:focus {
                 outline: none;
-                border-color: var(--ops-secondary);
-                box-shadow: var(--ops-shadow-md);
+                border-color: var(--ops-secondary, #3b82f6) !important;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
             }
         }
 
-        .o_home_menu_search_icon {
+        .o_home_menu_search_icon,
+        .fa-search {
             position: absolute;
             left: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--ops-text-secondary);
+            color: var(--ops-text-secondary, #64748b);
         }
     }
 
     // App grid container
     .o_apps {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        display: grid !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: 1.5rem;
-        max-width: 900px;
+        max-width: 800px;
         margin: 0 auto;
         padding: 1rem;
     }
 
     // Individual app card
     .o_app {
-        display: flex;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 1.5rem 1rem;
-        background-color: var(--ops-bg-card);
-        border-radius: var(--ops-radius-lg);
-        box-shadow: var(--ops-shadow-sm);
-        text-decoration: none;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        padding: 1.25rem 1rem;
+        background-color: var(--ops-bg-card, #fff) !important;
+        border: 1px solid var(--ops-border, #e2e8f0) !important;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        text-decoration: none !important;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
         cursor: pointer;
-        border: 1px solid var(--ops-border);
 
         &:hover {
             transform: translateY(-4px);
-            box-shadow: var(--ops-shadow-lg);
-            border-color: var(--ops-secondary);
-            text-decoration: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-color: var(--ops-secondary, #3b82f6) !important;
+            text-decoration: none !important;
         }
 
         // App icon
         .o_app_icon {
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
             margin-bottom: 0.75rem;
-            border-radius: var(--ops-radius-md);
-            display: flex;
+            display: flex !important;
             align-items: center;
             justify-content: center;
-            font-size: 1.75rem;
 
             img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                border-radius: var(--ops-radius-md);
+                max-width: 100%;
+                max-height: 100%;
+                border-radius: 0.5rem;
             }
         }
 
         // App name
         .o_caption {
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             font-weight: 500;
-            color: var(--ops-text-primary);
+            color: var(--ops-text-primary, #1e293b) !important;
             text-align: center;
-            line-height: 1.3;
         }
     }
 }
 
-// Responsive adjustments
+// =============================================================================
+// Home Menu Toggle Button (Grid icon in navbar)
+// =============================================================================
+.o_menu_toggle {
+    display: flex !important;
+    visibility: visible !important;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    color: #fff !important;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: rgba(255,255,255,0.1);
+    }
+
+    .oi-apps {
+        font-size: 1.25rem;
+    }
+}
+
+// =============================================================================
+// Responsive
+// =============================================================================
 @media (max-width: 575.98px) {
     .o_home_menu {
         padding: 1rem;
@@ -119,8 +150,12 @@
             padding: 1rem 0.75rem;
 
             .o_app_icon {
-                width: 48px;
-                height: 48px;
+                width: 40px;
+                height: 40px;
+            }
+
+            .o_caption {
+                font-size: 0.75rem;
             }
         }
     }
@@ -130,4 +165,16 @@
     .o_home_menu .o_apps {
         grid-template-columns: repeat(5, 1fr);
     }
+}
+
+// =============================================================================
+// Override any Odoo styles that might hide the home menu
+// =============================================================================
+.o_web_client .o_home_menu,
+.o_action_manager .o_home_menu {
+    display: block !important;
+}
+
+.o_home_menu_background {
+    background-color: var(--ops-bg-body, #f8fafc) !important;
 }

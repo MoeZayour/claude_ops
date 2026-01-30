@@ -2,205 +2,254 @@
 // OPS Theme - Split-Screen Login Page
 // =============================================================================
 
-// Main container - full viewport, flex row
-.ops-login-container {
-    display: flex;
+// Reset default body styles for login
+.ops-login-body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: none !important;
     min-height: 100vh;
+    overflow-x: hidden;
+}
+
+// Wrapper for full viewport
+.ops-login-wrapper {
+    min-height: 100vh;
+    display: flex;
     width: 100%;
+}
+
+// Main container - split screen flex
+.ops-login-container {
+    display: flex !important;
+    width: 100%;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
+}
 
-    // =========================================================================
-    // Left Panel - Company Branding
-    // =========================================================================
-    .ops-login-brand {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-        background-color: var(--ops-primary);
-        color: var(--ops-text-inverse);
-        position: relative;
-        overflow: hidden;
+// =============================================================================
+// Left Panel - Company Branding
+// =============================================================================
+.ops-login-brand {
+    flex: 1;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
 
-        // Company logo
-        .ops-login-logo {
-            max-width: 280px;
-            max-height: 120px;
-            margin-bottom: 2rem;
-            object-fit: contain;
-            filter: brightness(0) invert(1); // Make logo white
+    // Company logo
+    .ops-login-logo {
+        max-width: 280px;
+        max-height: 120px;
+        margin-bottom: 2rem;
+        object-fit: contain;
+        filter: brightness(0) invert(1); // Make logo white
+    }
+
+    // Tagline
+    .ops-login-tagline {
+        font-size: 1.5rem;
+        font-weight: 300;
+        text-align: center;
+        opacity: 0.95;
+        max-width: 400px;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    // Decorative gradient overlay
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+}
+
+// =============================================================================
+// Right Panel - Login Form
+// =============================================================================
+.ops-login-form-panel {
+    flex: 1;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: #ffffff;
+    position: relative;
+}
+
+// Dark mode support for form panel
+[data-color-mode="dark"] .ops-login-form-panel {
+    background-color: #1e293b;
+}
+
+.ops-login-form-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+// Form title
+.ops-login-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+[data-color-mode="dark"] .ops-login-title {
+    color: #f1f5f9;
+}
+
+// =============================================================================
+// Form Styling
+// =============================================================================
+.ops-login-form {
+    width: 100%;
+
+    // Form groups
+    .mb-3 {
+        margin-bottom: 1.25rem !important;
+    }
+
+    // Labels
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    [data-color-mode="dark"] & .form-label {
+        color: #94a3b8;
+    }
+
+    // Input fields
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        color: #1e293b;
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &::placeholder {
+            color: #94a3b8;
         }
 
-        // Tagline
-        .ops-login-tagline {
-            font-size: 1.5rem;
-            font-weight: 300;
-            text-align: center;
-            opacity: 0.9;
-            max-width: 400px;
-            line-height: 1.4;
-            margin: 0;
-        }
-
-        // Decorative elements
-        &::after {
-            content: '';
-            position: absolute;
-            bottom: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            pointer-events: none;
+        &:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
     }
 
-    // Background image variant
-    .ops-login-brand--with-image {
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+    [data-color-mode="dark"] & .form-control {
+        background-color: #0f172a;
+        border-color: #334155;
+        color: #f1f5f9;
 
-        &::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                135deg,
-                rgba(0, 0, 0, 0.6) 0%,
-                rgba(0, 0, 0, 0.4) 100%
-            );
-            z-index: 0;
-        }
-
-        > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        .ops-login-logo {
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-        }
-
-        // Remove decorative gradient when using image
-        &::after {
-            display: none;
+        &:focus {
+            border-color: #3b82f6;
         }
     }
 
-    // =========================================================================
-    // Right Panel - Login Form
-    // =========================================================================
-    .ops-login-form {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-        background-color: var(--ops-bg-card);
-        position: relative;
+    // Submit button
+    .btn-primary {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #fff !important;
+        background-color: #3b82f6 !important;
+        border: none !important;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: filter 0.2s, transform 0.2s;
+        margin-top: 0.5rem;
 
-        // Form container
-        .ops-login-form-inner {
-            width: 100%;
-            max-width: 400px;
+        &:hover {
+            filter: brightness(1.1);
         }
 
-        // Form title
-        .ops-login-title {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--ops-text-primary);
-            margin-bottom: 2rem;
-            text-align: center;
+        &:active {
+            transform: scale(0.98);
         }
 
-        // Form labels
-        .form-label {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--ops-text-secondary);
-            margin-bottom: 0.5rem;
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
         }
+    }
 
-        // Input fields
-        .form-control {
-            background-color: var(--ops-bg-input);
-            border: 1px solid var(--ops-border);
-            border-radius: var(--ops-radius-md);
-            padding: 0.75rem 1rem;
-            color: var(--ops-text-primary);
-            font-size: 1rem;
-            transition: border-color var(--ops-transition-fast),
-                        box-shadow var(--ops-transition-fast);
+    // Error alert
+    .alert-danger {
+        background-color: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 0.5rem;
+        color: #ef4444;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+}
 
-            &::placeholder {
-                color: var(--ops-text-muted);
-            }
+// Powered by footer
+.ops-powered-by {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
 
-            &:focus {
-                outline: none;
-                border-color: var(--ops-border-focus);
-                box-shadow: 0 0 0 3px var(--ops-secondary-light);
-            }
-        }
+// =============================================================================
+// Hide Default Odoo Login Elements
+// =============================================================================
+.ops-login-form-panel {
+    // Hide Odoo card wrapper styles
+    .card {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        max-width: none !important;
+    }
 
-        // Submit button
-        .btn-primary {
-            width: 100%;
-            background-color: var(--ops-secondary);
-            border: none;
-            border-radius: var(--ops-radius-md);
-            padding: 0.875rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #ffffff;
-            cursor: pointer;
-            transition: filter var(--ops-transition-fast),
-                        transform var(--ops-transition-fast);
+    .card-body {
+        padding: 0 !important;
+    }
 
-            &:hover {
-                filter: brightness(1.1);
-            }
+    // Hide default Odoo login header (logo area)
+    .text-center.pb-3.border-bottom,
+    .oe_login_form > div:first-child.text-center {
+        display: none !important;
+    }
 
-            &:active {
-                transform: scale(0.98);
-            }
+    // Hide default Odoo login footer
+    .text-center.small.border-top,
+    .card-footer {
+        display: none !important;
+    }
 
-            &:focus {
-                outline: none;
-                box-shadow: 0 0 0 3px var(--ops-secondary-light);
-            }
-        }
+    // Hide database selector if present (usually on first install)
+    .o_database_list {
+        background: transparent !important;
+        border: none !important;
 
-        // Error alert
-        .alert-danger {
-            background-color: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--ops-danger);
-            border-radius: var(--ops-radius-md);
-            color: var(--ops-danger);
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-        }
-
-        // Powered by footer
-        .ops-powered-by {
-            margin-top: 2rem;
-            font-size: 0.75rem;
-            color: var(--ops-text-muted);
-
-            a {
-                color: var(--ops-secondary);
-                text-decoration: none;
-
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
+        .card {
+            background: transparent !important;
         }
     }
 }
@@ -211,19 +260,19 @@
 @media (max-width: 767.98px) {
     .ops-login-container {
         flex-direction: column;
+    }
 
-        .ops-login-brand {
-            display: none;
-        }
+    .ops-login-brand {
+        display: none !important;
+    }
 
-        .ops-login-form {
-            min-height: 100vh;
-            padding: 1.5rem;
+    .ops-login-form-panel {
+        min-height: 100vh;
+        padding: 1.5rem;
+    }
 
-            .ops-login-form-inner {
-                max-width: 100%;
-            }
-        }
+    .ops-login-form-container {
+        max-width: 100%;
     }
 }
 
@@ -231,49 +280,19 @@
 // Tablet - Adjust proportions
 // =============================================================================
 @media (min-width: 768px) and (max-width: 1023.98px) {
-    .ops-login-container {
-        .ops-login-brand {
-            flex: 0.8;
+    .ops-login-brand {
+        flex: 0.8;
 
-            .ops-login-logo {
-                max-width: 200px;
-            }
-
-            .ops-login-tagline {
-                font-size: 1.25rem;
-            }
+        .ops-login-logo {
+            max-width: 200px;
         }
 
-        .ops-login-form {
-            flex: 1.2;
+        .ops-login-tagline {
+            font-size: 1.25rem;
         }
     }
-}
 
-// =============================================================================
-// Override Odoo Default Login Styles
-// =============================================================================
-.oe_login_form {
-    // Reset Odoo's default styles when in our container
-    .ops-login-container & {
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        padding: 0;
-        margin: 0;
-    }
-}
-
-// Hide default Odoo login background
-body.oe_login {
-    background: none !important;
-}
-
-// Ensure our container takes full viewport
-html, body {
-    &:has(.ops-login-container) {
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
+    .ops-login-form-panel {
+        flex: 1.2;
     }
 }

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Themes/Backend',
     'summary': 'Company-brandable backend theme with light/dark mode support',
     'description': """
@@ -40,37 +40,41 @@ Features:
     ],
     'assets': {
         'web.assets_frontend': [
-            # Variables must come first
+            # 1. Variables first (CSS custom properties)
             'ops_theme/static/src/scss/_variables.scss',
-            # Login page styling
+            # 2. Base styles
+            'ops_theme/static/src/scss/_base.scss',
+            # 3. Login page styling
             'ops_theme/static/src/scss/_login.scss',
-            # JavaScript
+            # 4. JavaScript (early load for color mode)
             'ops_theme/static/src/js/theme_loader.js',
         ],
         'web.assets_backend': [
-            # Variables must come first (CSS custom properties)
+            # 1. Variables first (CSS custom properties)
             'ops_theme/static/src/scss/_variables.scss',
-            # Navigation
+            # 2. Base styles
+            'ops_theme/static/src/scss/_base.scss',
+            # 3. Navigation
             'ops_theme/static/src/scss/_app_grid.scss',
             'ops_theme/static/src/scss/_navbar.scss',
             'ops_theme/static/src/scss/_menu_tabs.scss',
             'ops_theme/static/src/scss/_breadcrumb.scss',
-            # Views
+            # 4. Views
             'ops_theme/static/src/scss/_control_panel.scss',
             'ops_theme/static/src/scss/_form.scss',
             'ops_theme/static/src/scss/_list.scss',
             'ops_theme/static/src/scss/_kanban.scss',
-            # Components
+            # 5. Components
             'ops_theme/static/src/scss/_chatter.scss',
             'ops_theme/static/src/scss/_user_menu.scss',
             'ops_theme/static/src/scss/_settings.scss',
-            # Debranding (last to override Odoo styles)
+            # 6. Debranding LAST (to override Odoo styles)
             'ops_theme/static/src/scss/_debranding.scss',
-            # JavaScript
+            # 7. JavaScript
             'ops_theme/static/src/js/theme_loader.js',
             'ops_theme/static/src/js/color_mode_toggle.js',
             'ops_theme/static/src/js/chatter_toggle.js',
-            # XML templates
+            # 8. XML templates
             'ops_theme/static/src/xml/user_menu.xml',
         ],
     },

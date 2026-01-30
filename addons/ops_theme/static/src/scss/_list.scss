@@ -3,24 +3,24 @@
 // =============================================================================
 
 .o_list_view {
-    background-color: var(--ops-bg-card);
+    background-color: var(--ops-bg-card, #fff);
 
-    // Table
     .o_list_table {
-        background-color: var(--ops-bg-card);
+        background-color: var(--ops-bg-card, #fff);
 
         // Header
         thead {
-            background-color: var(--ops-bg-hover);
+            background-color: var(--ops-bg-hover, #f8fafc) !important;
 
             th {
-                color: var(--ops-text-secondary);
+                background-color: var(--ops-bg-hover, #f8fafc) !important;
+                color: var(--ops-text-secondary, #64748b) !important;
                 font-weight: 600;
                 font-size: 0.75rem;
                 text-transform: uppercase;
                 letter-spacing: 0.025em;
                 padding: 0.75rem 1rem;
-                border-bottom: 1px solid var(--ops-border);
+                border-bottom: 1px solid var(--ops-border, #e2e8f0);
                 white-space: nowrap;
 
                 // Sortable columns
@@ -28,13 +28,13 @@
                     cursor: pointer;
 
                     &:hover {
-                        background-color: var(--ops-border);
+                        background-color: var(--ops-border, #e2e8f0) !important;
                     }
 
                     // Sort indicator
                     &.o-sort-up::after,
                     &.o-sort-down::after {
-                        color: var(--ops-secondary);
+                        color: var(--ops-secondary, #3b82f6) !important;
                     }
                 }
             }
@@ -46,20 +46,34 @@
                 transition: background-color 0.15s ease;
 
                 &:hover {
-                    background-color: var(--ops-bg-hover);
+                    background-color: var(--ops-bg-hover, #f8fafc) !important;
                 }
 
                 // Selected row
                 &.o_data_row_selected {
-                    background-color: rgba(59, 130, 246, 0.1);
+                    background-color: rgba(59, 130, 246, 0.1) !important;
                 }
 
                 td {
                     padding: 0.75rem 1rem;
-                    border-bottom: 1px solid var(--ops-border);
-                    color: var(--ops-text-primary);
+                    border-bottom: 1px solid var(--ops-border, #e2e8f0);
+                    color: var(--ops-text-primary, #1e293b) !important;
                     font-size: 0.875rem;
                     vertical-align: middle;
+
+                    // Ensure ALL content inside cells inherits text color
+                    * {
+                        color: inherit;
+                    }
+
+                    // Links should be secondary color
+                    a:not(.btn) {
+                        color: var(--ops-secondary, #3b82f6) !important;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
 
                     // Checkbox column
                     &.o_list_record_selector {
@@ -74,7 +88,7 @@
         .o_list_record_selector input[type="checkbox"] {
             width: 16px;
             height: 16px;
-            accent-color: var(--ops-secondary);
+            accent-color: var(--ops-secondary, #3b82f6);
         }
     }
 
@@ -84,64 +98,170 @@
         text-align: center;
 
         .o_nocontent_help {
-            color: var(--ops-text-secondary);
+            color: var(--ops-text-secondary, #64748b);
 
             p:first-child {
                 font-size: 1.25rem;
                 font-weight: 500;
-                color: var(--ops-text-primary);
+                color: var(--ops-text-primary, #1e293b) !important;
             }
         }
     }
 
     // Footer (totals row)
     tfoot {
-        background-color: var(--ops-bg-hover);
+        background-color: var(--ops-bg-hover, #f8fafc) !important;
 
         td {
             padding: 0.75rem 1rem;
             font-weight: 600;
-            color: var(--ops-text-primary);
-            border-top: 2px solid var(--ops-border);
+            color: var(--ops-text-primary, #1e293b) !important;
+            border-top: 2px solid var(--ops-border, #e2e8f0);
         }
     }
 }
 
-// Status badges in list
+// =============================================================================
+// Ensure ALL data cells have readable text
+// =============================================================================
+.o_data_cell,
+.o_list_char,
+.o_list_text,
+.o_list_number,
+.o_field_char,
+.o_field_text,
+.o_field_integer,
+.o_field_float,
+.o_field_monetary,
+.o_field_date,
+.o_field_datetime,
+.o_field_selection,
+.o_field_many2one,
+.o_field_many2many_tags {
+    color: var(--ops-text-primary, #1e293b) !important;
+}
+
+// Field widgets in list view
+.o_list_view .o_field_widget {
+    color: var(--ops-text-primary, #1e293b) !important;
+
+    span, div {
+        color: inherit !important;
+    }
+}
+
+// Many2one field display
+.o_field_many2one .o_external_button + span,
+.o_field_many2one_avatar .o_m2o_avatar + span {
+    color: var(--ops-text-primary, #1e293b) !important;
+}
+
+// =============================================================================
+// Status badges in list - with proper contrast
+// =============================================================================
 .o_list_view .o_field_badge,
 .o_list_view .badge {
     padding: 0.25rem 0.75rem;
-    border-radius: var(--ops-radius-sm);
+    border-radius: 0.25rem;
     font-size: 0.75rem;
     font-weight: 500;
 
     &.text-bg-success,
     &.bg-success {
         background-color: rgba(16, 185, 129, 0.15) !important;
-        color: var(--ops-success) !important;
+        color: #059669 !important; // Darker green for contrast
     }
 
     &.text-bg-warning,
     &.bg-warning {
         background-color: rgba(245, 158, 11, 0.15) !important;
-        color: var(--ops-warning) !important;
+        color: #d97706 !important; // Darker orange for contrast
     }
 
     &.text-bg-danger,
     &.bg-danger {
         background-color: rgba(239, 68, 68, 0.15) !important;
-        color: var(--ops-danger) !important;
+        color: #dc2626 !important; // Darker red for contrast
     }
 
     &.text-bg-info,
     &.bg-info {
         background-color: rgba(6, 182, 212, 0.15) !important;
-        color: var(--ops-info) !important;
+        color: #0891b2 !important; // Darker cyan for contrast
     }
 
     &.text-bg-secondary,
     &.bg-secondary {
-        background-color: var(--ops-bg-hover) !important;
-        color: var(--ops-text-secondary) !important;
+        background-color: var(--ops-bg-hover, #f1f5f9) !important;
+        color: var(--ops-text-secondary, #64748b) !important;
+    }
+
+    &.text-bg-primary,
+    &.bg-primary {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+        color: #2563eb !important;
+    }
+}
+
+// =============================================================================
+// Optional fields / readonly fields
+// =============================================================================
+.o_list_view .o_optional_columns_dropdown {
+    color: var(--ops-text-secondary, #64748b);
+}
+
+.o_list_view .o_readonly_modifier {
+    color: var(--ops-text-secondary, #64748b) !important;
+}
+
+// =============================================================================
+// Editable list view
+// =============================================================================
+.o_list_editable {
+    .o_data_row.o_selected_row {
+        background-color: rgba(59, 130, 246, 0.05) !important;
+
+        td {
+            background-color: inherit !important;
+        }
+    }
+
+    .o_field_widget input,
+    .o_field_widget select {
+        color: var(--ops-text-primary, #1e293b) !important;
+        background-color: var(--ops-bg-input, #fff) !important;
+        border-color: var(--ops-border, #e2e8f0) !important;
+
+        &:focus {
+            border-color: var(--ops-secondary, #3b82f6) !important;
+        }
+    }
+}
+
+// =============================================================================
+// List view buttons
+// =============================================================================
+.o_list_view {
+    .o_list_button {
+        color: var(--ops-secondary, #3b82f6) !important;
+
+        &:hover {
+            color: var(--ops-secondary-hover, #2563eb) !important;
+        }
+    }
+}
+
+// =============================================================================
+// Group headers in list view
+// =============================================================================
+.o_list_view {
+    .o_group_header {
+        background-color: var(--ops-bg-hover, #f8fafc) !important;
+        color: var(--ops-text-primary, #1e293b) !important;
+        font-weight: 600;
+
+        td {
+            color: var(--ops-text-primary, #1e293b) !important;
+        }
     }
 }
