@@ -1,32 +1,12 @@
 // =============================================================================
 // OPS Theme - Main Entry Point
 // =============================================================================
-// This file imports all theme partials in the correct order.
-
-// Foundation
-@import 'variables';
-
-// Login
-@import 'login';
-
-// Navigation
-@import 'app_grid';
-@import 'navbar';
-@import 'menu_tabs';
-@import 'breadcrumb';
-
-// Views
-@import 'control_panel';
-@import 'form';
-@import 'list';
-@import 'kanban';
-
-// Components
-@import 'chatter';
-@import 'user_menu';
-
-// Settings
-@import 'settings';
-
-// Debranding (load last to override Odoo styles)
-@import 'debranding';
+// All SCSS files are loaded via __manifest__.py assets.
+// Do not use @import statements - Odoo 19 forbids them for security reasons.
+//
+// Load order is defined in __manifest__.py:
+// 1. _variables.scss (CSS custom properties)
+// 2. Navigation (_app_grid, _navbar, _menu_tabs, _breadcrumb)
+// 3. Views (_control_panel, _form, _list, _kanban)
+// 4. Components (_chatter, _user_menu, _settings)
+// 5. _debranding.scss (last to override Odoo styles)

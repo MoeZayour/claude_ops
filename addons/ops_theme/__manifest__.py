@@ -40,15 +40,37 @@ Features:
     ],
     'assets': {
         'web.assets_frontend': [
+            # Variables must come first
             'ops_theme/static/src/scss/_variables.scss',
+            # Login page styling
             'ops_theme/static/src/scss/_login.scss',
+            # JavaScript
             'ops_theme/static/src/js/theme_loader.js',
         ],
         'web.assets_backend': [
-            'ops_theme/static/src/scss/theme.scss',
+            # Variables must come first (CSS custom properties)
+            'ops_theme/static/src/scss/_variables.scss',
+            # Navigation
+            'ops_theme/static/src/scss/_app_grid.scss',
+            'ops_theme/static/src/scss/_navbar.scss',
+            'ops_theme/static/src/scss/_menu_tabs.scss',
+            'ops_theme/static/src/scss/_breadcrumb.scss',
+            # Views
+            'ops_theme/static/src/scss/_control_panel.scss',
+            'ops_theme/static/src/scss/_form.scss',
+            'ops_theme/static/src/scss/_list.scss',
+            'ops_theme/static/src/scss/_kanban.scss',
+            # Components
+            'ops_theme/static/src/scss/_chatter.scss',
+            'ops_theme/static/src/scss/_user_menu.scss',
+            'ops_theme/static/src/scss/_settings.scss',
+            # Debranding (last to override Odoo styles)
+            'ops_theme/static/src/scss/_debranding.scss',
+            # JavaScript
             'ops_theme/static/src/js/theme_loader.js',
             'ops_theme/static/src/js/color_mode_toggle.js',
             'ops_theme/static/src/js/chatter_toggle.js',
+            # XML templates
             'ops_theme/static/src/xml/user_menu.xml',
         ],
     },
