@@ -2,8 +2,10 @@
 <odoo>
 
     <!-- ===================================================================== -->
-    <!-- Override login_layout to use split-screen design                      -->
+    <!-- OPS THEME v2.0 - SPLIT-SCREEN LOGIN                                   -->
     <!-- ===================================================================== -->
+
+    <!-- Override login_layout to use split-screen design -->
     <template id="login_layout" inherit_id="web.login_layout" name="OPS Login Layout" priority="100">
         <!-- Replace the container with our split-screen layout -->
         <xpath expr="//div[hasclass('container')]" position="replace">
@@ -11,9 +13,9 @@
             <main class="ops-login-wrapper">
                 <div class="ops-login-container">
 
-                    <!-- Left Panel: Company Branding -->
-                    <div t-attf-class="ops-login-brand"
-                         t-attf-style="background-color: #{company.ops_primary_color or '#1e293b'};">
+                    <!-- LEFT PANEL: Company Branding -->
+                    <div class="ops-login-brand"
+                         t-attf-style="background: linear-gradient(135deg, #{company.ops_primary_color or '#1e293b'} 0%, #0f172a 100%);">
 
                         <!-- Company Logo -->
                         <img t-attf-src="/web/binary/company_logo?company={{ company.id }}"
@@ -21,23 +23,45 @@
                              alt="Company Logo"
                              onerror="this.style.display='none'"/>
 
-                        <!-- Tagline -->
-                        <h1 class="ops-login-tagline"
-                            t-esc="company.ops_login_tagline or 'Enterprise Resource Planning'"/>
+                        <!-- Welcome Container -->
+                        <div class="ops-login-welcome">
+                            <h1>Welcome</h1>
+                            <p t-if="company and company.name" t-esc="company.ops_login_tagline or company.name"/>
+                            <p t-else="">Enterprise Resource Planning</p>
+                        </div>
+
+                        <!-- Decorative Element -->
+                        <div class="ops-login-decoration">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
                     </div>
 
-                    <!-- Right Panel: Login Form -->
+                    <!-- RIGHT PANEL: Login Form -->
                     <div class="ops-login-form-panel">
                         <div class="ops-login-form-container">
-                            <h2 class="ops-login-title">Sign In</h2>
+
+                            <!-- Mobile Logo (shown only on small screens) -->
+                            <div class="ops-login-mobile-logo">
+                                <img t-attf-src="/web/binary/company_logo?company={{ company.id }}"
+                                     alt="Company Logo"
+                                     onerror="this.parentElement.style.display='none'"/>
+                            </div>
+
+                            <!-- Login Header -->
+                            <div class="ops-login-header">
+                                <h2>Sign In</h2>
+                                <p>Enter your credentials to access your account</p>
+                            </div>
 
                             <!-- Original login content inserted here -->
                             <t t-out="0"/>
 
-                            <!-- Powered by Footer -->
-                            <p class="ops-powered-by">
-                                Powered by <strong>OPS Framework</strong>
-                            </p>
+                            <!-- Footer -->
+                            <div class="ops-login-footer">
+                                <small>Powered by <strong>OPS Framework</strong></small>
+                            </div>
                         </div>
                     </div>
 
@@ -61,7 +85,7 @@
     <template id="login_inline_styles" inherit_id="web.frontend_layout" name="OPS Login Inline Styles" priority="101">
         <xpath expr="//head" position="inside">
             <style type="text/css">
-                /* Critical CSS - loads before SCSS to prevent flash */
+                /* Critical CSS v2.0 - loads before SCSS to prevent flash */
                 html, body, .ops-login-body {
                     margin: 0 !important;
                     padding: 0 !important;
@@ -83,15 +107,17 @@
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    padding: 2rem;
+                    padding: 3rem;
                     color: #fff;
+                    position: relative;
+                    overflow: hidden;
                 }
                 .ops-login-form-panel {
                     flex: 1;
                     display: flex !important;
                     align-items: center;
                     justify-content: center;
-                    padding: 2rem;
+                    padding: 3rem 2rem;
                     background-color: #ffffff;
                 }
                 /* Hide default Odoo card styling */
@@ -106,13 +132,19 @@
                 }
                 /* Hide default Odoo login header/footer */
                 .ops-login-form-panel .text-center.pb-3.border-bottom,
-                .ops-login-form-panel .text-center.small.border-top {
+                .ops-login-form-panel .text-center.pb-3,
+                .ops-login-form-panel .text-center.small.border-top,
+                .ops-login-form-panel .text-center.small {
                     display: none !important;
                 }
                 /* Mobile: hide brand panel */
                 @media (max-width: 767.98px) {
                     .ops-login-brand { display: none !important; }
+                    .ops-login-mobile-logo { display: block !important; }
                     .ops-login-form-panel { min-height: 100vh; }
+                }
+                @media (min-width: 768px) {
+                    .ops-login-mobile-logo { display: none; }
                 }
             </style>
         </xpath>

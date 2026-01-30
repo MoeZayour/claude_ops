@@ -1,5 +1,8 @@
 // =============================================================================
-// OPS Theme - Split-Screen Login Page
+// OPS THEME v2.0 - SPLIT-SCREEN LOGIN PAGE
+// =============================================================================
+// Split-screen layout: Brand left, Form right
+// With micro-interactions and smooth animations
 // =============================================================================
 
 // Reset default body styles for login
@@ -16,6 +19,7 @@
     min-height: 100vh;
     display: flex;
     width: 100%;
+    background: var(--ops-bg-body, #f1f5f9);
 }
 
 // Main container - split screen flex
@@ -28,7 +32,7 @@
 }
 
 // =============================================================================
-// Left Panel - Company Branding
+// LEFT PANEL - Company Branding
 // =============================================================================
 .ops-login-brand {
     flex: 1;
@@ -36,21 +40,51 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 3rem;
     color: #fff;
     position: relative;
     overflow: hidden;
+    background: linear-gradient(135deg, var(--ops-primary, #1e293b) 0%, #0f172a 100%);
 
-    // Company logo
+    // Company logo with entrance animation
     .ops-login-logo {
-        max-width: 280px;
-        max-height: 120px;
+        max-width: 200px;
+        max-height: 80px;
         margin-bottom: 2rem;
         object-fit: contain;
-        filter: brightness(0) invert(1); // Make logo white
+        filter: brightness(0) invert(1);
+        animation: ops-fadeInDown 0.6s ease;
+        transition: transform 0.3s ease;
+
+        &:hover {
+            transform: scale(1.05);
+        }
     }
 
-    // Tagline
+    // Welcome container
+    .ops-login-welcome {
+        text-align: center;
+        z-index: 1;
+        animation: ops-fadeInUp 0.6s ease 0.2s both;
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #fff;
+            letter-spacing: -0.025em;
+        }
+
+        p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            max-width: 400px;
+            line-height: 1.6;
+            margin: 0;
+        }
+    }
+
+    // Tagline (legacy support)
     .ops-login-tagline {
         font-size: 1.5rem;
         font-weight: 300;
@@ -59,23 +93,69 @@
         max-width: 400px;
         line-height: 1.4;
         margin: 0;
+        animation: ops-fadeInUp 0.6s ease 0.2s both;
     }
 
-    // Decorative gradient overlay
-    &::after {
+    // Decorative element - animated bars
+    .ops-login-decoration {
+        margin-top: 3rem;
+        display: flex;
+        gap: 8px;
+        animation: ops-fadeIn 0.8s ease 0.4s both;
+
+        span {
+            display: block;
+            height: 4px;
+            border-radius: 9999px;
+            background: var(--ops-secondary, #3b82f6);
+            transition: width 0.3s ease;
+
+            &:nth-child(1) { width: 60px; opacity: 0.9; }
+            &:nth-child(2) { width: 40px; opacity: 0.6; }
+            &:nth-child(3) { width: 24px; opacity: 0.3; }
+        }
+
+        &:hover {
+            span:nth-child(1) { width: 80px; }
+            span:nth-child(2) { width: 60px; }
+            span:nth-child(3) { width: 40px; }
+        }
+    }
+
+    // Abstract background pattern
+    &::before {
         content: '';
         position: absolute;
-        bottom: -50%;
+        top: -50%;
         right: -50%;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
         pointer-events: none;
+        animation: ops-float 20s ease-in-out infinite;
+    }
+
+    // Second decorative gradient
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: -30%;
+        width: 80%;
+        height: 80%;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+        pointer-events: none;
+        animation: ops-float 15s ease-in-out infinite reverse;
     }
 }
 
+@keyframes ops-float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, 30px); }
+}
+
 // =============================================================================
-// Right Panel - Login Form
+// RIGHT PANEL - Login Form
 // =============================================================================
 .ops-login-form-panel {
     flex: 1;
@@ -83,115 +163,183 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-    background-color: #ffffff;
+    padding: 3rem 2rem;
+    background-color: var(--ops-bg-card, #ffffff);
     position: relative;
+    animation: ops-fadeIn 0.4s ease;
 }
 
 // Dark mode support for form panel
 [data-color-mode="dark"] .ops-login-form-panel {
-    background-color: #1e293b;
+    background-color: var(--ops-bg-card, #1e293b);
 }
 
 .ops-login-form-container {
     width: 100%;
     max-width: 400px;
+    animation: ops-fadeInUp 0.5s ease 0.1s both;
 }
 
-// Form title
+// Mobile logo (shown only on small screens)
+.ops-login-mobile-logo {
+    display: none;
+    text-align: center;
+    margin-bottom: 2rem;
+
+    img {
+        max-width: 120px;
+        height: auto;
+    }
+}
+
+// Form header
+.ops-login-header {
+    margin-bottom: 2rem;
+    text-align: center;
+
+    h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--ops-text-primary, #1e293b);
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        color: var(--ops-text-secondary, #64748b);
+        font-size: 0.875rem;
+        margin: 0;
+    }
+}
+
+[data-color-mode="dark"] .ops-login-header {
+    h2 { color: var(--ops-text-primary, #f1f5f9); }
+    p { color: var(--ops-text-secondary, #94a3b8); }
+}
+
+// Form title (legacy)
 .ops-login-title {
     font-size: 1.75rem;
     font-weight: 600;
-    color: #1e293b;
+    color: var(--ops-text-primary, #1e293b);
     margin-bottom: 2rem;
     text-align: center;
 }
 
 [data-color-mode="dark"] .ops-login-title {
-    color: #f1f5f9;
+    color: var(--ops-text-primary, #f1f5f9);
 }
 
 // =============================================================================
-// Form Styling
+// FORM STYLING
 // =============================================================================
-.ops-login-form {
-    width: 100%;
-
+.ops-login-form-panel {
     // Form groups
     .mb-3 {
         margin-bottom: 1.25rem !important;
     }
 
     // Labels
+    label,
     .form-label {
+        display: block;
         font-size: 0.875rem;
         font-weight: 500;
-        color: #64748b;
+        color: var(--ops-text-primary, #1e293b);
         margin-bottom: 0.5rem;
-        display: block;
     }
 
+    [data-color-mode="dark"] & label,
     [data-color-mode="dark"] & .form-label {
-        color: #94a3b8;
+        color: var(--ops-text-primary, #f1f5f9);
     }
 
     // Input fields
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
     .form-control {
         width: 100%;
-        padding: 0.75rem 1rem;
+        padding: 0.875rem 1rem;
         font-size: 1rem;
-        color: #1e293b;
-        background-color: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
-        transition: border-color 0.2s, box-shadow 0.2s;
+        color: var(--ops-text-primary, #1e293b);
+        background-color: var(--ops-bg-input, #ffffff);
+        border: 1px solid var(--ops-border, #e2e8f0);
+        border-radius: var(--ops-radius-md, 8px);
+        transition: all 0.2s ease;
 
         &::placeholder {
-            color: #94a3b8;
+            color: var(--ops-text-muted, #94a3b8);
+        }
+
+        &:hover:not(:focus) {
+            border-color: var(--ops-text-muted, #94a3b8);
         }
 
         &:focus {
             outline: none;
-            border-color: #3b82f6;
+            border-color: var(--ops-secondary, #3b82f6);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
     }
 
+    [data-color-mode="dark"] & input[type="text"],
+    [data-color-mode="dark"] & input[type="password"],
+    [data-color-mode="dark"] & input[type="email"],
     [data-color-mode="dark"] & .form-control {
-        background-color: #0f172a;
-        border-color: #334155;
-        color: #f1f5f9;
-
-        &:focus {
-            border-color: #3b82f6;
-        }
+        background-color: var(--ops-bg-input, #334155);
+        border-color: var(--ops-border, #475569);
+        color: var(--ops-text-primary, #f1f5f9);
     }
 
-    // Submit button
+    // Submit button with ripple effect
+    button[type="submit"],
     .btn-primary {
         width: 100%;
         padding: 0.875rem 1.5rem;
         font-size: 1rem;
-        font-weight: 500;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
         color: #fff !important;
-        background-color: #3b82f6 !important;
+        background: var(--ops-secondary, #3b82f6) !important;
         border: none !important;
-        border-radius: 0.5rem;
+        border-radius: var(--ops-radius-md, 8px);
         cursor: pointer;
-        transition: filter 0.2s, transform 0.2s;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s ease;
         margin-top: 0.5rem;
 
-        &:hover {
-            filter: brightness(1.1);
+        &:hover:not(:disabled) {
+            background: var(--ops-secondary-hover, #2563eb) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
 
-        &:active {
-            transform: scale(0.98);
+        &:active:not(:disabled) {
+            transform: translateY(0);
         }
 
         &:focus {
             outline: none;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    // Links
+    a {
+        color: var(--ops-secondary, #3b82f6);
+        font-size: 0.875rem;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: var(--ops-secondary-hover, #2563eb);
+            text-decoration: underline;
         }
     }
 
@@ -199,11 +347,23 @@
     .alert-danger {
         background-color: rgba(239, 68, 68, 0.1);
         border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 0.5rem;
-        color: #ef4444;
+        border-radius: var(--ops-radius-md, 8px);
+        color: var(--ops-danger, #ef4444);
         padding: 0.75rem 1rem;
         font-size: 0.875rem;
         margin-bottom: 1rem;
+        animation: ops-shake 0.5s ease;
+    }
+}
+
+// Footer
+.ops-login-footer {
+    margin-top: 2rem;
+    text-align: center;
+
+    small {
+        color: var(--ops-text-muted, #94a3b8);
+        font-size: 0.75rem;
     }
 }
 
@@ -212,11 +372,15 @@
     margin-top: 2rem;
     text-align: center;
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--ops-text-muted, #94a3b8);
+
+    strong {
+        color: var(--ops-text-secondary, #64748b);
+    }
 }
 
 // =============================================================================
-// Hide Default Odoo Login Elements
+// HIDE DEFAULT ODOO LOGIN ELEMENTS
 // =============================================================================
 .ops-login-form-panel {
     // Hide Odoo card wrapper styles
@@ -233,17 +397,20 @@
 
     // Hide default Odoo login header (logo area)
     .text-center.pb-3.border-bottom,
-    .oe_login_form > div:first-child.text-center {
+    .oe_login_form > div:first-child.text-center,
+    .text-center.pb-3,
+    div.text-center:has(img[src*="logo"]) {
         display: none !important;
     }
 
     // Hide default Odoo login footer
     .text-center.small.border-top,
-    .card-footer {
+    .card-footer,
+    .text-center.small:has(a[href*="odoo"]) {
         display: none !important;
     }
 
-    // Hide database selector if present (usually on first install)
+    // Hide database selector if present
     .o_database_list {
         background: transparent !important;
         border: none !important;
@@ -255,7 +422,7 @@
 }
 
 // =============================================================================
-// Mobile Responsive - Hide Left Panel
+// MOBILE RESPONSIVE - Hide Left Panel
 // =============================================================================
 @media (max-width: 767.98px) {
     .ops-login-container {
@@ -266,33 +433,66 @@
         display: none !important;
     }
 
+    .ops-login-mobile-logo {
+        display: block;
+    }
+
     .ops-login-form-panel {
         min-height: 100vh;
-        padding: 1.5rem;
+        padding: 2rem 1.5rem;
     }
 
     .ops-login-form-container {
         max-width: 100%;
     }
+
+    .ops-login-header h2 {
+        font-size: 1.5rem;
+    }
 }
 
 // =============================================================================
-// Tablet - Adjust proportions
+// TABLET - Adjust proportions
 // =============================================================================
 @media (min-width: 768px) and (max-width: 1023.98px) {
     .ops-login-brand {
         flex: 0.8;
+        padding: 2rem;
 
         .ops-login-logo {
-            max-width: 200px;
+            max-width: 160px;
         }
 
-        .ops-login-tagline {
-            font-size: 1.25rem;
+        .ops-login-tagline,
+        .ops-login-welcome h1 {
+            font-size: 1.5rem;
+        }
+
+        .ops-login-welcome p {
+            font-size: 1rem;
         }
     }
 
     .ops-login-form-panel {
         flex: 1.2;
+    }
+}
+
+// =============================================================================
+// LARGE SCREENS
+// =============================================================================
+@media (min-width: 1400px) {
+    .ops-login-brand {
+        .ops-login-logo {
+            max-width: 240px;
+        }
+
+        .ops-login-welcome h1 {
+            font-size: 3rem;
+        }
+    }
+
+    .ops-login-form-container {
+        max-width: 440px;
     }
 }

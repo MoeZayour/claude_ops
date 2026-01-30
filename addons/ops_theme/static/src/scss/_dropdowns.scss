@@ -1,0 +1,325 @@
+// =============================================================================
+// OPS THEME v2.0 - ANIMATED DROPDOWNS
+// =============================================================================
+// Smooth dropdown animations and styling
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// BASE DROPDOWN STYLES
+// -----------------------------------------------------------------------------
+
+.dropdown-menu {
+    // Remove default browser styles
+    border: 1px solid var(--ops-border, #e2e8f0);
+    border-radius: var(--ops-radius-md, 8px);
+    box-shadow: var(--ops-shadow-lg);
+    background-color: var(--ops-bg-card, #ffffff);
+    padding: 8px 0;
+    min-width: 180px;
+
+    // Animation setup
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+    transform-origin: top center;
+    transition: opacity 0.15s ease,
+                transform 0.15s ease,
+                visibility 0.15s ease;
+
+    // Show state
+    &.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+// Dark mode dropdown
+[data-color-mode="dark"] .dropdown-menu {
+    background-color: var(--ops-bg-card, #1e293b);
+    border-color: var(--ops-border, #334155);
+}
+
+// -----------------------------------------------------------------------------
+// DROPDOWN ITEMS
+// -----------------------------------------------------------------------------
+
+.dropdown-item {
+    padding: 10px 16px;
+    font-size: 0.875rem;
+    color: var(--ops-text-primary, #1e293b);
+    border-radius: 0;
+    transition: background-color var(--ops-transition-fast, 150ms ease),
+                color var(--ops-transition-fast, 150ms ease);
+
+    // Icon alignment
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    i, .fa, .oi {
+        font-size: 1rem;
+        width: 20px;
+        text-align: center;
+        color: var(--ops-text-secondary, #64748b);
+        transition: color var(--ops-transition-fast, 150ms ease);
+    }
+
+    &:hover,
+    &:focus {
+        background-color: var(--ops-bg-hover, #f1f5f9);
+        color: var(--ops-text-primary, #1e293b);
+
+        i, .fa, .oi {
+            color: var(--ops-secondary, #3b82f6);
+        }
+    }
+
+    &:active,
+    &.active {
+        background-color: var(--ops-secondary, #3b82f6);
+        color: white;
+
+        i, .fa, .oi {
+            color: white;
+        }
+    }
+
+    &:disabled,
+    &.disabled {
+        color: var(--ops-text-disabled, #94a3b8);
+        pointer-events: none;
+
+        i, .fa, .oi {
+            color: var(--ops-text-disabled, #94a3b8);
+        }
+    }
+}
+
+// Dark mode items
+[data-color-mode="dark"] .dropdown-item {
+    color: var(--ops-text-primary, #f1f5f9);
+
+    &:hover,
+    &:focus {
+        background-color: var(--ops-bg-hover, #334155);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// DROPDOWN DIVIDER
+// -----------------------------------------------------------------------------
+
+.dropdown-divider {
+    margin: 8px 0;
+    border-color: var(--ops-border, #e2e8f0);
+    opacity: 1;
+}
+
+[data-color-mode="dark"] .dropdown-divider {
+    border-color: var(--ops-border, #334155);
+}
+
+// -----------------------------------------------------------------------------
+// DROPDOWN HEADER
+// -----------------------------------------------------------------------------
+
+.dropdown-header {
+    padding: 8px 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ops-text-secondary, #64748b);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+// -----------------------------------------------------------------------------
+// DROPDOWN WITH ICONS (Special variant)
+// -----------------------------------------------------------------------------
+
+.dropdown-menu.ops-dropdown-icons {
+    .dropdown-item {
+        padding: 12px 16px;
+
+        i, .fa, .oi {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--ops-bg-hover, #f1f5f9);
+            border-radius: var(--ops-radius-sm, 4px);
+            font-size: 0.875rem;
+        }
+
+        &:hover i,
+        &:hover .fa,
+        &:hover .oi {
+            background: var(--ops-secondary-light, rgba(59, 130, 246, 0.1));
+            color: var(--ops-secondary, #3b82f6);
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// MEGA DROPDOWN
+// -----------------------------------------------------------------------------
+
+.dropdown-menu.ops-mega-dropdown {
+    min-width: 400px;
+    padding: 16px;
+
+    .dropdown-header {
+        padding: 8px 0;
+        margin-bottom: 8px;
+    }
+
+    .row {
+        margin: 0 -8px;
+    }
+
+    .col {
+        padding: 0 8px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// DROPDOWN ARROWS/CHEVRONS
+// -----------------------------------------------------------------------------
+
+.dropdown-toggle {
+    &::after {
+        transition: transform var(--ops-transition-fast, 150ms ease);
+    }
+
+    &[aria-expanded="true"]::after {
+        transform: rotate(180deg);
+    }
+}
+
+// No caret variant
+.dropdown-toggle.no-caret::after {
+    display: none;
+}
+
+// -----------------------------------------------------------------------------
+// DROPDOWN POSITIONS & ANIMATIONS
+// -----------------------------------------------------------------------------
+
+// Dropup
+.dropup .dropdown-menu {
+    transform-origin: bottom center;
+    transform: translateY(8px) scale(0.98);
+
+    &.show {
+        transform: translateY(0) scale(1);
+    }
+}
+
+// Dropstart (left)
+.dropstart .dropdown-menu {
+    transform-origin: right center;
+    transform: translateX(8px) scale(0.98);
+
+    &.show {
+        transform: translateX(0) scale(1);
+    }
+}
+
+// Dropend (right)
+.dropend .dropdown-menu {
+    transform-origin: left center;
+    transform: translateX(-8px) scale(0.98);
+
+    &.show {
+        transform: translateX(0) scale(1);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// NAVBAR DROPDOWNS
+// -----------------------------------------------------------------------------
+
+.o_main_navbar {
+    .dropdown-menu {
+        margin-top: 4px;
+        border-radius: var(--ops-radius-md, 8px);
+
+        &.show {
+            animation: ops-dropdown-navbar 0.2s ease;
+        }
+    }
+}
+
+@keyframes ops-dropdown-navbar {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// AUTOCOMPLETE DROPDOWN
+// -----------------------------------------------------------------------------
+
+.o-autocomplete--dropdown-menu,
+.ui-autocomplete {
+    border: 1px solid var(--ops-border, #e2e8f0);
+    border-radius: var(--ops-radius-md, 8px);
+    box-shadow: var(--ops-shadow-lg);
+    background-color: var(--ops-bg-card, #ffffff);
+    overflow: hidden;
+
+    .o-autocomplete--dropdown-item,
+    .ui-menu-item {
+        padding: 10px 16px;
+        transition: background-color var(--ops-transition-fast, 150ms ease);
+
+        &:hover,
+        &.ui-state-focus,
+        &.ui-state-active {
+            background-color: var(--ops-bg-hover, #f1f5f9);
+        }
+
+        &.ui-state-active {
+            background-color: var(--ops-secondary, #3b82f6);
+            color: white;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SELECT2/MANY2ONE DROPDOWNS
+// -----------------------------------------------------------------------------
+
+.o_field_many2one_dropdown,
+.select2-dropdown {
+    border: 1px solid var(--ops-border, #e2e8f0);
+    border-radius: var(--ops-radius-md, 8px);
+    box-shadow: var(--ops-shadow-lg);
+    background: var(--ops-bg-card, #ffffff);
+    animation: ops-scaleInSimple 0.15s ease;
+}
+
+// -----------------------------------------------------------------------------
+// CONTEXT MENU
+// -----------------------------------------------------------------------------
+
+.o_context_menu {
+    border: 1px solid var(--ops-border, #e2e8f0);
+    border-radius: var(--ops-radius-md, 8px);
+    box-shadow: var(--ops-shadow-lg);
+    background: var(--ops-bg-card, #ffffff);
+    animation: ops-scaleIn 0.15s ease;
+
+    .o_menu_item {
+        padding: 10px 16px;
+        transition: background-color var(--ops-transition-fast, 150ms ease);
+
+        &:hover {
+            background-color: var(--ops-bg-hover, #f1f5f9);
+        }
+    }
+}

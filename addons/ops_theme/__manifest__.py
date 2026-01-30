@@ -1,24 +1,26 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.1.0.1',
+    'version': '19.0.2.0.0',
     'category': 'Themes/Backend',
-    'summary': 'Company-brandable backend theme with light/dark mode support',
+    'summary': 'Enterprise white-label theme with micro-interactions',
     'description': """
-OPS Theme - Enterprise Backend Theme
+OPS Theme v2.0 - Modern Enterprise UI
 =====================================
 
 Features:
-- Company-brandable UI with dynamic colors
-- Light/Dark/System color mode support
-- Split-screen login page with company branding
-- App grid home menu with horizontal menu tabs
-- Chatter position toggle (below/right)
+- Split-screen login with company branding
+- Light/Dark/System color modes
+- Micro-interactions (ripples, transitions, animations)
 - Complete Odoo debranding
-- PDF report theming
+- Company-configurable colors
+- Chatter position toggle
 - Theme configuration UI in Settings
 - Color pickers for brand customization
 - Theme presets (Corporate Blue, Modern Dark, etc.)
+- Smooth hover effects on all interactive elements
+- Loading spinners and progress indicators
+- Animated dropdowns and modals
     """,
     'author': 'OPS Framework',
     'website': 'https://github.com/MoeZayour/claude_ops',
@@ -44,9 +46,11 @@ Features:
             'ops_theme/static/src/scss/_variables.scss',
             # 2. Base styles
             'ops_theme/static/src/scss/_base.scss',
-            # 3. Login page styling
+            # 3. Animations (needed for login)
+            'ops_theme/static/src/scss/_animations.scss',
+            # 4. Login page styling
             'ops_theme/static/src/scss/_login.scss',
-            # 4. JavaScript (early load for color mode)
+            # 5. JavaScript (early load for color mode)
             'ops_theme/static/src/js/theme_loader.js',
         ],
         'web.assets_backend': [
@@ -54,27 +58,35 @@ Features:
             'ops_theme/static/src/scss/_variables.scss',
             # 2. Base styles
             'ops_theme/static/src/scss/_base.scss',
-            # 3. Navigation
+            # 3. Animations and interactions
+            'ops_theme/static/src/scss/_animations.scss',
+            'ops_theme/static/src/scss/_interactions.scss',
+            'ops_theme/static/src/scss/_loader.scss',
+            # 4. Navigation
             'ops_theme/static/src/scss/_app_grid.scss',
             'ops_theme/static/src/scss/_navbar.scss',
             'ops_theme/static/src/scss/_menu_tabs.scss',
             'ops_theme/static/src/scss/_breadcrumb.scss',
-            # 4. Views
+            # 5. Views
             'ops_theme/static/src/scss/_control_panel.scss',
             'ops_theme/static/src/scss/_form.scss',
             'ops_theme/static/src/scss/_list.scss',
             'ops_theme/static/src/scss/_kanban.scss',
-            # 5. Components
+            # 6. Components
+            'ops_theme/static/src/scss/_dropdowns.scss',
+            'ops_theme/static/src/scss/_badges.scss',
             'ops_theme/static/src/scss/_chatter.scss',
             'ops_theme/static/src/scss/_user_menu.scss',
             'ops_theme/static/src/scss/_settings.scss',
-            # 6. Debranding LAST (to override Odoo styles)
+            # 7. Debranding LAST (to override Odoo styles)
             'ops_theme/static/src/scss/_debranding.scss',
-            # 7. JavaScript
+            # 8. JavaScript
             'ops_theme/static/src/js/theme_loader.js',
             'ops_theme/static/src/js/color_mode_toggle.js',
             'ops_theme/static/src/js/chatter_toggle.js',
-            # 8. XML templates
+            'ops_theme/static/src/js/interactions.js',
+            'ops_theme/static/src/js/page_loader.js',
+            # 9. XML templates
             'ops_theme/static/src/xml/user_menu.xml',
         ],
     },

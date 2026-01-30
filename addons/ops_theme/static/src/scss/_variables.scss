@@ -1,132 +1,215 @@
 // =============================================================================
-// OPS Theme - CSS Variables
+// OPS THEME v2.0 - CSS VARIABLES
 // =============================================================================
-// These variables provide fallback values when the dynamic CSS endpoint
-// is not yet loaded. They are overridden by /ops_theme/variables.css
+// Design System: Light mode default, dark mode via data-color-mode="dark"
+// All colors use CSS custom properties for runtime theming
+// =============================================================================
 
 :root {
     // =========================================================================
-    // Brand Colors
+    // BRAND COLORS (Company-configurable via Settings)
     // =========================================================================
-    --ops-primary: #1e293b;
-    --ops-secondary: #3b82f6;
-    --ops-success: #10b981;
-    --ops-warning: #f59e0b;
-    --ops-danger: #ef4444;
-    --ops-info: #06b6d4;
+    --ops-primary: #1e293b;           // Deep slate - headers, navbar
+    --ops-secondary: #3b82f6;         // Blue - buttons, links, accents
+    --ops-secondary-hover: #2563eb;   // Blue darker - hover states
+    --ops-secondary-rgb: 59, 130, 246; // For rgba() usage
 
     // Derived colors
     --ops-primary-hover: #0f172a;
-    --ops-secondary-hover: #2563eb;
     --ops-primary-light: rgba(30, 41, 59, 0.1);
     --ops-secondary-light: rgba(59, 130, 246, 0.1);
 
     // =========================================================================
-    // Neutral Colors - Light Mode
+    // SEMANTIC COLORS
     // =========================================================================
-    --ops-bg-body: #f8fafc;
-    --ops-bg-card: #ffffff;
-    --ops-bg-input: #ffffff;
-    --ops-bg-hover: #f1f5f9;
-    --ops-bg-selected: #e2e8f0;
-
-    --ops-text-primary: #1e293b;
-    --ops-text-secondary: #64748b;
-    --ops-text-muted: #94a3b8;
-    --ops-text-inverse: #ffffff;
-
-    --ops-border: #e2e8f0;
-    --ops-border-focus: #3b82f6;
+    --ops-success: #10b981;           // Green - positive states
+    --ops-warning: #f59e0b;           // Amber - warnings
+    --ops-danger: #ef4444;            // Red - errors, destructive
+    --ops-info: #06b6d4;              // Cyan - informational
 
     // =========================================================================
-    // Navbar
+    // LIGHT MODE SURFACES
     // =========================================================================
-    --ops-navbar-bg: #1f2937;
-    --ops-navbar-text: #ffffff;
+    --ops-bg-body: #f1f5f9;           // Page background (slate-100)
+    --ops-bg-card: #ffffff;           // Card/panel background
+    --ops-bg-input: #ffffff;          // Input background
+    --ops-bg-hover: #f8fafc;          // Hover state background
+    --ops-bg-selected: #eff6ff;       // Selected row (blue tint)
 
     // =========================================================================
-    // UI Elements
+    // LIGHT MODE TEXT
     // =========================================================================
-    --ops-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --ops-text-primary: #1e293b;      // Primary text (slate-800)
+    --ops-text-secondary: #64748b;    // Secondary text (slate-500)
+    --ops-text-muted: #94a3b8;        // Muted text (slate-400)
+    --ops-text-disabled: #cbd5e1;     // Disabled text (slate-300)
+    --ops-text-inverse: #ffffff;      // Text on dark backgrounds
+
+    // =========================================================================
+    // BORDERS & DIVIDERS
+    // =========================================================================
+    --ops-border: #e2e8f0;            // Default border (slate-200)
+    --ops-border-focus: #3b82f6;      // Focus state border
+    --ops-divider: #f1f5f9;           // Subtle divider
+
+    // =========================================================================
+    // SHADOWS (Depth System)
+    // =========================================================================
     --ops-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --ops-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --ops-border-radius: 8px;
+    --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                     0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --ops-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                     0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --ops-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                     0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --ops-card-shadow: var(--ops-shadow-md);
+
+    // =========================================================================
+    // BORDER RADIUS
+    // =========================================================================
     --ops-radius-sm: 4px;
     --ops-radius-md: 8px;
     --ops-radius-lg: 12px;
+    --ops-radius-xl: 16px;
+    --ops-radius-full: 9999px;
+    --ops-border-radius: var(--ops-radius-md);
 
     // =========================================================================
-    // Text Disabled State
-    // =========================================================================
-    --ops-text-disabled: #cbd5e1;
-
-    // =========================================================================
-    // Report Styles
-    // =========================================================================
-    --ops-report-header-bg: #1e293b;
-
-    // =========================================================================
-    // Transitions
+    // TRANSITIONS (Smooth by default)
     // =========================================================================
     --ops-transition-fast: 150ms ease;
     --ops-transition-normal: 250ms ease;
+    --ops-transition-slow: 300ms ease;
+
+    // =========================================================================
+    // TYPOGRAPHY
+    // =========================================================================
+    --ops-font-family: 'Inter', -apple-system, BlinkMacSystemFont,
+                       'Segoe UI', Roboto, sans-serif;
+    --ops-font-size-xs: 0.75rem;      // 12px
+    --ops-font-size-sm: 0.875rem;     // 14px
+    --ops-font-size-base: 1rem;       // 16px
+    --ops-font-size-lg: 1.125rem;     // 18px
+    --ops-font-size-xl: 1.25rem;      // 20px
+
+    // =========================================================================
+    // Z-INDEX SCALE
+    // =========================================================================
+    --ops-z-dropdown: 1000;
+    --ops-z-sticky: 1020;
+    --ops-z-fixed: 1030;
+    --ops-z-modal-backdrop: 1040;
+    --ops-z-modal: 1050;
+    --ops-z-popover: 1060;
+    --ops-z-tooltip: 1070;
+    --ops-z-loader: 9999;
+
+    // =========================================================================
+    // NAVBAR
+    // =========================================================================
+    --ops-navbar-bg: var(--ops-primary);
+    --ops-navbar-text: #ffffff;
+
+    // =========================================================================
+    // REPORT STYLES
+    // =========================================================================
+    --ops-report-header-bg: var(--ops-primary);
 }
 
 // =============================================================================
-// Dark Mode Colors
+// DARK MODE OVERRIDES
 // =============================================================================
+// Applied when html has data-color-mode="dark"
+// =============================================================================
+
+[data-color-mode="dark"] {
+    // Surfaces
+    --ops-bg-body: #0f172a;           // Slate-900
+    --ops-bg-card: #1e293b;           // Slate-800
+    --ops-bg-input: #334155;          // Slate-700
+    --ops-bg-hover: #334155;          // Slate-700
+    --ops-bg-selected: #1e3a5f;       // Blue tint dark
+
+    // Text
+    --ops-text-primary: #f1f5f9;      // Slate-100
+    --ops-text-secondary: #94a3b8;    // Slate-400
+    --ops-text-muted: #64748b;        // Slate-500
+    --ops-text-disabled: #475569;     // Slate-600
+
+    // Borders
+    --ops-border: #334155;            // Slate-700
+    --ops-divider: #1e293b;           // Slate-800
+
+    // Derived colors (increase visibility in dark mode)
+    --ops-primary-light: rgba(30, 41, 59, 0.3);
+    --ops-secondary-light: rgba(59, 130, 246, 0.2);
+
+    // Shadows (more pronounced in dark mode)
+    --ops-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+                     0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --ops-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4),
+                     0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --ops-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5),
+                     0 10px 10px -5px rgba(0, 0, 0, 0.3);
+}
+
+// =============================================================================
+// SYSTEM PREFERENCE DARK MODE
+// =============================================================================
+// Applies when no explicit preference is set and system prefers dark
+
 @media (prefers-color-scheme: dark) {
     :root:not([data-color-mode="light"]) {
         --ops-bg-body: #0f172a;
         --ops-bg-card: #1e293b;
-        --ops-bg-input: #1e293b;
+        --ops-bg-input: #334155;
         --ops-bg-hover: #334155;
-        --ops-bg-selected: #475569;
+        --ops-bg-selected: #1e3a5f;
 
         --ops-text-primary: #f1f5f9;
         --ops-text-secondary: #94a3b8;
         --ops-text-muted: #64748b;
+        --ops-text-disabled: #475569;
 
         --ops-border: #334155;
+        --ops-divider: #1e293b;
 
         --ops-primary-light: rgba(30, 41, 59, 0.3);
         --ops-secondary-light: rgba(59, 130, 246, 0.2);
+
+        --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+                         0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        --ops-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4),
+                         0 4px 6px -2px rgba(0, 0, 0, 0.2);
     }
 }
 
-// Force dark mode
-[data-color-mode="dark"] {
-    --ops-bg-body: #0f172a;
-    --ops-bg-card: #1e293b;
-    --ops-bg-input: #1e293b;
-    --ops-bg-hover: #334155;
-    --ops-bg-selected: #475569;
+// =============================================================================
+// FORCE LIGHT MODE
+// =============================================================================
 
-    --ops-text-primary: #f1f5f9;
-    --ops-text-secondary: #94a3b8;
-    --ops-text-muted: #64748b;
-
-    --ops-border: #334155;
-
-    --ops-primary-light: rgba(30, 41, 59, 0.3);
-    --ops-secondary-light: rgba(59, 130, 246, 0.2);
-}
-
-// Force light mode
 [data-color-mode="light"] {
-    --ops-bg-body: #f8fafc;
+    --ops-bg-body: #f1f5f9;
     --ops-bg-card: #ffffff;
     --ops-bg-input: #ffffff;
-    --ops-bg-hover: #f1f5f9;
-    --ops-bg-selected: #e2e8f0;
+    --ops-bg-hover: #f8fafc;
+    --ops-bg-selected: #eff6ff;
 
     --ops-text-primary: #1e293b;
     --ops-text-secondary: #64748b;
     --ops-text-muted: #94a3b8;
+    --ops-text-disabled: #cbd5e1;
 
     --ops-border: #e2e8f0;
+    --ops-divider: #f1f5f9;
 
     --ops-primary-light: rgba(30, 41, 59, 0.1);
     --ops-secondary-light: rgba(59, 130, 246, 0.1);
+
+    --ops-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                     0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --ops-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                     0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }

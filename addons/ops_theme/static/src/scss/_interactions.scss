@@ -1,0 +1,289 @@
+// =============================================================================
+// OPS THEME v2.0 - MICRO-INTERACTIONS
+// =============================================================================
+// Makes the UI feel alive and responsive
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// RIPPLE EFFECT (Material Design inspired)
+// -----------------------------------------------------------------------------
+// Usage: Add .ops-ripple class to any clickable element
+
+.ops-ripple {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10%);
+        background-repeat: no-repeat;
+        background-position: 50%;
+        transform: scale(10, 10);
+        opacity: 0;
+        transition: transform 0.5s, opacity 1s;
+    }
+
+    &:active::after {
+        transform: scale(0, 0);
+        opacity: 0.3;
+        transition: 0s;
+    }
+}
+
+// Dark ripple variant (for light backgrounds)
+.ops-ripple-dark {
+    &::after {
+        background-image: radial-gradient(circle, rgba(0, 0, 0, 0.15) 10%, transparent 10%);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// HOVER LIFT EFFECT
+// -----------------------------------------------------------------------------
+// Subtle lift on hover for cards and buttons
+
+.ops-hover-lift {
+    transition: transform var(--ops-transition-normal, 250ms ease),
+                box-shadow var(--ops-transition-normal, 250ms ease);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--ops-shadow-lg);
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: var(--ops-shadow-md);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// ROW HOVER HIGHLIGHT
+// -----------------------------------------------------------------------------
+
+.o_list_view tbody tr {
+    transition: background-color var(--ops-transition-fast, 150ms ease);
+
+    &:hover {
+        background-color: var(--ops-bg-hover) !important;
+    }
+
+    &.o_data_row_selected {
+        background-color: var(--ops-bg-selected) !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// BUTTON HOVER STATES
+// -----------------------------------------------------------------------------
+
+.btn {
+    transition: all var(--ops-transition-normal, 250ms ease);
+    position: relative;
+    overflow: hidden;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: var(--ops-shadow-md);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+        box-shadow: var(--ops-shadow-sm);
+    }
+}
+
+// Primary button glow on hover
+.btn-primary {
+    &:hover:not(:disabled) {
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+    }
+}
+
+// Success button glow
+.btn-success {
+    &:hover:not(:disabled) {
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    }
+}
+
+// Danger button glow
+.btn-danger {
+    &:hover:not(:disabled) {
+        box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// ICON SPIN ON HOVER
+// -----------------------------------------------------------------------------
+
+.ops-icon-spin:hover {
+    .fa, .oi, i {
+        animation: ops-spin 0.5s ease;
+    }
+}
+
+@keyframes ops-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+// -----------------------------------------------------------------------------
+// SCALE ON HOVER (for icons, avatars)
+// -----------------------------------------------------------------------------
+
+.ops-hover-scale {
+    transition: transform var(--ops-transition-fast, 150ms ease);
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+// Apply to avatars
+.o_avatar,
+.o_field_widget img.rounded-circle {
+    transition: transform var(--ops-transition-fast, 150ms ease);
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// CARD HOVER EFFECTS
+// -----------------------------------------------------------------------------
+
+.o_kanban_record {
+    transition: transform var(--ops-transition-normal, 250ms ease),
+                box-shadow var(--ops-transition-normal, 250ms ease),
+                border-color var(--ops-transition-normal, 250ms ease);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--ops-shadow-lg);
+        border-color: var(--ops-secondary, #3b82f6);
+    }
+}
+
+// Form view card effect
+.o_form_view {
+    transition: box-shadow var(--ops-transition-normal, 250ms ease);
+
+    &:hover {
+        box-shadow: var(--ops-shadow-lg);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// MENU ITEM HOVER UNDERLINE
+// -----------------------------------------------------------------------------
+
+.o_menu_sections .nav-link {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background-color: var(--ops-secondary, #3b82f6);
+        transition: width var(--ops-transition-normal, 250ms ease),
+                    left var(--ops-transition-normal, 250ms ease);
+    }
+
+    &:hover::after,
+    &.active::after {
+        width: 100%;
+        left: 0;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// INPUT FOCUS GLOW
+// -----------------------------------------------------------------------------
+
+.form-control,
+.form-select,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea {
+    transition: border-color var(--ops-transition-fast, 150ms ease),
+                box-shadow var(--ops-transition-fast, 150ms ease);
+
+    &:focus {
+        border-color: var(--ops-secondary, #3b82f6);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// CHECKBOX/TOGGLE ANIMATIONS
+// -----------------------------------------------------------------------------
+
+input[type="checkbox"],
+input[type="radio"] {
+    transition: transform var(--ops-transition-fast, 150ms ease);
+
+    &:active {
+        transform: scale(0.9);
+    }
+}
+
+.form-switch .form-check-input {
+    transition: background-color var(--ops-transition-normal, 250ms ease),
+                background-position var(--ops-transition-normal, 250ms ease);
+}
+
+// -----------------------------------------------------------------------------
+// NOTIFICATION BADGE PULSE
+// -----------------------------------------------------------------------------
+
+.o_notification_counter,
+.badge.rounded-pill[data-count]:not([data-count="0"]) {
+    animation: ops-pulse 2s infinite;
+}
+
+@keyframes ops-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// LINK HOVER EFFECT
+// -----------------------------------------------------------------------------
+
+a:not(.btn):not(.dropdown-item):not(.nav-link) {
+    transition: color var(--ops-transition-fast, 150ms ease);
+
+    &:hover {
+        color: var(--ops-secondary-hover, #2563eb);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// TABLE CELL TRANSITIONS
+// -----------------------------------------------------------------------------
+
+.o_list_table td {
+    transition: background-color var(--ops-transition-fast, 150ms ease);
+}
+
+.o_list_table tr:hover td {
+    background-color: var(--ops-bg-hover);
+}
