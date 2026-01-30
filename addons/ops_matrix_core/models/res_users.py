@@ -526,78 +526,122 @@ class ResUsers(models.Model):
     
     def has_authority(self, authority_field):
         """
-        Check if user has specific authority based on ANY of their assigned personas.
+        Check if user has specific authority based on ANY of their effective personas.
         Returns True if ANY active persona has the authority flag set to True.
-        
+        Includes both own personas and delegated personas.
+
         :param authority_field: Name of the authority field (e.g., 'can_validate_invoices')
         :return: Boolean
         """
         self.ensure_one()
-        
+
         # System administrators bypass all checks
         if self.has_group('base.group_system'):
             return True
-        
-        # Check all active personas
-        active_personas = self.ops_persona_ids.filtered(lambda p: p.active and p.is_active_today)
-        
-        for persona in active_personas:
+
+        # Get all effective personas (own + delegated) using the central method
+        effective_personas = self.get_effective_personas()
+
+        if not effective_personas:
+            return False
+
+        for persona in effective_personas:
             if hasattr(persona, authority_field) and getattr(persona, authority_field):
                 return True
-        
+
         return False
     
+    def get_effective_personas(self):
+        """
+        Get all personas effective for this user, including:
+        - User's own active personas
+        - Personas from active delegations TO this user
+
+        This is the central method for determining what authorities a user has,
+        considering both direct persona assignments and delegations.
+
+        Returns: recordset of ops.persona records
+        """
+        self.ensure_one()
+        now = fields.Datetime.now()
+
+        # Start with user's own active personas
+        effective_personas = self.ops_persona_ids.filtered(
+            lambda p: p.active and getattr(p, 'is_active_today', True)
+        )
+
+        # Find active delegations TO this user
+        Delegation = self.env['ops.persona.delegation']
+        try:
+            active_delegations = Delegation.sudo().search([
+                ('delegate_id', '=', self.id),
+                ('active', '=', True),
+                ('start_date', '<=', now),
+                '|',
+                ('end_date', '=', False),
+                ('end_date', '>=', now),
+            ])
+
+            if active_delegations:
+                _logger.debug(
+                    f"User {self.name} (ID: {self.id}) has {len(active_delegations)} active delegations"
+                )
+                # Get the specific delegated personas (not all delegator personas)
+                for delegation in active_delegations:
+                    if delegation.persona_id and delegation.persona_id.active:
+                        effective_personas |= delegation.persona_id
+                        _logger.debug(
+                            f"User {self.name} inherited persona '{delegation.persona_id.name}' "
+                            f"via delegation from {delegation.delegator_id.name}"
+                        )
+
+        except Exception as e:
+            _logger.warning(f"Could not check delegations for user {self.name}: {e}")
+
+        return effective_personas
+
     def has_ops_authority(self, field_name):
         """
-        Cumulative Authority Logic Helper: Check if ANY of the user's assigned personas
-        grants a specific authority.
-        
+        Cumulative Authority Logic Helper: Check if ANY of the user's effective personas
+        grants a specific authority. Includes both own personas AND delegated personas.
+
         This method implements the OPS Framework anti-fraud pattern where users can have
         multiple personas, and we check if ANY persona grants the requested authority.
-        
+
         Usage Example:
             if self.env.user.has_ops_authority('can_validate_invoices'):
                 # Show validate button
                 pass
-        
+
         :param field_name: Name of the boolean authority field on ops.persona model
                           (e.g., 'can_validate_invoices', 'can_post_journal_entries')
         :return: Boolean - True if ANY active persona has the authority, False otherwise
-        
+
         Edge Cases Handled:
         - Returns True for system administrators (bypass all checks)
         - Returns False if user has no personas assigned
         - Returns False if the field doesn't exist on the persona model
         - Returns False if all personas lack the authority
         - Considers only active personas with valid date ranges
+        - **Includes personas inherited via active delegations**
         """
         self.ensure_one()
-        
+
         # System administrators bypass all authority checks
         if self.has_group('base.group_system'):
             return True
-        
-        # Handle case: No personas assigned to user
-        if not self.ops_persona_ids:
+
+        # Get all effective personas (own + delegated)
+        effective_personas = self.get_effective_personas()
+
+        # Handle case: No effective personas
+        if not effective_personas:
             _logger.debug(
-                f"User {self.name} (ID: {self.id}) has no personas assigned. "
+                f"User {self.name} (ID: {self.id}) has no effective personas. "
                 f"Authority check for '{field_name}' returns False."
             )
             return False
-        
-        # Filter to only active personas with valid date ranges
-        active_personas = self.ops_persona_ids.filtered(
-            lambda p: p.active and p.is_active_today
-        )
-        
-        # Handle case: No active personas
-        if not active_personas:
-            _logger.debug(
-                f"User {self.name} (ID: {self.id}) has no active personas. "
-                f"Authority check for '{field_name}' returns False."
-            )
-            return False
-        
+
         # Defensive check: Verify field exists on persona model
         persona_model = self.env['ops.persona']
         if field_name not in persona_model._fields:
@@ -606,23 +650,23 @@ class ResUsers(models.Model):
                 f"Authority check for user {self.name} (ID: {self.id}) returns False."
             )
             return False
-        
+
         # Use any() for efficient cumulative authority check
         # Returns True if ANY persona has the authority field set to True
         try:
             has_authority = any(
                 getattr(persona, field_name, False)
-                for persona in active_personas
+                for persona in effective_personas
             )
-            
+
             if has_authority:
                 _logger.debug(
                     f"User {self.name} (ID: {self.id}) has authority '{field_name}' "
-                    f"via one or more active personas."
+                    f"via one or more effective personas."
                 )
-            
+
             return has_authority
-            
+
         except Exception as e:
             _logger.error(
                 f"Error checking authority '{field_name}' for user {self.name} (ID: {self.id}): {e}"
@@ -1204,26 +1248,135 @@ class ResUsers(models.Model):
     # ========================================================================
     # PERSONA INTEGRATION
     # ========================================================================
-    
+
     def _get_effective_persona(self):
         """Get the effective persona considering delegations."""
         self.ensure_one()
-        
+        now = fields.Datetime.now()
+
         # Check if there's an active delegation TO this user
         delegation = self.env['ops.persona.delegation'].search([
             ('delegate_id', '=', self.id),
             ('active', '=', True),
-            ('start_date', '<=', fields.Date.today()),
+            ('start_date', '<=', now),
             '|',
             ('end_date', '=', False),
-            ('end_date', '>=', fields.Date.today()),
+            ('end_date', '>=', now),
         ], limit=1)
-        
+
         if delegation:
-            return delegation.delegator_id.persona_id
-        
+            return delegation.persona_id  # Return delegated persona, not delegator's own persona
+
         # Return user's own persona
         return self.persona_id
+
+    def get_delegation_info_for_authority(self, authority_field):
+        """
+        Check if user has authority via delegation and return delegation info.
+
+        This is useful for audit logging when approving via delegation.
+
+        :param authority_field: Name of the authority field on ops.persona
+        :return: dict with delegation info or None if authority is direct
+                 Returns: {'delegation': delegation_record, 'delegator': delegator_user,
+                          'persona': delegated_persona}
+        """
+        self.ensure_one()
+
+        # System admins don't need delegation
+        if self.has_group('base.group_system'):
+            return None
+
+        # Check if user has this authority directly
+        direct_personas = self.ops_persona_ids.filtered(
+            lambda p: p.active and getattr(p, 'is_active_today', True)
+        )
+        for persona in direct_personas:
+            if hasattr(persona, authority_field) and getattr(persona, authority_field):
+                return None  # Direct authority, not delegation
+
+        # Check if user has this authority via delegation
+        now = fields.Datetime.now()
+        Delegation = self.env['ops.persona.delegation']
+
+        try:
+            active_delegations = Delegation.sudo().search([
+                ('delegate_id', '=', self.id),
+                ('active', '=', True),
+                ('start_date', '<=', now),
+                '|',
+                ('end_date', '=', False),
+                ('end_date', '>=', now),
+            ])
+
+            for delegation in active_delegations:
+                persona = delegation.persona_id
+                if persona and persona.active:
+                    if hasattr(persona, authority_field) and getattr(persona, authority_field):
+                        return {
+                            'delegation': delegation,
+                            'delegator': delegation.delegator_id,
+                            'persona': persona,
+                        }
+
+        except Exception as e:
+            _logger.warning(f"Could not check delegation authority for user {self.name}: {e}")
+
+        return None
+
+    def check_authority_with_delegation_audit(self, authority_field):
+        """
+        Check if user has authority and return info about how (direct or delegated).
+
+        This is the preferred method for approval actions that need audit logging.
+
+        :param authority_field: Name of the authority field on ops.persona
+        :return: dict with keys:
+                 - 'has_authority': bool
+                 - 'is_delegated': bool
+                 - 'delegation_info': dict or None (if delegated, contains delegation details)
+                 - 'persona': the persona granting authority
+        """
+        self.ensure_one()
+
+        # System admins bypass all checks
+        if self.has_group('base.group_system'):
+            return {
+                'has_authority': True,
+                'is_delegated': False,
+                'delegation_info': None,
+                'persona': None,
+            }
+
+        # First check direct authority
+        direct_personas = self.ops_persona_ids.filtered(
+            lambda p: p.active and getattr(p, 'is_active_today', True)
+        )
+        for persona in direct_personas:
+            if hasattr(persona, authority_field) and getattr(persona, authority_field):
+                return {
+                    'has_authority': True,
+                    'is_delegated': False,
+                    'delegation_info': None,
+                    'persona': persona,
+                }
+
+        # Then check delegated authority
+        delegation_info = self.get_delegation_info_for_authority(authority_field)
+        if delegation_info:
+            return {
+                'has_authority': True,
+                'is_delegated': True,
+                'delegation_info': delegation_info,
+                'persona': delegation_info['persona'],
+            }
+
+        return {
+            'has_authority': False,
+            'is_delegated': False,
+            'delegation_info': None,
+            'persona': None,
+        }
     
     # ========================================================================
     # REST API AUTHENTICATION FIELDS

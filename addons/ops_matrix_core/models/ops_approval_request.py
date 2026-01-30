@@ -459,17 +459,45 @@ class OpsApprovalRequest(models.Model):
                 _logger.error(f"Error updating source record: {e}")
 
     def action_approve(self) -> bool:
-        """Approve the request."""
+        """Approve the request, with delegation audit logging."""
         self.ensure_one()
         if self.state != 'pending':
             raise UserError(_('Only pending requests can be approved.'))
-            
+
+        user = self.env.user
+
+        # Check if approval is via delegation
+        delegation_info = self._check_delegation_approval(user)
+
         self.write({
             'state': 'approved',
-            'approved_by': self.env.user.id,
+            'approved_by': user.id,
             'approved_date': fields.Datetime.now(),
         })
-        
+
+        # Build approval message with delegation info
+        if delegation_info:
+            approval_msg = _(
+                'Approval GRANTED by %(approver)s on behalf of %(delegator)s '
+                '(Delegation: %(persona)s, valid until %(end_date)s)'
+            ) % {
+                'approver': user.name,
+                'delegator': delegation_info['delegator'].name,
+                'persona': delegation_info['persona'].name,
+                'end_date': delegation_info['delegation'].end_date.strftime('%Y-%m-%d %H:%M') if delegation_info['delegation'].end_date else _('No end date'),
+            }
+            # Log to security audit
+            try:
+                self.env['ops.security.audit'].sudo().log_delegation_approval(
+                    approval_request_id=self.id,
+                    delegation_id=delegation_info['delegation'].id,
+                    details=approval_msg
+                )
+            except Exception as e:
+                _logger.warning(f"Could not log delegation approval to security audit: {e}")
+        else:
+            approval_msg = _('Approval GRANTED by %s') % user.name
+
         # Unlock the record
         if self.model_name and self.res_id:
             try:
@@ -479,25 +507,82 @@ class OpsApprovalRequest(models.Model):
                         'approval_locked': False,
                         'approval_request_id': False,
                     })
-                    
-                    # Post to document
+
+                    # Post to document with delegation info
                     if hasattr(record, 'message_post'):
                         record.message_post(
-                            body=_('Approval GRANTED by %s') % self.env.user.name,
+                            body=approval_msg,
                             message_type='notification',
                             subtype_xmlid='mail.mt_note'
                         )
             except Exception as e:
                 _logger.debug(f"Could not unlock record: {e}")
-        
+
         # Post to approval request
         self.message_post(
-            body=_('Approval GRANTED by %s') % self.env.user.name,
+            body=approval_msg,
             message_type='notification',
             subtype_xmlid='mail.mt_comment'
         )
-        
+
         return True
+
+    def _check_delegation_approval(self, user):
+        """
+        Check if user is approving via delegation and return delegation info.
+
+        :param user: res.users record
+        :return: dict with delegation info or None
+        """
+        # Try to get delegation info using the user's helper method
+        if hasattr(user, 'get_delegation_info_for_authority'):
+            # Check common approval authority fields
+            for authority_field in ['can_approve_transactions', 'can_validate_invoices',
+                                   'can_approve_discounts', 'can_approve_governance']:
+                try:
+                    delegation_info = user.get_delegation_info_for_authority(authority_field)
+                    if delegation_info:
+                        return delegation_info
+                except Exception:
+                    continue
+
+        # Fallback: Check if user has any active delegations
+        now = fields.Datetime.now()
+        try:
+            delegation = self.env['ops.persona.delegation'].sudo().search([
+                ('delegate_id', '=', user.id),
+                ('active', '=', True),
+                ('start_date', '<=', now),
+                '|',
+                ('end_date', '=', False),
+                ('end_date', '>=', now),
+            ], limit=1)
+
+            if delegation:
+                # Check if the delegated persona is related to approval authority
+                persona = delegation.persona_id
+                # Check if user's own personas have approval authority
+                user_personas = user.ops_persona_ids.filtered(lambda p: p.active)
+                approval_fields = ['can_approve_transactions', 'can_validate_invoices',
+                                   'can_approve_discounts', 'can_approve_governance']
+
+                # If user doesn't have approval via their own personas, they're using delegation
+                has_direct = any(
+                    hasattr(p, f) and getattr(p, f)
+                    for p in user_personas
+                    for f in approval_fields
+                )
+
+                if not has_direct and persona:
+                    return {
+                        'delegation': delegation,
+                        'delegator': delegation.delegator_id,
+                        'persona': persona,
+                    }
+        except Exception as e:
+            _logger.warning(f"Error checking delegation approval: {e}")
+
+        return None
 
     def action_escalate(self):
         for request in self.filtered(lambda r: r.state == 'pending' and r.is_overdue):

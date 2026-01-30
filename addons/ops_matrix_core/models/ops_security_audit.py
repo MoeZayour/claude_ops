@@ -35,6 +35,7 @@ class OpsSecurityAudit(models.Model):
         ('rule_violation', 'Rule Violation'),
         ('matrix_change', 'Matrix Access Change'),
         ('delegation_change', 'Delegation Change'),
+        ('delegation_approval', 'Delegation Approval'),  # Approval granted via delegation
         ('override_used', 'Security Override Used'),
         ('login_attempt', 'Login Attempt'),
         ('permission_escalation', 'Permission Escalation'),
@@ -265,7 +266,45 @@ class OpsSecurityAudit(models.Model):
             )
         except Exception as e:
             _logger.error(f"Failed to log delegation change: {str(e)}")
-    
+
+    @api.model
+    def log_delegation_approval(self, approval_request_id, delegation_id, details=None):
+        """Log when an approval is granted via delegation.
+
+        This is critical for audit trail when someone approves on behalf of another user.
+        """
+        try:
+            approval = self.env['ops.approval.request'].sudo().browse(approval_request_id)
+            delegation = self.env['ops.persona.delegation'].sudo().browse(delegation_id)
+
+            self.sudo().create({
+                'user_id': self.env.user.id,
+                'event_type': 'delegation_approval',
+                'model_name': 'ops.approval.request',
+                'record_id': approval_request_id,
+                'record_name': approval.name if approval.exists() else f"Approval #{approval_request_id}",
+                'details': details or _(
+                    "Approval granted via delegation: %(delegate)s approved on behalf of %(delegator)s "
+                    "(Delegation ID: %(delegation_id)s, Persona: %(persona)s)"
+                ) % {
+                    'delegate': self.env.user.name,
+                    'delegator': delegation.delegator_id.name if delegation.exists() else 'Unknown',
+                    'delegation_id': delegation_id,
+                    'persona': delegation.persona_id.name if delegation.exists() and delegation.persona_id else 'Unknown',
+                },
+                'ip_address': self._get_client_ip(),
+                'session_id': self._get_session_id(),
+                'company_id': self.env.company.id,
+                'severity': 'warning',  # Warning level because delegation approvals need attention
+            })
+
+            _logger.info(
+                f"Delegation approval: User {self.env.user.name} approved request {approval_request_id} "
+                f"via delegation {delegation_id}"
+            )
+        except Exception as e:
+            _logger.error(f"Failed to log delegation approval: {str(e)}")
+
     @api.model
     def log_security_override(self, model_name, record_id, reason):
         """Log when a security override is used."""
