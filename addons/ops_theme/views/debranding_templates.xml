@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ================================================================== -->
+    <!-- FOOTER DEBRANDING -->
+    <!-- ================================================================== -->
+
+    <!-- Remove "Powered by Odoo" from footer -->
+    <template id="brand_promotion_remove" inherit_id="web.brand_promotion" name="OPS Remove Brand Promotion" priority="100">
+        <xpath expr="//t[@t-call='web.brand_promotion_message']" position="replace">
+            <span class="ops-powered-by">
+                Powered by <strong>OPS Framework</strong>
+            </span>
+        </xpath>
+    </template>
+
+    <!-- ================================================================== -->
+    <!-- FAVICON -->
+    <!-- ================================================================== -->
+
+    <!-- Replace favicon with neutral/company favicon -->
+    <template id="favicon_debranding" inherit_id="web.layout" name="OPS Favicon" priority="100">
+        <xpath expr="//link[@rel='shortcut icon']" position="attributes">
+            <attribute name="href">/ops_theme/static/src/img/favicon.svg</attribute>
+            <attribute name="type">image/svg+xml</attribute>
+        </xpath>
+    </template>
+
+    <!-- ================================================================== -->
+    <!-- PAGE TITLE -->
+    <!-- ================================================================== -->
+
+    <!-- Remove "Odoo" from page title - just show the actual title -->
+    <template id="title_debranding" inherit_id="web.layout" name="OPS Page Title" priority="100">
+        <xpath expr="//title" position="replace">
+            <title><t t-if="title" t-esc="title"/><t t-else="">OPS</t></title>
+        </xpath>
+    </template>
+
+</odoo>

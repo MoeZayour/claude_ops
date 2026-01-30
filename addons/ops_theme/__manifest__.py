@@ -30,6 +30,7 @@ Features:
         'security/ir.model.access.csv',
         'views/login_templates.xml',
         'views/webclient_templates.xml',
+        'views/debranding_templates.xml',
     ],
     'assets': {
         'web.assets_frontend': [

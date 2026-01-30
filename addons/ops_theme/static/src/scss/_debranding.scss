@@ -1,0 +1,212 @@
+// =============================================================================
+// OPS THEME - DEBRANDING
+// =============================================================================
+// Remove/override all Odoo brand colors and references
+// Odoo purple: #714B67, #875A7B, #7C7BAD
+// =============================================================================
+
+// Primary button overrides (Odoo uses purple)
+.btn-primary {
+    background-color: var(--ops-secondary) !important;
+    border-color: var(--ops-secondary) !important;
+
+    &:hover,
+    &:focus,
+    &:active {
+        background-color: var(--ops-secondary-hover) !important;
+        border-color: var(--ops-secondary-hover) !important;
+    }
+
+    &:focus {
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
+    }
+}
+
+// Link colors
+a:not(.btn):not(.nav-link):not(.dropdown-item) {
+    color: var(--ops-secondary);
+
+    &:hover {
+        color: var(--ops-secondary-hover);
+    }
+}
+
+// Selection/highlight colors
+::selection {
+    background-color: var(--ops-secondary);
+    color: var(--ops-text-inverse);
+}
+
+// Form focus states
+.form-control:focus,
+.form-select:focus,
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--ops-secondary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
+}
+
+// Checkbox and radio (accent color)
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: var(--ops-secondary);
+}
+
+// Progress bars
+.progress-bar {
+    background-color: var(--ops-secondary);
+}
+
+// Badges that might use Odoo purple
+.badge.bg-primary,
+.badge.text-bg-primary {
+    background-color: var(--ops-secondary) !important;
+}
+
+// Alerts
+.alert-primary {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: var(--ops-secondary);
+    color: var(--ops-secondary);
+}
+
+// Override any hardcoded Odoo purple colors
+[style*="#714B67"],
+[style*="#875A7B"],
+[style*="#7C7BAD"] {
+    background-color: var(--ops-secondary) !important;
+    border-color: var(--ops-secondary) !important;
+}
+
+// Hide any remaining Odoo logos or branding
+img[src*="odoo_logo"],
+img[alt*="Odoo"],
+img[alt*="odoo"] {
+    &:not(.o_kanban_image):not(.o_image):not(.oe_avatar) {
+        display: none !important;
+    }
+}
+
+// Hide Odoo text references in UI
+.o_brand_promotion,
+.o_odoo_logo,
+[class*="odoo_logo"],
+[class*="odoo-logo"] {
+    display: none !important;
+}
+
+// Database manager debranding
+.o_database_manager {
+    .o_logo {
+        display: none !important;
+    }
+
+    // Style the header nicely
+    h1, h2, h3 {
+        color: var(--ops-primary);
+    }
+}
+
+// About dialog
+.o_about_dialog {
+    .o_odoo_logo,
+    img[src*="odoo"] {
+        display: none !important;
+    }
+}
+
+// Footer debranding
+footer {
+    a[href*="odoo.com"] {
+        display: none !important;
+    }
+}
+
+// Powered by text styling
+.ops-powered-by {
+    font-size: 0.75rem;
+    color: var(--ops-text-secondary);
+
+    a {
+        color: var(--ops-text-secondary);
+        text-decoration: none;
+
+        &:hover {
+            color: var(--ops-secondary);
+        }
+    }
+}
+
+// Loading spinner - replace Odoo purple
+.o_loading {
+    background-color: var(--ops-secondary) !important;
+}
+
+// Active menu items
+.o_menu_sections .active > a,
+.o_menu_sections .show > a {
+    color: var(--ops-secondary) !important;
+}
+
+// Dropdown active states
+.dropdown-menu .dropdown-item.active,
+.dropdown-menu .dropdown-item:active {
+    background-color: var(--ops-secondary) !important;
+}
+
+// Calendar event colors (override purple)
+.fc-event.bg-primary,
+.fc-event[style*="#714B67"],
+.fc-event[style*="#875A7B"] {
+    background-color: var(--ops-secondary) !important;
+    border-color: var(--ops-secondary) !important;
+}
+
+// Kanban progress bars
+.o_kanban_record .progress-bar {
+    background-color: var(--ops-secondary) !important;
+}
+
+// Chat/messaging colors
+.o_ChatWindow {
+    .o_ChatWindowHeader {
+        background-color: var(--ops-primary) !important;
+    }
+}
+
+// Systray notification badge
+.o_notification_counter {
+    background-color: var(--ops-danger) !important;
+}
+
+// Switch/toggle active state
+.custom-switch .custom-control-input:checked ~ .custom-control-label::before,
+.form-switch .form-check-input:checked {
+    background-color: var(--ops-secondary) !important;
+    border-color: var(--ops-secondary) !important;
+}
+
+// Pagination active
+.page-item.active .page-link {
+    background-color: var(--ops-secondary) !important;
+    border-color: var(--ops-secondary) !important;
+}
+
+// Tab active state
+.nav-tabs .nav-link.active,
+.nav-pills .nav-link.active {
+    color: var(--ops-secondary) !important;
+    border-color: var(--ops-secondary) !important;
+}
+
+// Modal header
+.modal-header {
+    border-bottom-color: var(--ops-border);
+}
+
+// List group active
+.list-group-item.active {
+    background-color: var(--ops-secondary) !important;
+    border-color: var(--ops-secondary) !important;
+}
