@@ -1,7 +1,24 @@
 # -*- coding: utf-8 -*-
+"""
+OPS Asset with Enhanced Depreciation Schedule Generation
+
+Task 2.4: Degressive Depreciation Fix
+
+Supports:
+- Linear (Straight Line): Equal amounts each period
+- Degressive (Declining Balance): Percentage of remaining value
+- Degressive then Linear: Switch when linear gives higher amount
+- Prorata temporis: Partial first period adjustment
+- Monthly or yearly periods
+- Salvage value handling
+
+Reference: om_account_asset depreciation calculation patterns
+"""
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_round, float_is_zero
 from dateutil.relativedelta import relativedelta
+import calendar
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -76,6 +93,20 @@ class OpsAsset(models.Model):
         compute='_compute_depreciation_count', string='Depreciation Count'
     )
 
+    # Impairment Fields (IAS 36)
+    impaired = fields.Boolean(string='Impaired', default=False, tracking=True)
+    impairment_date = fields.Date(string='Impairment Date', tracking=True)
+    original_value = fields.Float(string='Original Value',
+                                   help="Original depreciable value before impairment")
+    impairment_loss = fields.Float(string='Impairment Loss', compute='_compute_impairment', store=True)
+    recoverable_amount = fields.Float(string='Recoverable Amount',
+                                       help="Higher of fair value less costs to sell and value in use")
+    impairment_move_id = fields.Many2one('account.move', string='Impairment Entry', readonly=True)
+    impairment_loss_account_id = fields.Many2one(
+        'account.account', string='Impairment Loss Account',
+        help="Account to record impairment losses"
+    )
+
     # Analytic Fields are inherited from ops.analytic.mixin
 
     @api.model_create_multi
@@ -108,6 +139,16 @@ class OpsAsset(models.Model):
     def _compute_depreciation_count(self):
         for asset in self:
             asset.depreciation_count = len(asset.depreciation_ids)
+
+    @api.depends('book_value', 'recoverable_amount', 'impaired')
+    def _compute_impairment(self):
+        for asset in self:
+            if asset.impaired and asset.recoverable_amount:
+                # Impairment loss is the excess of carrying amount over recoverable amount
+                carrying = asset.book_value
+                asset.impairment_loss = max(carrying - asset.recoverable_amount, 0)
+            else:
+                asset.impairment_loss = 0
 
     @api.constrains('purchase_value', 'salvage_value')
     def _check_salvage_value(self):
@@ -182,41 +223,316 @@ class OpsAsset(models.Model):
             }
         }
 
-    def generate_depreciation_schedule(self):
+    def action_impair_asset(self):
+        """Open impairment wizard to record asset impairment per IAS 36."""
         self.ensure_one()
-        _logger.info(f"Generating depreciation schedule for asset {self.name} ({self.id})")
-        
+        if self.state != 'running':
+            raise UserError(_('Can only impair running assets.'))
+        if self.book_value <= self.salvage_value:
+            raise UserError(_('Asset is already fully depreciated. No impairment possible.'))
+        return {
+            'name': _('Record Impairment'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'ops.asset.impairment.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_asset_id': self.id,
+                'default_current_carrying_amount': self.book_value,
+                'default_impairment_loss_account_id': self.impairment_loss_account_id.id if self.impairment_loss_account_id else False,
+            }
+        }
+
+    def action_view_impairment_entry(self):
+        """View the impairment journal entry."""
+        self.ensure_one()
+        if not self.impairment_move_id:
+            raise UserError(_('No impairment entry exists for this asset.'))
+        return {
+            'name': _('Impairment Entry'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'res_id': self.impairment_move_id.id,
+            'view_mode': 'form',
+        }
+
+    def generate_depreciation_schedule(self):
+        """
+        Generate depreciation schedule based on category method.
+
+        Supports:
+        - Linear (Straight Line): Equal amounts each period
+        - Degressive (Declining Balance): Percentage of remaining value
+        - Degressive then Linear: Switch when linear gives higher amount
+
+        Also handles:
+        - Prorata temporis (partial first period)
+        - Monthly or yearly periods
+        - Salvage value
+        """
+        self.ensure_one()
+        _logger.info(f"Generating depreciation schedule for asset: {self.name} (ID: {self.id})")
+
+        # Clear existing draft lines
         self.depreciation_ids.filtered(lambda l: l.state == 'draft').unlink()
 
-        if self.depreciable_value < 0:
-            raise UserError(_("Depreciable value cannot be negative."))
-        if self.depreciable_value == 0:
-            _logger.warning(f"Depreciable value is zero for asset {self.name}. No schedule generated.")
+        # Validations
+        if self.depreciable_value <= 0:
+            _logger.warning(f"Asset {self.name} has no depreciable value. No schedule generated.")
             return
 
-        duration_years = self.category_id.depreciation_duration
-        if not duration_years > 0:
-            raise UserError(_("Depreciation duration must be greater than 0 years."))
+        category = self.category_id
+        if not category:
+            raise UserError(_("Please assign an asset category before generating schedule."))
 
-        depreciation_date = self.purchase_date
-        total_periods = duration_years * 12
-        
-        lines_to_create = []
+        if category.method_number <= 0:
+            raise UserError(_("Number of depreciations must be greater than 0."))
+
+        # Get parameters
+        method = category.depreciation_method
+        total_periods = category.method_number
+        period_months = category.method_period
+        degressive_factor = category.method_progress_factor
+        prorata = category.prorata
+        depreciable_value = self.depreciable_value
+        salvage_value = self.salvage_value
+        purchase_date = self.purchase_date
+
+        _logger.info(
+            f"Parameters: method={method}, periods={total_periods}, "
+            f"period_months={period_months}, factor={degressive_factor}, "
+            f"prorata={prorata}, depreciable={depreciable_value}"
+        )
+
+        # Calculate first depreciation date
+        if category.date_first_depreciation == 'last_day_period':
+            if period_months >= 12:
+                # Yearly: last day of fiscal year
+                first_date = purchase_date.replace(month=12, day=31)
+            else:
+                # Monthly: last day of purchase month
+                last_day = calendar.monthrange(purchase_date.year, purchase_date.month)[1]
+                first_date = purchase_date.replace(day=last_day)
+        else:
+            # Manual: one period after purchase
+            first_date = purchase_date + relativedelta(months=period_months)
+
+        # Generate schedule based on method
+        if method == 'straight_line':
+            lines = self._compute_linear_depreciation(
+                depreciable_value, total_periods, period_months,
+                first_date, prorata, purchase_date
+            )
+        elif method == 'declining_balance':
+            lines = self._compute_degressive_depreciation(
+                depreciable_value, total_periods, period_months,
+                first_date, prorata, purchase_date, degressive_factor,
+                salvage_value
+            )
+        elif method == 'degressive_then_linear':
+            lines = self._compute_degressive_then_linear(
+                depreciable_value, total_periods, period_months,
+                first_date, prorata, purchase_date, degressive_factor,
+                salvage_value
+            )
+        else:
+            raise UserError(_("Unknown depreciation method: %s") % method)
+
+        # Create depreciation lines
+        if lines:
+            self.env['ops.asset.depreciation'].create(lines)
+            _logger.info(f"Created {len(lines)} depreciation lines for asset {self.name}")
+
+        return True
+
+    def _compute_linear_depreciation(self, depreciable_value, total_periods, period_months,
+                                      first_date, prorata, purchase_date):
+        """
+        Straight-line depreciation: Equal amounts each period.
+
+        Formula: (Purchase Value - Salvage Value) / Number of Periods
+        """
+        lines = []
+
+        # Base amount per period
+        period_amount = depreciable_value / total_periods
+        period_amount = float_round(period_amount, precision_digits=2)
+
+        # Prorata adjustment for first period
+        if prorata:
+            days_in_first_period = (first_date - purchase_date).days
+            if period_months >= 12:
+                total_days = 365
+            else:
+                total_days = period_months * 30  # Approximate
+            prorata_factor = min(days_in_first_period / total_days, 1.0) if total_days > 0 else 1.0
+            first_amount = float_round(period_amount * prorata_factor, precision_digits=2)
+        else:
+            first_amount = period_amount
+
+        # Generate lines
+        current_date = first_date
+        remaining = depreciable_value
+
         for i in range(total_periods):
-            depreciation_date += relativedelta(months=1)
-            
-            lines_to_create.append({
+            if i == 0:
+                amount = first_amount
+            elif i == total_periods - 1:
+                # Last period: remaining balance to avoid rounding issues
+                amount = float_round(remaining, precision_digits=2)
+            else:
+                amount = period_amount
+
+            amount = min(amount, remaining)  # Don't exceed remaining
+
+            if amount > 0.01:  # Skip tiny amounts
+                lines.append({
+                    'asset_id': self.id,
+                    'sequence': i + 1,
+                    'depreciation_date': current_date,
+                    'amount': amount,
+                    'remaining_value': float_round(remaining - amount, precision_digits=2),
+                    'state': 'draft',
+                })
+                remaining -= amount
+
+            # Next period date
+            current_date = current_date + relativedelta(months=period_months)
+
+        return lines
+
+    def _compute_degressive_depreciation(self, depreciable_value, total_periods, period_months,
+                                          first_date, prorata, purchase_date, factor,
+                                          salvage_value):
+        """
+        Declining balance depreciation: Fixed percentage of book value.
+
+        Formula: Book Value × Degressive Factor (annual) / periods per year
+        Stops when book value reaches salvage value.
+        """
+        lines = []
+
+        # Periods per year
+        if period_months >= 12:
+            periods_per_year = 1
+        else:
+            periods_per_year = 12 / period_months
+
+        # Degressive rate per period
+        rate_per_period = factor / periods_per_year
+
+        current_date = first_date
+        book_value = depreciable_value + salvage_value  # Start with purchase value
+        remaining = depreciable_value
+
+        for i in range(total_periods):
+            if remaining <= 0.01:
+                break
+
+            # Calculate degressive amount based on remaining book value
+            amount = book_value * rate_per_period
+
+            # Prorata for first period
+            if i == 0 and prorata:
+                days_in_first_period = (first_date - purchase_date).days
+                total_days = period_months * 30 if period_months < 12 else 365
+                prorata_factor = min(days_in_first_period / total_days, 1.0) if total_days > 0 else 1.0
+                amount = amount * prorata_factor
+
+            # Round and cap
+            amount = float_round(amount, precision_digits=2)
+            amount = min(amount, remaining)
+
+            # Ensure we don't go below salvage
+            if amount > 0.01:
+                lines.append({
+                    'asset_id': self.id,
+                    'sequence': i + 1,
+                    'depreciation_date': current_date,
+                    'amount': amount,
+                    'remaining_value': float_round(remaining - amount, precision_digits=2),
+                    'state': 'draft',
+                })
+                book_value -= amount
+                remaining -= amount
+
+            current_date = current_date + relativedelta(months=period_months)
+
+        # If remaining value exists after all periods, add final adjustment
+        if remaining > 0.01:
+            lines.append({
                 'asset_id': self.id,
-                'depreciation_date': depreciation_date,
+                'sequence': len(lines) + 1,
+                'depreciation_date': current_date,
+                'amount': float_round(remaining, precision_digits=2),
+                'remaining_value': 0.0,
                 'state': 'draft',
             })
-        
-        if not lines_to_create:
-            return
-            
-        dep_lines = self.env['ops.asset.depreciation'].create(lines_to_create)
-        dep_lines._compute_amount()
-        _logger.info(f"Successfully created {len(dep_lines)} depreciation lines for asset {self.name}.")
+
+        return lines
+
+    def _compute_degressive_then_linear(self, depreciable_value, total_periods, period_months,
+                                         first_date, prorata, purchase_date, factor,
+                                         salvage_value):
+        """
+        Declining balance switching to straight-line.
+
+        Uses degressive until straight-line gives higher depreciation,
+        then switches to straight-line for remaining periods.
+        """
+        lines = []
+
+        # Periods per year
+        if period_months >= 12:
+            periods_per_year = 1
+        else:
+            periods_per_year = 12 / period_months
+
+        rate_per_period = factor / periods_per_year
+
+        current_date = first_date
+        book_value = depreciable_value + salvage_value
+        remaining = depreciable_value
+        periods_remaining = total_periods
+
+        for i in range(total_periods):
+            if remaining <= 0.01:
+                break
+
+            # Calculate both methods
+            degressive_amount = book_value * rate_per_period
+            linear_amount = remaining / periods_remaining if periods_remaining > 0 else remaining
+
+            # Use higher amount (switch point detection)
+            amount = max(degressive_amount, linear_amount)
+
+            # Prorata for first period
+            if i == 0 and prorata:
+                days_in_first_period = (first_date - purchase_date).days
+                total_days = period_months * 30 if period_months < 12 else 365
+                prorata_factor = min(days_in_first_period / total_days, 1.0) if total_days > 0 else 1.0
+                amount = amount * prorata_factor
+
+            # Round and cap
+            amount = float_round(amount, precision_digits=2)
+            amount = min(amount, remaining)
+
+            if amount > 0.01:
+                lines.append({
+                    'asset_id': self.id,
+                    'sequence': i + 1,
+                    'depreciation_date': current_date,
+                    'amount': amount,
+                    'remaining_value': float_round(remaining - amount, precision_digits=2),
+                    'state': 'draft',
+                })
+                book_value -= amount
+                remaining -= amount
+
+            periods_remaining -= 1
+            current_date = current_date + relativedelta(months=period_months)
+
+        return lines
     
     def open_depreciation_lines(self):
         self.ensure_one()

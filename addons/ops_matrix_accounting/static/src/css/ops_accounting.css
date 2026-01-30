@@ -170,3 +170,34 @@
 .o_kanban_record .ops-accounting__badge {
   margin-top: 4px;
 }
+
+/* ============================================
+   BLOCK: ops-budget-warning (Budget Alert Banner)
+   ============================================ */
+.ops-budget-warning {
+  border: 1px solid var(--ops-accounting-warning);
+  border-left: 4px solid var(--ops-accounting-warning);
+  background-color: #fff9e6;
+  border-radius: 4px;
+}
+
+.ops-budget-warning__icon {
+  color: #856404;
+  flex-shrink: 0;
+}
+
+.ops-budget-warning__title {
+  color: #856404;
+  font-size: 14px;
+}
+
+.ops-budget-warning__content {
+  flex: 1;
+}
+
+.ops-budget-warning__message {
+  color: #6c5a00;
+  font-size: 13px;
+  white-space: pre-line;
+  line-height: 1.5;
+}

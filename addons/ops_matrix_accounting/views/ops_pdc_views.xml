@@ -1,65 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
-    <!-- PDC Receivable Views -->
+
+    <!-- ============================================================== -->
+    <!-- PDC RECEIVABLE VIEWS -->
+    <!-- ============================================================== -->
+
     <record id="view_ops_pdc_receivable_tree" model="ir.ui.view">
         <field name="name">ops.pdc.receivable.tree</field>
         <field name="model">ops.pdc.receivable</field>
         <field name="arch" type="xml">
-            <list decoration-info="state=='draft'" decoration-success="state=='cleared'">
+            <list decoration-info="state=='draft'"
+                  decoration-success="state=='cleared'"
+                  decoration-danger="state=='bounced'"
+                  decoration-muted="state=='cancelled'">
                 <field name="name"/>
                 <field name="partner_id"/>
                 <field name="check_number"/>
                 <field name="maturity_date"/>
-                <field name="amount"/>
-                <field name="state"/>
+                <field name="amount" sum="Total Amount"/>
+                <field name="ops_branch_id" optional="show"/>
+                <field name="deposit_date" optional="hide"/>
+                <field name="clearance_date" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state=='draft'"
+                       decoration-warning="state=='deposited'"
+                       decoration-success="state=='cleared'"
+                       decoration-danger="state=='bounced'"/>
             </list>
         </field>
     </record>
-    
+
     <record id="view_ops_pdc_receivable_form" model="ir.ui.view">
         <field name="name">ops.pdc.receivable.form</field>
         <field name="model">ops.pdc.receivable</field>
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_deposit" string="Deposit" type="object" 
+                    <button name="action_deposit" string="Deposit" type="object"
                             invisible="state != 'draft'" class="oe_highlight"/>
-                    <button name="action_clear" string="Clear" type="object" 
+                    <button name="action_clear" string="Clear" type="object"
                             invisible="state != 'deposited'" class="oe_highlight"/>
-                    <button name="action_bounce" string="Bounce" type="object" 
-                            invisible="state != 'deposited'"/>
-                    <button name="action_cancel" string="Cancel" type="object" 
-                            invisible="state not in ['draft', 'deposited']"/>
-                    <field name="state" widget="statusbar"/>
+                    <button name="action_bounce" string="Bounce" type="object"
+                            invisible="state != 'deposited'" class="btn-warning"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state != 'draft'"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,deposited,cleared"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
                     <group>
-                        <group>
-                            <field name="name"/>
+                        <group string="Check Information">
                             <field name="partner_id"/>
                             <field name="check_number"/>
-                        </group>
-                        <group>
                             <field name="amount"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="branch_id"/>
+                            <field name="bank_id"/>
                         </group>
-                    </group>
-                    <group>
-                        <group>
+                        <group string="Dates">
                             <field name="check_date"/>
                             <field name="maturity_date"/>
-                        </group>
-                        <group>
                             <field name="deposit_date" readonly="1"/>
                             <field name="clearance_date" readonly="1"/>
+                            <field name="bounce_date" readonly="1" invisible="state != 'bounced'"/>
                         </group>
                     </group>
                     <group>
-                        <field name="bank_id"/>
-                        <field name="notes"/>
+                        <group string="Organization">
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                            <field name="ops_branch_id"/>
+                            <field name="ops_business_unit_id"/>
+                        </group>
+                        <group string="Accounting Configuration">
+                            <field name="journal_id"
+                                   placeholder="Uses company default if empty"/>
+                            <field name="pdc_account_id"
+                                   placeholder="Uses company default if empty"/>
+                            <field name="deposit_bank_journal_id"
+                                   required="state == 'deposited'"
+                                   placeholder="Select bank for clearance"/>
+                        </group>
                     </group>
+                    <notebook>
+                        <page string="Journal Entries" name="journal_entries"
+                              invisible="not deposit_move_id and not clearance_move_id and not bounce_move_id">
+                            <group>
+                                <group>
+                                    <field name="deposit_move_id" readonly="1"/>
+                                    <field name="clearance_move_id" readonly="1"/>
+                                    <field name="bounce_move_id" readonly="1"
+                                           invisible="state != 'bounced'"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes..."/>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
@@ -69,66 +112,131 @@
             </form>
         </field>
     </record>
-    
-    <!-- PDC Payable Views -->
+
+    <record id="view_ops_pdc_receivable_search" model="ir.ui.view">
+        <field name="name">ops.pdc.receivable.search</field>
+        <field name="model">ops.pdc.receivable</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="check_number"/>
+                <field name="ops_branch_id"/>
+                <separator/>
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_deposited" string="Deposited" domain="[('state', '=', 'deposited')]"/>
+                <filter name="filter_cleared" string="Cleared" domain="[('state', '=', 'cleared')]"/>
+                <filter name="filter_bounced" string="Bounced" domain="[('state', '=', 'bounced')]"/>
+                <separator/>
+                <filter name="group_state" string="State" context="{'group_by': 'state'}" domain="[]"/>
+                <filter name="group_partner" string="Customer" context="{'group_by': 'partner_id'}" domain="[]"/>
+                <filter name="group_branch" string="Branch" context="{'group_by': 'ops_branch_id'}" domain="[]"/>
+                <filter name="group_maturity" string="Maturity Date" context="{'group_by': 'maturity_date:month'}" domain="[]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- PDC PAYABLE VIEWS -->
+    <!-- ============================================================== -->
+
     <record id="view_ops_pdc_payable_tree" model="ir.ui.view">
         <field name="name">ops.pdc.payable.tree</field>
         <field name="model">ops.pdc.payable</field>
         <field name="arch" type="xml">
-            <list decoration-info="state=='draft'" decoration-success="state=='cleared'">
+            <list decoration-info="state=='draft'"
+                  decoration-warning="state in ('issued', 'presented')"
+                  decoration-success="state=='cleared'"
+                  decoration-muted="state=='cancelled'">
                 <field name="name"/>
                 <field name="partner_id"/>
                 <field name="check_number"/>
                 <field name="maturity_date"/>
-                <field name="amount"/>
-                <field name="state"/>
+                <field name="amount" sum="Total Amount"/>
+                <field name="ops_branch_id" optional="show"/>
+                <field name="issue_date" optional="hide"/>
+                <field name="clearance_date" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state=='draft'"
+                       decoration-warning="state in ('issued', 'presented')"
+                       decoration-success="state=='cleared'"/>
             </list>
         </field>
     </record>
-    
+
     <record id="view_ops_pdc_payable_form" model="ir.ui.view">
         <field name="name">ops.pdc.payable.form</field>
         <field name="model">ops.pdc.payable</field>
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_issue" string="Issue" type="object" 
+                    <button name="action_issue" string="Issue" type="object"
                             invisible="state != 'draft'" class="oe_highlight"/>
-                    <button name="action_present" string="Present" type="object" 
-                            invisible="state != 'issued'" class="oe_highlight"/>
-                    <button name="action_clear" string="Clear" type="object" 
-                            invisible="state != 'presented'" class="oe_highlight"/>
-                    <button name="action_cancel" string="Cancel" type="object" 
-                            invisible="state not in ['draft', 'issued']"/>
-                    <field name="state" widget="statusbar"/>
+                    <button name="action_present" string="Mark as Presented" type="object"
+                            invisible="state != 'issued'"/>
+                    <button name="action_clear" string="Clear" type="object"
+                            invisible="state not in ('issued', 'presented')" class="oe_highlight"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state not in ('draft', 'issued', 'presented')"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,issued,presented,cleared"/>
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
                     <group>
-                        <group>
-                            <field name="name"/>
+                        <group string="Check Information">
                             <field name="partner_id"/>
                             <field name="check_number"/>
-                        </group>
-                        <group>
                             <field name="amount"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="branch_id"/>
+                            <field name="bank_id"/>
                         </group>
-                    </group>
-                    <group>
-                        <group>
+                        <group string="Dates">
                             <field name="check_date"/>
                             <field name="maturity_date"/>
-                        </group>
-                        <group>
                             <field name="issue_date" readonly="1"/>
+                            <field name="present_date" readonly="1" invisible="state not in ('presented', 'cleared')"/>
                             <field name="clearance_date" readonly="1"/>
                         </group>
                     </group>
                     <group>
-                        <field name="bank_id"/>
-                        <field name="notes"/>
+                        <group string="Organization">
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                            <field name="ops_branch_id"/>
+                            <field name="ops_business_unit_id"/>
+                        </group>
+                        <group string="Accounting Configuration">
+                            <field name="journal_id"
+                                   placeholder="Uses company default if empty"/>
+                            <field name="pdc_account_id"
+                                   placeholder="Uses company default if empty"/>
+                            <field name="bank_journal_id"
+                                   required="state in ('issued', 'presented')"
+                                   placeholder="Select bank account for this check"/>
+                        </group>
                     </group>
+                    <notebook>
+                        <page string="Journal Entries" name="journal_entries"
+                              invisible="not issue_move_id and not clearance_move_id and not cancel_move_id">
+                            <group>
+                                <group>
+                                    <field name="issue_move_id" readonly="1"/>
+                                    <field name="clearance_move_id" readonly="1"/>
+                                    <field name="cancel_move_id" readonly="1"
+                                           invisible="state != 'cancelled'"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes..."/>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
@@ -138,18 +246,62 @@
             </form>
         </field>
     </record>
-    
-    <!-- Actions -->
+
+    <record id="view_ops_pdc_payable_search" model="ir.ui.view">
+        <field name="name">ops.pdc.payable.search</field>
+        <field name="model">ops.pdc.payable</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="check_number"/>
+                <field name="ops_branch_id"/>
+                <separator/>
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_issued" string="Issued" domain="[('state', '=', 'issued')]"/>
+                <filter name="filter_presented" string="Presented" domain="[('state', '=', 'presented')]"/>
+                <filter name="filter_cleared" string="Cleared" domain="[('state', '=', 'cleared')]"/>
+                <separator/>
+                <filter name="group_state" string="State" context="{'group_by': 'state'}" domain="[]"/>
+                <filter name="group_partner" string="Vendor" context="{'group_by': 'partner_id'}" domain="[]"/>
+                <filter name="group_branch" string="Branch" context="{'group_by': 'ops_branch_id'}" domain="[]"/>
+                <filter name="group_maturity" string="Maturity Date" context="{'group_by': 'maturity_date:month'}" domain="[]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================== -->
+    <!-- ACTIONS -->
+    <!-- ============================================================== -->
+
     <record id="action_ops_pdc_receivable" model="ir.actions.act_window">
         <field name="name">PDC Receivable</field>
         <field name="res_model">ops.pdc.receivable</field>
         <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_draft': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Post-Dated Check Receivable
+            </p>
+            <p>
+                Track checks received from customers that will be deposited on a future date.
+            </p>
+        </field>
     </record>
-    
+
     <record id="action_ops_pdc_payable" model="ir.actions.act_window">
         <field name="name">PDC Payable</field>
         <field name="res_model">ops.pdc.payable</field>
         <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_draft': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Post-Dated Check Payable
+            </p>
+            <p>
+                Track post-dated checks issued to vendors that will clear on a future date.
+            </p>
+        </field>
     </record>
-    
+
 </odoo>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Lease Form View -->
+    <record id="view_ops_lease_form" model="ir.ui.view">
+        <field name="name">ops.lease.form</field>
+        <field name="model">ops.lease</field>
+        <field name="arch" type="xml">
+            <form string="Lease Agreement">
+                <header>
+                    <button name="action_generate_schedules" string="Generate Schedules" type="object"
+                            class="btn-secondary" invisible="state != 'draft'"/>
+                    <button name="action_activate" string="Activate Lease" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_terminate" string="Terminate" type="object"
+                            invisible="state != 'active'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('active', 'terminated', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,terminated"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_journal_entries" type="object" class="oe_stat_button" icon="fa-book"
+                                invisible="not initial_recognition_move_id">
+                            <span>Journal Entries</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Lease Details">
+                            <field name="company_id" invisible="1"/>
+                            <field name="lessor_id"/>
+                            <field name="lease_type"/>
+                            <field name="ops_branch_id"/>
+                            <field name="ops_business_unit_id"/>
+                        </group>
+                        <group string="Term">
+                            <field name="commencement_date"/>
+                            <field name="end_date"/>
+                            <field name="lease_term_months"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Payment Terms">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="payment_amount"/>
+                            <field name="payment_frequency"/>
+                            <field name="payment_timing"/>
+                            <field name="discount_rate"/>
+                            <field name="initial_direct_costs"/>
+                        </group>
+                        <group string="IFRS 16 Values">
+                            <field name="rou_asset_value"/>
+                            <field name="lease_liability"/>
+                            <field name="current_liability"/>
+                            <field name="non_current_liability"/>
+                        </group>
+                    </group>
+                    <group string="Statistics" invisible="state == 'draft'">
+                        <field name="total_payments_made"/>
+                        <field name="payments_remaining"/>
+                        <field name="next_payment_date"/>
+                    </group>
+                    <notebook>
+                        <page string="Payment Schedule" name="payments">
+                            <field name="payment_schedule_ids">
+                                <list string="Payment Schedule" decoration-success="state == 'paid'"
+                                      decoration-warning="state == 'pending' and payment_date &lt; current_date">
+                                    <field name="sequence"/>
+                                    <field name="payment_date"/>
+                                    <field name="payment_amount" sum="Total"/>
+                                    <field name="interest_amount" sum="Interest"/>
+                                    <field name="principal_amount" sum="Principal"/>
+                                    <field name="balance_after"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'paid'"
+                                           decoration-warning="state == 'pending'"/>
+                                    <field name="move_id" optional="hide"/>
+                                    <button name="action_record_payment" type="object" string="Record Payment"
+                                            icon="fa-check" invisible="state == 'paid'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Depreciation Schedule" name="depreciation">
+                            <field name="depreciation_schedule_ids">
+                                <list string="Depreciation Schedule" decoration-success="state == 'posted'">
+                                    <field name="sequence"/>
+                                    <field name="depreciation_date"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'posted'"
+                                           decoration-info="state == 'draft'"/>
+                                    <field name="move_id" optional="hide"/>
+                                    <button name="action_post" type="object" string="Post"
+                                            icon="fa-check" invisible="state == 'posted'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Accounting Configuration" name="accounts">
+                            <group>
+                                <group string="Asset Accounts">
+                                    <field name="rou_asset_account_id"/>
+                                    <field name="accumulated_depreciation_account_id"/>
+                                </group>
+                                <group string="Liability &amp; Expense">
+                                    <field name="lease_liability_account_id"/>
+                                    <field name="depreciation_expense_account_id"/>
+                                    <field name="interest_expense_account_id"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="journal_id"/>
+                                <field name="initial_recognition_move_id" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="description" placeholder="Enter lease description and notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Lease Tree View -->
+    <record id="view_ops_lease_tree" model="ir.ui.view">
+        <field name="name">ops.lease.tree</field>
+        <field name="model">ops.lease</field>
+        <field name="arch" type="xml">
+            <list string="Lease Agreements" decoration-info="state == 'draft'"
+                  decoration-success="state == 'active'" decoration-muted="state in ('terminated', 'cancelled')">
+                <field name="name"/>
+                <field name="lessor_id"/>
+                <field name="lease_type"/>
+                <field name="ops_branch_id"/>
+                <field name="commencement_date"/>
+                <field name="end_date"/>
+                <field name="payment_amount"/>
+                <field name="rou_asset_value"/>
+                <field name="lease_liability"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="payments_remaining" optional="show"/>
+                <field name="next_payment_date" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'terminated'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Lease Search View -->
+    <record id="view_ops_lease_search" model="ir.ui.view">
+        <field name="name">ops.lease.search</field>
+        <field name="model">ops.lease</field>
+        <field name="arch" type="xml">
+            <search string="Search Leases">
+                <field name="name"/>
+                <field name="lessor_id"/>
+                <field name="ops_branch_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Active" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="Terminated" name="terminated" domain="[('state', '=', 'terminated')]"/>
+                <filter string="Property" name="property" domain="[('lease_type', '=', 'property')]"/>
+                <filter string="Vehicle" name="vehicle" domain="[('lease_type', '=', 'vehicle')]"/>
+                <filter string="Equipment" name="equipment" domain="[('lease_type', '=', 'equipment')]"/>
+                <filter string="Expiring Soon" name="expiring"
+                        domain="[('end_date', '&lt;=', (context_today() + relativedelta(months=3)).strftime('%Y-%m-%d')), ('state', '=', 'active')]"/>
+                <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                <filter string="Type" name="group_type" context="{'group_by': 'lease_type'}"/>
+                <filter string="Lessor" name="group_lessor" context="{'group_by': 'lessor_id'}"/>
+                <filter string="Branch" name="group_branch" context="{'group_by': 'ops_branch_id'}"/>
+                <filter string="End Date" name="group_end" context="{'group_by': 'end_date:month'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Lease Action -->
+    <record id="action_ops_lease" model="ir.actions.act_window">
+        <field name="name">Lease Agreements (IFRS 16)</field>
+        <field name="res_model">ops.lease</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ops_lease_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first lease agreement
+            </p>
+            <p>
+                Manage IFRS 16 compliant lease accounting with automatic ROU asset and lease liability calculations.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_ops_lease"
+              name="Leases (IFRS 16)"
+              parent="account.menu_finance"
+              action="action_ops_lease"
+              sequence="45"/>
+</odoo>

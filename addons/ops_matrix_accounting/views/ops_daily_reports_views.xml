@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== CASH BOOK WIZARD ==================== -->
+
+    <record id="view_ops_cash_book_wizard_form" model="ir.ui.view">
+        <field name="name">ops.cash.book.wizard.form</field>
+        <field name="model">ops.cash.book.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cash Book Report">
+                <group>
+                    <group string="Period">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <group string="Filters">
+                        <field name="journal_ids" widget="many2many_tags"
+                               options="{'no_create': True}"/>
+                        <field name="ops_branch_ids" widget="many2many_tags"
+                               options="{'no_create': True}"/>
+                        <field name="target_move" widget="radio"/>
+                    </group>
+                </group>
+                <group>
+                    <group>
+                        <field name="sort_by" widget="radio"/>
+                    </group>
+                    <group>
+                        <field name="display_account" widget="radio"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print_pdf" type="object"
+                            string="Print PDF" class="oe_highlight"
+                            icon="fa-file-pdf-o"/>
+                    <button name="action_export_excel" type="object"
+                            string="Export Excel" class="btn-secondary"
+                            icon="fa-file-excel-o"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== DAY BOOK WIZARD ==================== -->
+
+    <record id="view_ops_day_book_wizard_form" model="ir.ui.view">
+        <field name="name">ops.day.book.wizard.form</field>
+        <field name="model">ops.day.book.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Day Book Report">
+                <group>
+                    <group string="Date">
+                        <field name="date"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <group string="Filters">
+                        <field name="journal_ids" widget="many2many_tags"
+                               options="{'no_create': True}"
+                               placeholder="All Journals"/>
+                        <field name="ops_branch_ids" widget="many2many_tags"
+                               options="{'no_create': True}"
+                               placeholder="All Branches"/>
+                        <field name="target_move" widget="radio"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print_pdf" type="object"
+                            string="Print PDF" class="oe_highlight"
+                            icon="fa-file-pdf-o"/>
+                    <button name="action_export_excel" type="object"
+                            string="Export Excel" class="btn-secondary"
+                            icon="fa-file-excel-o"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== BANK BOOK WIZARD ==================== -->
+
+    <record id="view_ops_bank_book_wizard_form" model="ir.ui.view">
+        <field name="name">ops.bank.book.wizard.form</field>
+        <field name="model">ops.bank.book.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Bank Book Report">
+                <group>
+                    <group string="Period">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <group string="Filters">
+                        <field name="journal_ids" widget="many2many_tags"
+                               options="{'no_create': True}"/>
+                        <field name="ops_branch_ids" widget="many2many_tags"
+                               options="{'no_create': True}"/>
+                        <field name="target_move" widget="radio"/>
+                    </group>
+                </group>
+                <group>
+                    <group>
+                        <field name="group_by_journal"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print_pdf" type="object"
+                            string="Print PDF" class="oe_highlight"
+                            icon="fa-file-pdf-o"/>
+                    <button name="action_export_excel" type="object"
+                            string="Export Excel" class="btn-secondary"
+                            icon="fa-file-excel-o"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== ACTIONS ==================== -->
+
+    <record id="action_ops_cash_book_wizard" model="ir.actions.act_window">
+        <field name="name">Cash Book</field>
+        <field name="res_model">ops.cash.book.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_ops_day_book_wizard" model="ir.actions.act_window">
+        <field name="name">Day Book</field>
+        <field name="res_model">ops.day.book.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_ops_bank_book_wizard" model="ir.actions.act_window">
+        <field name="name">Bank Book</field>
+        <field name="res_model">ops.bank.book.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

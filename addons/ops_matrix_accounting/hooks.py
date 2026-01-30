@@ -13,20 +13,70 @@ def post_init_hook(env):
     """
     Post-installation hook for ops_matrix_accounting.
     Creates asset categories with proper journal references.
-    
+
     This runs AFTER all module data is loaded, ensuring
     that accounting records exist.
     """
     _logger.info("OPS Matrix Accounting: Running post_init_hook...")
-    
+
     try:
         _create_asset_categories(env)
+        _create_budget_indexes(env)
         _logger.info("OPS Matrix Accounting: post_init_hook completed successfully.")
     except Exception as e:
         _logger.warning(
             "OPS Matrix Accounting: post_init_hook encountered an error: %s. "
             "Asset categories may need to be created manually.", str(e)
         )
+
+
+def _create_budget_indexes(env):
+    """
+    Create database indexes for budget performance optimization.
+
+    These indexes improve query performance for:
+    - Committed amount calculation (PO lines by branch/date/state)
+    - Practical amount calculation (account move lines)
+    - Product category expense account lookups
+    """
+    _logger.info("OPS Matrix Accounting: Creating budget performance indexes...")
+
+    indexes = [
+        # Index for PO committed amount queries
+        (
+            "idx_po_branch_date_state",
+            """
+            CREATE INDEX IF NOT EXISTS idx_po_branch_date_state
+            ON purchase_order(ops_branch_id, date_order, state)
+            WHERE state IN ('purchase', 'done')
+            """
+        ),
+        # Index for product category expense account lookups
+        (
+            "idx_product_category_expense_account",
+            """
+            CREATE INDEX IF NOT EXISTS idx_product_category_expense_account
+            ON product_category(property_account_expense_categ_id)
+            WHERE property_account_expense_categ_id IS NOT NULL
+            """
+        ),
+        # Index for account move line practical amount queries
+        (
+            "idx_aml_account_branch_date",
+            """
+            CREATE INDEX IF NOT EXISTS idx_aml_account_branch_date
+            ON account_move_line(account_id, ops_branch_id, date)
+            WHERE ops_branch_id IS NOT NULL
+            """
+        ),
+    ]
+
+    for index_name, index_sql in indexes:
+        try:
+            env.cr.execute(index_sql)
+            _logger.info("Budget index '%s' created/verified", index_name)
+        except Exception as e:
+            _logger.warning("Could not create budget index '%s': %s", index_name, e)
 
 
 def _get_or_create_misc_journal(env, company):

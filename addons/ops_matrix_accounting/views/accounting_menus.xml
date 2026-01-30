@@ -186,4 +186,113 @@
         action="action_ops_fiscal_period"
         sequence="50"/>
 
+    <!-- =================== DAILY REPORTS =================== -->
+
+    <!-- Daily Reports submenu under Reporting -->
+    <menuitem
+        id="menu_ops_daily_reports"
+        name="Daily Reports"
+        parent="account.menu_finance_reports"
+        sequence="70"/>
+
+    <!-- Cash Book -->
+    <menuitem
+        id="menu_ops_cash_book"
+        name="Cash Book"
+        parent="menu_ops_daily_reports"
+        action="action_ops_cash_book_wizard"
+        sequence="10"/>
+
+    <!-- Day Book -->
+    <menuitem
+        id="menu_ops_day_book"
+        name="Day Book"
+        parent="menu_ops_daily_reports"
+        action="action_ops_day_book_wizard"
+        sequence="20"/>
+
+    <!-- Bank Book -->
+    <menuitem
+        id="menu_ops_bank_book"
+        name="Bank Book"
+        parent="menu_ops_daily_reports"
+        action="action_ops_bank_book_wizard"
+        sequence="30"/>
+
+    <!-- =================== CUSTOMER FOLLOW-UP =================== -->
+
+    <!-- Follow-up Main Menu under Customers -->
+    <menuitem
+        id="menu_ops_followup_main"
+        name="Follow-ups"
+        parent="account.menu_finance_receivables"
+        sequence="50"/>
+
+    <!-- Customer Follow-ups List -->
+    <menuitem
+        id="menu_ops_partner_followup"
+        name="Customer Follow-ups"
+        parent="menu_ops_followup_main"
+        action="action_ops_partner_followup"
+        sequence="10"/>
+
+    <!-- Credit Blocked Customers -->
+    <menuitem
+        id="menu_ops_blocked_customers"
+        name="Credit Blocked"
+        parent="menu_ops_followup_main"
+        action="action_ops_partner_followup_blocked"
+        sequence="20"/>
+
+    <!-- Follow-ups Due Today -->
+    <menuitem
+        id="menu_ops_followup_due"
+        name="Due Today"
+        parent="menu_ops_followup_main"
+        action="action_ops_partner_followup_due"
+        sequence="30"/>
+
+    <!-- =================== CONFIGURATION - FOLLOW-UP =================== -->
+
+    <!-- Follow-up Configuration -->
+    <menuitem
+        id="menu_ops_config_followup"
+        name="Follow-up Configuration"
+        parent="account.menu_finance_configuration"
+        action="action_ops_followup_config"
+        sequence="60"/>
+
+    <!-- =================== CONFIGURATION - FINANCIAL REPORTS =================== -->
+
+    <!-- Financial Report Structure Configuration -->
+    <menuitem
+        id="menu_ops_config_financial_report_structure"
+        name="Financial Report Structure"
+        parent="account.menu_finance_configuration"
+        sequence="70"/>
+
+    <!-- Balance Sheet Structure -->
+    <menuitem
+        id="menu_ops_config_bs_structure"
+        name="Balance Sheet Structure"
+        parent="menu_ops_config_financial_report_structure"
+        action="action_ops_financial_report_config_bs"
+        sequence="10"/>
+
+    <!-- P&L Structure -->
+    <menuitem
+        id="menu_ops_config_pl_structure"
+        name="Profit &amp; Loss Structure"
+        parent="menu_ops_config_financial_report_structure"
+        action="action_ops_financial_report_config_pl"
+        sequence="20"/>
+
+    <!-- All Report Configurations -->
+    <menuitem
+        id="menu_ops_config_all_report_config"
+        name="All Report Lines"
+        parent="menu_ops_config_financial_report_structure"
+        action="action_ops_financial_report_config"
+        sequence="30"/>
+
 </odoo>

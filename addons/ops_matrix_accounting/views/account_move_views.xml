@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Budget Warning Banner for Vendor Bills
+        =======================================
+        Displays a warning banner when a vendor bill exceeds the available budget
+        for the selected Branch/Business Unit combination.
+    -->
+
+    <!-- Budget Warning Banner on Vendor Bill Form -->
+    <record id="view_move_form_budget_warning" model="ir.ui.view">
+        <field name="name">account.move.form.budget.warning</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <!-- Add budget_warning field to form (invisible, for dependency) -->
+            <xpath expr="//sheet" position="before">
+                <div class="ops-budget-warning alert alert-warning mb-3" role="alert"
+                     invisible="not budget_warning">
+                    <div class="d-flex align-items-start">
+                        <i class="fa fa-exclamation-triangle fa-lg me-3 mt-1 ops-budget-warning__icon"
+                           title="Budget Warning"/>
+                        <div class="ops-budget-warning__content">
+                            <strong class="ops-budget-warning__title">Budget Warning</strong>
+                            <field name="budget_warning" readonly="1" nolabel="1"
+                                   class="ops-budget-warning__message d-block mt-1"
+                                   widget="text"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Budget Warning Indicator on Vendor Bills List View -->
+    <record id="view_move_tree_budget_indicator" model="ir.ui.view">
+        <field name="name">account.move.tree.budget.indicator</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_tree"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <!-- Add budget_warning field (hidden, for decoration) -->
+            <xpath expr="//list" position="inside">
+                <field name="budget_warning" column_invisible="1"/>
+            </xpath>
+            <!-- Add warning decoration to state field -->
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="decoration-warning">budget_warning</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!--
+        Three-Way Match Status for Vendor Bills
+        =======================================
+        Displays match status, smart buttons for PO/Receipts, and override controls.
+    -->
+
+    <!-- Three-Way Match Status Banner on Vendor Bill Form -->
+    <record id="view_move_form_three_way_match" model="ir.ui.view">
+        <field name="name">account.move.form.three.way.match</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority">110</field>
+        <field name="arch" type="xml">
+
+            <!-- Three-Way Match Status Banner (after sheet, before budget warning) -->
+            <xpath expr="//sheet" position="before">
+                <!-- Match Status Banner - Warning state -->
+                <div class="alert alert-info mb-3 ops-three-way-match-banner" role="alert"
+                     invisible="three_way_match_status in ('not_applicable', 'fully_matched') or move_type != 'in_invoice'">
+                    <div class="d-flex align-items-start">
+                        <i class="fa fa-link fa-lg me-3 mt-1"/>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center mb-2">
+                                <strong class="me-2">Three-Way Match:</strong>
+                                <field name="three_way_match_status" readonly="1"
+                                       widget="badge"
+                                       decoration-success="three_way_match_status == 'fully_matched'"
+                                       decoration-info="three_way_match_status == 'partial_match'"
+                                       decoration-warning="three_way_match_status in ('partial_receipt', 'no_po')"
+                                       decoration-danger="three_way_match_status in ('pending_receipt', 'over_billed', 'exception')"/>
+                                <field name="three_way_match_required" invisible="1"/>
+                            </div>
+                            <div class="text-muted small" style="white-space: pre-line;">
+                                <field name="three_way_match_details" readonly="1" nolabel="1"/>
+                            </div>
+                            <div class="mt-2" invisible="three_way_match_override or state == 'posted'">
+                                <button name="action_request_match_override" type="object"
+                                        string="Request Override" class="btn btn-sm btn-secondary"
+                                        title="Request approval to override three-way match requirement"
+                                        groups="account.group_account_invoice"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Override Active Indicator -->
+                <div class="alert alert-warning mb-3" role="alert"
+                     invisible="not three_way_match_override or move_type != 'in_invoice'">
+                    <div class="d-flex align-items-start">
+                        <i class="fa fa-exclamation-triangle fa-lg me-3 mt-1"/>
+                        <div>
+                            <strong>Three-Way Match Override Active</strong>
+                            <div class="small text-muted mt-1">
+                                <span>Reason: </span>
+                                <field name="three_way_match_override_reason" readonly="1" class="d-inline"/>
+                            </div>
+                            <div class="small text-muted">
+                                <span>Approved by: </span>
+                                <field name="three_way_match_override_by" readonly="1" class="d-inline"/>
+                                <span class="ms-2">on </span>
+                                <field name="three_way_match_override_date" readonly="1" class="d-inline"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+
+            <!-- Smart Buttons for PO and Receipts -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_matched_pos" type="object"
+                        class="oe_stat_button" icon="fa-shopping-cart"
+                        invisible="matched_po_count == 0 or move_type != 'in_invoice'">
+                    <field name="matched_po_count" string="Purchase Orders" widget="statinfo"/>
+                </button>
+                <button name="action_view_matched_receipts" type="object"
+                        class="oe_stat_button" icon="fa-truck"
+                        invisible="matched_picking_count == 0 or move_type != 'in_invoice'">
+                    <field name="matched_picking_count" string="Receipts" widget="statinfo"/>
+                </button>
+            </xpath>
+
+            <!-- Override Approval Button for Managers (in header) -->
+            <xpath expr="//header" position="inside">
+                <button name="action_approve_match_override" type="object"
+                        string="Approve Match Override" class="btn-success"
+                        invisible="three_way_match_override or three_way_match_status in ('not_applicable', 'fully_matched') or state == 'posted' or move_type != 'in_invoice'"
+                        groups="account.group_account_manager"
+                        title="Approve three-way match override for this bill"/>
+            </xpath>
+
+            <!-- Hidden fields for computation -->
+            <xpath expr="//sheet" position="inside">
+                <field name="three_way_match_override" invisible="1"/>
+                <field name="matched_po_ids" invisible="1"/>
+                <field name="matched_picking_ids" invisible="1"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Three-Way Match Status Column in Vendor Bills List View -->
+    <record id="view_move_tree_three_way_match" model="ir.ui.view">
+        <field name="name">account.move.tree.three.way.match</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_tree"/>
+        <field name="priority">110</field>
+        <field name="arch" type="xml">
+            <!-- Add three-way match status column before state -->
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="three_way_match_status" optional="show"
+                       string="Match"
+                       widget="badge"
+                       decoration-success="three_way_match_status == 'fully_matched'"
+                       decoration-info="three_way_match_status in ('partial_match', 'not_applicable')"
+                       decoration-warning="three_way_match_status in ('partial_receipt', 'no_po')"
+                       decoration-danger="three_way_match_status in ('pending_receipt', 'over_billed', 'exception')"/>
+            </xpath>
+            <!-- Add hidden fields for filtering -->
+            <xpath expr="//list" position="inside">
+                <field name="three_way_match_required" column_invisible="1"/>
+                <field name="three_way_match_override" column_invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search Filter for Three-Way Match Status -->
+    <record id="view_move_search_three_way_match" model="ir.ui.view">
+        <field name="name">account.move.search.three.way.match</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
+        <field name="priority">110</field>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter string="Match Required" name="match_required"
+                        domain="[('three_way_match_required', '=', True)]"/>
+                <filter string="Match Override" name="match_override"
+                        domain="[('three_way_match_override', '=', True)]"/>
+                <filter string="Fully Matched" name="fully_matched"
+                        domain="[('three_way_match_status', '=', 'fully_matched')]"/>
+                <filter string="Pending Receipt" name="pending_receipt"
+                        domain="[('three_way_match_status', '=', 'pending_receipt')]"/>
+                <filter string="Partial Receipt" name="partial_receipt"
+                        domain="[('three_way_match_status', '=', 'partial_receipt')]"/>
+                <filter string="No PO Reference" name="no_po"
+                        domain="[('three_way_match_status', '=', 'no_po')]"/>
+                <filter string="Over-Billed" name="over_billed"
+                        domain="[('three_way_match_status', '=', 'over_billed')]"/>
+                <filter string="Match Status" name="group_match_status"
+                        context="{'group_by': 'three_way_match_status'}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

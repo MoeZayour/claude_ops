@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- FX Revaluation Wizard Form View -->
+    <record id="view_ops_fx_revaluation_wizard_form" model="ir.ui.view">
+        <field name="name">ops.fx.revaluation.wizard.form</field>
+        <field name="model">ops.fx.revaluation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Foreign Currency Revaluation">
+                <header>
+                    <button name="action_calculate" string="Calculate" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_post" string="Post Entry" type="object"
+                            class="btn-success" invisible="state != 'calculated'"/>
+                    <button name="action_reset" string="Reset" type="object"
+                            invisible="state == 'posted'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,calculated,posted"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Parameters">
+                            <field name="company_id" invisible="1"/>
+                            <field name="revaluation_date"/>
+                            <field name="journal_id"/>
+                            <field name="account_type_filter"/>
+                        </group>
+                        <group string="Filters">
+                            <field name="ops_branch_ids" widget="many2many_tags"/>
+                            <field name="currency_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <group string="Results" invisible="state == 'draft'">
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="total_gain" class="text-success"/>
+                            <field name="total_loss" class="text-danger"/>
+                            <field name="net_result"
+                                   decoration-success="net_result > 0"
+                                   decoration-danger="net_result &lt; 0"/>
+                        </group>
+                        <group>
+                            <field name="move_id" readonly="1" invisible="state != 'posted'"/>
+                        </group>
+                    </group>
+                    <notebook invisible="state == 'draft'">
+                        <page string="Revaluation Lines" name="lines">
+                            <field name="revaluation_line_ids">
+                                <list string="Revaluation Lines"
+                                      decoration-success="adjustment_amount > 0"
+                                      decoration-danger="adjustment_amount &lt; 0">
+                                    <field name="account_id"/>
+                                    <field name="currency_id"/>
+                                    <field name="foreign_balance"/>
+                                    <field name="book_balance"/>
+                                    <field name="exchange_rate"/>
+                                    <field name="fair_value"/>
+                                    <field name="adjustment_amount" sum="Total Adjustment"/>
+                                    <field name="company_currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- FX Revaluation Action -->
+    <record id="action_ops_fx_revaluation_wizard" model="ir.actions.act_window">
+        <field name="name">FX Revaluation</field>
+        <field name="res_model">ops.fx.revaluation.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- Asset Impairment Wizard Form View -->
+    <record id="view_ops_asset_impairment_wizard_form" model="ir.ui.view">
+        <field name="name">ops.asset.impairment.wizard.form</field>
+        <field name="model">ops.asset.impairment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Record Asset Impairment">
+                <group>
+                    <group>
+                        <field name="asset_id" readonly="1"/>
+                        <field name="impairment_date"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="current_carrying_amount"/>
+                        <field name="recoverable_amount"/>
+                        <field name="impairment_loss" class="text-danger"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="impairment_loss_account_id"/>
+                    <field name="regenerate_schedule"/>
+                </group>
+                <group>
+                    <field name="reason" placeholder="Document the indicators of impairment and the basis for determining the recoverable amount..."/>
+                </group>
+                <footer>
+                    <button string="Record Impairment" type="object" name="action_record_impairment"
+                            class="btn-primary" invisible="impairment_loss &lt;= 0"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Menu Items for FX Revaluation -->
+    <menuitem id="menu_ops_fx_revaluation"
+              name="FX Revaluation"
+              parent="account.menu_finance_entries"
+              action="action_ops_fx_revaluation_wizard"
+              sequence="99"/>
+</odoo>

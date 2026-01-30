@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cron job to process customer follow-ups -->
+    <record id="cron_ops_process_followups" model="ir.cron">
+        <field name="name">OPS: Process Customer Follow-ups</field>
+        <field name="model_id" ref="model_ops_partner_followup"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_process_followups()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+        <field name="nextcall" eval="(DateTime.now() + relativedelta(days=1)).strftime('%Y-%m-%d 06:00:00')"/>
+    </record>
+</odoo>

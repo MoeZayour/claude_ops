@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Three-Way Match Override Wizard Form View -->
+    <record id="view_ops_three_way_match_override_wizard_form" model="ir.ui.view">
+        <field name="name">ops.three.way.match.override.wizard.form</field>
+        <field name="model">ops.three.way.match.override.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Approve Three-Way Match Override">
+                <sheet>
+                    <!-- Warning Banner -->
+                    <div class="alert alert-warning mb-3" role="alert">
+                        <i class="fa fa-exclamation-triangle me-2"/>
+                        <strong>Override Request:</strong> This vendor bill has failed three-way match validation.
+                        Review the details below before approving the override.
+                    </div>
+
+                    <!-- Bill Information -->
+                    <group string="Vendor Bill Information" col="4">
+                        <field name="move_id" invisible="1"/>
+                        <field name="move_name" string="Bill Reference"/>
+                        <field name="partner_id"/>
+                        <field name="amount_total"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+
+                    <!-- Match Status -->
+                    <group string="Three-Way Match Status" col="4">
+                        <field name="match_status" widget="badge"
+                               decoration-success="match_status == 'fully_matched'"
+                               decoration-warning="match_status in ('partial_receipt', 'partial_match')"
+                               decoration-danger="match_status in ('no_po', 'pending_receipt', 'over_billed')"/>
+                        <field name="matched_po_count" string="Purchase Orders"/>
+                        <field name="matched_picking_count" string="Receipts (GRN)"/>
+                    </group>
+
+                    <!-- Match Details -->
+                    <group string="Match Details">
+                        <field name="match_details" nolabel="1" readonly="1"
+                               widget="text" style="font-family: monospace; white-space: pre-wrap;"/>
+                    </group>
+
+                    <separator/>
+
+                    <!-- Override Approval -->
+                    <group string="Override Approval">
+                        <field name="override_reason" nolabel="1"
+                               placeholder="Enter a detailed reason for approving this override...&#10;&#10;Examples:&#10;- Goods received but GRN not yet processed in system&#10;- Partial delivery accepted as complete per agreement&#10;- Service invoice - no receipt required"
+                               style="min-height: 100px;"/>
+                    </group>
+
+                    <!-- Confirmation -->
+                    <group>
+                        <field name="confirm_override"
+                               string="I have reviewed the match details and approve this override"/>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <button name="action_approve_override" type="object"
+                            string="Approve Override" class="btn-primary"
+                            confirm="Are you sure you want to approve this three-way match override? This action will be logged for audit purposes."/>
+                    <button name="action_reject_override" type="object"
+                            string="Reject" class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+            OPS Auto-Depreciation Cron Jobs
+            ================================
+
+            Task 2.3: Auto-Depreciation Cron Job
+
+            Features:
+            - Daily auto-posting of due depreciation entries
+            - Respects period lock state (skips hard-locked periods)
+            - Category-level control (auto_post_depreciation setting)
+            - Error tracking and notification
+            - Monthly depreciation reminder
+        -->
+
+        <!-- Auto-Post Depreciation Cron Job (Daily) -->
+        <record id="ir_cron_auto_post_depreciation" model="ir.cron">
+            <field name="name">OPS: Auto-Post Asset Depreciation</field>
+            <field name="model_id" ref="model_ops_asset_depreciation"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_auto_post_depreciation()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+            <field name="priority">50</field>
+        </record>
+
+        <!-- Depreciation Reminder Cron (Monthly) -->
+        <record id="ir_cron_depreciation_reminder" model="ir.cron">
+            <field name="name">OPS: Monthly Depreciation Reminder</field>
+            <field name="model_id" ref="model_ops_asset_depreciation"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_send_depreciation_reminder()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
+            <field name="active" eval="True"/>
+            <field name="priority">60</field>
+        </record>
+
+        <!--
+            Server Action: Manual Run Auto-Depreciation
+            ============================================
+            Allows managers to manually trigger the auto-depreciation
+            cron for testing or immediate processing needs.
+        -->
+        <record id="action_manual_run_depreciation_cron" model="ir.actions.server">
+            <field name="name">Run Auto-Depreciation Now</field>
+            <field name="model_id" ref="model_ops_asset_depreciation"/>
+            <field name="binding_model_id" ref="model_ops_asset_depreciation"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+result = env['ops.asset.depreciation'].cron_auto_post_depreciation()
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'display_notification',
+    'params': {
+        'title': 'Auto-Depreciation Complete',
+        'message': 'Posted: %s, Failed: %s, Skipped: %s' % (result.get('posted', 0), result.get('failed', 0), result.get('skipped', 0)),
+        'type': 'success' if result.get('failed', 0) == 0 else 'warning',
+        'sticky': False,
+    }
+}
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.10.0.0",
+    "version": "19.0.16.0.0",
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -19,6 +19,7 @@
     "license": "LGPL-3",
     "depends": [
         "account",
+        "purchase",
         "stock",
         "ops_matrix_core",
         "analytic",
@@ -35,6 +36,11 @@
         "data/ops_asset_data.xml",
         "data/pdc_sequence.xml",
         "data/cron_snapshot.xml",
+        "data/cron_depreciation.xml",
+        "data/cron_recurring.xml",
+        "data/cron_followup.xml",
+        "data/followup_data.xml",
+        "data/sequences_advanced.xml",
         "data/templates/ops_budget_templates.xml",
         "data/report_templates.xml",
         "data/report_templates_extra.xml",
@@ -52,7 +58,6 @@
         "views/ops_pdc_payable_menus.xml",
         "views/ops_pdc_reports_menus.xml",
         "views/res_config_settings_views.xml",
-        "views/accounting_menus.xml",
         "views/ops_financial_report_wizard_views.xml",
         "views/ops_general_ledger_wizard_enhanced_views.xml",
         "views/ops_general_ledger_wizard_views.xml",
@@ -63,6 +68,15 @@
         "views/ops_inventory_report_views.xml",
         "views/ops_report_audit_views.xml",
         "views/ops_dashboard_action.xml",
+        "views/ops_recurring_views.xml",
+        "views/ops_financial_report_config_views.xml",
+        "views/ops_followup_views.xml",
+        "views/ops_daily_reports_views.xml",
+        "views/ops_interbranch_transfer_views.xml",
+        "views/ops_bank_reconciliation_views.xml",
+        "views/ops_lease_views.xml",
+        "views/ops_fx_revaluation_views.xml",
+        "views/accounting_menus.xml",
 
         # Wizards
         "wizard/ops_asset_depreciation_wizard_views.xml",
@@ -70,6 +84,7 @@
         "wizard/ops_treasury_report_wizard_views.xml",
         "wizard/ops_period_close_wizard_views.xml",
         "wizard/ops_asset_report_wizard_views.xml",
+        "wizard/ops_three_way_match_override_wizard_views.xml",
         # "wizard/ops_asset_report_wizard.xml",  # Disabled - references AbstractModel
 
         # Reports
@@ -83,6 +98,7 @@
         "report/ops_general_ledger_template.xml",
         "report/ops_inventory_report_templates.xml",  # Inventory Intelligence Reports
         "report/ops_treasury_report_templates.xml",   # Treasury Intelligence Reports
+        "report/ops_daily_report_templates.xml",        # Daily Cash/Bank/Day Book Reports
 
         # Menus
         # "views/ops_report_menu.xml",  # Disabled - references missing model

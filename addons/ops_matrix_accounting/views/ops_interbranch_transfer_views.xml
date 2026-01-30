@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inter-Branch Transfer Form View -->
+    <record id="view_ops_interbranch_transfer_form" model="ir.ui.view">
+        <field name="name">ops.interbranch.transfer.form</field>
+        <field name="model">ops.interbranch.transfer</field>
+        <field name="arch" type="xml">
+            <form string="Inter-Branch Transfer">
+                <header>
+                    <button name="action_send" string="Send Transfer" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_receive" string="Receive Transfer" type="object"
+                            class="btn-primary" invisible="state != 'pending'"/>
+                    <button name="action_reconcile" string="Reconcile" type="object"
+                            class="btn-success" invisible="state != 'received'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('reconciled', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,received,reconciled"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_journal_entries" type="object" class="oe_stat_button" icon="fa-book"
+                                invisible="not source_move_id and not dest_move_id">
+                            <span>Journal Entries</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id" invisible="1"/>
+                            <field name="transfer_type"/>
+                            <field name="date"/>
+                            <field name="source_branch_id"/>
+                            <field name="dest_branch_id"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount"/>
+                            <field name="journal_id"/>
+                            <field name="transit_account_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Source">
+                            <field name="source_account_id"/>
+                            <field name="sent_by" readonly="1"/>
+                            <field name="sent_date" readonly="1"/>
+                            <field name="source_move_id" readonly="1"/>
+                        </group>
+                        <group string="Destination">
+                            <field name="dest_account_id"/>
+                            <field name="received_by" readonly="1"/>
+                            <field name="received_date" readonly="1"/>
+                            <field name="dest_move_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="References" invisible="not inventory_transfer_id and not asset_id">
+                        <field name="inventory_transfer_id" invisible="transfer_type != 'inventory'"/>
+                        <field name="asset_id" invisible="transfer_type != 'asset'"/>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Additional notes about this transfer..."/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Inter-Branch Transfer Tree View -->
+    <record id="view_ops_interbranch_transfer_tree" model="ir.ui.view">
+        <field name="name">ops.interbranch.transfer.tree</field>
+        <field name="model">ops.interbranch.transfer</field>
+        <field name="arch" type="xml">
+            <list string="Inter-Branch Transfers" decoration-info="state == 'draft'"
+                  decoration-warning="state == 'pending'" decoration-success="state == 'reconciled'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="transfer_type"/>
+                <field name="source_branch_id"/>
+                <field name="dest_branch_id"/>
+                <field name="amount"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'pending'"
+                       decoration-primary="state == 'received'"
+                       decoration-success="state == 'reconciled'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Inter-Branch Transfer Search View -->
+    <record id="view_ops_interbranch_transfer_search" model="ir.ui.view">
+        <field name="name">ops.interbranch.transfer.search</field>
+        <field name="model">ops.interbranch.transfer</field>
+        <field name="arch" type="xml">
+            <search string="Search Transfers">
+                <field name="name"/>
+                <field name="source_branch_id"/>
+                <field name="dest_branch_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Pending" name="pending" domain="[('state', '=', 'pending')]"/>
+                <filter string="Received" name="received" domain="[('state', '=', 'received')]"/>
+                <filter string="Reconciled" name="reconciled" domain="[('state', '=', 'reconciled')]"/>
+                <filter string="Inventory" name="inventory" domain="[('transfer_type', '=', 'inventory')]"/>
+                <filter string="Asset" name="asset" domain="[('transfer_type', '=', 'asset')]"/>
+                <filter string="Funds" name="funds" domain="[('transfer_type', '=', 'funds')]"/>
+                <filter string="This Month" name="this_month"
+                        domain="[('date', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                <filter string="Type" name="group_type" context="{'group_by': 'transfer_type'}"/>
+                <filter string="Source Branch" name="group_source" context="{'group_by': 'source_branch_id'}"/>
+                <filter string="Destination Branch" name="group_dest" context="{'group_by': 'dest_branch_id'}"/>
+                <filter string="Date" name="group_date" context="{'group_by': 'date:month'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Inter-Branch Transfer Action -->
+    <record id="action_ops_interbranch_transfer" model="ir.actions.act_window">
+        <field name="name">Inter-Branch Transfers</field>
+        <field name="res_model">ops.interbranch.transfer</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ops_interbranch_transfer_search"/>
+        <field name="context">{'search_default_this_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first inter-branch transfer
+            </p>
+            <p>
+                Track inventory, asset, or fund transfers between branches with automatic journal entries.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_ops_interbranch_transfer"
+              name="Inter-Branch Transfers"
+              parent="account.menu_finance_entries"
+              action="action_ops_interbranch_transfer"
+              sequence="25"/>
+</odoo>

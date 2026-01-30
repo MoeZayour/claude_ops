@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Default Follow-up Configuration -->
+    <record id="default_followup" model="ops.followup">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="default_partner_days">30</field>
+        <field name="auto_send_email">False</field>
+        <field name="branch_specific">False</field>
+    </record>
+
+    <!-- Default Follow-up Levels -->
+    <record id="followup_line_level_1" model="ops.followup.line">
+        <field name="followup_id" ref="default_followup"/>
+        <field name="name">First Reminder</field>
+        <field name="delay">15</field>
+        <field name="send_email">True</field>
+        <field name="create_activity">True</field>
+        <field name="activity_days">5</field>
+        <field name="block_credit">False</field>
+        <field name="manual_action">False</field>
+        <field name="description"><![CDATA[
+            <p>Dear Customer,</p>
+            <p>This is a friendly reminder that you have overdue invoices with us.
+            Please review your account and arrange payment at your earliest convenience.</p>
+            <p>If payment has already been made, please disregard this notice.</p>
+            <p>Thank you for your business.</p>
+        ]]></field>
+    </record>
+
+    <record id="followup_line_level_2" model="ops.followup.line">
+        <field name="followup_id" ref="default_followup"/>
+        <field name="name">Second Reminder</field>
+        <field name="delay">30</field>
+        <field name="send_email">True</field>
+        <field name="create_activity">True</field>
+        <field name="activity_days">3</field>
+        <field name="block_credit">False</field>
+        <field name="manual_action">True</field>
+        <field name="manual_action_note">Call customer to discuss payment.</field>
+        <field name="description"><![CDATA[
+            <p>Dear Customer,</p>
+            <p>Our records indicate that your account has outstanding invoices that are now 30 days overdue.</p>
+            <p>Please arrange payment immediately to avoid any disruption to your account.</p>
+            <p>If you have any questions or concerns regarding your balance, please contact us.</p>
+        ]]></field>
+    </record>
+
+    <record id="followup_line_level_3" model="ops.followup.line">
+        <field name="followup_id" ref="default_followup"/>
+        <field name="name">Final Notice</field>
+        <field name="delay">45</field>
+        <field name="send_email">True</field>
+        <field name="create_activity">True</field>
+        <field name="activity_days">2</field>
+        <field name="block_credit">True</field>
+        <field name="manual_action">True</field>
+        <field name="manual_action_note">Escalate to management. Consider legal action.</field>
+        <field name="description"><![CDATA[
+            <p>Dear Customer,</p>
+            <p><strong>FINAL NOTICE</strong></p>
+            <p>Your account has invoices that are significantly overdue. Despite previous reminders,
+            we have not received payment.</p>
+            <p>Please note that your credit has been suspended pending payment of the outstanding balance.</p>
+            <p>Immediate payment is required to restore your account to good standing.</p>
+            <p>If payment is not received within 10 days, we may be forced to take further action.</p>
+        ]]></field>
+    </record>
+
+    <record id="followup_line_level_4" model="ops.followup.line">
+        <field name="followup_id" ref="default_followup"/>
+        <field name="name">Collection Action</field>
+        <field name="delay">60</field>
+        <field name="send_email">True</field>
+        <field name="create_activity">True</field>
+        <field name="activity_days">1</field>
+        <field name="block_credit">True</field>
+        <field name="manual_action">True</field>
+        <field name="manual_action_note">Initiate collection proceedings. Legal review required.</field>
+        <field name="description"><![CDATA[
+            <p>Dear Customer,</p>
+            <p><strong>COLLECTION NOTICE</strong></p>
+            <p>Your account remains seriously delinquent with invoices over 60 days past due.</p>
+            <p>We have initiated formal collection proceedings on your account.</p>
+            <p>Contact us immediately to discuss payment arrangements and avoid additional collection costs.</p>
+        ]]></field>
+    </record>
+</odoo>

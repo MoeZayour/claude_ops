@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Extend Accounting Settings to add PDC Configuration -->
+    <record id="res_config_settings_view_form_pdc" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pdc</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']" position="inside">
+                <block title="Post-Dated Checks (PDC)" name="pdc_settings">
+                    <setting id="pdc_settings_section" string="PDC Accounts Configuration" help="Configure accounts and journals for Post-Dated Check processing">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="pdc_journal_id" class="col-lg-3 o_light_label"/>
+                                <field name="pdc_journal_id" placeholder="Select PDC Journal"/>
+                            </div>
+                            <div class="row">
+                                <label for="pdc_receivable_account_id" class="col-lg-3 o_light_label"/>
+                                <field name="pdc_receivable_account_id" placeholder="Select PDC Receivable Account"/>
+                            </div>
+                            <div class="row">
+                                <label for="pdc_payable_account_id" class="col-lg-3 o_light_label"/>
+                                <field name="pdc_payable_account_id" placeholder="Select PDC Payable Account"/>
+                            </div>
+                            <div class="row">
+                                <label for="pdc_bounce_expense_account_id" class="col-lg-3 o_light_label"/>
+                                <field name="pdc_bounce_expense_account_id" placeholder="Optional: Bounce expense account"/>
+                            </div>
+                        </div>
+                        <div class="text-muted mt8">
+                            <p><strong>PDC Journal:</strong> Miscellaneous journal for PDC transactions</p>
+                            <p><strong>PDC Receivable Account:</strong> Current asset account (e.g., "PDC Receivable")</p>
+                            <p><strong>PDC Payable Account:</strong> Current liability account (e.g., "PDC Payable")</p>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Extend Accounting Settings to add Three-Way Match Configuration -->
+    <record id="res_config_settings_view_form_three_way_match" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.three.way.match</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']" position="inside">
+                <block title="Three-Way Match" name="three_way_match_settings">
+                    <setting id="three_way_match_section" string="Vendor Bill Validation"
+                             help="Configure three-way match (PO ↔ Receipt ↔ Invoice) requirements for vendor bills">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <div class="col-lg-9">
+                                    <field name="three_way_match_required"/>
+                                    <label for="three_way_match_required" class="ms-2"/>
+                                </div>
+                            </div>
+                            <div class="row mt8" invisible="not three_way_match_required">
+                                <label for="three_way_match_tolerance" class="col-lg-4 o_light_label"/>
+                                <field name="three_way_match_tolerance" class="col-lg-2"/>
+                                <span class="col-lg-6 text-muted">% tolerance allowed</span>
+                            </div>
+                        </div>
+                        <div class="text-muted mt8">
+                            <p><strong>When enabled:</strong></p>
+                            <ul class="mb-0">
+                                <li>Vendor bills must be linked to a Purchase Order</li>
+                                <li>Goods must be received (GRN) before bill can be posted</li>
+                                <li>Invoice quantities must not exceed received quantities</li>
+                                <li>AP managers can approve overrides for exceptions</li>
+                            </ul>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

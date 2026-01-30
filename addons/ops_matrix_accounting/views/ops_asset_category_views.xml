@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Form View for ops.asset.category -->
+    <!-- ============================================
+         Form View for ops.asset.category
+         Task 2.4: Enhanced with Degressive Depreciation Support
+         ============================================ -->
     <record id="view_ops_asset_category_form" model="ir.ui.view">
         <field name="name">ops.asset.category.form</field>
         <field name="model">ops.asset.category</field>
@@ -11,18 +14,111 @@
                         <label for="name" class="oe_edit_only"/>
                         <h1><field name="name" placeholder="e.g. Computer Hardware"/></h1>
                     </div>
+
                     <group>
-                        <group>
-                            <field name="journal_id"/>
-                            <field name="depreciation_method"/>
-                            <field name="depreciation_duration"/>
+                        <group string="General">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="parent_id"/>
+                            <field name="active" invisible="1"/>
                         </group>
-                        <group>
-                            <field name="asset_account_id"/>
-                            <field name="depreciation_account_id"/>
-                            <field name="expense_account_id"/>
+                        <group string="OPS Matrix Defaults">
+                            <field name="branch_id"/>
+                            <field name="business_unit_id"/>
                         </group>
                     </group>
+
+                    <notebook>
+                        <page string="Depreciation Method" name="method">
+                            <group>
+                                <group string="Method">
+                                    <field name="depreciation_method"/>
+                                    <field name="method_progress_factor"
+                                           widget="percentage"
+                                           invisible="depreciation_method == 'straight_line'"/>
+                                    <field name="prorata"/>
+                                    <field name="date_first_depreciation"/>
+                                </group>
+                                <group string="Duration">
+                                    <field name="method_number"/>
+                                    <field name="method_period"/>
+                                    <field name="depreciation_duration_display"
+                                           string="Total Duration (Years)"
+                                           widget="float"/>
+                                </group>
+                            </group>
+
+                            <!-- Method Information Alerts -->
+                            <div class="alert alert-info" role="alert"
+                                 invisible="depreciation_method != 'straight_line'">
+                                <strong><i class="fa fa-info-circle"/> Straight Line Method:</strong>
+                                Equal depreciation each period. Formula: (Cost - Salvage) / Periods
+                            </div>
+
+                            <div class="alert alert-info" role="alert"
+                                 invisible="depreciation_method != 'declining_balance'">
+                                <strong><i class="fa fa-info-circle"/> Declining Balance Method:</strong>
+                                Each period: Book Value × <field name="method_progress_factor" readonly="1" class="oe_inline" widget="percentage"/>
+                                <br/>
+                                The depreciation amount decreases each period as book value declines.
+                                Remaining value at end of schedule is added as final depreciation.
+                            </div>
+
+                            <div class="alert alert-info" role="alert"
+                                 invisible="depreciation_method != 'degressive_then_linear'">
+                                <strong><i class="fa fa-info-circle"/> Degressive then Linear:</strong>
+                                Uses declining balance at <field name="method_progress_factor" readonly="1" class="oe_inline" widget="percentage"/>
+                                until straight-line gives a higher amount, then switches.
+                                This ensures the asset is fully depreciated within the specified periods.
+                            </div>
+                        </page>
+
+                        <page string="Accounting" name="accounting">
+                            <group>
+                                <group string="Journal">
+                                    <field name="journal_id"/>
+                                </group>
+                                <group string="Accounts">
+                                    <field name="asset_account_id"/>
+                                    <field name="depreciation_account_id"/>
+                                    <field name="expense_account_id"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Automation" name="automation">
+                            <group>
+                                <group string="Auto-Post Settings">
+                                    <field name="auto_post_depreciation"/>
+                                    <field name="auto_post_day"
+                                           invisible="not auto_post_depreciation"
+                                           help="0 = post on due date, 1-28 = post on specific day of month"/>
+                                </group>
+                            </group>
+
+                            <div class="alert alert-warning" role="alert"
+                                 invisible="not auto_post_depreciation">
+                                <i class="fa fa-clock-o" title="Auto-Post"/> <strong>Auto-posting is enabled.</strong>
+                                <br/>
+                                Depreciation entries will be automatically posted daily when due.
+                                The cron job runs every day and posts all due depreciation for assets in "Running" state.
+                            </div>
+                        </page>
+
+                        <page string="Assets" name="assets">
+                            <field name="asset_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="purchase_value"/>
+                                    <field name="book_value"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="asset_count" string="Total Assets"/>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
@@ -33,29 +129,79 @@
         </field>
     </record>
 
-    <!-- List View for ops.asset.category -->
+    <!-- ============================================
+         List View for ops.asset.category
+         ============================================ -->
     <record id="view_ops_asset_category_list" model="ir.ui.view">
         <field name="name">ops.asset.category.list</field>
         <field name="model">ops.asset.category</field>
         <field name="arch" type="xml">
             <list string="Asset Categories">
                 <field name="name"/>
-                <field name="journal_id"/>
                 <field name="depreciation_method"/>
-                <field name="depreciation_duration"/>
+                <field name="method_number" string="Periods"/>
+                <field name="method_period" string="Period (Mo)"/>
+                <field name="depreciation_duration_display" string="Years" widget="float"/>
+                <field name="method_progress_factor"
+                       string="Factor"
+                       widget="percentage"
+                       optional="show"
+                       invisible="depreciation_method == 'straight_line'"/>
+                <field name="prorata" widget="boolean" optional="hide"/>
+                <field name="auto_post_depreciation" widget="boolean_toggle"/>
+                <field name="journal_id" optional="hide"/>
                 <field name="asset_count"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>
 
-    <!-- Action for ops.asset.category -->
+    <!-- ============================================
+         Search View for ops.asset.category
+         ============================================ -->
+    <record id="view_ops_asset_category_search" model="ir.ui.view">
+        <field name="name">ops.asset.category.search</field>
+        <field name="model">ops.asset.category</field>
+        <field name="arch" type="xml">
+            <search string="Search Asset Categories">
+                <field name="name"/>
+                <field name="journal_id"/>
+                <filter name="straight_line" string="Straight Line"
+                        domain="[('depreciation_method', '=', 'straight_line')]"/>
+                <filter name="declining_balance" string="Declining Balance"
+                        domain="[('depreciation_method', '=', 'declining_balance')]"/>
+                <filter name="degressive_linear" string="Degressive then Linear"
+                        domain="[('depreciation_method', '=', 'degressive_then_linear')]"/>
+                <filter name="auto_post" string="Auto-Post Enabled"
+                        domain="[('auto_post_depreciation', '=', True)]"/>
+                <group>
+                    <filter name="group_method" string="Method"
+                            context="{'group_by': 'depreciation_method'}"/>
+                    <filter name="group_journal" string="Journal"
+                            context="{'group_by': 'journal_id'}"/>
+                    <filter name="group_company" string="Company"
+                            context="{'group_by': 'company_id'}"
+                            groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================
+         Action for ops.asset.category
+         ============================================ -->
     <record id="action_ops_asset_category" model="ir.actions.act_window">
         <field name="name">Asset Categories</field>
         <field name="res_model">ops.asset.category</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ops_asset_category_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Create a new asset category.
+                Create your first asset category
+            </p>
+            <p>
+                Asset categories define depreciation methods, accounting settings,
+                and automation rules for groups of fixed assets.
             </p>
         </field>
     </record>

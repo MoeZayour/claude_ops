@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ===================== RECURRING TEMPLATE ===================== -->
+
+    <record id="view_ops_recurring_template_form" model="ir.ui.view">
+        <field name="name">ops.recurring.template.form</field>
+        <field name="model">ops.recurring.template</field>
+        <field name="arch" type="xml">
+            <form string="Recurring Template">
+                <header>
+                    <button name="action_activate" type="object" string="Activate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_pause" type="object" string="Pause"
+                            invisible="state != 'active'"/>
+                    <button name="action_resume" type="object" string="Resume"
+                            invisible="state != 'paused'"/>
+                    <button name="action_generate_entry_now" type="object"
+                            string="Generate Now" class="btn-secondary"
+                            invisible="state != 'active'"/>
+                    <button name="action_complete" type="object" string="Mark Complete"
+                            invisible="state in ('draft', 'done')"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft"
+                            invisible="state == 'draft'" groups="account.group_account_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_entries" type="object" class="oe_stat_button" icon="fa-list">
+                            <field name="entry_count" string="Entries" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Template Name"/></h1>
+                    </div>
+
+                    <group>
+                        <group string="Schedule">
+                            <field name="recurring_interval"/>
+                            <field name="recurring_period"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="next_execution_date" readonly="1"/>
+                        </group>
+                        <group string="Configuration">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="journal_id"/>
+                            <field name="journal_state"/>
+                            <field name="require_approval"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="OPS Matrix">
+                            <field name="ops_branch_id"/>
+                            <field name="ops_business_unit_id"/>
+                        </group>
+                        <group string="Auto-Reversal">
+                            <field name="auto_reverse"/>
+                            <field name="reversal_date_offset" invisible="not auto_reverse"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Entry Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="account_id" options="{'no_create': True}"/>
+                                    <field name="name"/>
+                                    <field name="partner_id" optional="show"/>
+                                    <field name="debit" sum="Total Debit"/>
+                                    <field name="credit" sum="Total Credit"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="description" placeholder="Description or notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ops_recurring_template_tree" model="ir.ui.view">
+        <field name="name">ops.recurring.template.tree</field>
+        <field name="model">ops.recurring.template</field>
+        <field name="arch" type="xml">
+            <list string="Recurring Templates" decoration-muted="state == 'done'" decoration-info="state == 'active'">
+                <field name="name"/>
+                <field name="recurring_interval"/>
+                <field name="recurring_period"/>
+                <field name="next_execution_date"/>
+                <field name="journal_id"/>
+                <field name="ops_branch_id" optional="show"/>
+                <field name="auto_reverse"/>
+                <field name="entry_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-info="state == 'draft'"
+                       decoration-muted="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_recurring_template_search" model="ir.ui.view">
+        <field name="name">ops.recurring.template.search</field>
+        <field name="model">ops.recurring.template</field>
+        <field name="arch" type="xml">
+            <search string="Search Templates">
+                <field name="name"/>
+                <field name="journal_id"/>
+                <field name="ops_branch_id"/>
+                <separator/>
+                <filter name="active_state" string="Active" domain="[('state', '=', 'active')]"/>
+                <filter name="draft_state" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="with_reversal" string="With Auto-Reversal" domain="[('auto_reverse', '=', True)]"/>
+                <separator/>
+                <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                <filter name="group_journal" string="Journal" context="{'group_by': 'journal_id'}"/>
+                <filter name="group_branch" string="Branch" context="{'group_by': 'ops_branch_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===================== RECURRING ENTRY ===================== -->
+
+    <record id="view_ops_recurring_entry_form" model="ir.ui.view">
+        <field name="name">ops.recurring.entry.form</field>
+        <field name="model">ops.recurring.entry</field>
+        <field name="arch" type="xml">
+            <form string="Recurring Entry">
+                <header>
+                    <button name="action_create_move" type="object" string="Create Entry"
+                            class="btn-primary" invisible="move_id or state != 'draft'"/>
+                    <button name="action_submit_for_approval" type="object" string="Submit for Approval"
+                            invisible="state != 'draft' or not require_approval"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-success" invisible="state != 'pending_approval'"
+                            groups="account.group_account_manager"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            invisible="state != 'pending_approval'"
+                            groups="account.group_account_manager"/>
+                    <button name="action_post_move" type="object" string="Post"
+                            class="btn-primary" invisible="state not in ('draft', 'approved') or not move_id"/>
+                    <button name="action_reverse" type="object" string="Reverse"
+                            invisible="state != 'posted'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('posted', 'reversed', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted,reversed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="template_id"/>
+                            <field name="entry_date"/>
+                            <field name="journal_id"/>
+                            <field name="move_id" readonly="1"/>
+                            <field name="require_approval" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="ops_branch_id"/>
+                            <field name="ops_business_unit_id"/>
+                            <field name="auto_reverse"/>
+                            <field name="reversal_date" invisible="not auto_reverse"/>
+                            <field name="reversal_move_id" readonly="1" invisible="not reversal_move_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="account_id"/>
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="debit" sum="Total Debit"/>
+                                    <field name="credit" sum="Total Credit"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Approval" invisible="not require_approval">
+                            <group>
+                                <field name="approved_by" readonly="1"/>
+                                <field name="approved_date" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ops_recurring_entry_tree" model="ir.ui.view">
+        <field name="name">ops.recurring.entry.tree</field>
+        <field name="model">ops.recurring.entry</field>
+        <field name="arch" type="xml">
+            <list string="Recurring Entries" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="template_id"/>
+                <field name="entry_date"/>
+                <field name="move_id"/>
+                <field name="ops_branch_id" optional="show"/>
+                <field name="auto_reverse"/>
+                <field name="reversal_date" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'pending_approval'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_recurring_entry_search" model="ir.ui.view">
+        <field name="name">ops.recurring.entry.search</field>
+        <field name="model">ops.recurring.entry</field>
+        <field name="arch" type="xml">
+            <search string="Search Entries">
+                <field name="name"/>
+                <field name="template_id"/>
+                <field name="entry_date"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="pending" string="Pending Approval" domain="[('state', '=', 'pending_approval')]"/>
+                <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <filter name="reversed" string="Reversed" domain="[('state', '=', 'reversed')]"/>
+                <separator/>
+                <filter name="pending_reversal" string="Pending Reversal"
+                        domain="[('auto_reverse', '=', True), ('reversal_move_id', '=', False), ('state', '=', 'posted')]"/>
+                <separator/>
+                <filter name="group_template" string="Template" context="{'group_by': 'template_id'}"/>
+                <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                <filter name="group_date" string="Entry Date" context="{'group_by': 'entry_date'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===================== JOURNAL TEMPLATE ===================== -->
+
+    <record id="view_ops_journal_template_form" model="ir.ui.view">
+        <field name="name">ops.journal.template.form</field>
+        <field name="model">ops.journal.template</field>
+        <field name="arch" type="xml">
+            <form string="Journal Template">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_create_entry" type="object"
+                                class="oe_stat_button" icon="fa-plus">
+                            <span>Create Entry</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Template Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="category"/>
+                            <field name="journal_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="ops_branch_id"/>
+                            <field name="ops_business_unit_id"/>
+                            <field name="use_count" readonly="1"/>
+                            <field name="last_used" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="account_id"/>
+                                    <field name="name"/>
+                                    <field name="amount_type"/>
+                                    <field name="debit" invisible="amount_type == 'percentage'" sum="Total Debit"/>
+                                    <field name="credit" invisible="amount_type == 'percentage'" sum="Total Credit"/>
+                                    <field name="percentage" invisible="amount_type != 'percentage'"/>
+                                    <field name="is_debit" invisible="amount_type != 'percentage'" string="Debit?"/>
+                                    <field name="partner_id" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Description">
+                            <field name="description" placeholder="Template description..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ops_journal_template_tree" model="ir.ui.view">
+        <field name="name">ops.journal.template.tree</field>
+        <field name="model">ops.journal.template</field>
+        <field name="arch" type="xml">
+            <list string="Journal Templates">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="category"/>
+                <field name="journal_id"/>
+                <field name="ops_branch_id" optional="show"/>
+                <field name="use_count"/>
+                <field name="last_used"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_journal_template_search" model="ir.ui.view">
+        <field name="name">ops.journal.template.search</field>
+        <field name="model">ops.journal.template</field>
+        <field name="arch" type="xml">
+            <search string="Search Templates">
+                <field name="name"/>
+                <field name="journal_id"/>
+                <field name="category"/>
+                <separator/>
+                <filter name="accrual" string="Accruals" domain="[('category', '=', 'accrual')]"/>
+                <filter name="provision" string="Provisions" domain="[('category', '=', 'provision')]"/>
+                <filter name="adjustment" string="Adjustments" domain="[('category', '=', 'adjustment')]"/>
+                <filter name="closing" string="Period Closing" domain="[('category', '=', 'closing')]"/>
+                <separator/>
+                <filter name="group_category" string="Category" context="{'group_by': 'category'}"/>
+                <filter name="group_journal" string="Journal" context="{'group_by': 'journal_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===================== WIZARD ===================== -->
+
+    <record id="view_ops_journal_template_wizard_form" model="ir.ui.view">
+        <field name="name">ops.journal.template.wizard.form</field>
+        <field name="model">ops.journal.template.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Entry from Template">
+                <group>
+                    <group>
+                        <field name="template_id" readonly="1"/>
+                        <field name="date"/>
+                        <field name="journal_id"/>
+                        <field name="ref"/>
+                    </group>
+                    <group>
+                        <field name="ops_branch_id"/>
+                        <field name="ops_business_unit_id"/>
+                        <field name="has_percentage_lines" invisible="1"/>
+                        <field name="base_amount" invisible="not has_percentage_lines"/>
+                        <field name="auto_post"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_create_entry" string="Create Entry" type="object" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===================== ACTIONS ===================== -->
+
+    <record id="action_ops_recurring_template" model="ir.actions.act_window">
+        <field name="name">Recurring Templates</field>
+        <field name="res_model">ops.recurring.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_ops_recurring_template_search"/>
+        <field name="context">{'search_default_active_state': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first recurring journal template
+            </p>
+            <p>
+                Define journal entries that will be automatically generated on a schedule.
+                Perfect for rent payments, depreciation entries, or any periodic transactions.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_ops_recurring_entry" model="ir.actions.act_window">
+        <field name="name">Recurring Entries</field>
+        <field name="res_model">ops.recurring.entry</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_ops_recurring_entry_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No recurring entries yet
+            </p>
+            <p>
+                Recurring entries are automatically generated from recurring templates.
+                Create and activate a template to start generating entries.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_ops_journal_template" model="ir.actions.act_window">
+        <field name="name">Journal Templates</field>
+        <field name="res_model">ops.journal.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_ops_journal_template_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first journal entry template
+            </p>
+            <p>
+                Journal templates allow you to quickly create common journal entries
+                with predefined accounts and amounts. Click a template to create an entry instantly.
+            </p>
+        </field>
+    </record>
+
+    <!-- ===================== MENUS ===================== -->
+
+    <menuitem id="menu_ops_automation"
+              name="Automation"
+              parent="account.menu_finance_entries"
+              sequence="90"/>
+
+    <menuitem id="menu_ops_recurring_template"
+              name="Recurring Templates"
+              parent="menu_ops_automation"
+              action="action_ops_recurring_template"
+              sequence="10"/>
+
+    <menuitem id="menu_ops_recurring_entry"
+              name="Recurring Entries"
+              parent="menu_ops_automation"
+              action="action_ops_recurring_entry"
+              sequence="20"/>
+
+    <menuitem id="menu_ops_journal_template"
+              name="Journal Templates"
+              parent="menu_ops_automation"
+              action="action_ops_journal_template"
+              sequence="30"/>
+
+</odoo>

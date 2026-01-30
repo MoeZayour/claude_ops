@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Recurring Entry Generation Cron -->
+        <record id="ir_cron_generate_recurring_entries" model="ir.cron">
+            <field name="name">OPS: Generate Recurring Journal Entries</field>
+            <field name="model_id" ref="model_ops_recurring_template"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_generate_recurring_entries()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+            <field name="priority">40</field>
+        </record>
+
+        <!-- Auto-Reversal Cron -->
+        <record id="ir_cron_process_auto_reversals" model="ir.cron">
+            <field name="name">OPS: Process Auto-Reversals</field>
+            <field name="model_id" ref="model_ops_recurring_entry"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_process_auto_reversals()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+            <field name="priority">45</field>
+        </record>
+
+        <!-- Sequence for recurring entries -->
+        <record id="sequence_ops_recurring_entry" model="ir.sequence">
+            <field name="name">OPS Recurring Entry</field>
+            <field name="code">ops.recurring.entry</field>
+            <field name="prefix">REC/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

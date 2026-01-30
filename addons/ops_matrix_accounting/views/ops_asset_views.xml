@@ -23,6 +23,10 @@
                             class="btn-warning" icon="fa-archive"
                             invisible="state not in ('running', 'paused')"
                             confirm="Are you sure you want to dispose this asset?"/>
+                    <button name="action_impair_asset" type="object" string="Record Impairment"
+                            class="btn-danger" icon="fa-exclamation-triangle"
+                            invisible="state != 'running'"
+                            groups="ops_matrix_core.group_ops_manager"/>
                     <button name="action_set_to_draft" type="object" string="Reset to Draft"
                             class="btn-link" icon="fa-undo"
                             invisible="state in ('draft', 'disposed', 'sold')"
@@ -46,6 +50,17 @@
                         <button name="open_depreciation_lines" type="object" class="oe_stat_button" icon="fa-line-chart">
                             <field name="depreciation_count" widget="statinfo" string="Depreciation Lines"/>
                         </button>
+                        <button name="action_view_impairment_entry" type="object" class="oe_stat_button" icon="fa-exclamation-triangle"
+                                invisible="not impairment_move_id">
+                            <span class="o_stat_text">Impairment Entry</span>
+                        </button>
+                    </div>
+                    <div class="alert alert-danger mb-3" role="alert"
+                         invisible="not impaired">
+                        <i class="fa fa-exclamation-triangle me-2" title="Impaired"/>
+                        <strong>Impaired:</strong> This asset was impaired on
+                        <field name="impairment_date" nolabel="1"/>.
+                        Impairment loss: <field name="impairment_loss" nolabel="1"/>
                     </div>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
@@ -83,6 +98,21 @@
                             <group>
                                 <field name="ops_branch_id"/>
                                 <field name="ops_business_unit_id"/>
+                            </group>
+                        </page>
+                        <page string="Impairment" name="impairment" icon="fa-exclamation-triangle"
+                              invisible="not impaired">
+                            <group>
+                                <group string="Impairment Details">
+                                    <field name="impaired" readonly="1"/>
+                                    <field name="impairment_date" readonly="1"/>
+                                    <field name="original_value" readonly="1"/>
+                                    <field name="recoverable_amount" readonly="1"/>
+                                </group>
+                                <group string="Configuration">
+                                    <field name="impairment_loss_account_id"/>
+                                    <field name="impairment_move_id" readonly="1"/>
+                                </group>
                             </group>
                         </page>
                         <page string="Notes" name="notes" icon="fa-sticky-note">

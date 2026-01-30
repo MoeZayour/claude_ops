@@ -1,43 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- List View for ops.asset.depreciation -->
+    <!-- ============================================
+         List View for ops.asset.depreciation
+         Task 2.4: Enhanced with sequence and remaining value
+         ============================================ -->
     <record id="view_ops_asset_depreciation_list" model="ir.ui.view">
         <field name="name">ops.asset.depreciation.list</field>
         <field name="model">ops.asset.depreciation</field>
         <field name="arch" type="xml">
-            <list string="Depreciation Lines" create="false">
+            <list string="Depreciation Lines" create="false" default_order="asset_id, sequence">
+                <field name="sequence" optional="hide"/>
                 <field name="depreciation_date"/>
                 <field name="asset_id"/>
-                <field name="amount"/>
-                <field name="move_id"/>
-                <field name="state"/>
-                <button name="action_post" type="object" string="Post" icon="fa-arrow-right" help="Post this depreciation line"/>
+                <field name="category_id" optional="hide"/>
+                <field name="amount" sum="Total"/>
+                <field name="remaining_value" optional="show"/>
+                <field name="cumulative_depreciation" optional="hide"/>
+                <field name="move_id" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'"
+                       decoration-danger="state == 'failed'"
+                       decoration-info="state == 'draft'"/>
+                <field name="auto_posted" optional="hide" widget="boolean"/>
+                <field name="auto_post_error" optional="hide"/>
+                <field name="branch_id" optional="hide"/>
+                <field name="business_unit_id" optional="hide"/>
+                <button name="action_post" type="object" string="Post" icon="fa-arrow-right"
+                        help="Post this depreciation line" invisible="state != 'draft'"/>
             </list>
         </field>
     </record>
 
-    <!-- Form View for ops.asset.depreciation -->
+    <!-- ============================================
+         Form View for ops.asset.depreciation
+         ============================================ -->
     <record id="view_ops_asset_depreciation_form" model="ir.ui.view">
         <field name="name">ops.asset.depreciation.form</field>
         <field name="model">ops.asset.depreciation</field>
         <field name="arch" type="xml">
             <form string="Depreciation Line" create="false">
                 <header>
-                     <button name="action_post" type="object" string="Post Entry" class="oe_highlight"/>
-                     <button name="action_view_move" type="object" string="View Journal Entry"/>
-                     <field name="state" widget="statusbar"/>
+                    <button name="action_post" type="object" string="Post Entry" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_view_move" type="object" string="View Journal Entry"
+                            invisible="not move_id"/>
+                    <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <!-- Alert banner for auto-post errors -->
+                    <div class="alert alert-warning" role="alert" invisible="not auto_post_error">
+                        <strong><i class="fa fa-exclamation-triangle"/> Auto-Post Error:</strong>
+                        <field name="auto_post_error" nolabel="1"/>
+                    </div>
+
                     <group>
-                        <group>
+                        <group string="Depreciation Details">
                             <field name="asset_id" readonly="1"/>
+                            <field name="category_id" readonly="1"/>
+                            <field name="sequence" readonly="1"/>
                             <field name="depreciation_date" readonly="1"/>
-                            <field name="amount" readonly="1"/>
                         </group>
-                        <group>
+                        <group string="Amounts">
+                            <field name="amount" readonly="1"/>
+                            <field name="remaining_value" readonly="1"/>
+                            <field name="cumulative_depreciation" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Journal Entry">
                             <field name="move_id" readonly="1"/>
-                            <field name="branch_id"/>
-                            <field name="business_unit_id"/>
+                        </group>
+                        <group string="OPS Matrix">
+                            <field name="branch_id" readonly="1"/>
+                            <field name="business_unit_id" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Auto-Post Information (shown when auto-posted or has error) -->
+                    <group string="Auto-Post Information"
+                           invisible="not auto_posted and not auto_post_error">
+                        <group>
+                            <field name="auto_posted" readonly="1"/>
+                            <field name="auto_post_date" readonly="1" invisible="not auto_posted"/>
                         </group>
                     </group>
                 </sheet>
@@ -45,24 +90,46 @@
         </field>
     </record>
 
-    <!-- Search View for ops.asset.depreciation -->
+    <!-- ============================================
+         Search View for ops.asset.depreciation
+         ============================================ -->
     <record id="view_ops_asset_depreciation_search" model="ir.ui.view">
         <field name="name">ops.asset.depreciation.search</field>
         <field name="model">ops.asset.depreciation</field>
         <field name="arch" type="xml">
             <search string="Search Depreciation Lines">
                 <field name="asset_id"/>
+                <field name="depreciation_date"/>
+                <separator/>
                 <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
                 <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <filter name="failed" string="Failed" domain="[('state', '=', 'failed')]"/>
                 <separator/>
-                <filter name="group_by_asset" string="Asset" context="{'group_by': 'asset_id'}"/>
-                <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
-                <filter name="group_by_date" string="Date" context="{'group_by': 'depreciation_date'}"/>
+                <filter name="auto_posted" string="Auto-Posted" domain="[('auto_posted', '=', True)]"/>
+                <filter name="auto_post_errors" string="Auto-Post Errors" domain="[('auto_post_error', '!=', False)]"/>
+                <separator/>
+                <filter name="this_month" string="This Month"
+                        domain="[('depreciation_date', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                 ('depreciation_date', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"/>
+                <filter name="this_year" string="This Year"
+                        domain="[('depreciation_date', '&gt;=', (context_today() - relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
+                                 ('depreciation_date', '&lt;', (context_today() + relativedelta(years=1, month=1, day=1)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <group>
+                    <filter name="group_by_asset" string="Asset" context="{'group_by': 'asset_id'}"/>
+                    <filter name="group_by_category" string="Category" context="{'group_by': 'category_id'}"/>
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_date" string="Date" context="{'group_by': 'depreciation_date:month'}"/>
+                    <filter name="group_by_branch" string="Branch" context="{'group_by': 'branch_id'}"/>
+                    <filter name="group_by_bu" string="Business Unit" context="{'group_by': 'business_unit_id'}"/>
+                </group>
             </search>
         </field>
     </record>
 
-    <!-- Action for ops.asset.depreciation -->
+    <!-- ============================================
+         Action for ops.asset.depreciation
+         ============================================ -->
     <record id="action_ops_asset_depreciation" model="ir.actions.act_window">
         <field name="name">Depreciation Lines</field>
         <field name="res_model">ops.asset.depreciation</field>
@@ -71,19 +138,22 @@
         <field name="context">{'search_default_draft': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No depreciation lines found. They are generated from assets.
+                No depreciation lines found
+            </p>
+            <p>
+                Depreciation lines are generated automatically when you confirm an asset.
+                Each line represents a periodic depreciation entry.
             </p>
         </field>
     </record>
 
-    <record id="action_run_asset_depreciation" model="ir.cron">
-        <field name="name">Asset Depreciation: Post Monthly Entries</field>
-        <field name="model_id" ref="model_ops_asset_depreciation"/>
-        <field name="state">code</field>
-        <field name="code">model.search([('depreciation_date', '&lt;=', datetime.date.today()), ('state', '=', 'draft')]).action_post()</field>
-        <field name="user_id" ref="base.user_root"/>
-        <field name="interval_number">1</field>
-        <field name="interval_type">months</field>
-        <field name="active" eval="True"/>
-    </record>
+    <!--
+        Note: The basic cron job has been replaced by the enhanced
+        auto-depreciation cron in data/cron_depreciation.xml
+        which includes:
+        - Period lock checking
+        - Category auto_post_depreciation setting
+        - Error tracking and notifications
+        - Monthly reminders
+    -->
 </odoo>

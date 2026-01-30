@@ -9,3 +9,8 @@ from . import ops_asset_depreciation_wizard
 from . import ops_asset_disposal_wizard
 from . import ops_inventory_report_wizard
 from . import ops_period_close_wizard
+from . import ops_three_way_match_override_wizard
+from . import ops_daily_reports_wizard
+# Phase 5: Advanced Features
+from . import ops_asset_impairment_wizard
+from . import ops_fx_revaluation_wizard

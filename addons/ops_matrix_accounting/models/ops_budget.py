@@ -1,6 +1,9 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from psycopg2 import sql
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class OpsBudget(models.Model):
     _name = 'ops.budget'
@@ -261,43 +264,107 @@ class OpsBudgetLine(models.Model):
         for line in self:
             line.available_amount = line.planned_amount - line.practical_amount - line.committed_amount
 
+    @api.depends('general_account_id', 'budget_id.date_from', 'budget_id.date_to',
+                 'budget_id.ops_branch_id', 'budget_id.ops_business_unit_id')
     def _compute_practical_amount(self):
-        """Compute actual spend from account moves."""
-        for line in self:
-            domain = [
-                ('account_id', '=', line.general_account_id.id),
-                ('ops_branch_id', '=', line.budget_id.ops_branch_id.id),
-                ('ops_business_unit_id', '=', line.budget_id.ops_business_unit_id.id),
-                ('date', '>=', line.budget_id.date_from),
-                ('date', '<=', line.budget_id.date_to),
-                ('move_id.state', '=', 'posted'),
-                ('move_id.move_type', 'in', ['in_invoice', 'in_refund'])
-            ]
-            
-            amount = sum(self.env['account.move.line'].search(domain).mapped('debit'))
-            line.practical_amount = amount
+        """
+        Compute actual spend from posted account moves using SQL for performance.
 
-    @api.depends('general_account_id', 'budget_id.date_from', 'budget_id.date_to')
+        Practical = Sum of debit - credit from posted vendor bills/refunds/entries
+        matching the budget's branch, BU, account, and date range.
+        """
+        for line in self:
+            if not line.general_account_id or not line.budget_id:
+                line.practical_amount = 0.0
+                continue
+
+            if not line.budget_id.ops_branch_id:
+                line.practical_amount = 0.0
+                continue
+
+            # Use raw SQL for performance on large datasets
+            query = """
+                SELECT COALESCE(SUM(aml.debit - aml.credit), 0)
+                FROM account_move_line aml
+                JOIN account_move am ON aml.move_id = am.id
+                WHERE aml.account_id = %s
+                  AND aml.ops_branch_id = %s
+                  AND aml.date >= %s
+                  AND aml.date <= %s
+                  AND am.state = 'posted'
+                  AND am.move_type IN ('in_invoice', 'in_refund', 'entry')
+                  AND am.company_id = %s
+            """
+
+            params = (
+                line.general_account_id.id,
+                line.budget_id.ops_branch_id.id,
+                line.budget_id.date_from,
+                line.budget_id.date_to,
+                line.budget_id.company_id.id,
+            )
+
+            try:
+                self.env.cr.execute(query, params)
+                result = self.env.cr.fetchone()
+                line.practical_amount = result[0] if result and result[0] else 0.0
+            except Exception as e:
+                _logger.error("Budget practical amount calculation error: %s", e)
+                line.practical_amount = 0.0
+
+    @api.depends('general_account_id', 'budget_id.date_from', 'budget_id.date_to',
+                 'budget_id.ops_branch_id', 'budget_id.ops_business_unit_id')
     def _compute_committed_amount(self):
-        """Compute committed amount from purchase orders"""
+        """
+        Compute committed amount from purchase orders using SQL for performance.
+
+        Committed = PO lines (confirmed/done) not yet fully invoiced, matching:
+        - Same branch as budget
+        - Date within budget period
+        - Product expense account matches budget line account
+
+        Formula: price_subtotal - (qty_invoiced * price_unit) gives the uninvoiced portion.
+        """
         for line in self:
             if not line.general_account_id or not line.budget_id:
                 line.committed_amount = 0.0
                 continue
-            
-            # Get PO lines where product's expense account matches our account
-            domain = [
-                ('order_id.state', 'in', ['purchase', 'done']),
-                ('date_planned', '>=', line.budget_id.date_from),
-                ('date_planned', '<=', line.budget_id.date_to),
-            ]
-            
-            # Find PO lines with matching expense account
-            po_lines = self.env['purchase.order.line'].search(domain)
-            
-            # Filter by account matching
-            matching_lines = po_lines.filtered(
-                lambda l: l.product_id.categ_id.property_account_expense_categ_id == line.general_account_id
+
+            if not line.budget_id.ops_branch_id:
+                line.committed_amount = 0.0
+                continue
+
+            # Use raw SQL for performance on large datasets
+            # Join through product -> product_template -> product_category to get expense account
+            query = """
+                SELECT COALESCE(SUM(
+                    pol.price_subtotal - COALESCE(pol.qty_invoiced * pol.price_unit, 0)
+                ), 0)
+                FROM purchase_order_line pol
+                JOIN purchase_order po ON pol.order_id = po.id
+                JOIN product_product pp ON pol.product_id = pp.id
+                JOIN product_template pt ON pp.product_tmpl_id = pt.id
+                JOIN product_category pc ON pt.categ_id = pc.id
+                WHERE po.state IN ('purchase', 'done')
+                  AND po.ops_branch_id = %s
+                  AND po.date_order >= %s
+                  AND po.date_order <= %s
+                  AND pc.property_account_expense_categ_id = %s
+                  AND po.company_id = %s
+            """
+
+            params = (
+                line.budget_id.ops_branch_id.id,
+                line.budget_id.date_from,
+                line.budget_id.date_to,
+                line.general_account_id.id,
+                line.budget_id.company_id.id,
             )
-            
-            line.committed_amount = sum(matching_lines.mapped('price_subtotal'))
+
+            try:
+                self.env.cr.execute(query, params)
+                result = self.env.cr.fetchone()
+                line.committed_amount = result[0] if result and result[0] else 0.0
+            except Exception as e:
+                _logger.error("Budget committed amount calculation error: %s", e)
+                line.committed_amount = 0.0

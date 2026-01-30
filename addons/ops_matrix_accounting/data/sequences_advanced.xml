@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Inter-Branch Transfer Sequence -->
+        <record id="seq_ops_interbranch_transfer" model="ir.sequence">
+            <field name="name">Inter-Branch Transfer Sequence</field>
+            <field name="code">ops.interbranch.transfer</field>
+            <field name="prefix">IBT/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Bank Reconciliation Sequence -->
+        <record id="seq_ops_bank_reconciliation" model="ir.sequence">
+            <field name="name">Bank Reconciliation Sequence</field>
+            <field name="code">ops.bank.reconciliation</field>
+            <field name="prefix">BRECON/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- IFRS 16 Lease Sequence -->
+        <record id="seq_ops_lease" model="ir.sequence">
+            <field name="name">Lease Agreement Sequence</field>
+            <field name="code">ops.lease</field>
+            <field name="prefix">LEASE/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

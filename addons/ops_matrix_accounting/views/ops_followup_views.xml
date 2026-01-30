@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== FOLLOW-UP CONFIGURATION ==================== -->
+
+    <!-- Follow-up Configuration Form -->
+    <record id="view_ops_followup_form" model="ir.ui.view">
+        <field name="name">ops.followup.form</field>
+        <field name="model">ops.followup</field>
+        <field name="arch" type="xml">
+            <form string="Follow-up Configuration">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="branch_specific"/>
+                        </group>
+                        <group>
+                            <field name="default_partner_days"/>
+                            <field name="auto_send_email"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Follow-up Levels" name="levels">
+                            <field name="followup_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="delay"/>
+                                    <field name="send_email"/>
+                                    <field name="email_template_id" optional="show"/>
+                                    <field name="create_activity"/>
+                                    <field name="block_credit"/>
+                                    <field name="manual_action"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Follow-up Configuration Tree -->
+    <record id="view_ops_followup_tree" model="ir.ui.view">
+        <field name="name">ops.followup.tree</field>
+        <field name="model">ops.followup</field>
+        <field name="arch" type="xml">
+            <list string="Follow-up Configurations">
+                <field name="company_id"/>
+                <field name="branch_specific"/>
+                <field name="auto_send_email"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Follow-up Line Form -->
+    <record id="view_ops_followup_line_form" model="ir.ui.view">
+        <field name="name">ops.followup.line.form</field>
+        <field name="model">ops.followup.line</field>
+        <field name="arch" type="xml">
+            <form string="Follow-up Level">
+                <sheet>
+                    <group>
+                        <group string="Basic">
+                            <field name="name"/>
+                            <field name="delay"/>
+                            <field name="sequence" readonly="1"/>
+                            <field name="followup_id" invisible="1"/>
+                        </group>
+                        <group string="Actions">
+                            <field name="send_email"/>
+                            <field name="email_template_id" invisible="not send_email"/>
+                            <field name="send_letter"/>
+                            <field name="block_credit"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Activity">
+                            <field name="create_activity"/>
+                            <field name="activity_type_id" invisible="not create_activity"/>
+                            <field name="activity_user_id" invisible="not create_activity"/>
+                            <field name="activity_days" invisible="not create_activity"/>
+                        </group>
+                        <group string="Manual Action">
+                            <field name="manual_action"/>
+                            <field name="manual_action_note" invisible="not manual_action"/>
+                        </group>
+                    </group>
+                    <group string="Follow-up Message">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== PARTNER FOLLOW-UP STATUS ==================== -->
+
+    <!-- Partner Follow-up Form -->
+    <record id="view_ops_partner_followup_form" model="ir.ui.view">
+        <field name="name">ops.partner.followup.form</field>
+        <field name="model">ops.partner.followup</field>
+        <field name="arch" type="xml">
+            <form string="Follow-up Status">
+                <header>
+                    <button name="action_send_followup" type="object" string="Send Follow-up"
+                            class="oe_highlight" invisible="state == 'resolved'"
+                            confirm="Send follow-up communication to this customer?"/>
+                    <button name="action_request_credit_override" type="object"
+                            string="Request Credit Override"
+                            invisible="not credit_blocked or credit_override"/>
+                    <button name="action_approve_credit_override" type="object"
+                            string="Approve Override" class="oe_highlight"
+                            invisible="not credit_blocked or credit_override"
+                            groups="account.group_account_manager"/>
+                    <button name="action_revoke_credit_override" type="object"
+                            string="Revoke Override"
+                            invisible="not credit_override"
+                            groups="account.group_account_manager"/>
+                    <button name="action_mark_resolved" type="object"
+                            string="Mark Resolved" invisible="state == 'resolved'"/>
+                    <button name="action_reset_followup" type="object"
+                            string="Reset" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,resolved,blocked"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_overdue_invoices" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="overdue_invoice_count" widget="statinfo"
+                                   string="Overdue Invoices"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Credit Blocked" bg_color="text-bg-danger"
+                            invisible="not credit_blocked or credit_override"/>
+                    <widget name="web_ribbon" title="Override Active" bg_color="text-bg-warning"
+                            invisible="not credit_override"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="partner_id" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Current Status">
+                            <field name="followup_level_id"/>
+                            <field name="followup_level_sequence"/>
+                            <field name="max_overdue_days"/>
+                            <field name="total_overdue_amount"/>
+                            <field name="total_balance"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Follow-up History">
+                            <field name="last_followup_date"/>
+                            <field name="last_followup_level_id"/>
+                            <field name="next_followup_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Organization">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="ops_branch_id"/>
+                        </group>
+                        <group string="Credit Block" invisible="not credit_blocked">
+                            <field name="credit_blocked"/>
+                            <field name="credit_block_reason"/>
+                            <field name="credit_override"/>
+                            <field name="credit_override_by" invisible="not credit_override"/>
+                            <field name="credit_override_date" invisible="not credit_override"/>
+                            <field name="credit_override_reason" invisible="not credit_override"/>
+                            <field name="credit_override_expiry" invisible="not credit_override"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Internal notes about this customer's follow-up..."/>
+                        </page>
+                        <page string="History" name="history">
+                            <field name="followup_history_ids">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="followup_level_id"/>
+                                    <field name="user_id"/>
+                                    <field name="action_taken"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Partner Follow-up Tree -->
+    <record id="view_ops_partner_followup_tree" model="ir.ui.view">
+        <field name="name">ops.partner.followup.tree</field>
+        <field name="model">ops.partner.followup</field>
+        <field name="arch" type="xml">
+            <list string="Customer Follow-ups" decoration-danger="credit_blocked and not credit_override"
+                  decoration-warning="max_overdue_days > 60" decoration-muted="state == 'resolved'">
+                <field name="partner_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'resolved'"
+                       decoration-warning="state == 'active'"
+                       decoration-danger="state == 'blocked'"
+                       decoration-info="state == 'draft'"/>
+                <field name="followup_level_id"/>
+                <field name="max_overdue_days"/>
+                <field name="total_overdue_amount" sum="Total Overdue"/>
+                <field name="total_balance" sum="Total Balance" optional="show"/>
+                <field name="overdue_invoice_count"/>
+                <field name="last_followup_date"/>
+                <field name="next_followup_date" optional="show"/>
+                <field name="credit_blocked" widget="boolean"/>
+                <field name="credit_override" widget="boolean" optional="hide"/>
+                <field name="ops_branch_id" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Partner Follow-up Search -->
+    <record id="view_ops_partner_followup_search" model="ir.ui.view">
+        <field name="name">ops.partner.followup.search</field>
+        <field name="model">ops.partner.followup</field>
+        <field name="arch" type="xml">
+            <search string="Follow-up Search">
+                <field name="partner_id"/>
+                <field name="ops_branch_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Active" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="Blocked" name="blocked" domain="[('state', '=', 'blocked')]"/>
+                <filter string="Resolved" name="resolved" domain="[('state', '=', 'resolved')]"/>
+                <separator/>
+                <filter string="Credit Blocked" name="credit_blocked"
+                        domain="[('credit_blocked', '=', True), ('credit_override', '=', False)]"/>
+                <filter string="Override Active" name="override_active"
+                        domain="[('credit_override', '=', True)]"/>
+                <separator/>
+                <filter string="Overdue &gt; 30 Days" name="overdue_30"
+                        domain="[('max_overdue_days', '&gt;', 30)]"/>
+                <filter string="Overdue &gt; 60 Days" name="overdue_60"
+                        domain="[('max_overdue_days', '&gt;', 60)]"/>
+                <filter string="Overdue &gt; 90 Days" name="overdue_90"
+                        domain="[('max_overdue_days', '&gt;', 90)]"/>
+                <separator/>
+                <filter string="Due for Follow-up" name="due_followup"
+                        domain="[('next_followup_date', '&lt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Status" name="group_state"
+                        context="{'group_by': 'state'}" domain="[]"/>
+                <filter string="Follow-up Level" name="group_level"
+                        context="{'group_by': 'followup_level_id'}" domain="[]"/>
+                <filter string="Branch" name="group_branch"
+                        context="{'group_by': 'ops_branch_id'}" domain="[]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Partner Follow-up Kanban -->
+    <record id="view_ops_partner_followup_kanban" model="ir.ui.view">
+        <field name="name">ops.partner.followup.kanban</field>
+        <field name="model">ops.partner.followup</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="state">
+                <field name="partner_id"/>
+                <field name="state"/>
+                <field name="total_overdue_amount"/>
+                <field name="max_overdue_days"/>
+                <field name="followup_level_id"/>
+                <field name="credit_blocked"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex mb-2">
+                            <strong class="o_kanban_record_title flex-grow-1">
+                                <field name="partner_id"/>
+                            </strong>
+                            <span t-if="record.credit_blocked.raw_value" class="badge text-bg-danger">
+                                BLOCKED
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>
+                                <strong>Overdue:</strong>
+                                <field name="total_overdue_amount" widget="monetary"/>
+                            </span>
+                            <span class="text-muted">
+                                <field name="max_overdue_days"/> days
+                            </span>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge text-bg-secondary">
+                                <field name="followup_level_id"/>
+                            </span>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ==================== CREDIT OVERRIDE WIZARD ==================== -->
+
+    <record id="view_ops_credit_override_wizard_form" model="ir.ui.view">
+        <field name="name">ops.credit.override.wizard.form</field>
+        <field name="model">ops.credit.override.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Credit Override Request">
+                <group>
+                    <group>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="total_overdue" readonly="1"/>
+                        <field name="max_overdue_days" readonly="1"/>
+                        <field name="current_level" readonly="1"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="partner_followup_id" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="override_expiry"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="reason" placeholder="Explain why credit should be extended to this customer despite overdue payments..."/>
+                </group>
+                <footer>
+                    <button name="action_submit_request" type="object"
+                            string="Submit Request" class="oe_highlight"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== ACTIONS ==================== -->
+
+    <record id="action_ops_followup_config" model="ir.actions.act_window">
+        <field name="name">Follow-up Configuration</field>
+        <field name="res_model">ops.followup</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure customer follow-up levels
+            </p>
+            <p>
+                Set up escalation levels for overdue customer payments.
+                Define delays, email templates, activities, and credit blocking rules.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_ops_partner_followup" model="ir.actions.act_window">
+        <field name="name">Customer Follow-ups</field>
+        <field name="res_model">ops.partner.followup</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No customer follow-ups yet
+            </p>
+            <p>
+                Follow-up records are created automatically when customers have overdue invoices.
+                Run the scheduled action or manually create follow-up records.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_ops_partner_followup_blocked" model="ir.actions.act_window">
+        <field name="name">Credit Blocked Customers</field>
+        <field name="res_model">ops.partner.followup</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('credit_blocked', '=', True), ('credit_override', '=', False)]</field>
+        <field name="context">{'search_default_credit_blocked': 1}</field>
+    </record>
+
+    <record id="action_ops_partner_followup_due" model="ir.actions.act_window">
+        <field name="name">Follow-ups Due Today</field>
+        <field name="res_model">ops.partner.followup</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_due_followup': 1}</field>
+    </record>
+</odoo>
