@@ -1,11 +1,124 @@
 // =============================================================================
 // OPS Theme - Settings Page Styling
 // =============================================================================
+// LIGHT MODE DEFAULT - hardcoded fallbacks for readability
+// =============================================================================
 
-// Theme settings section in General Settings
+// =============================================================================
+// GLOBAL SETTINGS PAGE - LIGHT MODE DEFAULT
+// =============================================================================
+.o_base_settings,
+.o_settings_container {
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
+
+    // Settings panel/card
+    .o_setting_box,
+    .o_settings_box {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    // Settings left/right panes
+    .o_setting_left_pane,
+    .o_setting_right_pane {
+        color: #1e293b !important;
+    }
+
+    // Section headers
+    h2, .h2 {
+        color: #1e293b !important;
+        font-weight: 600;
+    }
+
+    // Labels and text
+    label,
+    .o_form_label {
+        color: #64748b !important;
+    }
+
+    // Muted/secondary text
+    .text-muted,
+    small,
+    .text-secondary {
+        color: #64748b !important;
+    }
+
+    // Settings description text
+    .o_setting_box .text-muted,
+    .text-900 {
+        color: #64748b !important;
+    }
+
+    // App blocks
+    .app_settings_block {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+
+        h2 {
+            color: #1e293b !important;
+        }
+    }
+
+    // Card containers - ensure white background, no blue tint
+    .card,
+    .o_settings_container .card {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    // Left pane - transparent background
+    .o_setting_left_pane {
+        background: transparent !important;
+        background-color: transparent !important;
+    }
+
+    // Section headers - remove any blue tint
+    h2,
+    .o_app_settings_header {
+        background: transparent !important;
+        background-color: transparent !important;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+    }
+
+    // Override any blue highlighted sections
+    .o_setting_box.o_searchable_setting,
+    .o_setting_box[style*="background"] {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+    }
+
+    // Sidebar/navigation
+    .o_base_settings .settings_tab,
+    .settings_tab {
+        background-color: #ffffff !important;
+
+        .selected {
+            background-color: #eff6ff !important;
+            color: #3b82f6 !important;
+        }
+
+        a {
+            color: #1e293b !important;
+
+            &:hover {
+                background-color: #f8fafc !important;
+            }
+        }
+    }
+}
+
+// =============================================================================
+// Theme configuration app section
+// =============================================================================
 .o_base_settings {
-
-    // Theme configuration app section
     .app_settings_block[data-key="ops_theme"] {
 
         // Color picker fields
@@ -14,8 +127,8 @@
                 width: 60px;
                 height: 36px;
                 padding: 2px;
-                border: 1px solid var(--ops-border);
-                border-radius: var(--ops-radius-md);
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 8px;
                 cursor: pointer;
 
                 &::-webkit-color-swatch-wrapper {
@@ -23,7 +136,7 @@
                 }
 
                 &::-webkit-color-swatch {
-                    border-radius: var(--ops-radius-sm);
+                    border-radius: 4px;
                     border: none;
                 }
             }
@@ -34,8 +147,8 @@
             display: inline-block;
             width: 24px;
             height: 24px;
-            border-radius: var(--ops-radius-sm);
-            border: 1px solid var(--ops-border);
+            border-radius: 4px;
+            border: 1px solid #e2e8f0 !important;
             vertical-align: middle;
             margin-left: 0.5rem;
         }
@@ -44,13 +157,13 @@
         .oe_avatar {
             max-width: 200px;
             max-height: 120px;
-            border-radius: var(--ops-radius-md);
-            border: 1px solid var(--ops-border);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0 !important;
         }
 
         // Section blocks
         .o_setting_box {
-            border-bottom: 1px solid var(--ops-border);
+            border-bottom: 1px solid #e2e8f0 !important;
             padding-bottom: 1rem;
             margin-bottom: 1rem;
 
@@ -61,13 +174,13 @@
 
         // Action buttons
         .btn-secondary {
-            background-color: var(--ops-bg-hover);
-            border-color: var(--ops-border);
-            color: var(--ops-text-primary);
+            background-color: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+            color: #1e293b !important;
 
             &:hover {
-                background-color: var(--ops-border);
-                border-color: var(--ops-secondary);
+                background-color: #e2e8f0 !important;
+                border-color: #3b82f6 !important;
             }
 
             .fa {
@@ -77,7 +190,9 @@
     }
 }
 
+// =============================================================================
 // User preferences display section
+// =============================================================================
 .o_form_view {
     .o_group[name="ops_display_preferences"],
     .o_group[name="ops_display"] {
@@ -91,20 +206,23 @@
 
                 input[type="radio"] {
                     margin-right: 0.5rem;
-                    accent-color: var(--ops-secondary);
+                    accent-color: #3b82f6;
                 }
 
                 label {
                     margin-bottom: 0;
                     cursor: pointer;
                     font-weight: normal;
+                    color: #1e293b !important;
                 }
             }
         }
     }
 }
 
+// =============================================================================
 // Company form theme tab
+// =============================================================================
 .o_form_view {
     .o_notebook {
         .tab-pane[name="ops_theme"] {
@@ -115,8 +233,8 @@
                     width: 50px;
                     height: 32px;
                     padding: 2px;
-                    border: 1px solid var(--ops-border);
-                    border-radius: var(--ops-radius-sm);
+                    border: 1px solid #e2e8f0 !important;
+                    border-radius: 4px;
                     cursor: pointer;
                 }
             }
@@ -125,7 +243,42 @@
             .oe_avatar {
                 max-width: 150px;
                 max-height: 100px;
-                border-radius: var(--ops-radius-md);
+                border-radius: 8px;
+            }
+        }
+    }
+}
+
+// =============================================================================
+// DARK MODE OVERRIDES (only when explicitly set)
+// =============================================================================
+[data-color-mode="dark"] {
+    .o_base_settings,
+    .o_settings_container {
+        background-color: #0f172a !important;
+        color: #f1f5f9 !important;
+
+        .o_setting_box,
+        .o_settings_box,
+        .app_settings_block {
+            background-color: #1e293b !important;
+            color: #f1f5f9 !important;
+            border-color: #334155 !important;
+        }
+
+        h2, .h2 {
+            color: #f1f5f9 !important;
+        }
+
+        label, .o_form_label, .text-muted {
+            color: #94a3b8 !important;
+        }
+
+        .settings_tab {
+            background-color: #1e293b !important;
+
+            a {
+                color: #f1f5f9 !important;
             }
         }
     }

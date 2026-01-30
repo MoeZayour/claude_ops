@@ -1,14 +1,17 @@
 // =============================================================================
 // OPS THEME - FORM VIEW
 // =============================================================================
+// LIGHT MODE DEFAULT with hardcoded fallbacks
+// =============================================================================
 
 .o_form_view {
-    background-color: var(--ops-bg-body);
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
 
-    // Status bar
+    // Status bar - LIGHT MODE DEFAULT
     .o_form_statusbar {
-        background-color: var(--ops-bg-card);
-        border-bottom: 1px solid var(--ops-border);
+        background-color: #ffffff !important;
+        border-bottom: 1px solid #e2e8f0 !important;
         padding: 0.5rem 1rem;
 
         // Status buttons (workflow states)
@@ -60,12 +63,14 @@
         }
     }
 
-    // Form sheet (main content card)
+    // Form sheet (main content card) - LIGHT MODE DEFAULT
     .o_form_sheet_bg {
         padding: 1rem;
+        background-color: #f1f5f9 !important;
 
         .o_form_sheet {
-            background-color: var(--ops-bg-card);
+            background-color: #ffffff !important;
+            color: #1e293b !important;
             border-radius: var(--ops-radius-lg);
             box-shadow: var(--ops-shadow-md);
             padding: 1.5rem;
@@ -109,42 +114,72 @@
         }
     }
 
-    // Labels
+    // Labels - LIGHT MODE DEFAULT
     .o_form_label {
-        color: var(--ops-text-secondary);
+        color: #64748b !important;
         font-size: 0.875rem;
         font-weight: 500;
     }
 
-    // Input fields
+    // Input fields - LIGHT MODE DEFAULT (white bg, dark text)
     .o_field_widget {
         input.o_input,
         textarea.o_input,
-        select.o_input {
-            background-color: var(--ops-bg-input);
-            border: 1px solid var(--ops-border);
+        select.o_input,
+        input,
+        textarea,
+        select {
+            background-color: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
             border-radius: var(--ops-radius-md);
-            color: var(--ops-text-primary);
+            color: #1e293b !important;
             padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
+            &::placeholder {
+                color: #94a3b8 !important;
+            }
+
             &:focus {
-                border-color: var(--ops-border-focus);
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                border-color: #3b82f6 !important;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
                 outline: none;
             }
 
             &:disabled,
             &[readonly] {
-                background-color: var(--ops-bg-hover);
-                color: var(--ops-text-disabled);
+                background-color: #f8fafc !important;
+                color: #64748b !important;
             }
         }
 
         // Readonly text display
-        &.o_readonly_modifier span {
-            color: var(--ops-text-primary);
+        &.o_readonly_modifier span,
+        span.o_readonly_modifier {
+            color: #1e293b !important;
+        }
+    }
+
+    // Many2one/Selection fields - ensure white background
+    .o_field_many2one,
+    .o_field_many2many,
+    .o_field_selection {
+        input,
+        .o_input_dropdown,
+        select {
+            background-color: #ffffff !important;
+            color: #1e293b !important;
+        }
+    }
+
+    // Many2many tags
+    .o_field_many2many_tags {
+        background-color: #ffffff !important;
+
+        .badge {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
         }
     }
 
@@ -188,6 +223,102 @@
             border: 1px solid var(--ops-border);
             border-radius: var(--ops-radius-md);
             overflow: hidden;
+        }
+    }
+}
+
+// =============================================================================
+// TOGGLE/CHECKBOX - GREEN WHEN SELECTED
+// =============================================================================
+.o_boolean_toggle input:checked + span,
+.o_field_boolean input:checked + span,
+.form-check-input:checked,
+.form-switch .form-check-input:checked,
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+    accent-color: #10b981 !important;
+}
+
+// Boolean toggle specific styling
+.o_boolean_toggle {
+    .slider,
+    .o_boolean_toggle_slider {
+        &:before {
+            transition: transform 0.2s ease;
+        }
+    }
+
+    input:checked + .slider,
+    input:checked + .o_boolean_toggle_slider {
+        background-color: #10b981 !important;
+        border-color: #10b981 !important;
+    }
+}
+
+// Bootstrap form-switch overrides
+.form-switch {
+    .form-check-input {
+        &:checked {
+            background-color: #10b981 !important;
+            border-color: #10b981 !important;
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25) !important;
+        }
+    }
+}
+
+// Radio buttons - green when checked
+.o_field_radio,
+.o_radio_input {
+    input[type="radio"]:checked {
+        accent-color: #10b981 !important;
+    }
+}
+
+// =============================================================================
+// DARK MODE OVERRIDES (only when explicitly set)
+// =============================================================================
+[data-color-mode="dark"] {
+    .o_form_view {
+        background-color: #0f172a !important;
+        color: #f1f5f9 !important;
+
+        .o_form_statusbar {
+            background-color: #1e293b !important;
+            border-bottom-color: #334155 !important;
+        }
+
+        .o_form_sheet_bg {
+            background-color: #0f172a !important;
+
+            .o_form_sheet {
+                background-color: #1e293b !important;
+                color: #f1f5f9 !important;
+            }
+        }
+
+        .o_form_label {
+            color: #94a3b8 !important;
+        }
+
+        .o_field_widget {
+            input, textarea, select {
+                background-color: #334155 !important;
+                color: #f1f5f9 !important;
+                border-color: #475569 !important;
+
+                &::placeholder {
+                    color: #64748b !important;
+                }
+            }
+
+            &.o_readonly_modifier span {
+                color: #f1f5f9 !important;
+            }
         }
     }
 }

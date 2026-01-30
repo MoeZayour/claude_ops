@@ -1,26 +1,35 @@
 // =============================================================================
 // OPS THEME - LIST VIEW
 // =============================================================================
+// LIGHT MODE DEFAULT - hardcoded fallbacks
+// =============================================================================
 
 .o_list_view {
-    background-color: var(--ops-bg-card, #fff);
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    overflow: hidden;
 
     .o_list_table {
         background-color: var(--ops-bg-card, #fff);
+        border-collapse: collapse;
+        width: 100%;
 
         // Header
         thead {
-            background-color: var(--ops-bg-hover, #f8fafc) !important;
+            background-color: #f8fafc !important;
+            border-bottom: 2px solid #e2e8f0 !important;
 
             th {
-                background-color: var(--ops-bg-hover, #f8fafc) !important;
+                background-color: #f8fafc !important;
                 color: var(--ops-text-secondary, #64748b) !important;
                 font-weight: 600;
                 font-size: 0.75rem;
                 text-transform: uppercase;
                 letter-spacing: 0.025em;
                 padding: 0.75rem 1rem;
-                border-bottom: 1px solid var(--ops-border, #e2e8f0);
+                border-bottom: 2px solid #e2e8f0 !important;
                 white-space: nowrap;
 
                 // Sortable columns
@@ -110,15 +119,24 @@
 
     // Footer (totals row)
     tfoot {
-        background-color: var(--ops-bg-hover, #f8fafc) !important;
+        background-color: #f8fafc !important;
+        border-top: 2px solid #e2e8f0 !important;
 
         td {
             padding: 0.75rem 1rem;
             font-weight: 600;
             color: var(--ops-text-primary, #1e293b) !important;
-            border-top: 2px solid var(--ops-border, #e2e8f0);
+            border-top: none;
+            background-color: #f8fafc !important;
         }
     }
+}
+
+// List view wrapper container
+.o_list_renderer {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    overflow: hidden;
 }
 
 // =============================================================================
@@ -263,5 +281,47 @@
         td {
             color: var(--ops-text-primary, #1e293b) !important;
         }
+    }
+}
+
+// =============================================================================
+// DARK MODE OVERRIDES (only when explicitly set)
+// =============================================================================
+[data-color-mode="dark"] {
+    .o_list_view {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+
+        .o_list_table {
+            background-color: #1e293b !important;
+
+            thead th {
+                background-color: #0f172a !important;
+                color: #94a3b8 !important;
+                border-bottom-color: #334155 !important;
+            }
+
+            tbody tr {
+                &:hover {
+                    background-color: #334155 !important;
+                }
+
+                td {
+                    color: #f1f5f9 !important;
+                    border-bottom-color: #334155 !important;
+                }
+            }
+
+            tfoot td {
+                background-color: #0f172a !important;
+                color: #f1f5f9 !important;
+                border-top-color: #334155 !important;
+            }
+        }
+    }
+
+    .o_data_cell,
+    .o_field_widget {
+        color: #f1f5f9 !important;
     }
 }

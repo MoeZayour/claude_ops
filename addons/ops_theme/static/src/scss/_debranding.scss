@@ -170,6 +170,43 @@ input[type="radio"] {
 }
 
 // =============================================================================
+// Kill Purple Icons and SVG Elements
+// =============================================================================
+.o_kanban_image,
+.o_field_widget .fa,
+.fa[style*="color"][style*="714B67"],
+.fa[style*="color"][style*="875A7B"],
+[style*="background"][style*="714B67"],
+[style*="color"][style*="714B67"],
+[style*="background"][style*="875A7B"],
+[style*="color"][style*="875A7B"] {
+    color: #3b82f6 !important;
+}
+
+// SVG fills - replace purple with blue
+svg[fill="#714B67"],
+svg[fill="#875A7B"],
+svg[fill="#7C7BAD"],
+svg[fill="#6B5B95"] {
+    fill: #3b82f6 !important;
+}
+
+svg path[fill="#714B67"],
+svg path[fill="#875A7B"],
+svg path[fill="#7C7BAD"],
+svg path[fill="#6B5B95"] {
+    fill: #3b82f6 !important;
+}
+
+// Icons with purple color
+.oi[style*="714B67"],
+.oi[style*="875A7B"],
+i[style*="714B67"],
+i[style*="875A7B"] {
+    color: #3b82f6 !important;
+}
+
+// =============================================================================
 // Hide Odoo Logos and Branding
 // =============================================================================
 img[src*="odoo_logo"],
@@ -444,4 +481,46 @@ header .o_main_navbar,
 .o_wizard .btn-primary {
     background-color: var(--ops-secondary, #3b82f6) !important;
     border-color: var(--ops-secondary, #3b82f6) !important;
+}
+
+// =============================================================================
+// Chart Colors - Replace purple with blue
+// =============================================================================
+.o_graph_canvas_container,
+.o_kanban_graph {
+    // Chart.js will use JS for colors, but we can style wrappers
+    canvas {
+        max-width: 100%;
+    }
+}
+
+// Dashboard cards with charts
+.o_kanban_view .o_kanban_record .o_graph_barchart rect,
+.o_graph_barchart rect,
+.o_graph_renderer rect {
+    fill: #3b82f6 !important;
+}
+
+// Line charts
+.o_graph_linechart path,
+.o_graph_renderer path.line {
+    stroke: #3b82f6 !important;
+}
+
+// Pie charts
+.o_graph_piechart path:first-child,
+.o_graph_renderer .pie-slice:first-child {
+    fill: #3b82f6 !important;
+}
+
+// Dashboard stats badges
+.o_kanban_primary_left .badge,
+.o_kanban_primary_right .badge {
+    background: #3b82f6 !important;
+}
+
+// Graph view legend
+.o_graph_renderer .nv-legend-text,
+.o_graph_view .legend text {
+    fill: #1e293b !important;
 }
