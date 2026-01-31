@@ -139,7 +139,9 @@ class OpsDashboardWidget(models.Model):
         Model = self.env[self.list_model]
 
         from odoo.tools.safe_eval import safe_eval
-        base_domain = safe_eval(self.list_domain) if self.list_domain else []
+        from .ops_kpi_value import _get_safe_eval_context
+        eval_context = _get_safe_eval_context(self.env)
+        base_domain = safe_eval(self.list_domain, eval_context) if self.list_domain else []
 
         # Apply branch isolation if model has ops_branch_id
         user = self.env.user
@@ -175,3 +177,25 @@ class OpsDashboardWidget(models.Model):
             result.append(row)
 
         return result
+
+    @api.model
+    def cron_refresh_dashboard_data(self):
+        """
+        Refresh data for all active widgets.
+        Called by scheduled cron job to pre-compute widget data.
+        """
+        widgets = self.search([('active', '=', True)])
+        _logger.info(f"Cron: Refreshing data for {len(widgets)} active dashboard widgets")
+
+        success_count = 0
+        error_count = 0
+        for widget in widgets:
+            try:
+                widget.get_widget_data()
+                success_count += 1
+            except Exception as e:
+                error_count += 1
+                _logger.error(f"Error refreshing widget '{widget.name}' (ID: {widget.id}): {e}")
+
+        _logger.info(f"Cron: Dashboard refresh complete. Success: {success_count}, Errors: {error_count}")
+        return True

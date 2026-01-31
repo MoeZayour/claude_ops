@@ -22,21 +22,29 @@ class OpsDashboard(models.Model):
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
 
-    # Targeting
+    # Dashboard Type - Extended for enterprise
     dashboard_type = fields.Selection([
-        ('executive', 'Executive Dashboard'),
-        ('branch', 'Branch Dashboard'),
-        ('bu', 'Business Unit Dashboard'),
-        ('sales', 'Sales Dashboard'),
-        ('purchase', 'Purchase Dashboard'),
-        ('finance', 'Finance Dashboard'),
-        ('inventory', 'Inventory Dashboard'),
-        ('custom', 'Custom Dashboard'),
+        ('executive', 'Executive'),
+        ('finance', 'Finance'),
+        ('sales', 'Sales'),
+        ('purchase', 'Purchase'),
+        ('inventory', 'Inventory'),
+        ('receivable', 'Receivables'),
+        ('payable', 'Payables'),
+        ('treasury', 'Treasury'),
+        ('branch', 'Branch'),
+        ('bu', 'Business Unit'),
+        ('system', 'System'),
+        ('custom', 'Custom'),
     ], string='Type', required=True, default='custom')
 
-    # Persona Access
+    # Persona Access - Enhanced for enterprise
     persona_ids = fields.Many2many('ops.persona', string='Target Personas',
                                    help='Which personas can view this dashboard')
+    persona_codes = fields.Char(
+        string='Persona Codes',
+        help='Comma-separated persona codes: P01,P02,P03. Alternative to persona_ids.'
+    )
     group_ids = fields.Many2many('res.groups', string='Access Groups',
                                  help='Additional groups that can view this dashboard')
 
@@ -72,8 +80,11 @@ class OpsDashboard(models.Model):
         for dashboard in self:
             dashboard.widget_count = len(dashboard.widget_ids)
 
-    def _check_access(self):
-        """Check if current user can access this dashboard."""
+    def _check_user_dashboard_access(self):
+        """
+        Check if current user can access this dashboard.
+        Checks: system admin, IT admin blindness, persona codes, groups.
+        """
         user = self.env.user
         self.ensure_one()
 
@@ -81,19 +92,34 @@ class OpsDashboard(models.Model):
         if user.has_group('base.group_system'):
             return True
 
+        # IT Admin can ONLY see system dashboards
+        if user.has_group('ops_matrix_core.group_ops_it_admin'):
+            return self.dashboard_type == 'system'
+
+        # Check persona_codes first (comma-separated string)
+        if self.persona_codes:
+            allowed_codes = [p.strip() for p in self.persona_codes.split(',') if p.strip()]
+            user_personas = []
+            if hasattr(user, 'ops_persona_ids'):
+                user_personas = user.ops_persona_ids.mapped('code')
+            if allowed_codes and any(p in allowed_codes for p in user_personas):
+                return True
+
+        # Check persona_ids (Many2many)
+        if self.persona_ids:
+            if hasattr(user, 'persona_id') and user.persona_id in self.persona_ids:
+                return True
+            if hasattr(user, 'ops_persona_ids') and (user.ops_persona_ids & self.persona_ids):
+                return True
+
         # Check group access
         if self.group_ids:
             user_groups = user.groups_id
             if self.group_ids & user_groups:
                 return True
 
-        # Check persona access
-        if self.persona_ids and hasattr(user, 'ops_persona_id'):
-            if user.ops_persona_id in self.persona_ids:
-                return True
-
         # Default: allow if no restrictions set
-        if not self.group_ids and not self.persona_ids:
+        if not self.group_ids and not self.persona_ids and not self.persona_codes:
             return True
 
         return False
@@ -103,12 +129,16 @@ class OpsDashboard(models.Model):
         """Get dashboards accessible to current user."""
         user = self.env.user
 
-        # IT Admin gets no business dashboards
+        # IT Admin gets only system dashboards
         if user.has_group('ops_matrix_core.group_ops_it_admin'):
-            return []  # Return empty list for JSON serialization
+            dashboards = self.search([
+                ('active', '=', True),
+                ('dashboard_type', '=', 'system')
+            ])
+            return dashboards.read(['id', 'name', 'code', 'dashboard_type'])
 
         dashboards = self.search([('active', '=', True)])
-        accessible = dashboards.filtered(lambda d: d._check_access())
+        accessible = dashboards.filtered(lambda d: d._check_user_dashboard_access())
         return accessible.read(['id', 'name', 'code', 'dashboard_type'])
 
     @api.model
@@ -122,7 +152,7 @@ class OpsDashboard(models.Model):
         if not dashboard.exists():
             return {'error': 'Dashboard not found'}
 
-        if not dashboard._check_access():
+        if not dashboard._check_user_dashboard_access():
             return {'error': 'Access Denied'}
 
         # Collect widget data
@@ -139,4 +169,27 @@ class OpsDashboard(models.Model):
             'refresh_interval': int(dashboard.refresh_interval or 0),
             'columns': dashboard.columns,
             'widgets': widgets_data,
+        }
+
+    @api.model
+    def get_company_currency_info(self):
+        """
+        Get the current user's company currency information.
+        Returns symbol, position, and code for frontend formatting.
+        """
+        company = self.env.company
+        currency = company.currency_id
+
+        if currency:
+            return {
+                'symbol': currency.symbol or '$',
+                'position': currency.position or 'before',
+                'code': currency.name or 'USD',
+            }
+
+        # Fallback defaults
+        return {
+            'symbol': '$',
+            'position': 'before',
+            'code': 'USD',
         }

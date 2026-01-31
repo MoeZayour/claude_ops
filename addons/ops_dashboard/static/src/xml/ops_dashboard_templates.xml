@@ -2,136 +2,142 @@
 <templates xml:space="preserve">
     <t t-name="ops_dashboard.DashboardAction">
         <div class="ops-dashboard">
-            <!-- Header -->
-            <div class="ops-dashboard-header">
-                <h1 class="dashboard-title">
-                    <t t-if="state.dashboardData">
-                        <t t-esc="state.dashboardData.dashboard_name"/>
-                    </t>
-                    <t t-else="">OPS Analytics</t>
-                </h1>
+            <div class="ops-dashboard-container">
+                <!-- Header -->
+                <div class="ops-dashboard-header">
+                    <h1 class="dashboard-title">
+                        <t t-if="state.dashboardData">
+                            <t t-esc="state.dashboardData.dashboard_name"/>
+                        </t>
+                        <t t-else="">OPS Analytics</t>
+                    </h1>
 
-                <div class="dashboard-controls">
-                    <!-- Dashboard Selector -->
-                    <t t-if="state.dashboards.length > 1">
-                        <select class="form-select dashboard-selector"
-                                t-on-change="onDashboardChange"
-                                t-att-value="state.selectedDashboardId">
-                            <t t-foreach="state.dashboards" t-as="dashboard" t-key="dashboard.id">
-                                <option t-att-value="dashboard.id"
-                                        t-att-selected="dashboard.id === state.selectedDashboardId">
-                                    <t t-esc="dashboard.name"/>
+                    <div class="dashboard-controls">
+                        <!-- Dashboard Selector -->
+                        <t t-if="state.dashboards.length > 1">
+                            <select class="form-select dashboard-selector"
+                                    t-on-change="onDashboardChange"
+                                    t-att-value="state.selectedDashboardId">
+                                <t t-foreach="state.dashboards" t-as="dashboard" t-key="dashboard.id">
+                                    <option t-att-value="dashboard.id"
+                                            t-att-selected="dashboard.id === state.selectedDashboardId">
+                                        <t t-esc="dashboard.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </t>
+
+                        <!-- Period Selector -->
+                        <select class="form-select period-selector"
+                                t-on-change="onPeriodChange"
+                                t-att-value="state.period">
+                            <t t-foreach="periods" t-as="p" t-key="p.value">
+                                <option t-att-value="p.value"
+                                        t-att-selected="p.value === state.period">
+                                    <t t-esc="p.label"/>
                                 </option>
                             </t>
                         </select>
-                    </t>
 
-                    <!-- Period Selector -->
-                    <select class="form-select period-selector"
-                            t-on-change="onPeriodChange"
-                            t-att-value="state.period">
-                        <t t-foreach="periods" t-as="p" t-key="p.value">
-                            <option t-att-value="p.value"
-                                    t-att-selected="p.value === state.period">
-                                <t t-esc="p.label"/>
-                            </option>
-                        </t>
-                    </select>
-
-                    <!-- Refresh Button -->
-                    <button class="refresh-button"
-                            t-on-click="onRefresh"
-                            t-att-disabled="state.refreshing">
-                        <i t-attf-class="fa #{state.refreshing ? 'fa-spinner fa-spin' : 'fa-sync-alt'}"/>
-                        <span class="ms-2">Refresh</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Loading State -->
-            <t t-if="state.loading">
-                <div class="ops-dashboard-loading">
-                    <div class="loading-spinner"/>
-                    <div class="loading-text">Loading dashboard...</div>
-                </div>
-            </t>
-
-            <!-- Error State -->
-            <t t-elif="state.error">
-                <div class="ops-dashboard-empty">
-                    <div class="empty-icon">
-                        <i class="fa fa-exclamation-triangle"/>
-                    </div>
-                    <div class="empty-title">Error</div>
-                    <div class="empty-message">
-                        <t t-esc="state.error"/>
+                        <!-- Refresh Button -->
+                        <button class="refresh-button"
+                                t-on-click="onRefresh"
+                                t-att-disabled="state.refreshing">
+                            <i t-attf-class="fa #{state.refreshing ? 'fa-spinner fa-spin' : 'fa-sync-alt'}"/>
+                            <span>Refresh</span>
+                        </button>
                     </div>
                 </div>
-            </t>
 
-            <!-- Empty State -->
-            <t t-elif="!state.dashboardData or !state.dashboardData.widgets or state.dashboardData.widgets.length === 0">
-                <div class="ops-dashboard-empty">
-                    <div class="empty-icon">
-                        <i class="fa fa-chart-bar"/>
-                    </div>
-                    <div class="empty-title">No Dashboard Data</div>
-                    <div class="empty-message">
-                        <t t-if="state.dashboards.length === 0">
-                            No dashboards are available for your user.
-                        </t>
-                        <t t-else="">
-                            This dashboard has no widgets configured or you don't have access to view the data.
-                        </t>
-                    </div>
-                </div>
-            </t>
-
-            <!-- Dashboard Grid -->
-            <t t-else="">
-                <div class="ops-dashboard-grid"
-                     t-attf-style="grid-template-columns: repeat(#{state.dashboardData.columns || 4}, 1fr)">
-                    <t t-foreach="state.dashboardData.widgets" t-as="widget" t-key="widget.widget_id">
-                        <div class="ops-kpi-card"
-                             t-attf-style="grid-column: span #{widget.position.w || 1}; grid-row: span #{widget.position.h || 1}; color: #{widget.color}">
-                            <div class="kpi-header">
-                                <div class="kpi-icon" t-attf-style="background-color: #{widget.color}">
-                                    <i t-attf-class="fa #{widget.icon || 'fa-chart-bar'}"/>
-                                </div>
-                                <span class="kpi-name"><t t-esc="widget.name"/></span>
-                            </div>
-
-                            <div class="kpi-value">
-                                <t t-esc="formatValue(widget)"/>
-                            </div>
-
-                            <t t-if="widget.trend_direction and widget.trend_direction !== 'flat'">
-                                <div t-attf-class="kpi-trend #{getTrendClass(widget)}">
-                                    <i t-attf-class="trend-icon fa #{getTrendIcon(widget)}"/>
-                                    <span class="trend-value">
-                                        <t t-esc="Math.abs(widget.trend_percentage || 0).toFixed(1)"/>%
-                                    </span>
-                                    <span class="trend-label">vs previous</span>
-                                </div>
-                            </t>
-
-                            <t t-if="widget.subtitle">
-                                <div class="kpi-subtitle">
-                                    <t t-esc="widget.subtitle"/>
-                                </div>
-                            </t>
-                        </div>
-                    </t>
-                </div>
-
-                <!-- Auto-refresh indicator -->
-                <t t-if="hasAutoRefresh">
-                    <div class="auto-refresh-indicator">
-                        <div class="refresh-dot"/>
-                        <span>Auto-refresh: <t t-esc="refreshIntervalText"/></span>
+                <!-- Loading State -->
+                <t t-if="state.loading">
+                    <div class="ops-dashboard-loading">
+                        <div class="loading-spinner"/>
+                        <div class="loading-text">Loading dashboard...</div>
                     </div>
                 </t>
-            </t>
+
+                <!-- Error State -->
+                <t t-elif="state.error">
+                    <div class="ops-dashboard-empty">
+                        <div class="empty-icon">
+                            <i class="fa fa-exclamation-triangle"/>
+                        </div>
+                        <div class="empty-title">Error</div>
+                        <div class="empty-message">
+                            <t t-esc="state.error"/>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Empty State -->
+                <t t-elif="!state.dashboardData or !state.dashboardData.widgets or state.dashboardData.widgets.length === 0">
+                    <div class="ops-dashboard-empty">
+                        <div class="empty-icon">
+                            <i class="fa fa-chart-bar"/>
+                        </div>
+                        <div class="empty-title">No Dashboard Data</div>
+                        <div class="empty-message">
+                            <t t-if="state.dashboards.length === 0">
+                                No dashboards are available for your user.
+                            </t>
+                            <t t-else="">
+                                This dashboard has no widgets configured or you don't have access to view the data.
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Dashboard Grid -->
+                <t t-else="">
+                    <div class="ops-dashboard-grid">
+                        <t t-foreach="state.dashboardData.widgets" t-as="widget" t-key="widget.widget_id">
+                            <div t-attf-class="ops-kpi-card #{getCardColorClass(widget)}"
+                                 t-attf-style="grid-column: span #{widget.position.w || 1}; grid-row: span #{widget.position.h || 1};">
+
+                                <!-- Card Header: Name + Icon -->
+                                <div class="kpi-header">
+                                    <span class="kpi-name"><t t-esc="widget.name"/></span>
+                                    <div class="kpi-icon" t-attf-style="background-color: #{widget.color}">
+                                        <i t-attf-class="fa #{widget.icon || 'fa-chart-bar'}"/>
+                                    </div>
+                                </div>
+
+                                <!-- Main Value -->
+                                <div class="kpi-value">
+                                    <t t-esc="formatValue(widget)"/>
+                                </div>
+
+                                <!-- Trend Indicator -->
+                                <t t-if="widget.trend_direction and widget.trend_direction !== 'flat'">
+                                    <div t-attf-class="kpi-trend #{getTrendClass(widget)}">
+                                        <i t-attf-class="trend-icon fa #{getTrendIcon(widget)}"/>
+                                        <span class="trend-value">
+                                            <t t-esc="Math.abs(widget.trend_percentage || 0).toFixed(1)"/>%
+                                        </span>
+                                        <span class="trend-label">vs previous</span>
+                                    </div>
+                                </t>
+
+                                <!-- Subtitle -->
+                                <t t-if="widget.subtitle">
+                                    <div class="kpi-subtitle">
+                                        <t t-esc="widget.subtitle"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- Auto-refresh indicator -->
+                    <t t-if="hasAutoRefresh">
+                        <div class="auto-refresh-indicator">
+                            <div class="refresh-dot"/>
+                            <span>Auto-refresh: <t t-esc="refreshIntervalText"/></span>
+                        </div>
+                    </t>
+                </t>
+            </div>
         </div>
     </t>
 </templates>

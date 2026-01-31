@@ -7,7 +7,7 @@ import { _t } from "@web/core/l10n/translation";
 
 /**
  * OPS Dashboard Action Component
- * Displays KPI cards with real-time data and auto-refresh
+ * Displays KPI cards with real-time data, auto-refresh, and proper currency formatting
  */
 class OpsDashboardAction extends Component {
     static template = "ops_dashboard.DashboardAction";
@@ -25,6 +25,10 @@ class OpsDashboardAction extends Component {
             loading: true,
             refreshing: false,
             error: null,
+            // Currency info - will be loaded from backend
+            currencySymbol: "",
+            currencyPosition: "before",
+            currencyCode: "",
         });
 
         this.refreshInterval = null;
@@ -40,6 +44,7 @@ class OpsDashboardAction extends Component {
         ];
 
         onWillStart(async () => {
+            await this.loadCurrencyInfo();
             await this.loadDashboards();
         });
 
@@ -50,6 +55,33 @@ class OpsDashboardAction extends Component {
         onWillUnmount(() => {
             this.clearAutoRefresh();
         });
+    }
+
+    /**
+     * Load the company's currency information for proper formatting
+     * Uses a backend method to get currency info for current user's company
+     */
+    async loadCurrencyInfo() {
+        try {
+            // Call backend method to get currency info
+            const currencyInfo = await this.orm.call(
+                "ops.dashboard",
+                "get_company_currency_info",
+                []
+            );
+
+            if (currencyInfo) {
+                this.state.currencySymbol = currencyInfo.symbol || "$";
+                this.state.currencyPosition = currencyInfo.position || "before";
+                this.state.currencyCode = currencyInfo.code || "USD";
+            }
+        } catch (error) {
+            console.warn("Could not load currency info:", error);
+            // Set defaults if unable to load
+            this.state.currencySymbol = "$";
+            this.state.currencyPosition = "before";
+            this.state.currencyCode = "USD";
+        }
     }
 
     async loadDashboards() {
@@ -137,18 +169,17 @@ class OpsDashboardAction extends Component {
         });
     }
 
+    /**
+     * Format a widget value according to its format type
+     * Uses the company's currency for currency formatting
+     */
     formatValue(widget) {
         const value = widget.value || 0;
         const formatType = widget.format_type || "number";
 
         switch (formatType) {
             case "currency":
-                return new Intl.NumberFormat(undefined, {
-                    style: "currency",
-                    currency: "USD",
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                }).format(value);
+                return this.formatCurrency(value);
             case "percentage":
                 return `${value.toFixed(1)}%`;
             case "integer":
@@ -159,6 +190,58 @@ class OpsDashboardAction extends Component {
                     maximumFractionDigits: 2,
                 }).format(value);
         }
+    }
+
+    /**
+     * Format a value as currency using the company's currency symbol and position
+     */
+    formatCurrency(value) {
+        const absValue = Math.abs(value);
+        const isNegative = value < 0;
+
+        // Format the number with thousand separators, no decimals for large values
+        const formatted = new Intl.NumberFormat(undefined, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: absValue >= 1000 ? 0 : 2,
+        }).format(absValue);
+
+        const symbol = this.state.currencySymbol || "$";
+        let result;
+
+        // Position the symbol based on currency settings
+        if (this.state.currencyPosition === "after") {
+            result = `${formatted} ${symbol}`;
+        } else {
+            result = `${symbol}${formatted}`;
+        }
+
+        return isNegative ? `-${result}` : result;
+    }
+
+    /**
+     * Get the CSS color class for a card based on its color
+     */
+    getCardColorClass(widget) {
+        const color = widget.color || "#3b82f6";
+        if (color.includes("10b981") || color.includes("059669") || color.toLowerCase().includes("green")) {
+            return "color-green";
+        }
+        if (color.includes("f59e0b") || color.includes("eab308") || color.toLowerCase().includes("yellow")) {
+            return "color-yellow";
+        }
+        if (color.includes("ef4444") || color.includes("dc2626") || color.toLowerCase().includes("red")) {
+            return "color-red";
+        }
+        if (color.includes("8b5cf6") || color.includes("7c3aed") || color.toLowerCase().includes("purple")) {
+            return "color-purple";
+        }
+        if (color.includes("14b8a6") || color.includes("0d9488") || color.toLowerCase().includes("teal")) {
+            return "color-teal";
+        }
+        if (color.includes("f97316") || color.toLowerCase().includes("orange")) {
+            return "color-orange";
+        }
+        return "color-blue";
     }
 
     getTrendClass(widget) {

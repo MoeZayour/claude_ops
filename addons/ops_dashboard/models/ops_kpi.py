@@ -9,6 +9,7 @@ class OpsKpi(models.Model):
     """
     KPI Definition - Defines what metrics can be displayed.
     Security-aware: respects OPS Matrix access controls.
+    Enterprise dashboard with persona-based visibility.
     """
     _name = 'ops.kpi'
     _description = 'KPI Definition'
@@ -21,7 +22,7 @@ class OpsKpi(models.Model):
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
 
-    # Categorization
+    # Categorization - Extended for enterprise
     category = fields.Selection([
         ('sales', 'Sales'),
         ('purchase', 'Purchase'),
@@ -30,6 +31,11 @@ class OpsKpi(models.Model):
         ('receivable', 'Accounts Receivable'),
         ('payable', 'Accounts Payable'),
         ('pdc', 'PDC Management'),
+        ('treasury', 'Treasury'),
+        ('budget', 'Budget'),
+        ('asset', 'Assets'),
+        ('governance', 'Governance'),
+        ('system', 'System'),
         ('operations', 'Operations'),
     ], string='Category', required=True, default='sales')
 
@@ -92,9 +98,22 @@ class OpsKpi(models.Model):
     visible_to_it_admin = fields.Boolean(string='Visible to IT Admin', default=False,
                                          help='Should always be False for business data')
 
-    # Persona Targeting
+    # Persona Targeting - Enhanced for enterprise dashboards
     persona_ids = fields.Many2many('ops.persona', string='Target Personas',
                                    help='Which personas should see this KPI')
+    persona_codes = fields.Char(
+        string='Persona Codes',
+        help='Comma-separated persona codes: P01,P02,P03. Alternative to persona_ids.'
+    )
+
+    # Scope Type - Determines data visibility level
+    scope_type = fields.Selection([
+        ('company', 'Company-Wide'),
+        ('bu', 'Business Unit'),
+        ('branch', 'Branch'),
+        ('own', 'Own Records Only'),
+    ], string='Data Scope', default='branch',
+       help='company=All, bu=BU branches, branch=Own branch, own=Own records')
 
     _code_unique = models.Constraint(
         'unique(code)',
@@ -115,34 +134,76 @@ class OpsKpi(models.Model):
         """
         Build security-compliant domain for queries.
         CRITICAL: This method enforces OPS Matrix security.
+        Respects scope_type: company, bu, branch, own
         """
+        self.ensure_one()
         user = self.env.user
         domain = list(base_domain or [])
 
-        # IT Admin Blindness - they see NOTHING
+        # IT Admin Blindness - they see NOTHING for business data
         if user.has_group('ops_matrix_core.group_ops_it_admin'):
             if not self.visible_to_it_admin:
                 return [('id', '=', 0)]  # Return empty result
 
-        # Branch Isolation (unless manager/exec with bypass)
-        if not user.has_group('ops_matrix_core.group_ops_manager'):
-            branch_ids = user.ops_allowed_branch_ids.ids if hasattr(user, 'ops_allowed_branch_ids') else []
-            if branch_ids:
-                # Check if model has ops_branch_id field
-                model = self.env.get(self.source_model)
-                if model and 'ops_branch_id' in model._fields:
+        # Get model reference
+        model = self.env.get(self.source_model)
+        if not model:
+            return domain
+
+        # Apply scope-based filtering
+        scope = self.scope_type or 'branch'
+
+        if scope == 'company':
+            # Company-wide: Only company filter (for execs)
+            pass
+
+        elif scope == 'bu':
+            # Business Unit: All branches in user's BU
+            if 'ops_branch_id' in model._fields:
+                if hasattr(user, 'ops_business_unit_id') and user.ops_business_unit_id:
+                    bu_branches = self.env['ops.branch'].search([
+                        ('business_unit_id', '=', user.ops_business_unit_id.id)
+                    ])
+                    domain.append(('ops_branch_id', 'in', bu_branches.ids))
+
+        elif scope == 'branch':
+            # Branch: User's allowed branches only
+            if not user.has_group('ops_matrix_core.group_ops_manager'):
+                branch_ids = user.ops_allowed_branch_ids.ids if hasattr(user, 'ops_allowed_branch_ids') else []
+                if branch_ids and 'ops_branch_id' in model._fields:
                     domain.append(('ops_branch_id', 'in', branch_ids))
 
-        # Company Filter
-        domain.append(('company_id', 'in', self.env.companies.ids))
+        elif scope == 'own':
+            # Own records only: Filter by create_uid or user_id
+            if 'user_id' in model._fields:
+                domain.append(('user_id', '=', user.id))
+            elif 'create_uid' in model._fields:
+                domain.append(('create_uid', '=', user.id))
+            # Also apply branch filter for own scope
+            if not user.has_group('ops_matrix_core.group_ops_manager'):
+                branch_ids = user.ops_allowed_branch_ids.ids if hasattr(user, 'ops_allowed_branch_ids') else []
+                if branch_ids and 'ops_branch_id' in model._fields:
+                    domain.append(('ops_branch_id', 'in', branch_ids))
+
+        # Company Filter (always applied)
+        if 'company_id' in model._fields:
+            domain.append(('company_id', 'in', self.env.companies.ids))
 
         return domain
 
     def _check_user_access(self):
-        """Check if current user can view this KPI."""
+        """
+        Check if current user can view this KPI.
+        Checks: IT Admin blindness, cost/margin access, persona codes.
+        """
+        self.ensure_one()
         user = self.env.user
 
-        # IT Admin check
+        # System admin bypasses all
+        if user.has_group('base.group_system'):
+            return True
+
+        # IT Admin check - only system KPIs visible
         if user.has_group('ops_matrix_core.group_ops_it_admin'):
             if not self.visible_to_it_admin:
                 return False
@@ -157,4 +218,21 @@ class OpsKpi(models.Model):
             if not user.has_group('ops_matrix_core.group_ops_see_margin'):
                 return False
 
+        # Persona codes check (if specified)
+        if self.persona_codes:
+            allowed_codes = [p.strip() for p in self.persona_codes.split(',') if p.strip()]
+            user_personas = []
+            if hasattr(user, 'ops_persona_ids'):
+                user_personas = user.ops_persona_ids.mapped('code')
+            if allowed_codes and not any(p in allowed_codes for p in user_personas):
+                return False
+
         return True
+
+    def compute_value(self, period=None):
+        """
+        Compute KPI value for current user with security.
+        Wrapper for ops.kpi.value.compute_kpi_value().
+        """
+        self.ensure_one()
+        return self.env['ops.kpi.value'].compute_kpi_value(self, period=period)

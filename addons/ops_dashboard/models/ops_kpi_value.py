@@ -1,10 +1,32 @@
 from odoo import models, fields, api, _
 from odoo.tools.safe_eval import safe_eval
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
 import logging
 
 _logger = logging.getLogger(__name__)
+
+
+def _get_safe_eval_context(env):
+    """
+    Build a safe evaluation context for KPI domain filters.
+    Provides common date functions and utilities.
+    """
+    today = fields.Date.context_today(env['res.users'])
+
+    def context_today():
+        """Return today's date (compatible with Odoo domain syntax)."""
+        return today
+
+    return {
+        'datetime': datetime,
+        'date': date,
+        'timedelta': timedelta,
+        'relativedelta': relativedelta,
+        'context_today': context_today,
+        'today': today,
+        'uid': env.uid,
+    }
 
 
 class OpsKpiValue(models.Model):
@@ -137,8 +159,9 @@ class OpsKpiValue(models.Model):
         period = period or kpi.default_period
         period_start, period_end = self._get_period_dates(period)
 
-        # Build secure domain
-        base_domain = safe_eval(kpi.domain_filter) if kpi.domain_filter else []
+        # Build secure domain with proper evaluation context
+        eval_context = _get_safe_eval_context(self.env)
+        base_domain = safe_eval(kpi.domain_filter, eval_context) if kpi.domain_filter else []
         domain = kpi._get_secure_domain(base_domain)
 
         # Add date filter if applicable

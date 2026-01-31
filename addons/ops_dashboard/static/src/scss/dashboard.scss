@@ -1,285 +1,450 @@
-/* OPS Dashboard Styles */
+/* =============================================================================
+   OPS DASHBOARD - REFINED LAYOUT
+   ============================================================================= */
 
 .ops-dashboard {
-    padding: 20px;
-    background-color: var(--o-view-background-color, #f1f5f9);
-    min-height: 100vh;
+    padding: 24px 32px;
+    background: var(--o-view-background-color, #f8fafc);
+    min-height: calc(100vh - 50px);
+}
 
-    .ops-dashboard-header {
+/* =============================================================================
+   HEADER - Title and Controls in One Row
+   ============================================================================= */
+
+.ops-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+
+    .dashboard-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--o-text-color, #1e293b);
+        margin: 0;
+    }
+
+    .dashboard-controls {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 24px;
+        gap: 12px;
         flex-wrap: wrap;
-        gap: 16px;
-
-        .dashboard-title {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--o-text-color, #1e293b);
-            margin: 0;
-        }
-
-        .dashboard-controls {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-
-            .dashboard-selector {
-                min-width: 200px;
-            }
-
-            .period-selector {
-                min-width: 150px;
-            }
-
-            .refresh-button {
-                padding: 8px 16px;
-                border-radius: 6px;
-                background-color: var(--o-brand-primary, #3b82f6);
-                color: white;
-                border: none;
-                cursor: pointer;
-                transition: background-color 0.2s;
-
-                &:hover {
-                    background-color: darken(#3b82f6, 10%);
-                }
-
-                &:disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                }
-            }
-        }
-    }
-
-    .ops-dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-
-        @media (max-width: 1400px) {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        @media (max-width: 1024px) {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        @media (max-width: 640px) {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .ops-kpi-card {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s, box-shadow 0.2s;
-        position: relative;
-        overflow: hidden;
-
-        &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .kpi-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-
-            .kpi-icon {
-                width: 40px;
-                height: 40px;
-                border-radius: 10px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 18px;
-                color: white;
-            }
-
-            .kpi-name {
-                font-size: 0.875rem;
-                color: #64748b;
-                font-weight: 500;
-            }
-        }
-
-        .kpi-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--o-text-color, #1e293b);
-            margin-bottom: 8px;
-            line-height: 1.2;
-        }
-
-        .kpi-trend {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.875rem;
-
-            .trend-icon {
-                font-size: 12px;
-            }
-
-            .trend-value {
-                font-weight: 600;
-            }
-
-            &.trend-up-good {
-                color: #10b981;
-            }
-
-            &.trend-up-bad {
-                color: #ef4444;
-            }
-
-            &.trend-down-good {
-                color: #10b981;
-            }
-
-            &.trend-down-bad {
-                color: #ef4444;
-            }
-
-            &.trend-flat {
-                color: #64748b;
-            }
-        }
-
-        .kpi-subtitle {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            margin-top: 4px;
-        }
-
-        /* Background decoration */
-        &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle at top right, currentColor, transparent);
-            opacity: 0.05;
-            pointer-events: none;
-        }
-    }
-
-    .ops-dashboard-empty {
-        text-align: center;
-        padding: 60px 20px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
-        .empty-icon {
-            font-size: 48px;
-            color: #94a3b8;
-            margin-bottom: 16px;
-        }
-
-        .empty-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--o-text-color, #1e293b);
-            margin-bottom: 8px;
-        }
-
-        .empty-message {
-            color: #64748b;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-    }
-
-    .ops-dashboard-loading {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 60px 20px;
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #e2e8f0;
-            border-top-color: var(--o-brand-primary, #3b82f6);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        .loading-text {
-            margin-top: 16px;
-            color: #64748b;
-        }
-    }
-
-    @keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    /* Auto-refresh indicator */
-    .auto-refresh-indicator {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.75rem;
-        color: #64748b;
-
-        .refresh-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
     }
 }
 
-/* Dark mode support */
-.o_dark_mode .ops-dashboard {
-    background-color: #0f172a;
+/* Dropdown Selects */
+.dashboard-selector,
+.period-selector {
+    padding: 10px 14px;
+    padding-right: 36px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M2 4l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 12px center;
+    font-size: 0.875rem;
+    color: #334155;
+    cursor: pointer;
+    appearance: none;
 
-    .ops-dashboard-header .dashboard-title {
+    &:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    &:hover {
+        border-color: #cbd5e1;
+    }
+}
+
+.dashboard-selector {
+    min-width: 180px;
+}
+
+.period-selector {
+    min-width: 140px;
+}
+
+/* Refresh Button */
+.refresh-button {
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+        background: #2563eb;
+    }
+
+    &:active {
+        background: #1d4ed8;
+        transform: scale(0.98);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+/* =============================================================================
+   KPI GRID - Flexbox with Equal-Width Cards
+   ============================================================================= */
+
+.ops-dashboard-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* =============================================================================
+   KPI CARD - Clean Modern Design with Flexbox Sizing
+   ============================================================================= */
+
+.ops-kpi-card {
+    /* Flexbox sizing: 4 cards per row with equal width */
+    flex: 1 1 calc(25% - 15px);
+    min-width: 220px;
+    max-width: calc(25% - 15px);
+
+    /* Card styling */
+    background: white;
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 140px;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+    }
+
+    /* Left color accent bar */
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--card-accent, #3b82f6);
+    }
+
+    /* Color variants */
+    &.color-green::before { background: #10b981; }
+    &.color-blue::before { background: #3b82f6; }
+    &.color-yellow::before { background: #f59e0b; }
+    &.color-red::before { background: #ef4444; }
+    &.color-purple::before { background: #8b5cf6; }
+    &.color-teal::before { background: #14b8a6; }
+    &.color-orange::before { background: #f97316; }
+}
+
+/* Responsive: 2 cards on tablet */
+@media (max-width: 1024px) {
+    .ops-kpi-card {
+        flex: 1 1 calc(50% - 10px);
+        max-width: calc(50% - 10px);
+    }
+}
+
+/* Responsive: 1 card on mobile */
+@media (max-width: 600px) {
+    .ops-kpi-card {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+}
+
+/* Card Header - Title and Icon */
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 12px;
+}
+
+.kpi-name {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+    flex: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.kpi-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    color: white;
+
+    &.icon-success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+    &.icon-primary {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+    &.icon-warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+    &.icon-danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+    &.icon-purple {
+        background: rgba(139, 92, 246, 0.1);
+        color: #8b5cf6;
+    }
+    &.icon-teal {
+        background: rgba(20, 184, 166, 0.1);
+        color: #14b8a6;
+    }
+}
+
+/* Main Value */
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--o-text-color, #1e293b);
+    line-height: 1.2;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+/* Trend Indicator */
+.kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: auto;
+
+    .trend-icon {
+        font-size: 0.6875rem;
+    }
+
+    .trend-value {
+        font-weight: 600;
+    }
+
+    .trend-label {
+        color: #94a3b8;
+        font-weight: 400;
+    }
+
+    &.trend-up-good {
+        color: #10b981;
+    }
+
+    &.trend-up-bad {
+        color: #ef4444;
+    }
+
+    &.trend-down-good {
+        color: #10b981;
+    }
+
+    &.trend-down-bad {
+        color: #ef4444;
+    }
+
+    &.trend-flat {
+        color: #64748b;
+    }
+}
+
+/* Period Label */
+.kpi-subtitle {
+    font-size: 0.6875rem;
+    color: #94a3b8;
+    margin-top: 6px;
+    text-transform: capitalize;
+}
+
+/* =============================================================================
+   LOADING, ERROR, EMPTY STATES
+   ============================================================================= */
+
+.ops-dashboard-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #e2e8f0;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    .loading-text {
+        margin-top: 16px;
+        color: #64748b;
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.ops-dashboard-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px;
+    text-align: center;
+    padding: 32px;
+    background: #fef2f2;
+    border-radius: 12px;
+    max-width: 400px;
+    margin: 20px auto;
+
+    i {
+        font-size: 2.5rem;
+        color: #f87171;
+        margin-bottom: 16px;
+    }
+
+    h3 {
+        color: #b91c1c;
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    p {
+        color: #dc2626;
+        font-size: 0.875rem;
+    }
+}
+
+.ops-dashboard-empty {
+    text-align: center;
+    padding: 48px 32px;
+    background: white;
+    border-radius: 12px;
+    max-width: 400px;
+    margin: 20px auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+
+    .empty-icon {
+        font-size: 3rem;
+        color: #cbd5e1;
+        margin-bottom: 16px;
+    }
+
+    .empty-title {
+        color: #334155;
+        font-size: 1.125rem;
+        margin-bottom: 8px;
+    }
+
+    .empty-message {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+}
+
+/* Auto-refresh indicator */
+.auto-refresh-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: #64748b;
+
+    .refresh-dot {
+        width: 8px;
+        height: 8px;
+        background: #10b981;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* =============================================================================
+   DARK MODE
+   ============================================================================= */
+
+.o_dark_mode .ops-dashboard,
+.dark-skin .ops-dashboard {
+    background: #0f172a;
+
+    .dashboard-title {
         color: #f1f5f9;
+    }
+
+    .dashboard-selector,
+    .period-selector {
+        background-color: #1e293b;
+        border-color: #334155;
+        color: #e2e8f0;
     }
 
     .ops-kpi-card {
         background: #1e293b;
-
-        .kpi-value {
-            color: #f1f5f9;
-        }
 
         .kpi-name {
             color: #94a3b8;
         }
+
+        .kpi-value {
+            color: #f1f5f9;
+        }
     }
 
     .ops-dashboard-empty {
@@ -288,5 +453,10 @@
         .empty-title {
             color: #f1f5f9;
         }
+    }
+
+    .auto-refresh-indicator {
+        background: #1e293b;
+        color: #94a3b8;
     }
 }
