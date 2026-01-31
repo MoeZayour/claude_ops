@@ -58,9 +58,12 @@
                             <!-- Original login content inserted here -->
                             <t t-out="0"/>
 
-                            <!-- Footer -->
+                            <!-- Footer with styled badge -->
                             <div class="ops-login-footer">
-                                <small>Powered by <strong>OPS Framework</strong></small>
+                                <div class="ops-powered-by">
+                                    <span class="ops-powered-text">Powered by</span>
+                                    <span class="ops-badge">OPS Framework</span>
+                                </div>
                             </div>
                         </div>
                     </div>

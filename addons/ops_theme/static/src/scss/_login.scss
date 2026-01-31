@@ -356,26 +356,49 @@
     }
 }
 
-// Footer
+// =============================================================================
+// FOOTER - POWERED BY OPS FRAMEWORK BADGE
+// =============================================================================
 .ops-login-footer {
     margin-top: 2rem;
     text-align: center;
 
+    .ops-powered-by {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+
+        .ops-powered-text {
+            font-size: 12px;
+            color: var(--ops-text-muted, #64748b);
+            font-weight: 400;
+        }
+
+        .ops-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+            }
+        }
+    }
+
+    // Legacy fallback for plain text
     small {
         color: var(--ops-text-muted, #94a3b8);
         font-size: 0.75rem;
-    }
-}
-
-// Powered by footer
-.ops-powered-by {
-    margin-top: 2rem;
-    text-align: center;
-    font-size: 0.75rem;
-    color: var(--ops-text-muted, #94a3b8);
-
-    strong {
-        color: var(--ops-text-secondary, #64748b);
     }
 }
 
