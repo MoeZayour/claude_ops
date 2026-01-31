@@ -77,22 +77,23 @@
         height: 18px !important;
         padding: 0 !important;
         margin-left: 4px !important;
-        background: rgba(255, 255, 255, 0.2) !important;
+        background: rgba(255, 255, 255, 0.25) !important;
         border: none !important;
         border-radius: 50% !important;
         color: #ffffff !important;
         font-size: 10px !important;
         cursor: pointer !important;
-        transition: background 0.15s ease !important;
+        transition: all 0.15s ease !important;
         flex-shrink: 0 !important;
+        opacity: 0.9 !important;
 
         // Make sure X icon is visible
         &::before {
-            content: "\00d7" !important;
+            content: "×" !important;
             font-size: 14px !important;
-            font-weight: bold !important;
+            font-weight: 600 !important;
             line-height: 1 !important;
-            font-family: inherit !important;
+            font-family: sans-serif !important;
         }
 
         // Hide any other icon that might appear
@@ -101,22 +102,26 @@
         }
 
         &:hover {
-            background: rgba(255, 255, 255, 0.4) !important;
+            background: rgba(255, 255, 255, 0.45) !important;
+            opacity: 1 !important;
+            transform: scale(1.1) !important;
         }
     }
 
-    // HOVER STATE - Keep same appearance, no pencil
+    // HOVER STATE - Badge darker, close button more visible
     &:hover {
         background: #2563eb !important;
 
-        // Don't change to pencil icon on hover
+        // Make close button more prominent on hover
         .o_facet_remove,
+        .o_facet_remove_btn,
         > .fa-times,
         > button {
-            background: rgba(255, 255, 255, 0.3) !important;
+            opacity: 1 !important;
+            background: rgba(255, 255, 255, 0.35) !important;
 
             &::before {
-                content: "\00d7" !important; // Keep X, not pencil
+                content: "×" !important; // Keep X, never pencil
             }
         }
     }
