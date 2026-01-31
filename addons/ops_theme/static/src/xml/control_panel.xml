@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Auto-refresh toggle button (extends ControlPanel) -->
+    <t t-name="ops_theme.AutoRefreshButton">
+        <button t-if="_checkAutoRefreshAvailable()"
+                class="btn btn-secondary btn-sm ms-2"
+                t-att-class="{'btn-success': autoRefreshState.active}"
+                t-on-click="toggleAutoRefresh"
+                title="Auto-refresh">
+            <i class="fa fa-refresh"/>
+            <t t-if="autoRefreshState.active">
+                <span class="ms-1" t-esc="autoRefreshState.counter"/>s
+            </t>
+        </button>
+    </t>
+
+    <!-- Expand All Groups - Cog menu item -->
+    <t t-name="ops_theme.ExpandAllGroups">
+        <DropdownItem onSelected.bind="onClick">
+            <i class="fa fa-expand me-2"/>
+            Expand All
+        </DropdownItem>
+    </t>
+
+    <!-- Collapse All Groups - Cog menu item -->
+    <t t-name="ops_theme.CollapseAllGroups">
+        <DropdownItem onSelected.bind="onClick">
+            <i class="fa fa-compress me-2"/>
+            Collapse All
+        </DropdownItem>
+    </t>
+
+</templates>

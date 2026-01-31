@@ -1,26 +1,30 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.2.0.0',
+    'version': '19.0.5.1.0',
     'category': 'Themes/Backend',
-    'summary': 'Enterprise white-label theme with micro-interactions',
+    'summary': 'Premium enterprise theme with modern styling',
     'description': """
-OPS Theme v2.0 - Modern Enterprise UI
-=====================================
+OPS Theme v5.0 - Premium Enterprise Theme
+==========================================
+
+Modern, premium theme following minimal-override philosophy:
+- Inter font family with proper typography hierarchy
+- Custom-styled form controls (radio, checkbox, toggle, inputs)
+- Card and KPI dashboard styling with hover effects
+- Status badges with soft colored backgrounds
+- Enhanced buttons with hover animations
+- Clean table styling
+- Full dark mode support with system preference detection
 
 Features:
-- Split-screen login with company branding
-- Light/Dark/System color modes
-- Micro-interactions (ripples, transitions, animations)
-- Complete Odoo debranding
-- Company-configurable colors
-- Chatter position toggle
-- Theme configuration UI in Settings
-- Color pickers for brand customization
-- Theme presets (Corporate Blue, Modern Dark, etc.)
-- Smooth hover effects on all interactive elements
-- Loading spinners and progress indicators
-- Animated dropdowns and modals
+- Bootstrap variable overrides for complete debranding
+- Clean slate/blue color scheme
+- Dark/Light/System mode toggle
+- Chatter position toggle via FormCompiler patch
+- List auto-refresh feature
+- Expand/Collapse all groups
+- Split-screen login page
     """,
     'author': 'OPS Framework',
     'website': 'https://github.com/MoeZayour/claude_ops',
@@ -29,7 +33,7 @@ Features:
         'base',
         'web',
         'mail',
-        'ops_matrix_core',
+        'base_setup',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -41,53 +45,70 @@ Features:
         'views/debranding_templates.xml',
     ],
     'assets': {
+        # =================================================================
+        # PRIMARY VARIABLES - Loaded BEFORE Bootstrap compilation
+        # =================================================================
+        # This is the key to proper debranding - override colors at source
+        'web._assets_primary_variables': [
+            ('after', 'web/static/src/scss/primary_variables.scss',
+             'ops_theme/static/src/scss/_primary_variables.scss'),
+        ],
+
+        # =================================================================
+        # FRONTEND ASSETS (Login page)
+        # =================================================================
         'web.assets_frontend': [
-            # 1. Variables first (CSS custom properties)
-            'ops_theme/static/src/scss/_variables.scss',
-            # 2. Base styles
-            'ops_theme/static/src/scss/_base.scss',
-            # 3. Animations (needed for login)
-            'ops_theme/static/src/scss/_animations.scss',
-            # 4. Login page styling
+            'ops_theme/static/src/scss/_animations_minimal.scss',
             'ops_theme/static/src/scss/_login.scss',
-            # 5. JavaScript (early load for color mode)
             'ops_theme/static/src/js/theme_loader.js',
         ],
+
+        # =================================================================
+        # BACKEND ASSETS - Complete theme styling
+        # =================================================================
         'web.assets_backend': [
-            # 1. Variables first (CSS custom properties)
-            'ops_theme/static/src/scss/_variables.scss',
-            # 2. Base styles
-            'ops_theme/static/src/scss/_base.scss',
-            # 3. Animations and interactions
-            'ops_theme/static/src/scss/_animations.scss',
-            'ops_theme/static/src/scss/_interactions.scss',
-            'ops_theme/static/src/scss/_loader.scss',
-            # 4. Navigation
-            'ops_theme/static/src/scss/_app_grid.scss',
+            # 1. Typography (loads Inter font)
+            'ops_theme/static/src/scss/_typography.scss',
+
+            # 2. Core appearance styling
+            'ops_theme/static/src/scss/_appearance.scss',
+            'ops_theme/static/src/scss/_animations_minimal.scss',
+
+            # 3. Enhanced component styling
+            'ops_theme/static/src/scss/_form_controls.scss',
+            'ops_theme/static/src/scss/_cards.scss',
+            'ops_theme/static/src/scss/_badges_enhanced.scss',
+            'ops_theme/static/src/scss/_buttons_enhanced.scss',
+            'ops_theme/static/src/scss/_tables.scss',
+
+            # 4. Layout components (navbar, list, control panel, kanban)
             'ops_theme/static/src/scss/_navbar.scss',
-            'ops_theme/static/src/scss/_menu_tabs.scss',
-            'ops_theme/static/src/scss/_breadcrumb.scss',
-            # 5. Views
-            'ops_theme/static/src/scss/_control_panel.scss',
-            'ops_theme/static/src/scss/_form.scss',
             'ops_theme/static/src/scss/_list.scss',
+            'ops_theme/static/src/scss/_control_panel.scss',
             'ops_theme/static/src/scss/_kanban.scss',
-            # 6. Components
-            'ops_theme/static/src/scss/_dropdowns.scss',
-            'ops_theme/static/src/scss/_badges.scss',
-            'ops_theme/static/src/scss/_chatter.scss',
+
+            # 5. Dark mode
+            'ops_theme/static/src/scss/_dark_mode.scss',
+
+            # 6. Color mode toggle styling
             'ops_theme/static/src/scss/_user_menu.scss',
-            'ops_theme/static/src/scss/_settings.scss',
-            # 7. Debranding LAST (to override Odoo styles)
-            'ops_theme/static/src/scss/_debranding.scss',
-            # 8. JavaScript
+
+            # 7. JavaScript - Theme utilities
             'ops_theme/static/src/js/theme_loader.js',
+
+            # 8. Color mode toggle component
             'ops_theme/static/src/js/color_mode_toggle.js',
-            'ops_theme/static/src/js/chatter_toggle.js',
-            'ops_theme/static/src/js/interactions.js',
-            'ops_theme/static/src/js/page_loader.js',
-            # 9. XML templates
+
+            # 9. OWL Component Patches (behavior via JS, not CSS)
+            'ops_theme/static/src/views/form/form_compiler.js',
+
+            # 10. Feature extensions
+            'ops_theme/static/src/search/control_panel_refresh.js',
+            'ops_theme/static/src/search/group_actions.js',
+
+            # 11. XML templates
             'ops_theme/static/src/xml/user_menu.xml',
+            'ops_theme/static/src/xml/control_panel.xml',
         ],
     },
     'installable': True,

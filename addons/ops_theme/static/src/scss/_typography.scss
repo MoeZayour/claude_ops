@@ -1,0 +1,300 @@
+// =============================================================================
+// OPS THEME - TYPOGRAPHY
+// =============================================================================
+// Inter font family with proper hierarchy
+// Following Gilded Admin design principles
+// Note: Inter font is loaded via <link> tag in webclient_templates.xml
+// =============================================================================
+
+// =============================================================================
+// BASE TYPOGRAPHY
+// =============================================================================
+
+body,
+.o_web_client {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+}
+
+// =============================================================================
+// HEADINGS
+// =============================================================================
+
+h1, .h1 {
+    font-weight: 600;
+    font-size: 1.75rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ops-text-primary, #1e293b);
+}
+
+h2, .h2 {
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--ops-text-primary, #1e293b);
+}
+
+h3, .h3 {
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--ops-text-primary, #1e293b);
+}
+
+h4, .h4 {
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1.35;
+    color: var(--ops-text-primary, #1e293b);
+}
+
+h5, .h5 {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--ops-text-primary, #1e293b);
+}
+
+h6, .h6 {
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--ops-text-primary, #1e293b);
+}
+
+// =============================================================================
+// KPI NUMBERS - Large, bold, tight letter-spacing
+// =============================================================================
+
+.o_kanban_primary_left,
+.ops-kpi-value,
+.o_value,
+.o_kanban_card_header .o_primary {
+    font-weight: 700;
+    font-size: 1.75rem;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    color: var(--ops-text-primary, #1e293b);
+}
+
+// Stat button numbers
+.oe_stat_button .o_stat_value,
+.oe_stat_button .o_field_integer,
+.oe_stat_button .o_field_float {
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+}
+
+// =============================================================================
+// BUTTONS
+// =============================================================================
+
+.btn {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 0.875rem;
+    letter-spacing: 0;
+    line-height: 1.4;
+}
+
+.btn-primary,
+.btn-secondary {
+    font-weight: 600;
+}
+
+// =============================================================================
+// TABLE HEADERS - Uppercase, smaller
+// =============================================================================
+
+.o_list_table thead th,
+.table thead th {
+    font-weight: 600;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ops-text-secondary, #64748b);
+}
+
+// =============================================================================
+// FORM LABELS
+// =============================================================================
+
+.o_form_label,
+.o_td_label label,
+label:not(.btn):not(.form-check-label) {
+    font-weight: 500;
+    font-size: 0.8125rem;
+    color: var(--ops-text-secondary, #64748b);
+    letter-spacing: 0;
+}
+
+// =============================================================================
+// SECTION HEADERS (Horizontal separators)
+// =============================================================================
+
+.o_horizontal_separator,
+.o_settings_container .app_settings_header,
+.o_group_header {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ops-text-secondary, #64748b);
+}
+
+// =============================================================================
+// HELP TEXT / MUTED
+// =============================================================================
+
+.text-muted,
+.o_field_widget .text-muted,
+small,
+.o_form_view .o_field_widget .o_input_dropdown + small {
+    font-size: 0.8125rem;
+    color: var(--ops-text-muted, #94a3b8);
+}
+
+// =============================================================================
+// BREADCRUMB
+// =============================================================================
+
+.o_breadcrumb .active {
+    font-weight: 600;
+    color: var(--ops-text-primary, #1e293b);
+}
+
+.o_breadcrumb a,
+.o_breadcrumb .o_back_button {
+    font-weight: 500;
+    color: var(--ops-text-secondary, #64748b);
+}
+
+// =============================================================================
+// NAVBAR
+// =============================================================================
+
+.o_main_navbar .o_menu_brand {
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.o_main_navbar .o_menu_sections > a,
+.o_main_navbar .o_menu_sections > button,
+.o_main_navbar .dropdown-toggle {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+// =============================================================================
+// DROPDOWN ITEMS
+// =============================================================================
+
+.dropdown-menu,
+.o-dropdown--menu {
+    font-size: 0.875rem;
+}
+
+.dropdown-item,
+.o-dropdown-item {
+    font-weight: 400;
+}
+
+.dropdown-header {
+    font-weight: 600;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ops-text-muted, #94a3b8);
+}
+
+// =============================================================================
+// BADGE TEXT
+// =============================================================================
+
+.badge,
+.o_field_badge,
+.o_tag {
+    font-weight: 500;
+    font-size: 0.6875rem;
+    letter-spacing: 0.01em;
+}
+
+// =============================================================================
+// KANBAN CARD TYPOGRAPHY
+// =============================================================================
+
+.o_kanban_record {
+    .o_kanban_record_title,
+    .o_kanban_record_headings strong {
+        font-weight: 600;
+        font-size: 0.9375rem;
+    }
+
+    .o_kanban_record_subtitle {
+        font-weight: 400;
+        font-size: 0.8125rem;
+        color: var(--ops-text-secondary, #64748b);
+    }
+}
+
+// =============================================================================
+// NOTEBOOK TABS
+// =============================================================================
+
+.o_notebook .nav-tabs .nav-link {
+    font-weight: 500;
+    font-size: 0.875rem;
+    letter-spacing: 0;
+}
+
+// =============================================================================
+// STATUS BAR
+// =============================================================================
+
+.o_statusbar_status button,
+.o_statusbar_status .o_arrow_button {
+    font-weight: 500;
+    font-size: 0.8125rem;
+    letter-spacing: 0;
+}
+
+// =============================================================================
+// MODAL TITLES
+// =============================================================================
+
+.modal-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+    letter-spacing: -0.01em;
+}
+
+// =============================================================================
+// DARK MODE ADJUSTMENTS
+// =============================================================================
+
+[data-color-mode="dark"] {
+    h1, h2, h3, h4, h5, h6,
+    .h1, .h2, .h3, .h4, .h5, .h6 {
+        color: var(--ops-text-primary, #f1f5f9);
+    }
+
+    .o_kanban_primary_left,
+    .ops-kpi-value,
+    .o_value {
+        color: var(--ops-text-primary, #f1f5f9);
+    }
+
+    .o_breadcrumb .active {
+        color: var(--ops-text-primary, #f1f5f9);
+    }
+}

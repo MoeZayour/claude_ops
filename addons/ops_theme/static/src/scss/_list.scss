@@ -1,327 +1,419 @@
 // =============================================================================
-// OPS THEME - LIST VIEW
+// OPS THEME v3.5 - LISTS/TABLES (Complete Rewrite)
 // =============================================================================
-// LIGHT MODE DEFAULT - hardcoded fallbacks
+// Auto-width tables, proper alignment, overflow handling
 // =============================================================================
 
+// -----------------------------------------------------------------------------
+// SECTION 1: LIST VIEW CONTAINER
+// -----------------------------------------------------------------------------
+
 .o_list_view {
-    background-color: #ffffff !important;
-    color: #1e293b !important;
-    border: 1px solid #e2e8f0 !important;
+    width: 100% !important;
+    padding: 16px !important;
+    background: #f8fafc !important;
+    overflow: visible !important;
+}
+
+.o_list_renderer {
+    width: 100% !important;
+    background: #ffffff !important;
     border-radius: 8px !important;
-    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    overflow: visible !important;
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 2: TABLE STYLING
+// -----------------------------------------------------------------------------
+
+.o_list_table {
+    width: 100% !important;
+    table-layout: auto !important;
+    border-collapse: collapse !important;
+    overflow: visible !important;
+
+    // Header - COMPACT
+    thead {
+        background: #f8fafc !important;
+
+        th {
+            padding: 10px 12px !important;
+            font-weight: 600 !important;
+            font-size: 11px !important;
+            color: #64748b !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.03em !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            white-space: nowrap !important;
+            text-align: left !important;
+            vertical-align: middle !important;
+
+            &.text-center {
+                text-align: center !important;
+            }
+
+            &.text-end,
+            &.text-right {
+                text-align: right !important;
+            }
+
+            &.o_column_sortable:hover {
+                background: #f1f5f9 !important;
+            }
+        }
+    }
+
+    // Body - COMPACT 40px rows
+    tbody {
+        tr {
+            height: 40px !important;
+            transition: background-color 0.1s ease !important;
+
+            &:nth-child(odd) {
+                background: #ffffff !important;
+            }
+
+            &:nth-child(even) {
+                background: #fafafa !important;
+            }
+
+            &:hover {
+                background: #f1f5f9 !important;
+            }
+
+            &.o_data_row_selected {
+                background: #eff6ff !important;
+            }
+        }
+
+        td {
+            padding: 8px 12px !important;
+            font-size: 13px !important;
+            color: #1e293b !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            vertical-align: middle !important;
+            overflow: visible !important;
+            position: static !important;
+
+            &.text-end,
+            &.text-right {
+                text-align: right !important;
+            }
+
+            &.o_list_number {
+                text-align: right !important;
+                font-variant-numeric: tabular-nums !important;
+            }
+        }
+    }
+
+    // Checkbox column
+    .o_list_record_selector {
+        width: 40px !important;
+        min-width: 40px !important;
+        max-width: 40px !important;
+        text-align: center !important;
+    }
+
+    // Handle (drag) column
+    .o_handle_cell {
+        width: 30px !important;
+        min-width: 30px !important;
+        cursor: grab !important;
+    }
+
+    // Actions column
+    .o_list_actions_header,
+    td.o_list_button {
+        width: 50px !important;
+        text-align: center !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 3: INLINE EDITING
+// -----------------------------------------------------------------------------
+
+.o_list_table {
+    .o_selected_row {
+        background: #eff6ff !important;
+
+        td {
+            background: transparent !important;
+        }
+
+        // Dropdowns in selected row need high z-index
+        .o-autocomplete--dropdown-menu,
+        .dropdown-menu {
+            z-index: 1100 !important;
+        }
+    }
+
+    // Editable cell
+    .o_data_row td.o_data_cell {
+        &.o_field_cell {
+            overflow: visible !important;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 4: X2MANY TABLES (In Forms)
+// -----------------------------------------------------------------------------
+
+.o_field_x2many {
+    width: 100% !important;
+    overflow: visible !important;
+
+    .o_list_renderer {
+        box-shadow: none !important;
+        border: 1px solid #e2e8f0 !important;
+    }
 
     .o_list_table {
-        background-color: var(--ops-bg-card, #fff);
-        border-collapse: collapse;
-        width: 100%;
-
-        // Header
-        thead {
-            background-color: #f8fafc !important;
-            border-bottom: 2px solid #e2e8f0 !important;
-
-            th {
-                background-color: #f8fafc !important;
-                color: var(--ops-text-secondary, #64748b) !important;
-                font-weight: 600;
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.025em;
-                padding: 0.75rem 1rem;
-                border-bottom: 2px solid #e2e8f0 !important;
-                white-space: nowrap;
-
-                // Sortable columns
-                &.o_column_sortable {
-                    cursor: pointer;
-
-                    &:hover {
-                        background-color: var(--ops-border, #e2e8f0) !important;
-                    }
-
-                    // Sort indicator
-                    &.o-sort-up::after,
-                    &.o-sort-down::after {
-                        color: var(--ops-secondary, #3b82f6) !important;
-                    }
-                }
-            }
-        }
-
-        // Body rows
-        tbody {
-            tr {
-                transition: background-color 0.15s ease;
-
-                &:hover {
-                    background-color: var(--ops-bg-hover, #f8fafc) !important;
-                }
-
-                // Selected row
-                &.o_data_row_selected {
-                    background-color: rgba(59, 130, 246, 0.1) !important;
-                }
-
-                td {
-                    padding: 0.75rem 1rem;
-                    border-bottom: 1px solid var(--ops-border, #e2e8f0);
-                    color: var(--ops-text-primary, #1e293b) !important;
-                    font-size: 0.875rem;
-                    vertical-align: middle;
-
-                    // Ensure ALL content inside cells inherits text color
-                    * {
-                        color: inherit;
-                    }
-
-                    // Links should be secondary color
-                    a:not(.btn) {
-                        color: var(--ops-secondary, #3b82f6) !important;
-
-                        &:hover {
-                            text-decoration: underline;
-                        }
-                    }
-
-                    // Checkbox column
-                    &.o_list_record_selector {
-                        width: 40px;
-                        padding-right: 0;
-                    }
-                }
-            }
-        }
-
-        // Checkbox styling
-        .o_list_record_selector input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--ops-secondary, #3b82f6);
+        thead th {
+            background: #f1f5f9 !important;
+            text-align: center !important;
         }
     }
 
-    // Empty state
-    .o_view_nocontent {
-        padding: 3rem;
-        text-align: center;
+    // Add line buttons
+    .o_field_x2many_list_row_add {
+        a {
+            color: #3b82f6 !important;
+            font-size: 13px !important;
 
-        .o_nocontent_help {
-            color: var(--ops-text-secondary, #64748b);
-
-            p:first-child {
-                font-size: 1.25rem;
-                font-weight: 500;
-                color: var(--ops-text-primary, #1e293b) !important;
+            &:hover {
+                text-decoration: underline !important;
             }
         }
     }
+}
 
-    // Footer (totals row)
-    tfoot {
-        background-color: #f8fafc !important;
-        border-top: 2px solid #e2e8f0 !important;
+// Section and note styling
+.o_section_and_note_list_view {
+    .o_is_line_section td {
+        background: #f8fafc !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+    }
 
-        td {
-            padding: 0.75rem 1rem;
-            font-weight: 600;
-            color: var(--ops-text-primary, #1e293b) !important;
-            border-top: none;
-            background-color: #f8fafc !important;
-        }
+    .o_is_line_note td {
+        font-style: italic !important;
+        color: #64748b !important;
     }
 }
 
-// List view wrapper container
-.o_list_renderer {
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 8px !important;
-    overflow: hidden;
+// -----------------------------------------------------------------------------
+// SECTION 5: EMPTY LISTS
+// -----------------------------------------------------------------------------
+
+.o_list_table tbody tr:empty {
+    display: none !important;
 }
 
-// =============================================================================
-// Ensure ALL data cells have readable text
-// =============================================================================
-.o_data_cell,
-.o_list_char,
-.o_list_text,
-.o_list_number,
-.o_field_char,
-.o_field_text,
-.o_field_integer,
-.o_field_float,
-.o_field_monetary,
-.o_field_date,
-.o_field_datetime,
-.o_field_selection,
-.o_field_many2one,
-.o_field_many2many_tags {
-    color: var(--ops-text-primary, #1e293b) !important;
+.o_view_nocontent {
+    padding: 48px 24px !important;
+    text-align: center !important;
+    color: #64748b !important;
 }
 
-// Field widgets in list view
-.o_list_view .o_field_widget {
-    color: var(--ops-text-primary, #1e293b) !important;
+// -----------------------------------------------------------------------------
+// SECTION 6: COLUMN TYPES
+// -----------------------------------------------------------------------------
 
-    span, div {
-        color: inherit !important;
-    }
-}
-
-// Many2one field display
-.o_field_many2one .o_external_button + span,
-.o_field_many2one_avatar .o_m2o_avatar + span {
-    color: var(--ops-text-primary, #1e293b) !important;
-}
-
-// =============================================================================
-// Status badges in list - with proper contrast
-// =============================================================================
-.o_list_view .o_field_badge,
-.o_list_view .badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-
-    &.text-bg-success,
-    &.bg-success {
-        background-color: rgba(16, 185, 129, 0.15) !important;
-        color: #059669 !important; // Darker green for contrast
+.o_list_table {
+    // Text columns - allow wrapping
+    th.o_list_text,
+    td.o_list_text,
+    th.o_list_char,
+    td.o_list_char {
+        white-space: normal !important;
+        min-width: 120px !important;
     }
 
-    &.text-bg-warning,
-    &.bg-warning {
-        background-color: rgba(245, 158, 11, 0.15) !important;
-        color: #d97706 !important; // Darker orange for contrast
+    // Number columns - right align
+    th.o_list_number,
+    td.o_list_number,
+    .o_field_integer,
+    .o_field_float,
+    .o_field_monetary {
+        text-align: right !important;
+        font-variant-numeric: tabular-nums !important;
     }
 
-    &.text-bg-danger,
-    &.bg-danger {
-        background-color: rgba(239, 68, 68, 0.15) !important;
-        color: #dc2626 !important; // Darker red for contrast
+    // Date columns
+    .o_field_date,
+    .o_field_datetime {
+        white-space: nowrap !important;
     }
 
-    &.text-bg-info,
-    &.bg-info {
-        background-color: rgba(6, 182, 212, 0.15) !important;
-        color: #0891b2 !important; // Darker cyan for contrast
-    }
-
-    &.text-bg-secondary,
-    &.bg-secondary {
-        background-color: var(--ops-bg-hover, #f1f5f9) !important;
-        color: var(--ops-text-secondary, #64748b) !important;
-    }
-
-    &.text-bg-primary,
-    &.bg-primary {
-        background-color: rgba(59, 130, 246, 0.15) !important;
-        color: #2563eb !important;
+    // Boolean columns
+    .o_field_boolean {
+        text-align: center !important;
     }
 }
 
-// =============================================================================
-// Optional fields / readonly fields
-// =============================================================================
-.o_list_view .o_optional_columns_dropdown {
-    color: var(--ops-text-secondary, #64748b);
-}
+// -----------------------------------------------------------------------------
+// SECTION 7: GROUPING
+// -----------------------------------------------------------------------------
 
-.o_list_view .o_readonly_modifier {
-    color: var(--ops-text-secondary, #64748b) !important;
-}
+.o_group_header {
+    background: #f1f5f9 !important;
+    font-weight: 600 !important;
 
-// =============================================================================
-// Editable list view
-// =============================================================================
-.o_list_editable {
-    .o_data_row.o_selected_row {
-        background-color: rgba(59, 130, 246, 0.05) !important;
-
-        td {
-            background-color: inherit !important;
-        }
+    td {
+        padding: 10px 16px !important;
+        color: #1e293b !important;
     }
 
-    .o_field_widget input,
-    .o_field_widget select {
-        color: var(--ops-text-primary, #1e293b) !important;
-        background-color: var(--ops-bg-input, #fff) !important;
-        border-color: var(--ops-border, #e2e8f0) !important;
-
-        &:focus {
-            border-color: var(--ops-secondary, #3b82f6) !important;
-        }
+    .o_group_name {
+        color: #3b82f6 !important;
     }
 }
 
-// =============================================================================
-// List view buttons
-// =============================================================================
-.o_list_view {
-    .o_list_button {
-        color: var(--ops-secondary, #3b82f6) !important;
+// -----------------------------------------------------------------------------
+// SECTION 8: PAGINATION
+// -----------------------------------------------------------------------------
+
+.o_list_pager,
+.o_pager {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+
+    .o_pager_value {
+        font-size: 13px !important;
+        color: #64748b !important;
+    }
+
+    .o_pager_previous,
+    .o_pager_next {
+        padding: 4px 8px !important;
+        color: #64748b !important;
 
         &:hover {
-            color: var(--ops-secondary-hover, #2563eb) !important;
+            color: #3b82f6 !important;
+        }
+
+        &.disabled {
+            opacity: 0.5 !important;
         }
     }
 }
 
-// =============================================================================
-// Group headers in list view
-// =============================================================================
-.o_list_view {
-    .o_group_header {
-        background-color: var(--ops-bg-hover, #f8fafc) !important;
-        color: var(--ops-text-primary, #1e293b) !important;
-        font-weight: 600;
+// -----------------------------------------------------------------------------
+// SECTION 9: PRIORITY STAR COLUMN
+// -----------------------------------------------------------------------------
 
-        td {
-            color: var(--ops-text-primary, #1e293b) !important;
+.o_list_table {
+    // Favorite star column - ALIGNMENT FIX
+    td.o_list_favorite,
+    td.o_priority,
+    th.o_list_favorite,
+    th.o_priority {
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+        padding: 8px 4px !important;
+        text-align: center !important;
+    }
+}
+
+// Priority star styling
+.o_priority_star,
+.fa-star,
+.fa-star-o {
+    font-size: 14px !important;
+    color: #cbd5e1 !important;
+    cursor: pointer !important;
+    transition: color 0.15s ease !important;
+
+    &:hover {
+        color: #fbbf24 !important;
+    }
+}
+
+.fa-star {
+    color: #fbbf24 !important;
+}
+
+// Checkbox styling
+.o-checkbox {
+    input[type="checkbox"] {
+        width: 16px !important;
+        height: 16px !important;
+        border: 2px solid #cbd5e1 !important;
+        border-radius: 3px !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+
+        &:checked {
+            background: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+        }
+
+        &:hover {
+            border-color: #3b82f6 !important;
         }
     }
 }
 
-// =============================================================================
-// DARK MODE OVERRIDES (only when explicitly set)
-// =============================================================================
+// -----------------------------------------------------------------------------
+// SECTION 10: DARK MODE
+// -----------------------------------------------------------------------------
+
+.dark-skin,
 [data-color-mode="dark"] {
     .o_list_view {
-        background-color: #1e293b !important;
-        color: #f1f5f9 !important;
+        background: #0f172a !important;
+    }
 
-        .o_list_table {
-            background-color: #1e293b !important;
+    .o_list_renderer {
+        background: #1e293b !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+    }
 
-            thead th {
-                background-color: #0f172a !important;
+    .o_list_table {
+        thead {
+            background: #0f172a !important;
+
+            th {
                 color: #94a3b8 !important;
                 border-bottom-color: #334155 !important;
             }
+        }
 
-            tbody tr {
-                &:hover {
-                    background-color: #334155 !important;
-                }
-
-                td {
-                    color: #f1f5f9 !important;
-                    border-bottom-color: #334155 !important;
-                }
+        tbody {
+            tr:nth-child(odd) {
+                background: #1e293b !important;
             }
 
-            tfoot td {
-                background-color: #0f172a !important;
+            tr:nth-child(even) {
+                background: #263548 !important;
+            }
+
+            tr:hover {
+                background: #0f172a !important;
+            }
+
+            td {
                 color: #f1f5f9 !important;
-                border-top-color: #334155 !important;
+                border-bottom-color: #334155 !important;
             }
         }
     }
 
-    .o_data_cell,
-    .o_field_widget {
-        color: #f1f5f9 !important;
+    .o_group_header {
+        background: #0f172a !important;
+
+        td {
+            color: #f1f5f9 !important;
+        }
+    }
+
+    .o_field_x2many .o_list_renderer {
+        border-color: #334155 !important;
     }
 }

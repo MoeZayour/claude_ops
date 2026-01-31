@@ -1,0 +1,436 @@
+// =============================================================================
+// OPS THEME - BUTTONS
+// =============================================================================
+// Polish & hover effects for all button variants
+// Following Gilded Admin design principles
+// =============================================================================
+
+// =============================================================================
+// BASE BUTTON STYLING
+// =============================================================================
+
+.btn {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border-radius: 6px;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    // Icon sizing
+    .fa,
+    .oi {
+        font-size: 14px;
+    }
+}
+
+// =============================================================================
+// PRIMARY BUTTON - Main action
+// =============================================================================
+
+.btn-primary {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #ffffff;
+    font-weight: 600;
+
+    &:hover:not(:disabled) {
+        background: #2563eb;
+        border-color: #2563eb;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+        transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.25);
+    }
+
+    &:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
+    }
+}
+
+// =============================================================================
+// SECONDARY BUTTON - Alternative action
+// =============================================================================
+
+.btn-secondary {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #475569;
+
+    &:hover:not(:disabled) {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: #334155;
+    }
+
+    &:active:not(:disabled) {
+        background: #e2e8f0;
+    }
+}
+
+// =============================================================================
+// OUTLINE BUTTONS
+// =============================================================================
+
+.btn-outline-primary {
+    background: transparent;
+    border-color: #3b82f6;
+    color: #3b82f6;
+
+    &:hover:not(:disabled) {
+        background: #3b82f6;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+        background: #2563eb;
+        transform: translateY(0);
+    }
+}
+
+.btn-outline-secondary {
+    background: transparent;
+    border-color: #cbd5e1;
+    color: #64748b;
+
+    &:hover:not(:disabled) {
+        background: #f8fafc;
+        border-color: #94a3b8;
+        color: #475569;
+    }
+}
+
+.btn-outline-success {
+    background: transparent;
+    border-color: #10b981;
+    color: #10b981;
+
+    &:hover:not(:disabled) {
+        background: #10b981;
+        color: #ffffff;
+    }
+}
+
+.btn-outline-danger {
+    background: transparent;
+    border-color: #ef4444;
+    color: #ef4444;
+
+    &:hover:not(:disabled) {
+        background: #ef4444;
+        color: #ffffff;
+    }
+}
+
+.btn-outline-warning {
+    background: transparent;
+    border-color: #f59e0b;
+    color: #f59e0b;
+
+    &:hover:not(:disabled) {
+        background: #f59e0b;
+        color: #ffffff;
+    }
+}
+
+.btn-outline-info {
+    background: transparent;
+    border-color: #06b6d4;
+    color: #06b6d4;
+
+    &:hover:not(:disabled) {
+        background: #06b6d4;
+        color: #ffffff;
+    }
+}
+
+// =============================================================================
+// SOLID COLOR BUTTONS
+// =============================================================================
+
+.btn-success {
+    background: #10b981;
+    border-color: #10b981;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+        background: #059669;
+        border-color: #059669;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+        transform: translateY(-1px);
+    }
+}
+
+.btn-danger {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+        background: #dc2626;
+        border-color: #dc2626;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+        transform: translateY(-1px);
+    }
+}
+
+.btn-warning {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+        background: #d97706;
+        border-color: #d97706;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+        transform: translateY(-1px);
+    }
+}
+
+.btn-info {
+    background: #06b6d4;
+    border-color: #06b6d4;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+        background: #0891b2;
+        border-color: #0891b2;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);
+        transform: translateY(-1px);
+    }
+}
+
+// =============================================================================
+// LIGHT & LINK BUTTONS
+// =============================================================================
+
+.btn-light {
+    background: #f8fafc;
+    border-color: #f8fafc;
+    color: #475569;
+
+    &:hover:not(:disabled) {
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+    }
+}
+
+.btn-link {
+    background: transparent;
+    border-color: transparent;
+    color: #3b82f6;
+    text-decoration: none;
+    padding: 8px 12px;
+
+    &:hover:not(:disabled) {
+        color: #2563eb;
+        text-decoration: underline;
+    }
+}
+
+// =============================================================================
+// BUTTON SIZES
+// =============================================================================
+
+.btn-sm {
+    font-size: 0.8125rem;
+    padding: 6px 12px;
+    border-radius: 5px;
+
+    .fa,
+    .oi {
+        font-size: 12px;
+    }
+}
+
+.btn-lg {
+    font-size: 1rem;
+    padding: 12px 24px;
+    border-radius: 8px;
+
+    .fa,
+    .oi {
+        font-size: 16px;
+    }
+}
+
+// =============================================================================
+// ICON-ONLY BUTTONS
+// =============================================================================
+
+.btn-icon,
+.btn.o_icon_button {
+    padding: 8px;
+    min-width: 36px;
+    min-height: 36px;
+
+    &.btn-sm {
+        padding: 6px;
+        min-width: 30px;
+        min-height: 30px;
+    }
+}
+
+// =============================================================================
+// BUTTON GROUPS
+// =============================================================================
+
+.btn-group {
+    .btn {
+        border-radius: 0;
+
+        &:first-child {
+            border-radius: 6px 0 0 6px;
+        }
+
+        &:last-child {
+            border-radius: 0 6px 6px 0;
+        }
+
+        &:not(:last-child) {
+            border-right-width: 0;
+        }
+
+        &:not(:first-child) {
+            margin-left: -1px;
+        }
+    }
+}
+
+// =============================================================================
+// ODOO-SPECIFIC BUTTONS
+// =============================================================================
+
+// Action buttons in form view
+.o_form_buttons_view .btn,
+.o_form_buttons_edit .btn {
+    margin-right: 4px;
+}
+
+// Statusbar buttons
+.o_statusbar_buttons .btn {
+    margin-right: 8px;
+}
+
+// Control panel buttons
+.o_control_panel .btn {
+    &.btn-primary {
+        font-weight: 600;
+    }
+}
+
+// Dropdown toggle buttons
+.dropdown-toggle {
+    &::after {
+        margin-left: 6px;
+        border-top-width: 5px;
+        border-right-width: 5px;
+        border-left-width: 5px;
+    }
+}
+
+// =============================================================================
+// LOADING STATE
+// =============================================================================
+
+.btn.o_loading {
+    position: relative;
+    pointer-events: none;
+
+    &::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: btn-spin 0.75s linear infinite;
+    }
+
+    > * {
+        visibility: hidden;
+    }
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// =============================================================================
+// DARK MODE - BUTTONS
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .btn-secondary {
+        background: #334155;
+        border-color: #475569;
+        color: #f1f5f9;
+
+        &:hover:not(:disabled) {
+            background: #475569;
+            border-color: #64748b;
+        }
+    }
+
+    .btn-outline-secondary {
+        border-color: #475569;
+        color: #94a3b8;
+
+        &:hover:not(:disabled) {
+            background: #334155;
+            color: #f1f5f9;
+        }
+    }
+
+    .btn-light {
+        background: #334155;
+        border-color: #334155;
+        color: #f1f5f9;
+
+        &:hover:not(:disabled) {
+            background: #475569;
+        }
+    }
+
+    .btn-link {
+        color: #60a5fa;
+
+        &:hover:not(:disabled) {
+            color: #93c5fd;
+        }
+    }
+
+    // Focus rings in dark mode
+    .btn:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+    }
+}

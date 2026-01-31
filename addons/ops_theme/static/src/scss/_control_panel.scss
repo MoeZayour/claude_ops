@@ -1,42 +1,226 @@
 // =============================================================================
 // OPS THEME - CONTROL PANEL
 // =============================================================================
+// LIGHT MODE DEFAULT - hardcoded fallbacks
+// =============================================================================
+
+// =============================================================================
+// SEARCH FACET/FILTER TAGS - Clear delete button
+// =============================================================================
+
+// Search view container
+.o_searchview {
+    display: flex !important;
+    align-items: center !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 4px 8px !important;
+    min-height: 40px !important;
+
+    &:focus-within {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+}
+
+// Search icon
+.o_searchview_icon {
+    color: #94a3b8 !important;
+    padding: 0 8px !important;
+}
+
+// Filter/Facet tags
+.o_searchview_facet,
+.o_facet_tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: #3b82f6 !important;
+    color: #ffffff !important;
+    padding: 4px 8px 4px 12px !important;
+    border-radius: 6px !important;
+    margin: 2px 4px 2px 0 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    max-width: 200px !important;
+
+    // Facet label (filter icon + text)
+    .o_facet_value,
+    .o_facet_values {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        color: #ffffff !important;
+    }
+
+    // Filter icon inside facet
+    .fa, .oi, i {
+        font-size: 12px !important;
+        opacity: 0.9 !important;
+    }
+
+    // DELETE BUTTON - Always visible and clear
+    .o_facet_remove,
+    .o_facet_remove_btn,
+    > .fa-times,
+    > .oi-close,
+    > button,
+    > [data-remove] {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 18px !important;
+        height: 18px !important;
+        padding: 0 !important;
+        margin-left: 4px !important;
+        background: rgba(255, 255, 255, 0.2) !important;
+        border: none !important;
+        border-radius: 50% !important;
+        color: #ffffff !important;
+        font-size: 10px !important;
+        cursor: pointer !important;
+        transition: background 0.15s ease !important;
+        flex-shrink: 0 !important;
+
+        // Make sure X icon is visible
+        &::before {
+            content: "\00d7" !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+            line-height: 1 !important;
+            font-family: inherit !important;
+        }
+
+        // Hide any other icon that might appear
+        .fa, .oi, i, svg {
+            display: none !important;
+        }
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.4) !important;
+        }
+    }
+
+    // HOVER STATE - Keep same appearance, no pencil
+    &:hover {
+        background: #2563eb !important;
+
+        // Don't change to pencil icon on hover
+        .o_facet_remove,
+        > .fa-times,
+        > button {
+            background: rgba(255, 255, 255, 0.3) !important;
+
+            &::before {
+                content: "\00d7" !important; // Keep X, not pencil
+            }
+        }
+    }
+}
+
+// Multiple facet values (comma separated)
+.o_facet_values_sep {
+    margin: 0 2px !important;
+    opacity: 0.7 !important;
+}
+
+// Search input
+.o_searchview_input {
+    flex: 1 !important;
+    border: none !important;
+    outline: none !important;
+    padding: 6px 8px !important;
+    font-size: 14px !important;
+    background: transparent !important;
+    min-width: 100px !important;
+    color: #1e293b !important;
+
+    &::placeholder {
+        color: #94a3b8 !important;
+    }
+}
+
+// Dropdown toggle in search
+.o_searchview_dropdown_toggler {
+    padding: 4px 8px !important;
+    color: #64748b !important;
+
+    &:hover {
+        color: #3b82f6 !important;
+    }
+}
+
+// Autocomplete menu for search
+.o_searchview_autocomplete {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1060 !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    margin-top: 4px !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+
+    .o-dropdown-item,
+    .o_menu_item {
+        padding: 10px 14px !important;
+        cursor: pointer !important;
+
+        &:hover,
+        &.focus {
+            background: #f1f5f9 !important;
+        }
+    }
+}
+
+// Group by / Filter menu sections
+.o_group_by_menu,
+.o_filter_menu {
+    .o_menu_item {
+        &.selected,
+        &.o_item_active {
+            background: #eff6ff !important;
+            color: #3b82f6 !important;
+
+            .fa, .oi {
+                color: #3b82f6 !important;
+            }
+        }
+    }
+}
+
+// =============================================================================
+// CONTROL PANEL BASE STYLES
+// =============================================================================
 
 .o_control_panel {
-    background-color: var(--ops-bg-card);
-    border-bottom: 1px solid var(--ops-border);
-    padding: 0.75rem 1rem;
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
 
-    // Breadcrumb area
-    .o_control_panel_breadcrumbs {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    // Action buttons area
-    .o_control_panel_actions {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    // Buttons styling
+    // Buttons styling - LIGHT MODE DEFAULT
     .btn {
         border-radius: var(--ops-radius-md);
         font-weight: 500;
         font-size: 0.875rem;
-        padding: 0.5rem 1rem;
-        transition: all 0.2s ease;
+        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 
         // Primary button
         &.btn-primary {
-            background-color: var(--ops-secondary);
-            border-color: var(--ops-secondary);
-            color: var(--ops-text-inverse);
+            background-color: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+            color: #ffffff !important;
 
             &:hover {
-                filter: brightness(1.1);
+                background-color: #2563eb !important;
+                border-color: #2563eb !important;
             }
         }
 
@@ -44,114 +228,170 @@
         &.btn-secondary,
         &.btn-outline-secondary {
             background-color: transparent;
-            border-color: var(--ops-border);
-            color: var(--ops-text-primary);
+            border-color: #e2e8f0 !important;
+            color: #1e293b !important;
 
             &:hover {
-                background-color: var(--ops-bg-hover);
-                border-color: var(--ops-secondary);
-                color: var(--ops-secondary);
+                background-color: #f8fafc !important;
+                border-color: #3b82f6 !important;
+                color: #3b82f6 !important;
             }
-        }
-
-        // Icon buttons
-        &.o_icon_button {
-            padding: 0.5rem;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
     }
 
-    // Search view
+    // Search view inside control panel
     .o_searchview {
-        background-color: var(--ops-bg-input);
-        border: 1px solid var(--ops-border);
-        border-radius: var(--ops-radius-md);
         max-width: 400px;
-
-        &:focus-within {
-            border-color: var(--ops-border-focus);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .o_searchview_input {
-            background: transparent;
-            color: var(--ops-text-primary);
-
-            &::placeholder {
-                color: var(--ops-text-disabled);
-            }
-        }
-
-        // Search facets (active filters)
-        .o_searchview_facet {
-            background-color: var(--ops-secondary);
-            color: var(--ops-text-inverse);
-            border-radius: var(--ops-radius-sm);
-            padding: 0.125rem 0.5rem;
-            margin: 0.25rem;
-            font-size: 0.75rem;
-
-            .o_facet_remove {
-                color: var(--ops-text-inverse);
-                opacity: 0.7;
-
-                &:hover {
-                    opacity: 1;
-                }
-            }
-        }
     }
 
-    // Filter/Group buttons
+    // Filter/Group buttons - LIGHT MODE DEFAULT
     .o_filter_menu,
     .o_group_by_menu,
     .o_favorite_menu {
         .dropdown-toggle {
             background-color: transparent;
-            border: 1px solid var(--ops-border);
-            color: var(--ops-text-primary);
+            border: 1px solid #e2e8f0 !important;
+            color: #1e293b !important;
             border-radius: var(--ops-radius-md);
             padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
 
             &:hover {
-                background-color: var(--ops-bg-hover);
-                border-color: var(--ops-secondary);
+                background-color: #f8fafc !important;
+                border-color: #3b82f6 !important;
+            }
+
+            // Icons in buttons
+            i, .fa, .oi {
+                color: #64748b !important;
             }
         }
     }
 
-    // Pager
+    // Pager - LIGHT MODE DEFAULT
     .o_pager {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
         font-size: 0.875rem;
-        color: var(--ops-text-secondary);
+        color: #64748b !important;
 
-        .o_pager_counter {
-            margin: 0 0.5rem;
+        .o_pager_value {
+            color: #1e293b !important;
         }
 
         button {
             background: transparent;
-            border: 1px solid var(--ops-border);
-            border-radius: var(--ops-radius-sm);
-            padding: 0.25rem 0.5rem;
-            color: var(--ops-text-primary);
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 4px;
+            color: #1e293b !important;
 
             &:hover:not(:disabled) {
-                background-color: var(--ops-bg-hover);
-                border-color: var(--ops-secondary);
+                background-color: #f8fafc !important;
+                border-color: #3b82f6 !important;
             }
 
             &:disabled {
                 opacity: 0.5;
-                cursor: not-allowed;
+                color: #94a3b8 !important;
+            }
+
+            // Pager icons
+            i, .fa, .oi {
+                color: inherit;
+            }
+        }
+    }
+
+    // Breadcrumbs - LIGHT MODE DEFAULT
+    .o_breadcrumb {
+        .breadcrumb-item {
+            color: #64748b !important;
+
+            a {
+                color: #3b82f6 !important;
+
+                &:hover {
+                    color: #2563eb !important;
+                }
+            }
+
+            &.active {
+                color: #1e293b !important;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+// =============================================================================
+// DARK MODE OVERRIDES (only when explicitly set)
+// =============================================================================
+[data-color-mode="dark"] {
+    .o_control_panel {
+        background-color: #1e293b !important;
+        border-bottom-color: #334155 !important;
+
+        .btn {
+            &.btn-secondary,
+            &.btn-outline-secondary {
+                border-color: #334155 !important;
+                color: #f1f5f9 !important;
+
+                &:hover {
+                    background-color: #334155 !important;
+                }
+            }
+        }
+
+        .o_searchview {
+            background-color: #334155 !important;
+            border-color: #475569 !important;
+
+            .o_searchview_input {
+                color: #f1f5f9 !important;
+
+                &::placeholder {
+                    color: #64748b !important;
+                }
+            }
+
+            .o_searchview_icon,
+            .fa-search {
+                color: #94a3b8 !important;
+            }
+        }
+
+        .o_filter_menu,
+        .o_group_by_menu,
+        .o_favorite_menu {
+            .dropdown-toggle {
+                border-color: #334155 !important;
+                color: #f1f5f9 !important;
+            }
+        }
+
+        .o_pager {
+            color: #94a3b8 !important;
+
+            .o_pager_value {
+                color: #f1f5f9 !important;
+            }
+
+            button {
+                border-color: #334155 !important;
+                color: #f1f5f9 !important;
+
+                &:hover:not(:disabled) {
+                    background-color: #334155 !important;
+                }
+            }
+        }
+
+        .o_breadcrumb {
+            .breadcrumb-item {
+                color: #94a3b8 !important;
+
+                &.active {
+                    color: #f1f5f9 !important;
+                }
             }
         }
     }

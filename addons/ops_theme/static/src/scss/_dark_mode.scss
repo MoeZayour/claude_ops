@@ -1,0 +1,660 @@
+// =============================================================================
+// OPS THEME - DARK MODE
+// =============================================================================
+// Comprehensive dark mode styling using [data-color-mode="dark"]
+// Colors based on Tailwind slate palette
+// =============================================================================
+
+// Dark mode CSS variables override
+[data-color-mode="dark"] {
+    // Core surfaces
+    --ops-bg-body: #0f172a;           // slate-900
+    --ops-bg-card: #1e293b;           // slate-800
+    --ops-bg-input: #334155;          // slate-700
+    --ops-bg-hover: #334155;          // slate-700
+
+    // Text colors
+    --ops-text-primary: #f1f5f9;      // slate-100
+    --ops-text-secondary: #94a3b8;    // slate-400
+    --ops-text-muted: #64748b;        // slate-500
+    --ops-text-inverse: #0f172a;      // slate-900
+
+    // Borders
+    --ops-border: #334155;            // slate-700
+    --ops-border-light: #475569;      // slate-600
+
+    // Shadows (more pronounced in dark mode)
+    --ops-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --ops-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+
+// =============================================================================
+// BODY & WEB CLIENT
+// =============================================================================
+
+[data-color-mode="dark"] {
+    body,
+    .o_web_client {
+        background-color: #0f172a !important;
+        color: #f1f5f9 !important;
+    }
+}
+
+// =============================================================================
+// NAVBAR
+// =============================================================================
+
+[data-color-mode="dark"] .o_main_navbar {
+    background: #0f172a !important;
+    border-bottom-color: #334155 !important;
+}
+
+// =============================================================================
+// CONTROL PANEL
+// =============================================================================
+
+[data-color-mode="dark"] .o_control_panel {
+    background: #1e293b !important;
+    border-bottom-color: #334155 !important;
+
+    .o_breadcrumb {
+        color: #f1f5f9 !important;
+
+        a,
+        .o_back_button {
+            color: #94a3b8 !important;
+
+            &:hover {
+                color: #f1f5f9 !important;
+            }
+        }
+
+        .active {
+            color: #f1f5f9 !important;
+        }
+    }
+
+    .o_searchview {
+        background: #334155 !important;
+        border-color: #475569 !important;
+
+        input {
+            color: #f1f5f9 !important;
+
+            &::placeholder {
+                color: #64748b !important;
+            }
+        }
+    }
+
+    .o_searchview_facet {
+        background-color: #3b82f6 !important;
+    }
+}
+
+// =============================================================================
+// FORM VIEWS
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .o_form_view {
+        background: #0f172a !important;
+    }
+
+    .o_form_sheet_bg {
+        background: #0f172a !important;
+    }
+
+    .o_form_sheet {
+        background: #1e293b !important;
+        color: #f1f5f9 !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .o_form_statusbar {
+        background: #1e293b !important;
+        border-bottom-color: #334155 !important;
+    }
+
+    .o_form_label,
+    .o_td_label label {
+        color: #94a3b8 !important;
+    }
+
+    .oe_title {
+        border-bottom-color: #334155 !important;
+
+        h1, h2, .o_field_widget {
+            color: #f1f5f9 !important;
+        }
+    }
+}
+
+// =============================================================================
+// INPUT FIELDS (Dark Mode)
+// =============================================================================
+
+[data-color-mode="dark"] {
+    input,
+    textarea,
+    select,
+    .o_input,
+    input.o_input,
+    select.o_input,
+    textarea.o_input,
+    .form-control {
+        background: #0f172a !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+
+        &::placeholder {
+            color: #64748b !important;
+        }
+
+        &:focus {
+            background: #1e293b !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        }
+
+        &:disabled,
+        &[readonly] {
+            background: #1e293b !important;
+            color: #94a3b8 !important;
+        }
+    }
+}
+
+// =============================================================================
+// DROPDOWN MENUS
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .dropdown-menu,
+    .o-dropdown--menu,
+    .o-autocomplete--dropdown-menu {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+
+        .dropdown-item,
+        .o-dropdown-item,
+        .o-autocomplete--dropdown-item {
+            color: #f1f5f9 !important;
+
+            &:hover,
+            &:focus,
+            &.focus {
+                background: #334155 !important;
+            }
+
+            &.active,
+            &:active {
+                background: #3b82f6 !important;
+                color: #ffffff !important;
+            }
+        }
+
+        .dropdown-divider {
+            border-color: #334155 !important;
+        }
+
+        .dropdown-header {
+            color: #64748b !important;
+        }
+    }
+}
+
+// =============================================================================
+// LIST VIEWS
+// =============================================================================
+
+[data-color-mode="dark"] .o_list_view {
+    background: #1e293b !important;
+
+    thead {
+        background: #0f172a !important;
+
+        th {
+            color: #94a3b8 !important;
+            border-color: #334155 !important;
+            background: #0f172a !important;
+        }
+    }
+
+    tbody {
+        tr {
+            background: #1e293b !important;
+
+            &:hover {
+                background: #334155 !important;
+            }
+
+            &.o_data_row_selected {
+                background: rgba(59, 130, 246, 0.15) !important;
+            }
+        }
+
+        td {
+            color: #f1f5f9 !important;
+            border-color: #334155 !important;
+        }
+    }
+
+    tfoot {
+        background: #0f172a !important;
+        color: #f1f5f9 !important;
+
+        td {
+            border-color: #334155 !important;
+        }
+    }
+}
+
+// =============================================================================
+// KANBAN VIEWS
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .o_kanban_view {
+        background: #0f172a !important;
+    }
+
+    .o_kanban_group {
+        background: #1e293b !important;
+
+        .o_kanban_header {
+            color: #f1f5f9 !important;
+            border-bottom-color: #334155 !important;
+        }
+    }
+
+    .o_kanban_record {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f1f5f9 !important;
+
+        &:hover {
+            background: #334155 !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .o_kanban_record_title,
+        .o_kanban_record_headings strong {
+            color: #f1f5f9 !important;
+        }
+
+        .o_kanban_record_subtitle,
+        .text-muted {
+            color: #94a3b8 !important;
+        }
+    }
+}
+
+// =============================================================================
+// NOTEBOOKS (TABS)
+// =============================================================================
+
+[data-color-mode="dark"] .o_notebook {
+    .nav-tabs {
+        border-bottom-color: #334155 !important;
+
+        .nav-link {
+            color: #94a3b8 !important;
+
+            &:hover {
+                color: #f1f5f9 !important;
+            }
+
+            &.active {
+                color: #3b82f6 !important;
+                border-bottom-color: #3b82f6 !important;
+            }
+        }
+    }
+
+    .tab-content {
+        color: #f1f5f9 !important;
+    }
+}
+
+// =============================================================================
+// SETTINGS
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .o_settings_container {
+        background: #0f172a !important;
+    }
+
+    .o_setting_box {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .app_settings_block {
+        background: transparent !important;
+
+        h2 {
+            color: #f1f5f9 !important;
+        }
+    }
+
+    .settings_tab {
+        background: #1e293b !important;
+
+        .tab {
+            color: #94a3b8 !important;
+
+            &:hover {
+                background: #334155 !important;
+                color: #f1f5f9 !important;
+            }
+
+            &.selected {
+                background: #3b82f6 !important;
+                color: #ffffff !important;
+            }
+        }
+    }
+
+    .o_horizontal_separator {
+        background: #0f172a !important;
+        color: #94a3b8 !important;
+    }
+}
+
+// =============================================================================
+// MODALS
+// =============================================================================
+
+[data-color-mode="dark"] .modal-content {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+
+    .modal-header {
+        border-bottom-color: #334155 !important;
+
+        .modal-title {
+            color: #f1f5f9 !important;
+        }
+
+        .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+    }
+
+    .modal-body {
+        color: #f1f5f9 !important;
+    }
+
+    .modal-footer {
+        border-top-color: #334155 !important;
+    }
+}
+
+// =============================================================================
+// CARDS
+// =============================================================================
+
+[data-color-mode="dark"] .card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+
+    .card-header {
+        background: #0f172a !important;
+        border-bottom-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .card-body {
+        color: #f1f5f9 !important;
+    }
+
+    .card-footer {
+        background: #0f172a !important;
+        border-top-color: #334155 !important;
+    }
+}
+
+// =============================================================================
+// CHATTER
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .o-mail-Chatter,
+    .o_Chatter,
+    .o_ChatterContainer {
+        background: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o-mail-Message,
+    .o_Message {
+        background: #1e293b !important;
+    }
+
+    .o-mail-Message-body,
+    .o_Message_content {
+        color: #f1f5f9 !important;
+    }
+
+    .o-mail-Message-author,
+    .o_Message_authorName {
+        color: #f1f5f9 !important;
+    }
+
+    .o-mail-Message-date,
+    .o_Message_date {
+        color: #64748b !important;
+    }
+
+    .o-mail-Composer,
+    .o_Composer {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+
+        textarea {
+            background: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+    }
+}
+
+// =============================================================================
+// BUTTONS (Dark Mode Adjustments)
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .btn-secondary {
+        background: #334155 !important;
+        border-color: #475569 !important;
+        color: #f1f5f9 !important;
+
+        &:hover {
+            background: #475569 !important;
+        }
+    }
+
+    .btn-outline-secondary {
+        border-color: #475569 !important;
+        color: #94a3b8 !important;
+
+        &:hover {
+            background: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+    }
+
+    .btn-light {
+        background: #334155 !important;
+        border-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+}
+
+// =============================================================================
+// TEXT UTILITIES
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .text-muted {
+        color: #64748b !important;
+    }
+
+    .text-dark {
+        color: #f1f5f9 !important;
+    }
+
+    a:not(.btn):not(.nav-link):not(.dropdown-item) {
+        color: #60a5fa !important;
+
+        &:hover {
+            color: #93c5fd !important;
+        }
+    }
+}
+
+// =============================================================================
+// HOME MENU / APP GRID
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .o_home_menu {
+        background: #0f172a !important;
+    }
+
+    .o_app {
+        color: #f1f5f9 !important;
+
+        &:hover {
+            background: #334155 !important;
+        }
+
+        .o_caption {
+            color: #f1f5f9 !important;
+        }
+    }
+
+    .o_menuitem {
+        color: #f1f5f9 !important;
+
+        &:hover {
+            background: #334155 !important;
+        }
+    }
+}
+
+// =============================================================================
+// STAT BUTTONS
+// =============================================================================
+
+[data-color-mode="dark"] .oe_stat_button {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+
+    &:hover {
+        background: #334155 !important;
+    }
+
+    .o_stat_text {
+        color: #94a3b8 !important;
+    }
+
+    .o_stat_value {
+        color: #f1f5f9 !important;
+    }
+}
+
+// =============================================================================
+// STATUS BAR
+// =============================================================================
+
+[data-color-mode="dark"] .o_statusbar_status {
+    button,
+    .o_arrow_button {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+        color: #94a3b8 !important;
+
+        &.o_arrow_button_current,
+        &[aria-checked="true"],
+        &.btn-primary {
+            background: #3b82f6 !important;
+            color: #ffffff !important;
+            border-color: #3b82f6 !important;
+        }
+
+        &.disabled:not(.o_arrow_button_current) {
+            background: #1e293b !important;
+            color: #64748b !important;
+        }
+    }
+}
+
+// =============================================================================
+// MANY2MANY TAGS
+// =============================================================================
+
+[data-color-mode="dark"] .o_field_many2many_tags .o_tag {
+    background: rgba(59, 130, 246, 0.2) !important;
+    color: #60a5fa !important;
+}
+
+// =============================================================================
+// SCROLLBARS (Dark Mode)
+// =============================================================================
+
+[data-color-mode="dark"] {
+    * {
+        scrollbar-color: #475569 #1e293b;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background: #475569;
+    }
+
+    *::-webkit-scrollbar-track {
+        background: #1e293b;
+    }
+}
+
+// =============================================================================
+// ALERTS (Dark Mode)
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .alert-primary {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+        border-color: #3b82f6 !important;
+        color: #60a5fa !important;
+    }
+
+    .alert-success {
+        background-color: rgba(16, 185, 129, 0.15) !important;
+        border-color: #10b981 !important;
+        color: #34d399 !important;
+    }
+
+    .alert-warning {
+        background-color: rgba(245, 158, 11, 0.15) !important;
+        border-color: #f59e0b !important;
+        color: #fbbf24 !important;
+    }
+
+    .alert-danger {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+        border-color: #ef4444 !important;
+        color: #f87171 !important;
+    }
+
+    .alert-info {
+        background-color: rgba(6, 182, 212, 0.15) !important;
+        border-color: #06b6d4 !important;
+        color: #22d3ee !important;
+    }
+}

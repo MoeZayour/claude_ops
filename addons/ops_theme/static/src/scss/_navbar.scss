@@ -5,6 +5,49 @@
 // DevTools shows: nav.o_main_navbar.d-print-none
 // =============================================================================
 
+// =============================================================================
+// CRITICAL: OVERFLOW FIX FOR DROPDOWNS
+// =============================================================================
+// Navbar MUST allow overflow for dropdowns to appear
+
+.o_main_navbar,
+nav.o_main_navbar {
+    overflow: visible !important;
+
+    // Ensure all children allow overflow
+    > *,
+    .o_menu_brand,
+    .o_menu_sections,
+    .o_menu_systray {
+        overflow: visible !important;
+    }
+}
+
+// Menu sections must allow dropdown overflow
+.o_menu_sections {
+    overflow: visible !important;
+
+    .dropdown,
+    .o-dropdown,
+    .o_nav_entry {
+        overflow: visible !important;
+        position: relative !important;
+    }
+}
+
+// Systray (right side icons)
+.o_menu_systray {
+    overflow: visible !important;
+
+    > * {
+        overflow: visible !important;
+    }
+}
+
+// =============================================================================
+// NAVBAR BACKGROUND
+// =============================================================================
+
 // Force navbar - all possible selectors
 nav.o_main_navbar,
 .o_main_navbar,
@@ -33,17 +76,17 @@ header.o_navbar,
         }
     }
 
-    // App name / brand
+    // App name / brand - PRIMARY BLUE COLOR
     .o_menu_brand {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--ops-text-inverse);
-        text-transform: uppercase;
-        letter-spacing: 0.025em;
+        color: #3b82f6 !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        letter-spacing: 0.03em !important;
+        text-transform: uppercase !important;
         padding: 0 1rem;
 
         &:hover {
-            color: var(--ops-text-inverse);
+            color: #3b82f6 !important;
             text-decoration: none;
         }
     }
@@ -182,4 +225,21 @@ button[data-menu-xmlid*="ops_matrix"],
 .o_main_navbar .o-dropdown.show,
 .o_main_navbar [aria-expanded="true"] {
     background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+// =============================================================================
+// APP NAME - Primary blue color branding (PURCHASE, SALES, INVENTORY, etc.)
+// =============================================================================
+
+// App name in navbar - multiple selector targets
+.o_main_navbar .o_menu_brand,
+.o_main_navbar > .o_menu_brand,
+.o_navbar_apps_menu + .o_menu_brand,
+nav.o_main_navbar .o_menu_brand,
+nav.o_main_navbar a.o_menu_brand {
+    color: #3b82f6 !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.03em !important;
+    text-transform: uppercase !important;
 }

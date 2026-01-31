@@ -1,0 +1,466 @@
+// =============================================================================
+// OPS THEME - CARDS & DASHBOARD
+// =============================================================================
+// Card styling, KPI cards, shadows, and hover effects
+// Inspired by Gilded Admin design principles
+// =============================================================================
+
+// =============================================================================
+// BASE CARD STYLING
+// =============================================================================
+
+.card,
+.o_form_sheet,
+.o_kanban_record,
+.modal-content,
+.o_setting_box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+// =============================================================================
+// KANBAN CARDS - Hover lift effect
+// =============================================================================
+
+.o_kanban_record {
+    padding: 16px;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+        transform: translateY(-1px);
+    }
+
+    // Card content
+    .o_kanban_record_top {
+        margin-bottom: 8px;
+    }
+
+    .o_kanban_record_body {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .o_kanban_record_bottom {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f1f5f9;
+    }
+}
+
+// =============================================================================
+// KPI CARDS - Colored accent and icon backgrounds
+// =============================================================================
+
+.ops-kpi-card,
+.o_kanban_record.o_dashboard_card,
+.o_kanban_view .o_kanban_record[data-type="kpi"] {
+    position: relative;
+    padding: 20px;
+    overflow: hidden;
+
+    // Left border accent
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--ops-secondary, #3b82f6);
+        border-radius: 4px 0 0 4px;
+    }
+
+    // KPI Value
+    .ops-kpi-value,
+    .o_kanban_primary_left,
+    .o_primary {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        line-height: 1.1;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    // KPI Label
+    .ops-kpi-label,
+    .o_kanban_bottom_left,
+    .o_field_widget:not(.o_priority) {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: #64748b;
+    }
+
+    // Hover effect
+    &:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+    }
+}
+
+// =============================================================================
+// KPI ICON CONTAINERS - Colored backgrounds
+// =============================================================================
+
+.ops-kpi-icon,
+.o_kanban_image_wrapper,
+.o_kanban_record .o_image_wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+
+    // Color variants
+    &.bg-primary,
+    &[style*="primary"],
+    &.text-primary {
+        background: rgba(59, 130, 246, 0.15) !important;
+        color: #3b82f6 !important;
+    }
+
+    &.bg-success,
+    &[style*="success"],
+    &.text-success {
+        background: rgba(16, 185, 129, 0.15) !important;
+        color: #10b981 !important;
+    }
+
+    &.bg-warning,
+    &[style*="warning"],
+    &.text-warning {
+        background: rgba(245, 158, 11, 0.15) !important;
+        color: #f59e0b !important;
+    }
+
+    &.bg-danger,
+    &[style*="danger"],
+    &.text-danger {
+        background: rgba(239, 68, 68, 0.15) !important;
+        color: #ef4444 !important;
+    }
+
+    &.bg-info,
+    &[style*="info"],
+    &.text-info {
+        background: rgba(6, 182, 212, 0.15) !important;
+        color: #06b6d4 !important;
+    }
+
+    &.bg-secondary,
+    &[style*="secondary"],
+    &.text-secondary {
+        background: rgba(100, 116, 139, 0.15) !important;
+        color: #64748b !important;
+    }
+}
+
+// =============================================================================
+// PRIMARY KPI CARD - Gradient background
+// =============================================================================
+
+.ops-kpi-card.primary,
+.o_kanban_record.primary-kpi {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    color: white !important;
+    border: none !important;
+
+    &::before {
+        display: none;
+    }
+
+    .ops-kpi-value,
+    .o_kanban_primary_left,
+    .o_primary {
+        color: white !important;
+    }
+
+    .ops-kpi-label,
+    .o_kanban_bottom_left {
+        color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    .ops-kpi-icon {
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+    }
+
+    &:hover {
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+    }
+}
+
+// =============================================================================
+// STAT BUTTONS (Form button box)
+// =============================================================================
+
+.oe_stat_button {
+    flex: 0 0 auto !important;
+    min-width: 100px !important;
+    padding: 12px 16px !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+
+    &:hover {
+        background: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .o_stat_info {
+        text-align: center !important;
+    }
+
+    .o_stat_value {
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
+        color: #1e293b !important;
+        line-height: 1.2 !important;
+    }
+
+    .o_stat_text {
+        font-size: 0.75rem !important;
+        font-weight: 500 !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.03em !important;
+    }
+
+    // Colored stat buttons
+    &.text-primary .o_stat_value { color: #3b82f6 !important; }
+    &.text-success .o_stat_value { color: #10b981 !important; }
+    &.text-warning .o_stat_value { color: #f59e0b !important; }
+    &.text-danger .o_stat_value { color: #ef4444 !important; }
+}
+
+.oe_button_box {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+}
+
+// =============================================================================
+// SECTION HEADERS
+// =============================================================================
+
+.o_horizontal_separator,
+.o_settings_container .app_settings_header,
+.o_group_header {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border-radius: 6px;
+    margin: 16px 0 12px;
+    border-left: 3px solid #3b82f6;
+}
+
+// =============================================================================
+// FORM SHEET ENHANCEMENTS
+// =============================================================================
+
+.o_form_sheet {
+    padding: 24px !important;
+
+    .oe_title {
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e2e8f0;
+
+        h1,
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+    }
+}
+
+// =============================================================================
+// MODAL ENHANCEMENTS
+// =============================================================================
+
+.modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+
+    .modal-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+            color: #1e293b;
+        }
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        padding: 16px 20px;
+        border-top: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+}
+
+// =============================================================================
+// SETTINGS CARDS
+// =============================================================================
+
+.o_setting_box {
+    padding: 16px 20px;
+    margin-bottom: 12px;
+
+    .o_setting_left_pane {
+        padding-right: 16px;
+    }
+
+    .o_setting_right_pane {
+        .o_form_label {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .text-muted {
+            font-size: 13px;
+        }
+    }
+}
+
+// =============================================================================
+// DASHBOARD GRID LAYOUT
+// =============================================================================
+
+.o_kanban_view.o_kanban_dashboard {
+    .o_kanban_group {
+        background: transparent;
+        padding: 0;
+    }
+
+    .o_kanban_record {
+        margin-bottom: 16px;
+    }
+}
+
+// =============================================================================
+// DARK MODE - CARDS
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .card,
+    .o_form_sheet,
+    .o_kanban_record,
+    .modal-content,
+    .o_setting_box {
+        background: #1e293b;
+        border-color: #334155;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .o_kanban_record {
+        &:hover {
+            background: #334155;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .o_kanban_record_body {
+            color: #94a3b8;
+        }
+
+        .o_kanban_record_bottom {
+            border-top-color: #334155;
+        }
+    }
+
+    // KPI Cards
+    .ops-kpi-card,
+    .o_kanban_record.o_dashboard_card {
+        .ops-kpi-value,
+        .o_kanban_primary_left,
+        .o_primary {
+            color: #f1f5f9;
+        }
+
+        .ops-kpi-label,
+        .o_kanban_bottom_left {
+            color: #94a3b8;
+        }
+    }
+
+    // Stat buttons
+    .oe_stat_button {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+
+        &:hover {
+            background: #334155 !important;
+        }
+
+        .o_stat_value {
+            color: #f1f5f9 !important;
+        }
+
+        .o_stat_text {
+            color: #94a3b8 !important;
+        }
+    }
+
+    // Section headers
+    .o_horizontal_separator,
+    .o_settings_container .app_settings_header {
+        background: #0f172a;
+        color: #94a3b8;
+    }
+
+    // Form sheet
+    .o_form_sheet .oe_title {
+        border-bottom-color: #334155;
+
+        h1, h2 {
+            color: #f1f5f9;
+        }
+    }
+
+    // Modals
+    .modal-content {
+        .modal-header {
+            background: #0f172a;
+            border-bottom-color: #334155;
+
+            .modal-title {
+                color: #f1f5f9;
+            }
+        }
+
+        .modal-footer {
+            background: #0f172a;
+            border-top-color: #334155;
+        }
+    }
+
+    // Settings
+    .o_setting_box {
+        .o_setting_right_pane .o_form_label {
+            color: #f1f5f9;
+        }
+    }
+}

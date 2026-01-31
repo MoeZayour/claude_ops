@@ -1,0 +1,59 @@
+// =============================================================================
+// OPS THEME - MINIMAL ANIMATIONS
+// =============================================================================
+// Subtle transitions only - no complex animations that fight with OWL
+// =============================================================================
+
+// Subtle transition for interactive elements
+.btn,
+.dropdown-item,
+.nav-link,
+.o_kanban_record,
+a {
+    transition: background-color 0.15s ease,
+                color 0.15s ease,
+                border-color 0.15s ease,
+                box-shadow 0.15s ease;
+}
+
+// Input focus transition
+.o_input,
+input,
+select,
+textarea {
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+// Login page animations (kept for frontend)
+@keyframes ops-fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes ops-fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ops-fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ops-shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}

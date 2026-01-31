@@ -1,0 +1,361 @@
+// =============================================================================
+// OPS THEME - APPEARANCE ONLY
+// =============================================================================
+// Following MuK Theme's philosophy: Style APPEARANCE only.
+// NO layout changes, NO overflow hacks, NO z-index wars.
+// Let Odoo's OWL components handle behavior.
+// Total: ~250 lines (down from ~7000)
+// =============================================================================
+
+// =============================================================================
+// CSS CUSTOM PROPERTIES
+// =============================================================================
+:root {
+    // Brand Colors
+    --ops-primary: #1e293b;
+    --ops-secondary: #3b82f6;
+    --ops-secondary-hover: #2563eb;
+
+    // Surfaces
+    --ops-bg-body: #f1f5f9;
+    --ops-bg-card: #ffffff;
+    --ops-bg-hover: #f8fafc;
+
+    // Text
+    --ops-text-primary: #1e293b;
+    --ops-text-secondary: #64748b;
+    --ops-text-muted: #94a3b8;
+    --ops-text-inverse: #ffffff;
+
+    // Borders
+    --ops-border: #e2e8f0;
+    --ops-border-focus: #3b82f6;
+
+    // Shadows
+    --ops-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --ops-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+    // Border Radius
+    --ops-radius-sm: 4px;
+    --ops-radius-md: 6px;
+    --ops-radius-lg: 8px;
+}
+
+// Dark mode overrides
+[data-color-mode="dark"] {
+    --ops-bg-body: #0f172a;
+    --ops-bg-card: #1e293b;
+    --ops-bg-hover: #334155;
+    --ops-text-primary: #f1f5f9;
+    --ops-text-secondary: #94a3b8;
+    --ops-border: #334155;
+}
+
+// =============================================================================
+// NAVBAR - Appearance only (colors, no layout changes)
+// =============================================================================
+.o_main_navbar {
+    background: var(--ops-primary) !important;
+    border-bottom: none;
+
+    // Brand name styling
+    .o_menu_brand {
+        color: var(--ops-secondary) !important;
+        font-weight: 600;
+    }
+
+    // Menu items appearance
+    .o_menu_sections > a,
+    .o_menu_sections > button,
+    .o_menu_sections .o-dropdown > a,
+    .o_menu_sections .dropdown-toggle {
+        color: rgba(255, 255, 255, 0.85);
+
+        &:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    // Systray icons
+    .o_menu_systray a,
+    .o_menu_systray button {
+        color: rgba(255, 255, 255, 0.85);
+
+        &:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+}
+
+// =============================================================================
+// DROPDOWN MENUS - Appearance only (shadows, borders, colors)
+// =============================================================================
+.dropdown-menu,
+.o-dropdown--menu {
+    background: var(--ops-bg-card);
+    border: 1px solid var(--ops-border);
+    border-radius: var(--ops-radius-md);
+    box-shadow: var(--ops-shadow-lg);
+
+    .dropdown-item,
+    .o-dropdown-item {
+        color: var(--ops-text-primary);
+
+        &:hover,
+        &:focus {
+            background: var(--ops-bg-hover);
+        }
+
+        &.active,
+        &:active {
+            background: var(--ops-secondary);
+            color: var(--ops-text-inverse);
+        }
+    }
+
+    .dropdown-divider {
+        border-color: var(--ops-border);
+    }
+}
+
+// Autocomplete dropdowns
+.o-autocomplete--dropdown-menu {
+    background: var(--ops-bg-card);
+    border: 1px solid var(--ops-border);
+    border-radius: var(--ops-radius-md);
+    box-shadow: var(--ops-shadow-lg);
+
+    .o-autocomplete--dropdown-item {
+        color: var(--ops-text-primary);
+
+        &:hover,
+        &.focus {
+            background: var(--ops-bg-hover);
+        }
+    }
+}
+
+// =============================================================================
+// FORM VIEWS - Appearance only (colors, borders, shadows)
+// =============================================================================
+.o_form_sheet {
+    background: var(--ops-bg-card);
+    border-radius: var(--ops-radius-lg);
+    box-shadow: var(--ops-shadow-sm);
+}
+
+// Input styling
+.o_input,
+input.o_input,
+select.o_input,
+textarea.o_input {
+    border: 1px solid var(--ops-border);
+    border-radius: var(--ops-radius-sm);
+    background: var(--ops-bg-card);
+    color: var(--ops-text-primary);
+
+    &:focus {
+        border-color: var(--ops-border-focus);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    &:hover:not(:focus) {
+        border-color: var(--ops-text-muted);
+    }
+}
+
+// Required field indicator (following MuK pattern)
+.o_form_view:not(.o_field_highlight) {
+    .o_field_widget:not(.o_field_invalid):not(.o_field_highlight) .o_input:not(:hover):not(:focus) {
+        --o-input-border-color: #{$gray-200};
+    }
+    .o_required_modifier.o_field_widget:not(.o_field_invalid):not(.o_field_highlight) .o_input:not(:hover):not(:focus) {
+        --o-input-border-color: #{$gray-400};
+    }
+}
+
+// Labels
+.o_form_label,
+.o_td_label label {
+    color: var(--ops-text-secondary);
+    font-weight: 500;
+    font-size: 13px;
+}
+
+// =============================================================================
+// NOTEBOOK (TABS) - Appearance only
+// =============================================================================
+.o_notebook .nav-tabs {
+    border-bottom: 2px solid var(--ops-border);
+
+    .nav-link {
+        color: var(--ops-text-secondary);
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+
+        &:hover {
+            color: var(--ops-secondary);
+        }
+
+        &.active {
+            color: var(--ops-secondary);
+            border-bottom-color: var(--ops-secondary);
+            background: transparent;
+        }
+    }
+}
+
+// =============================================================================
+// BUTTONS - Appearance only
+// =============================================================================
+.btn-primary {
+    background-color: var(--ops-secondary);
+    border-color: var(--ops-secondary);
+
+    &:hover,
+    &:focus,
+    &:active {
+        background-color: var(--ops-secondary-hover);
+        border-color: var(--ops-secondary-hover);
+    }
+
+    &:focus {
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+    }
+}
+
+.btn-outline-primary {
+    color: var(--ops-secondary);
+    border-color: var(--ops-secondary);
+
+    &:hover,
+    &:active {
+        background-color: var(--ops-secondary);
+        border-color: var(--ops-secondary);
+        color: var(--ops-text-inverse);
+    }
+}
+
+// =============================================================================
+// BADGES - Appearance only
+// =============================================================================
+.badge.bg-primary,
+.badge.text-bg-primary {
+    background-color: var(--ops-secondary) !important;
+}
+
+// =============================================================================
+// KANBAN VIEW - Appearance only
+// =============================================================================
+.o_kanban_record {
+    background: var(--ops-bg-card);
+    border: 1px solid var(--ops-border);
+    border-radius: var(--ops-radius-md);
+    box-shadow: var(--ops-shadow-sm);
+
+    &:hover {
+        box-shadow: var(--ops-shadow-md);
+    }
+}
+
+// =============================================================================
+// LIST VIEW - Appearance only
+// =============================================================================
+.o_list_view {
+    .o_data_row:hover td {
+        background: var(--ops-bg-hover);
+    }
+
+    .o_data_row.o_data_row_selected td {
+        background: rgba(59, 130, 246, 0.08);
+    }
+}
+
+// =============================================================================
+// SETTINGS PAGE - Appearance only (no grid overrides)
+// =============================================================================
+.o_setting_box {
+    background: var(--ops-bg-card);
+    border: 1px solid var(--ops-border);
+    border-radius: var(--ops-radius-md);
+}
+
+// =============================================================================
+// CONTROL PANEL - Appearance only
+// =============================================================================
+.o_control_panel {
+    background: var(--ops-bg-card);
+    border-bottom: 1px solid var(--ops-border);
+}
+
+// Search facets
+.o_searchview_facet {
+    background-color: var(--ops-secondary);
+    border-radius: var(--ops-radius-sm);
+
+    .o_facet_value,
+    .o_facet_remove {
+        color: var(--ops-text-inverse);
+    }
+}
+
+// =============================================================================
+// DEBRANDING - Hide Odoo logos and references
+// =============================================================================
+img[src*="odoo_logo"],
+img[src*="odoo-logo"],
+.o_brand_promotion,
+.o_odoo_logo,
+.o_powered_by {
+    display: none !important;
+}
+
+// =============================================================================
+// PROGRESS BARS
+// =============================================================================
+.progress-bar {
+    background-color: var(--ops-secondary);
+}
+
+// =============================================================================
+// ALERTS
+// =============================================================================
+.alert-primary {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: var(--ops-secondary);
+    color: var(--ops-secondary);
+}
+
+// =============================================================================
+// CHECKBOX/RADIO ACCENT
+// =============================================================================
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: var(--ops-secondary);
+}
+
+// =============================================================================
+// SCROLLBAR STYLING
+// =============================================================================
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}

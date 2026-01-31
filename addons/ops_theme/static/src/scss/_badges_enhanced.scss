@@ -1,0 +1,293 @@
+// =============================================================================
+// OPS THEME - STATUS BADGES
+// =============================================================================
+// Pill-shaped badges with soft colored backgrounds
+// Following Gilded Admin design principles
+// =============================================================================
+
+// =============================================================================
+// BASE BADGE STYLING
+// =============================================================================
+
+.badge,
+.o_field_badge,
+.o_tag,
+.o_priority .fa {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 0.6875rem;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    border: none;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+// =============================================================================
+// STATUS COLOR VARIANTS - Soft Backgrounds
+// =============================================================================
+
+// Success (Green)
+.badge.text-bg-success,
+.badge.bg-success,
+.badge.bg-success-light,
+.o_field_badge[data-value="success"],
+.o_field_badge.text-bg-success {
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #059669 !important;
+}
+
+// Warning (Orange/Amber)
+.badge.text-bg-warning,
+.badge.bg-warning,
+.badge.bg-warning-light,
+.o_field_badge[data-value="warning"],
+.o_field_badge.text-bg-warning {
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #d97706 !important;
+}
+
+// Danger (Red)
+.badge.text-bg-danger,
+.badge.bg-danger,
+.badge.bg-danger-light,
+.o_field_badge[data-value="danger"],
+.o_field_badge.text-bg-danger {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #dc2626 !important;
+}
+
+// Primary (Blue)
+.badge.text-bg-primary,
+.badge.bg-primary,
+.badge.bg-primary-light,
+.o_field_badge[data-value="primary"],
+.o_field_badge.text-bg-primary {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #2563eb !important;
+}
+
+// Info (Cyan)
+.badge.text-bg-info,
+.badge.bg-info,
+.badge.bg-info-light,
+.o_field_badge[data-value="info"],
+.o_field_badge.text-bg-info {
+    background: rgba(6, 182, 212, 0.15) !important;
+    color: #0891b2 !important;
+}
+
+// Secondary (Gray)
+.badge.text-bg-secondary,
+.badge.bg-secondary,
+.badge.bg-secondary-light,
+.o_field_badge[data-value="secondary"],
+.o_field_badge.text-bg-secondary {
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+}
+
+// Light
+.badge.text-bg-light,
+.badge.bg-light {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+// Dark
+.badge.text-bg-dark,
+.badge.bg-dark {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+// =============================================================================
+// ODOO-SPECIFIC BADGE PATTERNS
+// =============================================================================
+
+// Selection field badges (decoration-*)
+.o_field_badge[decoration-success],
+.o_data_row .o_field_cell[data-decoration="success"] .badge {
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #059669 !important;
+}
+
+.o_field_badge[decoration-warning],
+.o_data_row .o_field_cell[data-decoration="warning"] .badge {
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #d97706 !important;
+}
+
+.o_field_badge[decoration-danger],
+.o_data_row .o_field_cell[data-decoration="danger"] .badge {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #dc2626 !important;
+}
+
+.o_field_badge[decoration-info],
+.o_data_row .o_field_cell[data-decoration="info"] .badge {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #2563eb !important;
+}
+
+.o_field_badge[decoration-muted],
+.o_data_row .o_field_cell[data-decoration="muted"] .badge {
+    background: #f1f5f9 !important;
+    color: #94a3b8 !important;
+}
+
+// =============================================================================
+// ACTIVITY BADGES
+// =============================================================================
+
+.o_ActivityMenuView .badge,
+.o_mail_activity_view .badge {
+    font-size: 0.625rem;
+    padding: 2px 6px;
+    min-width: 18px;
+    height: 18px;
+    justify-content: center;
+}
+
+// =============================================================================
+// NOTIFICATION BADGES (Navbar)
+// =============================================================================
+
+.o_menu_systray .badge,
+.o_MessagingMenu .badge {
+    font-size: 0.625rem;
+    padding: 2px 5px;
+    min-width: 16px;
+    height: 16px;
+    background: #ef4444 !important;
+    color: white !important;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+}
+
+// =============================================================================
+// KANBAN RECORD BADGES
+// =============================================================================
+
+.o_kanban_record .badge {
+    font-size: 0.6875rem;
+    padding: 3px 8px;
+}
+
+// =============================================================================
+// PRIORITY STARS
+// =============================================================================
+
+.o_priority {
+    .fa-star,
+    .fa-star-o {
+        font-size: 14px;
+        padding: 2px;
+        border-radius: 4px;
+        background: transparent !important;
+    }
+
+    .fa-star {
+        color: #f59e0b !important;
+    }
+
+    .fa-star-o {
+        color: #cbd5e1 !important;
+    }
+}
+
+// =============================================================================
+// TAG COLORS (Many2many tags in forms)
+// =============================================================================
+
+.o_tag_color_0 { background: rgba(100, 116, 139, 0.15) !important; color: #475569 !important; }
+.o_tag_color_1 { background: rgba(239, 68, 68, 0.15) !important; color: #dc2626 !important; }
+.o_tag_color_2 { background: rgba(249, 115, 22, 0.15) !important; color: #ea580c !important; }
+.o_tag_color_3 { background: rgba(245, 158, 11, 0.15) !important; color: #d97706 !important; }
+.o_tag_color_4 { background: rgba(132, 204, 22, 0.15) !important; color: #65a30d !important; }
+.o_tag_color_5 { background: rgba(16, 185, 129, 0.15) !important; color: #059669 !important; }
+.o_tag_color_6 { background: rgba(6, 182, 212, 0.15) !important; color: #0891b2 !important; }
+.o_tag_color_7 { background: rgba(59, 130, 246, 0.15) !important; color: #2563eb !important; }
+.o_tag_color_8 { background: rgba(139, 92, 246, 0.15) !important; color: #7c3aed !important; }
+.o_tag_color_9 { background: rgba(236, 72, 153, 0.15) !important; color: #db2777 !important; }
+.o_tag_color_10 { background: rgba(168, 162, 158, 0.15) !important; color: #78716c !important; }
+.o_tag_color_11 { background: rgba(30, 41, 59, 0.15) !important; color: #334155 !important; }
+
+// =============================================================================
+// DARK MODE - BADGES
+// =============================================================================
+
+[data-color-mode="dark"] {
+    // Base badge
+    .badge.text-bg-secondary,
+    .badge.bg-secondary {
+        background: #334155 !important;
+        color: #94a3b8 !important;
+    }
+
+    .badge.text-bg-light,
+    .badge.bg-light {
+        background: #334155 !important;
+        color: #e2e8f0 !important;
+        border-color: #475569 !important;
+    }
+
+    // Success
+    .badge.text-bg-success,
+    .badge.bg-success {
+        background: rgba(16, 185, 129, 0.2) !important;
+        color: #34d399 !important;
+    }
+
+    // Warning
+    .badge.text-bg-warning,
+    .badge.bg-warning {
+        background: rgba(245, 158, 11, 0.2) !important;
+        color: #fbbf24 !important;
+    }
+
+    // Danger
+    .badge.text-bg-danger,
+    .badge.bg-danger {
+        background: rgba(239, 68, 68, 0.2) !important;
+        color: #f87171 !important;
+    }
+
+    // Primary
+    .badge.text-bg-primary,
+    .badge.bg-primary {
+        background: rgba(59, 130, 246, 0.2) !important;
+        color: #60a5fa !important;
+    }
+
+    // Info
+    .badge.text-bg-info,
+    .badge.bg-info {
+        background: rgba(6, 182, 212, 0.2) !important;
+        color: #22d3ee !important;
+    }
+
+    // Priority stars
+    .o_priority .fa-star-o {
+        color: #475569 !important;
+    }
+
+    // Tag colors
+    .o_tag_color_0 { background: rgba(100, 116, 139, 0.25) !important; color: #94a3b8 !important; }
+    .o_tag_color_1 { background: rgba(239, 68, 68, 0.25) !important; color: #f87171 !important; }
+    .o_tag_color_2 { background: rgba(249, 115, 22, 0.25) !important; color: #fb923c !important; }
+    .o_tag_color_3 { background: rgba(245, 158, 11, 0.25) !important; color: #fbbf24 !important; }
+    .o_tag_color_4 { background: rgba(132, 204, 22, 0.25) !important; color: #a3e635 !important; }
+    .o_tag_color_5 { background: rgba(16, 185, 129, 0.25) !important; color: #34d399 !important; }
+    .o_tag_color_6 { background: rgba(6, 182, 212, 0.25) !important; color: #22d3ee !important; }
+    .o_tag_color_7 { background: rgba(59, 130, 246, 0.25) !important; color: #60a5fa !important; }
+    .o_tag_color_8 { background: rgba(139, 92, 246, 0.25) !important; color: #a78bfa !important; }
+    .o_tag_color_9 { background: rgba(236, 72, 153, 0.25) !important; color: #f472b6 !important; }
+    .o_tag_color_10 { background: rgba(168, 162, 158, 0.25) !important; color: #a8a29e !important; }
+    .o_tag_color_11 { background: rgba(148, 163, 184, 0.25) !important; color: #94a3b8 !important; }
+}

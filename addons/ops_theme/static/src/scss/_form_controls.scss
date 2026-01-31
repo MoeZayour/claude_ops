@@ -1,0 +1,558 @@
+// =============================================================================
+// OPS THEME - FORM CONTROLS
+// =============================================================================
+// Custom styled radio buttons, checkboxes, toggles, and inputs
+// Inspired by Gilded Admin design principles
+// =============================================================================
+
+// =============================================================================
+// RADIO BUTTONS - Custom circular style
+// =============================================================================
+
+input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+    margin: 0;
+    flex-shrink: 0;
+
+    &:hover {
+        border-color: #94a3b8;
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        border-color: #3b82f6;
+    }
+
+    &:checked {
+        border-color: #3b82f6;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: radioScale 0.15s ease-in-out;
+        }
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f1f5f9;
+    }
+}
+
+@keyframes radioScale {
+    0% { transform: translate(-50%, -50%) scale(0); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+// =============================================================================
+// CHECKBOXES - Custom square style with checkmark
+// =============================================================================
+
+input[type="checkbox"]:not(.o_boolean_toggle):not(.form-switch input):not([role="switch"]) {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #cbd5e1;
+    border-radius: 4px;
+    background: #ffffff;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+    margin: 0;
+    flex-shrink: 0;
+
+    &:hover {
+        border-color: #94a3b8;
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        border-color: #3b82f6;
+    }
+
+    &:checked {
+        background: #3b82f6;
+        border-color: #3b82f6;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 5px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            animation: checkScale 0.15s ease-in-out;
+        }
+    }
+
+    &:indeterminate {
+        background: #3b82f6;
+        border-color: #3b82f6;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 2px;
+            background: white;
+        }
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f1f5f9;
+    }
+}
+
+@keyframes checkScale {
+    0% { transform: rotate(45deg) scale(0); }
+    100% { transform: rotate(45deg) scale(1); }
+}
+
+// =============================================================================
+// TOGGLE SWITCHES - Pill style for boolean fields
+// =============================================================================
+
+// Odoo boolean toggle
+.o_boolean_toggle,
+.form-switch .form-check-input,
+input[type="checkbox"][role="switch"],
+.custom-switch .custom-control-input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 44px !important;
+    height: 24px !important;
+    background: #cbd5e1 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease;
+    }
+
+    &::after {
+        display: none !important; // Hide default checkmark
+    }
+
+    &:checked {
+        background: #3b82f6 !important;
+
+        &::before {
+            transform: translateX(20px);
+        }
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+// Form switch container adjustments
+.form-switch {
+    padding-left: 0 !important;
+
+    .form-check-input {
+        margin-left: 0 !important;
+        float: none !important;
+    }
+}
+
+// =============================================================================
+// INPUT FIELDS - Enhanced styling
+// =============================================================================
+
+.o_input,
+input.o_input,
+select.o_input,
+textarea.o_input,
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+input[type="url"],
+input[type="tel"],
+input[type="search"],
+select.form-control,
+textarea.form-control {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.2s ease;
+
+    &:hover:not(:focus):not(:disabled):not([readonly]) {
+        border-color: #cbd5e1;
+        background-color: #f1f5f9;
+    }
+
+    &:focus {
+        background-color: #ffffff;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        outline: none;
+    }
+
+    &::placeholder {
+        color: #94a3b8;
+    }
+
+    &:disabled,
+    &[readonly] {
+        background-color: #f1f5f9;
+        color: #64748b;
+        cursor: not-allowed;
+    }
+}
+
+// =============================================================================
+// SELECT DROPDOWNS - Custom arrow
+// =============================================================================
+
+select.o_input,
+select.form-control,
+.o_field_selection select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+// =============================================================================
+// TEXTAREA - Enhanced
+// =============================================================================
+
+textarea.o_input,
+textarea.form-control,
+.o_field_text textarea {
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+// =============================================================================
+// MANY2MANY TAGS - Enhanced chip style
+// =============================================================================
+
+.o_field_many2many_tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+
+    .o_tag {
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 4px 10px !important;
+        margin: 0 !important;
+        background: #eff6ff !important;
+        color: #2563eb !important;
+        border: 1px solid #bfdbfe !important;
+        border-radius: 9999px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        transition: all 0.15s ease !important;
+
+        &:hover {
+            background: #dbeafe !important;
+        }
+
+        .o_delete,
+        .o_tag_badge_text + span {
+            margin-left: 6px !important;
+            cursor: pointer !important;
+            opacity: 0.7 !important;
+            font-size: 12px !important;
+
+            &:hover {
+                opacity: 1 !important;
+            }
+        }
+    }
+}
+
+// =============================================================================
+// RADIO GROUP LAYOUT
+// =============================================================================
+
+.o_field_radio,
+.o_radio_input {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px 20px !important;
+
+    .o_radio_item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        min-height: 32px !important;
+        padding: 4px 0 !important;
+
+        input[type="radio"] {
+            margin: 0 !important;
+        }
+
+        label {
+            margin: 0 !important;
+            cursor: pointer !important;
+            font-weight: 400 !important;
+            color: #374151 !important;
+        }
+    }
+}
+
+// =============================================================================
+// CHECKBOX GROUP LAYOUT
+// =============================================================================
+
+.o_field_boolean,
+.form-check {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-height: 32px !important;
+
+    input[type="checkbox"] {
+        margin: 0 !important;
+    }
+
+    label,
+    .form-check-label {
+        margin: 0 !important;
+        cursor: pointer !important;
+        font-weight: 400 !important;
+        color: #374151 !important;
+    }
+}
+
+// =============================================================================
+// REQUIRED FIELD INDICATOR
+// =============================================================================
+
+.o_required_modifier {
+    .o_input,
+    input.o_input,
+    select.o_input,
+    textarea.o_input {
+        border-left: 3px solid #f59e0b;
+
+        &:focus {
+            border-left-color: #3b82f6;
+        }
+    }
+}
+
+// =============================================================================
+// INVALID FIELD INDICATOR
+// =============================================================================
+
+.o_field_invalid {
+    .o_input,
+    input.o_input,
+    select.o_input,
+    textarea.o_input {
+        border-color: #ef4444 !important;
+        background-color: #fef2f2 !important;
+
+        &:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+        }
+    }
+}
+
+// =============================================================================
+// DARK MODE - FORM CONTROLS
+// =============================================================================
+
+[data-color-mode="dark"] {
+    // Radio buttons
+    input[type="radio"] {
+        background: #334155;
+        border-color: #475569;
+
+        &:hover {
+            border-color: #64748b;
+        }
+
+        &:checked {
+            border-color: #3b82f6;
+
+            &::after {
+                background: #3b82f6;
+            }
+        }
+
+        &:disabled {
+            background: #1e293b;
+        }
+    }
+
+    // Checkboxes
+    input[type="checkbox"]:not(.o_boolean_toggle):not(.form-switch input):not([role="switch"]) {
+        background: #334155;
+        border-color: #475569;
+
+        &:hover {
+            border-color: #64748b;
+        }
+
+        &:checked {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        &:disabled {
+            background: #1e293b;
+        }
+    }
+
+    // Toggle switches
+    .o_boolean_toggle,
+    .form-switch .form-check-input,
+    input[type="checkbox"][role="switch"] {
+        background: #475569 !important;
+
+        &::before {
+            background: #94a3b8;
+        }
+
+        &:checked {
+            background: #3b82f6 !important;
+
+            &::before {
+                background: white;
+            }
+        }
+    }
+
+    // Input fields
+    .o_input,
+    input.o_input,
+    select.o_input,
+    textarea.o_input,
+    .form-control {
+        background-color: #0f172a;
+        border-color: #475569;
+        color: #f1f5f9;
+
+        &:hover:not(:focus):not(:disabled):not([readonly]) {
+            background-color: #1e293b;
+            border-color: #64748b;
+        }
+
+        &:focus {
+            background-color: #1e293b;
+            border-color: #3b82f6;
+        }
+
+        &::placeholder {
+            color: #64748b;
+        }
+
+        &:disabled,
+        &[readonly] {
+            background-color: #1e293b;
+            color: #64748b;
+        }
+    }
+
+    // Select arrow for dark mode
+    select.o_input,
+    select.form-control {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    }
+
+    // Many2many tags
+    .o_field_many2many_tags .o_tag {
+        background: rgba(59, 130, 246, 0.2) !important;
+        color: #60a5fa !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+
+        &:hover {
+            background: rgba(59, 130, 246, 0.3) !important;
+        }
+    }
+
+    // Radio/checkbox labels
+    .o_radio_item label,
+    .form-check-label {
+        color: #e2e8f0 !important;
+    }
+
+    // Required field indicator
+    .o_required_modifier {
+        .o_input,
+        input.o_input {
+            border-left-color: #f59e0b;
+        }
+    }
+
+    // Invalid field
+    .o_field_invalid {
+        .o_input,
+        input.o_input {
+            border-color: #ef4444 !important;
+            background-color: rgba(239, 68, 68, 0.1) !important;
+        }
+    }
+}
