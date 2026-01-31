@@ -236,3 +236,367 @@ class OpsKpi(models.Model):
         """
         self.ensure_one()
         return self.env['ops.kpi.value'].compute_kpi_value(self, period=period)
+
+    def get_time_series(self, period='this_month', granularity='day'):
+        """
+        Get time series data for trend charts (area/line charts).
+        Returns list of {date, value} points for charting.
+
+        Args:
+            period: 'today', 'this_week', 'this_month', 'this_quarter', 'this_year', 'last_30_days'
+            granularity: 'day', 'week', 'month' (for aggregating data points)
+
+        Returns:
+            {'data': [{'date': 'Jan 01', 'value': 12500}, ...], 'error': None}
+        """
+        self.ensure_one()
+
+        if not self._check_user_access():
+            return {'data': [], 'error': 'Access Denied'}
+
+        try:
+            from datetime import datetime, timedelta
+            from dateutil.relativedelta import relativedelta
+
+            today = fields.Date.context_today(self)
+            date_field = self.date_field or 'create_date'
+
+            # Determine date range based on period
+            if period == 'today':
+                start = today
+                num_points = 1
+                delta = timedelta(days=1)
+            elif period == 'this_week':
+                start = today - timedelta(days=today.weekday())
+                num_points = (today - start).days + 1
+                delta = timedelta(days=1)
+            elif period == 'this_month':
+                start = today.replace(day=1)
+                num_points = (today - start).days + 1
+                delta = timedelta(days=1)
+            elif period == 'this_quarter':
+                quarter = (today.month - 1) // 3
+                start = today.replace(month=quarter * 3 + 1, day=1)
+                if granularity == 'week':
+                    num_points = ((today - start).days // 7) + 1
+                    delta = timedelta(weeks=1)
+                else:
+                    num_points = (today - start).days + 1
+                    delta = timedelta(days=1)
+            elif period == 'this_year':
+                start = today.replace(month=1, day=1)
+                if granularity == 'month':
+                    num_points = today.month
+                    delta = relativedelta(months=1)
+                elif granularity == 'week':
+                    num_points = ((today - start).days // 7) + 1
+                    delta = timedelta(weeks=1)
+                else:
+                    num_points = min((today - start).days + 1, 365)
+                    delta = timedelta(days=1)
+            elif period == 'last_30_days':
+                start = today - timedelta(days=29)
+                num_points = 30
+                delta = timedelta(days=1)
+            elif period == 'last_90_days':
+                start = today - timedelta(days=89)
+                if granularity == 'week':
+                    num_points = 13
+                    delta = timedelta(weeks=1)
+                else:
+                    num_points = 90
+                    delta = timedelta(days=1)
+            else:  # all_time - return monthly for last 12 months
+                start = today - relativedelta(months=11)
+                start = start.replace(day=1)
+                num_points = 12
+                delta = relativedelta(months=1)
+                granularity = 'month'
+
+            # Get model reference
+            Model = self.env.get(self.source_model)
+            if not Model:
+                return {'data': [], 'error': f'Model {self.source_model} not found'}
+
+            # Build base domain
+            from odoo.tools.safe_eval import safe_eval
+            from .ops_kpi_value import _get_safe_eval_context
+            eval_context = _get_safe_eval_context(self.env)
+            base_domain = safe_eval(self.domain_filter, eval_context) if self.domain_filter else []
+
+            data = []
+            current = start
+
+            for i in range(num_points):
+                # Calculate period end
+                if isinstance(delta, relativedelta):
+                    period_end = current + delta - timedelta(days=1)
+                else:
+                    period_end = current + delta - timedelta(days=1)
+
+                # Don't go beyond today
+                if period_end > today:
+                    period_end = today
+
+                # Build domain for this period
+                domain = self._get_secure_domain(base_domain.copy())
+                domain.extend([
+                    (date_field, '>=', fields.Date.to_string(current)),
+                    (date_field, '<=', fields.Date.to_string(period_end)),
+                ])
+
+                # Calculate value
+                try:
+                    if self.calculation_type == 'count':
+                        value = Model.search_count(domain)
+                    elif self.calculation_type == 'sum':
+                        records = Model.search(domain)
+                        value = sum(records.mapped(self.measure_field) or [0])
+                    elif self.calculation_type == 'average':
+                        records = Model.search(domain)
+                        values = records.mapped(self.measure_field) or [0]
+                        value = sum(values) / len(values) if values else 0
+                    else:
+                        value = 0
+                except Exception as e:
+                    _logger.warning("Error computing time series point: %s", str(e))
+                    value = 0
+
+                # Format date label
+                if granularity == 'month':
+                    date_label = current.strftime('%b')
+                elif granularity == 'week':
+                    date_label = f"W{current.isocalendar()[1]}"
+                else:
+                    date_label = current.strftime('%d')
+
+                data.append({
+                    'date': date_label,
+                    'full_date': fields.Date.to_string(current),
+                    'value': round(value, 2),
+                })
+
+                # Move to next period
+                if isinstance(delta, relativedelta):
+                    current = current + delta
+                else:
+                    current = current + delta
+
+                # Don't go beyond today
+                if current > today:
+                    break
+
+            return {'data': data, 'error': None}
+
+        except Exception as e:
+            _logger.error("Error in get_time_series for KPI %s: %s", self.code, str(e))
+            return {'data': [], 'error': str(e)}
+
+    def get_breakdown(self, period='this_month', group_by='ops_branch_id'):
+        """
+        Get breakdown by dimension for bar/pie charts.
+        Returns list of {name, value} for each group.
+
+        Args:
+            period: Time period to filter data
+            group_by: Field to group by ('ops_branch_id', 'ops_business_unit_id', etc.)
+
+        Returns:
+            {'data': [{'name': 'Doha Branch', 'value': 45000, 'id': 1}, ...], 'error': None}
+        """
+        self.ensure_one()
+
+        if not self._check_user_access():
+            return {'data': [], 'error': 'Access Denied'}
+
+        try:
+            from datetime import timedelta
+
+            today = fields.Date.context_today(self)
+            date_field = self.date_field or 'create_date'
+
+            # Get period dates
+            period_start, period_end = self.env['ops.kpi.value']._get_period_dates(period)
+
+            # Get model reference
+            Model = self.env.get(self.source_model)
+            if not Model:
+                return {'data': [], 'error': f'Model {self.source_model} not found'}
+
+            # Check if group_by field exists
+            if group_by not in Model._fields:
+                return {'data': [], 'error': f'Field {group_by} not found in {self.source_model}'}
+
+            # Build base domain
+            from odoo.tools.safe_eval import safe_eval
+            from .ops_kpi_value import _get_safe_eval_context
+            eval_context = _get_safe_eval_context(self.env)
+            base_domain = safe_eval(self.domain_filter, eval_context) if self.domain_filter else []
+            domain = self._get_secure_domain(base_domain)
+
+            # Add date filter
+            if period_start and period_end and date_field:
+                domain.extend([
+                    (date_field, '>=', fields.Date.to_string(period_start)),
+                    (date_field, '<=', fields.Date.to_string(period_end)),
+                ])
+
+            # Determine aggregation field
+            if self.calculation_type == 'count':
+                agg_field = 'id:count'
+            elif self.calculation_type == 'sum' and self.measure_field:
+                agg_field = f'{self.measure_field}:sum'
+            elif self.calculation_type == 'average' and self.measure_field:
+                agg_field = f'{self.measure_field}:avg'
+            else:
+                agg_field = 'id:count'
+
+            # Use read_group for aggregation
+            results = Model.read_group(
+                domain=domain,
+                fields=[group_by, agg_field],
+                groupby=[group_by],
+                orderby=f'{agg_field.split(":")[0]} desc' if ':' in agg_field else 'id desc',
+            )
+
+            data = []
+            for result in results:
+                group_value = result.get(group_by)
+                if isinstance(group_value, tuple):
+                    # Many2one field returns (id, name)
+                    group_id = group_value[0]
+                    group_name = group_value[1]
+                else:
+                    group_id = group_value
+                    group_name = str(group_value) if group_value else 'Undefined'
+
+                # Get the aggregated value
+                if self.calculation_type == 'count':
+                    value = result.get(f'{group_by}_count', 0)
+                elif self.calculation_type in ('sum', 'average'):
+                    value = result.get(self.measure_field, 0)
+                else:
+                    value = 0
+
+                if group_name:  # Skip null groups
+                    data.append({
+                        'id': group_id,
+                        'name': group_name,
+                        'value': round(value, 2) if isinstance(value, float) else value,
+                    })
+
+            return {'data': data, 'error': None}
+
+        except Exception as e:
+            _logger.error("Error in get_breakdown for KPI %s: %s", self.code, str(e))
+            return {'data': [], 'error': str(e)}
+
+    def get_comparison(self, period='this_month'):
+        """
+        Get comparison with previous periods (MoM, YoY).
+        Returns current value with last month and last year comparisons.
+
+        Args:
+            period: Time period for current value
+
+        Returns:
+            {
+                'current': 12500,
+                'last_month': 11200,
+                'last_year': 10800,
+                'mom_change': 11.6,
+                'yoy_change': 15.7,
+                'error': None
+            }
+        """
+        self.ensure_one()
+
+        if not self._check_user_access():
+            return {'error': 'Access Denied'}
+
+        try:
+            from datetime import timedelta
+            from dateutil.relativedelta import relativedelta
+
+            today = fields.Date.context_today(self)
+            date_field = self.date_field or 'create_date'
+
+            # Get current period dates
+            period_start, period_end = self.env['ops.kpi.value']._get_period_dates(period)
+
+            # Get model reference
+            Model = self.env.get(self.source_model)
+            if not Model:
+                return {'error': f'Model {self.source_model} not found'}
+
+            # Build base domain
+            from odoo.tools.safe_eval import safe_eval
+            from .ops_kpi_value import _get_safe_eval_context
+            eval_context = _get_safe_eval_context(self.env)
+            base_domain = safe_eval(self.domain_filter, eval_context) if self.domain_filter else []
+
+            def compute_value_for_period(start, end):
+                """Helper to compute value for a specific period."""
+                domain = self._get_secure_domain(base_domain.copy())
+                if start and end and date_field:
+                    domain.extend([
+                        (date_field, '>=', fields.Date.to_string(start)),
+                        (date_field, '<=', fields.Date.to_string(end)),
+                    ])
+
+                try:
+                    if self.calculation_type == 'count':
+                        return Model.search_count(domain)
+                    elif self.calculation_type == 'sum':
+                        records = Model.search(domain)
+                        return sum(records.mapped(self.measure_field) or [0])
+                    elif self.calculation_type == 'average':
+                        records = Model.search(domain)
+                        values = records.mapped(self.measure_field) or [0]
+                        return sum(values) / len(values) if values else 0
+                    else:
+                        return 0
+                except Exception as e:
+                    _logger.warning("Error computing comparison value: %s", str(e))
+                    return 0
+
+            # Current period
+            current = compute_value_for_period(period_start, period_end)
+
+            # Last month (same day range, previous month)
+            if period_start and period_end:
+                lm_start = period_start - relativedelta(months=1)
+                lm_end = period_end - relativedelta(months=1)
+                last_month = compute_value_for_period(lm_start, lm_end)
+            else:
+                last_month = 0
+
+            # Last year (same day range, previous year)
+            if period_start and period_end:
+                ly_start = period_start - relativedelta(years=1)
+                ly_end = period_end - relativedelta(years=1)
+                last_year = compute_value_for_period(ly_start, ly_end)
+            else:
+                last_year = 0
+
+            # Calculate changes
+            mom_change = 0
+            if last_month and last_month != 0:
+                mom_change = round(((current - last_month) / abs(last_month)) * 100, 1)
+
+            yoy_change = 0
+            if last_year and last_year != 0:
+                yoy_change = round(((current - last_year) / abs(last_year)) * 100, 1)
+
+            return {
+                'current': round(current, 2) if isinstance(current, float) else current,
+                'last_month': round(last_month, 2) if isinstance(last_month, float) else last_month,
+                'last_year': round(last_year, 2) if isinstance(last_year, float) else last_year,
+                'mom_change': mom_change,
+                'yoy_change': yoy_change,
+                'error': None,
+            }
+
+        except Exception as e:
+            _logger.error("Error in get_comparison for KPI %s: %s", self.code, str(e))
+            return {'error': str(e)}

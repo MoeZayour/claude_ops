@@ -63,8 +63,17 @@ Enterprise-grade dashboard system for trading companies with:
     ],
     'assets': {
         'web.assets_backend': [
+            # Chart libraries (must load first)
+            'ops_dashboard/static/src/lib/chart.min.js',
+            'ops_dashboard/static/src/lib/apexcharts.min.js',
+            # Stylesheets
             'ops_dashboard/static/src/scss/dashboard.scss',
+            'ops_dashboard/static/src/scss/charts.scss',
+            # JavaScript components
+            'ops_dashboard/static/src/js/chart_components.js',
             'ops_dashboard/static/src/js/ops_dashboard_action.js',
+            # Templates
+            'ops_dashboard/static/src/xml/chart_templates.xml',
             'ops_dashboard/static/src/xml/ops_dashboard_templates.xml',
         ],
     },

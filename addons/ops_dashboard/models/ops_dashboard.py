@@ -193,3 +193,171 @@ class OpsDashboard(models.Model):
             'position': 'before',
             'code': 'USD',
         }
+
+    @api.model
+    def get_chart_data(self, dashboard_id, period='this_month'):
+        """
+        Get all chart data for a dashboard including time series and breakdowns.
+        This is the main RPC method for the enhanced dashboard with charts.
+
+        Returns structured data for:
+        - KPI cards with sparkline data
+        - Area charts (trends)
+        - Bar charts (branch comparisons)
+        - Donut charts (breakdowns)
+        - Alerts
+        """
+        dashboard = self.browse(dashboard_id)
+
+        if not dashboard.exists():
+            return {'error': 'Dashboard not found'}
+
+        if not dashboard._check_user_dashboard_access():
+            return {'error': 'Access Denied'}
+
+        result = {
+            'dashboard_id': dashboard.id,
+            'dashboard_name': dashboard.name,
+            'dashboard_type': dashboard.dashboard_type,
+            'refresh_interval': int(dashboard.refresh_interval or 0),
+            'period': period,
+            'kpi_cards': [],
+            'trend_charts': [],
+            'breakdown_charts': [],
+            'comparison_charts': [],
+            'alerts': [],
+            'filters': {
+                'branches': [],
+                'business_units': [],
+            },
+        }
+
+        # Get filter options
+        user = self.env.user
+        if hasattr(user, 'ops_allowed_branch_ids') and user.ops_allowed_branch_ids:
+            result['filters']['branches'] = user.ops_allowed_branch_ids.read(['id', 'name'])
+        else:
+            branches = self.env['ops.branch'].search([('active', '=', True)])
+            result['filters']['branches'] = branches.read(['id', 'name'])
+
+        # Process each widget
+        for widget in dashboard.widget_ids.sorted('sequence'):
+            widget_data = widget.get_widget_data(period=period)
+            if widget_data and not widget_data.get('error'):
+                kpi = widget.kpi_id
+
+                # Add sparkline data for KPI cards
+                if kpi:
+                    sparkline = kpi.get_time_series(period=period, granularity='day')
+                    widget_data['sparkline_data'] = sparkline.get('data', [])
+
+                    # Check for comparison data
+                    comparison = kpi.get_comparison(period=period)
+                    if comparison and not comparison.get('error'):
+                        widget_data['comparison'] = comparison
+
+                result['kpi_cards'].append(widget_data)
+
+        # Generate trend charts from revenue/sales KPIs
+        trend_kpis = self.env['ops.kpi'].search([
+            ('code', 'in', ['SALES_TOTAL', 'REVENUE_MTD', 'SALES_MTD']),
+            ('active', '=', True),
+        ], limit=1)
+
+        for kpi in trend_kpis:
+            if kpi._check_user_access():
+                trend_data = kpi.get_time_series(period=period, granularity='day')
+                if trend_data.get('data'):
+                    result['trend_charts'].append({
+                        'kpi_id': kpi.id,
+                        'kpi_code': kpi.code,
+                        'title': kpi.name,
+                        'data': trend_data['data'],
+                        'color': kpi.color,
+                        'format_type': kpi.format_type,
+                    })
+
+        # Generate breakdown charts (branch comparison)
+        breakdown_kpis = self.env['ops.kpi'].search([
+            ('code', 'in', ['SALES_TOTAL', 'REVENUE_MTD', 'SALES_MTD', 'AR_TOTAL']),
+            ('active', '=', True),
+        ], limit=2)
+
+        for kpi in breakdown_kpis:
+            if kpi._check_user_access():
+                # Try ops_branch_id first
+                Model = self.env.get(kpi.source_model)
+                if Model and 'ops_branch_id' in Model._fields:
+                    breakdown_data = kpi.get_breakdown(period=period, group_by='ops_branch_id')
+                    if breakdown_data.get('data'):
+                        result['breakdown_charts'].append({
+                            'kpi_id': kpi.id,
+                            'kpi_code': kpi.code,
+                            'title': f'{kpi.name} by Branch',
+                            'data': breakdown_data['data'],
+                            'group_by': 'ops_branch_id',
+                            'format_type': kpi.format_type,
+                        })
+
+        # Generate alerts from KPIs with negative trends or thresholds
+        alert_threshold = -10  # Alert if trend is worse than -10%
+        for widget_data in result['kpi_cards']:
+            trend_pct = widget_data.get('trend_percentage', 0)
+            trend_is_good = widget_data.get('trend_is_good', True)
+
+            if not trend_is_good and trend_pct != 0:
+                severity = 'critical' if trend_pct < -20 else 'warning'
+                result['alerts'].append({
+                    'kpi_id': widget_data.get('kpi_id'),
+                    'title': widget_data.get('name'),
+                    'message': f'{abs(trend_pct):.1f}% {"decrease" if trend_pct < 0 else "increase"} vs previous period',
+                    'severity': severity,
+                    'value': widget_data.get('value'),
+                    'formatted_value': widget_data.get('formatted_value'),
+                    'positive': False,
+                })
+            elif trend_is_good and trend_pct > 15:
+                result['alerts'].append({
+                    'kpi_id': widget_data.get('kpi_id'),
+                    'title': widget_data.get('name'),
+                    'message': f'{trend_pct:.1f}% {"increase" if trend_pct > 0 else "decrease"} vs previous period',
+                    'severity': 'success',
+                    'value': widget_data.get('value'),
+                    'formatted_value': widget_data.get('formatted_value'),
+                    'positive': True,
+                })
+
+        return result
+
+    @api.model
+    def get_kpi_chart_data(self, kpi_id, chart_type, period='this_month', group_by=None):
+        """
+        Get specific chart data for a single KPI.
+        Used for drill-down and detailed views.
+
+        Args:
+            kpi_id: ID of the KPI
+            chart_type: 'time_series', 'breakdown', 'comparison'
+            period: Time period
+            group_by: Field to group by (for breakdown)
+
+        Returns:
+            Chart data specific to the requested type
+        """
+        kpi = self.env['ops.kpi'].browse(kpi_id)
+
+        if not kpi.exists():
+            return {'error': 'KPI not found'}
+
+        if not kpi._check_user_access():
+            return {'error': 'Access Denied'}
+
+        if chart_type == 'time_series':
+            return kpi.get_time_series(period=period)
+        elif chart_type == 'breakdown':
+            group_by = group_by or 'ops_branch_id'
+            return kpi.get_breakdown(period=period, group_by=group_by)
+        elif chart_type == 'comparison':
+            return kpi.get_comparison(period=period)
+        else:
+            return {'error': f'Unknown chart type: {chart_type}'}

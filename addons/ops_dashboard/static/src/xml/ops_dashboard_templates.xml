@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="ops_dashboard.DashboardAction">
-        <div class="ops-dashboard">
+        <div class="ops-dashboard ops-dashboard-v2">
             <div class="ops-dashboard-container">
                 <!-- Header -->
                 <div class="ops-dashboard-header">
@@ -27,17 +27,19 @@
                             </select>
                         </t>
 
-                        <!-- Period Selector -->
-                        <select class="form-select period-selector"
-                                t-on-change="onPeriodChange"
-                                t-att-value="state.period">
-                            <t t-foreach="periods" t-as="p" t-key="p.value">
-                                <option t-att-value="p.value"
-                                        t-att-selected="p.value === state.period">
-                                    <t t-esc="p.label"/>
-                                </option>
-                            </t>
-                        </select>
+                        <!-- Period Selector (Enhanced) -->
+                        <PeriodSelector
+                            value="state.period"
+                            periods="periods"
+                            onChange.bind="onPeriodChange"/>
+
+                        <!-- View Mode Toggle -->
+                        <button class="chart-action-btn"
+                                t-att-class="{'active': state.viewMode === 'list'}"
+                                t-on-click="toggleViewMode"
+                                title="Toggle View">
+                            <i t-attf-class="fa #{state.viewMode === 'grid' ? 'fa-list' : 'fa-th'}"/>
+                        </button>
 
                         <!-- Refresh Button -->
                         <button class="refresh-button"
@@ -48,6 +50,23 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Filter Panel -->
+                <t t-if="filterBranches.length > 0 or filterBusinessUnits.length > 0">
+                    <FilterPanel
+                        branches="filterBranches"
+                        businessUnits="filterBusinessUnits"
+                        filters="state.filters"
+                        collapsed="true"
+                        onChange.bind="onFilterChange"/>
+                </t>
+
+                <!-- Drilldown Breadcrumb -->
+                <t t-if="isInDrilldown">
+                    <DrilldownBreadcrumb
+                        path="state.drilldownPath"
+                        onNavigate.bind="onDrilldownNavigate"/>
+                </t>
 
                 <!-- Loading State -->
                 <t t-if="state.loading">
@@ -71,7 +90,7 @@
                 </t>
 
                 <!-- Empty State -->
-                <t t-elif="!state.dashboardData or !state.dashboardData.widgets or state.dashboardData.widgets.length === 0">
+                <t t-elif="!hasChartData">
                     <div class="ops-dashboard-empty">
                         <div class="empty-icon">
                             <i class="fa fa-chart-bar"/>
@@ -88,12 +107,59 @@
                     </div>
                 </t>
 
-                <!-- Dashboard Grid -->
+                <!-- Drilldown View -->
+                <t t-elif="isInDrilldown and state.drilldownData">
+                    <div class="ops-dashboard-grid-12">
+                        <!-- KPI Summary -->
+                        <div class="col-span-12">
+                            <div class="ops-kpi-card-enhanced" t-att-style="'--kpi-color: ' + (state.drilldownData.kpi.color || '#3b82f6')">
+                                <div class="kpi-header">
+                                    <span class="kpi-name"><t t-esc="state.drilldownData.kpi.name"/> - Detail View</span>
+                                    <div class="kpi-icon" t-att-style="'background-color: ' + (state.drilldownData.kpi.color || '#3b82f6')">
+                                        <i t-attf-class="fa #{state.drilldownData.kpi.icon || 'fa-chart-line'}"/>
+                                    </div>
+                                </div>
+                                <div class="kpi-value">
+                                    <t t-esc="formatValue(state.drilldownData.kpi)"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trend Chart -->
+                        <t t-if="state.drilldownData.timeSeries.length > 0">
+                            <div class="col-span-8">
+                                <AreaChart
+                                    title="'Trend Over Time'"
+                                    subtitle="'Daily values for selected period'"
+                                    data="state.drilldownData.timeSeries"
+                                    color="state.drilldownData.kpi.color"
+                                    formatType="state.drilldownData.kpi.format_type"
+                                    currencyInfo="currencyInfo"/>
+                            </div>
+                        </t>
+
+                        <!-- Breakdown Chart -->
+                        <t t-if="state.drilldownData.breakdown.length > 0">
+                            <div class="col-span-4">
+                                <HorizontalBarChart
+                                    title="'By Branch'"
+                                    data="state.drilldownData.breakdown"
+                                    formatType="state.drilldownData.kpi.format_type"
+                                    currencyInfo="currencyInfo"
+                                    onClick.bind="onChartItemClick"/>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+
+                <!-- Main Dashboard View -->
                 <t t-else="">
+                    <!-- KPI Cards Row -->
                     <div class="ops-dashboard-grid">
-                        <t t-foreach="state.dashboardData.widgets" t-as="widget" t-key="widget.widget_id">
+                        <t t-foreach="kpiCards" t-as="widget" t-key="widget.widget_id || widget.kpi_id">
                             <div t-attf-class="ops-kpi-card #{getCardColorClass(widget)}"
-                                 t-attf-style="grid-column: span #{widget.position.w || 1}; grid-row: span #{widget.position.h || 1};">
+                                 t-on-click="() => this.onKPIDrilldown(widget)"
+                                 style="cursor: pointer;">
 
                                 <!-- Card Header: Name + Icon -->
                                 <div class="kpi-header">
@@ -128,6 +194,47 @@
                             </div>
                         </t>
                     </div>
+
+                    <!-- Charts Section -->
+                    <t t-if="trendCharts.length > 0 or breakdownCharts.length > 0 or alerts.length > 0">
+                        <div class="ops-dashboard-grid-12" style="margin-top: 24px;">
+                            <!-- Trend Charts -->
+                            <t t-foreach="trendCharts" t-as="chart" t-key="chart.kpi_id">
+                                <div class="col-span-8">
+                                    <AreaChart
+                                        title="chart.title"
+                                        subtitle="'Daily trend for selected period'"
+                                        data="chart.data"
+                                        color="chart.color"
+                                        formatType="chart.format_type"
+                                        currencyInfo="currencyInfo"/>
+                                </div>
+                            </t>
+
+                            <!-- Alerts Panel -->
+                            <t t-if="alerts.length > 0">
+                                <div class="col-span-4">
+                                    <AlertList
+                                        title="'Alerts &amp; Insights'"
+                                        alerts="alerts"
+                                        onClick.bind="onAlertClick"/>
+                                </div>
+                            </t>
+
+                            <!-- Breakdown Charts -->
+                            <t t-foreach="breakdownCharts" t-as="chart" t-key="chart.kpi_id + '_breakdown'">
+                                <div class="col-span-6">
+                                    <HorizontalBarChart
+                                        title="chart.title"
+                                        data="chart.data"
+                                        formatType="chart.format_type"
+                                        currencyInfo="currencyInfo"
+                                        showRanking="true"
+                                        onClick.bind="onChartItemClick"/>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
 
                     <!-- Auto-refresh indicator -->
                     <t t-if="hasAutoRefresh">

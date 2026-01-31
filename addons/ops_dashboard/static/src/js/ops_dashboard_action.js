@@ -5,42 +5,92 @@ import { Component, useState, onWillStart, onMounted, onWillUnmount } from "@odo
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 
+// Import chart components
+import {
+    PeriodSelector,
+    FilterPanel,
+    KPICardSparkline,
+    AreaChart,
+    HorizontalBarChart,
+    DonutChart,
+    GaugeChart,
+    FunnelChart,
+    BulletChart,
+    AlertList,
+    DrilldownBreadcrumb,
+    formatValue,
+    COLORS,
+} from "./chart_components";
+
 /**
- * OPS Dashboard Action Component
- * Displays KPI cards with real-time data, auto-refresh, and proper currency formatting
+ * OPS Dashboard Action Component V2
+ * Enhanced dashboard with interactive charts, drill-down, and filters
  */
 class OpsDashboardAction extends Component {
     static template = "ops_dashboard.DashboardAction";
     static props = ["*"];
 
+    // Register child components
+    static components = {
+        PeriodSelector,
+        FilterPanel,
+        KPICardSparkline,
+        AreaChart,
+        HorizontalBarChart,
+        DonutChart,
+        GaugeChart,
+        AlertList,
+        DrilldownBreadcrumb,
+    };
+
     setup() {
         this.orm = useService("orm");
         this.notification = useService("notification");
+        this.action = useService("action");
 
         this.state = useState({
+            // Dashboard selection
             dashboards: [],
             selectedDashboardId: null,
+
+            // Data
             dashboardData: null,
+            chartData: null,
+
+            // UI State
             period: "this_month",
             loading: true,
             refreshing: false,
             error: null,
-            // Currency info - will be loaded from backend
+            viewMode: "grid", // 'grid' or 'list'
+            filtersExpanded: false,
+
+            // Filters
+            filters: {
+                branch_id: null,
+                business_unit_id: null,
+                date_from: null,
+                date_to: null,
+            },
+
+            // Drilldown
+            drilldownPath: [],
+            drilldownData: null,
+
+            // Currency info
             currencySymbol: "",
             currencyPosition: "before",
             currencyCode: "",
         });
 
         this.refreshInterval = null;
+
         this.periods = [
             { value: "today", label: _t("Today") },
-            { value: "this_week", label: _t("This Week") },
-            { value: "this_month", label: _t("This Month") },
-            { value: "this_quarter", label: _t("This Quarter") },
-            { value: "this_year", label: _t("This Year") },
-            { value: "last_30_days", label: _t("Last 30 Days") },
-            { value: "last_90_days", label: _t("Last 90 Days") },
-            { value: "all_time", label: _t("All Time") },
+            { value: "this_week", label: _t("Week") },
+            { value: "this_month", label: _t("Month") },
+            { value: "this_quarter", label: _t("Quarter") },
+            { value: "this_year", label: _t("Year") },
         ];
 
         onWillStart(async () => {
@@ -58,12 +108,10 @@ class OpsDashboardAction extends Component {
     }
 
     /**
-     * Load the company's currency information for proper formatting
-     * Uses a backend method to get currency info for current user's company
+     * Load the company's currency information
      */
     async loadCurrencyInfo() {
         try {
-            // Call backend method to get currency info
             const currencyInfo = await this.orm.call(
                 "ops.dashboard",
                 "get_company_currency_info",
@@ -77,11 +125,18 @@ class OpsDashboardAction extends Component {
             }
         } catch (error) {
             console.warn("Could not load currency info:", error);
-            // Set defaults if unable to load
             this.state.currencySymbol = "$";
             this.state.currencyPosition = "before";
             this.state.currencyCode = "USD";
         }
+    }
+
+    get currencyInfo() {
+        return {
+            symbol: this.state.currencySymbol,
+            position: this.state.currencyPosition,
+            code: this.state.currencyCode,
+        };
     }
 
     async loadDashboards() {
@@ -113,17 +168,28 @@ class OpsDashboardAction extends Component {
 
         try {
             this.state.refreshing = true;
-            const data = await this.orm.call(
-                "ops.dashboard",
-                "get_dashboard_data",
-                [this.state.selectedDashboardId, this.state.period]
-            );
 
-            if (data.error) {
-                this.state.error = data.error;
+            // Load both standard widget data and chart data
+            const [widgetData, chartData] = await Promise.all([
+                this.orm.call(
+                    "ops.dashboard",
+                    "get_dashboard_data",
+                    [this.state.selectedDashboardId, this.state.period]
+                ),
+                this.orm.call(
+                    "ops.dashboard",
+                    "get_chart_data",
+                    [this.state.selectedDashboardId, this.state.period]
+                ),
+            ]);
+
+            if (widgetData.error) {
+                this.state.error = widgetData.error;
                 this.state.dashboardData = null;
+                this.state.chartData = null;
             } else {
-                this.state.dashboardData = data;
+                this.state.dashboardData = widgetData;
+                this.state.chartData = chartData;
                 this.state.error = null;
             }
         } catch (error) {
@@ -151,14 +217,27 @@ class OpsDashboardAction extends Component {
         }
     }
 
+    // =========================================================================
+    // EVENT HANDLERS
+    // =========================================================================
+
     async onDashboardChange(ev) {
         this.state.selectedDashboardId = parseInt(ev.target.value);
+        this.state.drilldownPath = [];
+        this.state.drilldownData = null;
         await this.loadDashboardData();
         this.setupAutoRefresh();
     }
 
-    async onPeriodChange(ev) {
-        this.state.period = ev.target.value;
+    async onPeriodChange(newPeriod) {
+        this.state.period = newPeriod;
+        this.state.drilldownPath = [];
+        this.state.drilldownData = null;
+        await this.loadDashboardData();
+    }
+
+    async onFilterChange(newFilters) {
+        this.state.filters = newFilters;
         await this.loadDashboardData();
     }
 
@@ -169,58 +248,139 @@ class OpsDashboardAction extends Component {
         });
     }
 
-    /**
-     * Format a widget value according to its format type
-     * Uses the company's currency for currency formatting
-     */
+    toggleViewMode() {
+        this.state.viewMode = this.state.viewMode === "grid" ? "list" : "grid";
+    }
+
+    // =========================================================================
+    // DRILLDOWN HANDLERS
+    // =========================================================================
+
+    async onKPIDrilldown(widget) {
+        if (!widget.kpi_id) return;
+
+        // Add to drilldown path
+        this.state.drilldownPath.push({
+            label: widget.name,
+            kpi_id: widget.kpi_id,
+            type: "kpi",
+        });
+
+        try {
+            // Load detailed data for this KPI
+            const [timeSeries, breakdown] = await Promise.all([
+                this.orm.call("ops.dashboard", "get_kpi_chart_data", [
+                    widget.kpi_id,
+                    "time_series",
+                    this.state.period,
+                ]),
+                this.orm.call("ops.dashboard", "get_kpi_chart_data", [
+                    widget.kpi_id,
+                    "breakdown",
+                    this.state.period,
+                    "ops_branch_id",
+                ]),
+            ]);
+
+            this.state.drilldownData = {
+                kpi: widget,
+                timeSeries: timeSeries.data || [],
+                breakdown: breakdown.data || [],
+            };
+        } catch (error) {
+            console.error("Error loading drilldown data:", error);
+            this.notification.add(_t("Failed to load details"), { type: "warning" });
+        }
+    }
+
+    onDrilldownNavigate(index) {
+        if (index < 0) {
+            // Back to main dashboard
+            this.state.drilldownPath = [];
+            this.state.drilldownData = null;
+        } else {
+            // Navigate to specific level
+            this.state.drilldownPath = this.state.drilldownPath.slice(0, index + 1);
+            // Reload data for that level if needed
+        }
+    }
+
+    onChartItemClick(item) {
+        // Handle click on chart item (e.g., branch in bar chart)
+        if (item && item.id) {
+            this.notification.add(_t("Clicked: ") + item.name, { type: "info" });
+            // Could implement further drill-down here
+        }
+    }
+
+    onAlertClick(alert) {
+        // Navigate to the KPI or related records
+        if (alert.kpi_id) {
+            const widget = this.state.chartData?.kpi_cards?.find(
+                (w) => w.kpi_id === alert.kpi_id
+            );
+            if (widget) {
+                this.onKPIDrilldown(widget);
+            }
+        }
+    }
+
+    // =========================================================================
+    // COMPUTED PROPERTIES
+    // =========================================================================
+
+    get hasChartData() {
+        return (
+            this.state.chartData &&
+            (this.state.chartData.kpi_cards?.length > 0 ||
+                this.state.chartData.trend_charts?.length > 0 ||
+                this.state.chartData.breakdown_charts?.length > 0)
+        );
+    }
+
+    get isInDrilldown() {
+        return this.state.drilldownPath.length > 0;
+    }
+
+    get filterBranches() {
+        return this.state.chartData?.filters?.branches || [];
+    }
+
+    get filterBusinessUnits() {
+        return this.state.chartData?.filters?.business_units || [];
+    }
+
+    get alerts() {
+        return this.state.chartData?.alerts || [];
+    }
+
+    get trendCharts() {
+        return this.state.chartData?.trend_charts || [];
+    }
+
+    get breakdownCharts() {
+        return this.state.chartData?.breakdown_charts || [];
+    }
+
+    get kpiCards() {
+        // Use chart data KPI cards which include sparkline data
+        return this.state.chartData?.kpi_cards || this.state.dashboardData?.widgets || [];
+    }
+
+    // =========================================================================
+    // FORMATTING HELPERS
+    // =========================================================================
+
     formatValue(widget) {
         const value = widget.value || 0;
         const formatType = widget.format_type || "number";
-
-        switch (formatType) {
-            case "currency":
-                return this.formatCurrency(value);
-            case "percentage":
-                return `${value.toFixed(1)}%`;
-            case "integer":
-                return new Intl.NumberFormat().format(Math.round(value));
-            default:
-                return new Intl.NumberFormat(undefined, {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 2,
-                }).format(value);
-        }
+        return formatValue(value, formatType, this.currencyInfo);
     }
 
-    /**
-     * Format a value as currency using the company's currency symbol and position
-     */
     formatCurrency(value) {
-        const absValue = Math.abs(value);
-        const isNegative = value < 0;
-
-        // Format the number with thousand separators, no decimals for large values
-        const formatted = new Intl.NumberFormat(undefined, {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: absValue >= 1000 ? 0 : 2,
-        }).format(absValue);
-
-        const symbol = this.state.currencySymbol || "$";
-        let result;
-
-        // Position the symbol based on currency settings
-        if (this.state.currencyPosition === "after") {
-            result = `${formatted} ${symbol}`;
-        } else {
-            result = `${symbol}${formatted}`;
-        }
-
-        return isNegative ? `-${result}` : result;
+        return formatValue(value, "currency", this.currencyInfo);
     }
 
-    /**
-     * Get the CSS color class for a card based on its color
-     */
     getCardColorClass(widget) {
         const color = widget.color || "#3b82f6";
         if (color.includes("10b981") || color.includes("059669") || color.toLowerCase().includes("green")) {
@@ -287,6 +447,23 @@ class OpsDashboardAction extends Component {
             return `${Math.floor(seconds / 60)} min`;
         }
         return `${seconds}s`;
+    }
+
+    // Helper for KPI card trend object
+    getWidgetTrend(widget) {
+        if (!widget.trend_direction || widget.trend_direction === "flat") {
+            return null;
+        }
+        return {
+            direction: widget.trend_direction,
+            percentage: widget.trend_percentage || 0,
+            isGood: widget.trend_is_good !== false,
+        };
+    }
+
+    // Helper for sparkline data
+    getWidgetSparkline(widget) {
+        return widget.sparkline_data || [];
     }
 }
 

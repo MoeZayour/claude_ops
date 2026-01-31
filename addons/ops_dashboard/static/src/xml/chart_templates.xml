@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- =================================================================== -->
+    <!-- PERIOD SELECTOR                                                     -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.PeriodSelector">
+        <div class="ops-period-selector">
+            <t t-foreach="periods" t-as="period" t-key="period.value">
+                <button
+                    t-attf-class="period-btn #{period.value === currentValue ? 'active' : ''}"
+                    t-on-click="() => this.onPeriodClick(period.value)">
+                    <t t-esc="period.label"/>
+                </button>
+            </t>
+        </div>
+    </t>
+
+    <!-- =================================================================== -->
+    <!-- FILTER PANEL                                                        -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.FilterPanel">
+        <div class="ops-filter-panel">
+            <div t-attf-class="filter-header #{state.collapsed ? 'collapsed' : ''}"
+                 t-on-click="toggleCollapse">
+                <h4>
+                    <i class="fa fa-filter"/>
+                    Filters
+                </h4>
+                <i class="fa fa-chevron-down toggle-icon"/>
+            </div>
+
+            <div t-attf-class="filter-body #{state.collapsed ? 'hidden' : ''}">
+                <!-- Branch Filter -->
+                <div class="filter-group" t-if="props.branches and props.branches.length">
+                    <label>Branch</label>
+                    <select t-on-change="(ev) => this.onFilterChange('branch_id', ev.target.value)">
+                        <option value="">All Branches</option>
+                        <t t-foreach="props.branches" t-as="branch" t-key="branch.id">
+                            <option t-att-value="branch.id"
+                                    t-att-selected="props.filters?.branch_id == branch.id">
+                                <t t-esc="branch.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+
+                <!-- Business Unit Filter -->
+                <div class="filter-group" t-if="props.businessUnits and props.businessUnits.length">
+                    <label>Business Unit</label>
+                    <select t-on-change="(ev) => this.onFilterChange('business_unit_id', ev.target.value)">
+                        <option value="">All Business Units</option>
+                        <t t-foreach="props.businessUnits" t-as="bu" t-key="bu.id">
+                            <option t-att-value="bu.id"
+                                    t-att-selected="props.filters?.business_unit_id == bu.id">
+                                <t t-esc="bu.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+
+                <!-- Date Range Filter -->
+                <div class="filter-group">
+                    <label>Date From</label>
+                    <input type="date"
+                           t-att-value="props.filters?.date_from"
+                           t-on-change="(ev) => this.onFilterChange('date_from', ev.target.value)"/>
+                </div>
+
+                <div class="filter-group">
+                    <label>Date To</label>
+                    <input type="date"
+                           t-att-value="props.filters?.date_to"
+                           t-on-change="(ev) => this.onFilterChange('date_to', ev.target.value)"/>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- =================================================================== -->
+    <!-- KPI CARD WITH SPARKLINE                                             -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.KPICardSparkline">
+        <div class="ops-kpi-card-enhanced"
+             t-att-style="cardStyle"
+             t-on-click="onCardClick">
+
+            <div class="kpi-header">
+                <span class="kpi-name"><t t-esc="props.title"/></span>
+                <div class="kpi-icon" t-att-style="'background-color: ' + (props.color || '#3b82f6')">
+                    <i t-attf-class="fa #{props.icon || 'fa-chart-line'}"/>
+                </div>
+            </div>
+
+            <div class="kpi-value">
+                <t t-esc="formattedValue"/>
+            </div>
+
+            <t t-if="props.trend">
+                <div t-attf-class="kpi-trend #{trendClass}">
+                    <i t-attf-class="fa #{trendIcon}"/>
+                    <span class="trend-value">
+                        <t t-esc="Math.abs(props.trend.percentage || 0).toFixed(1)"/>%
+                    </span>
+                    <span class="trend-label">vs previous</span>
+                </div>
+            </t>
+
+            <t t-if="props.sparklineData and props.sparklineData.length">
+                <div class="kpi-sparkline">
+                    <canvas t-ref="sparklineCanvas"/>
+                </div>
+            </t>
+        </div>
+    </t>
+
+    <!-- =================================================================== -->
+    <!-- AREA CHART                                                          -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.AreaChart">
+        <div class="ops-chart-container ops-area-chart">
+            <div class="chart-header">
+                <div>
+                    <h3 class="chart-title"><t t-esc="props.title"/></h3>
+                    <t t-if="props.subtitle">
+                        <div class="chart-subtitle"><t t-esc="props.subtitle"/></div>
+                    </t>
+                </div>
+            </div>
+            <div class="chart-body">
+                <canvas t-ref="chartCanvas"/>
+            </div>
+        </div>
+    </t>
+
+    <!-- =================================================================== -->
+    <!-- HORIZONTAL BAR CHART                                                -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.HorizontalBarChart">
+        <div class="ops-chart-container ops-horizontal-bar">
+            <div class="chart-header">
+                <div>
+                    <h3 class="chart-title"><t t-esc="props.title"/></h3>
+                    <t t-if="props.subtitle">
+                        <div class="chart-subtitle"><t t-esc="props.subtitle"/></div>
+                    </t>
+                </div>
+            </div>
+            <div class="chart-body">
+                <canvas t-ref="chartCanvas"/>
+            </div>
+        </div>
+    </t>
+
+    <!-- =================================================================== -->
+    <!-- DONUT CHART                                                         -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.DonutChart">
+        <div class="ops-chart-container ops-donut-chart">
+            <div class="chart-header">
+                <div>
+                    <h3 class="chart-title"><t t-esc="props.title"/></h3>
+                    <t t-if="props.subtitle">
+                        <div class="chart-subtitle"><t t-esc="props.subtitle"/></div>
+                    </t>
+                </div>
+            </div>
+            <div class="chart-body">
+                <div class="donut-wrapper">
+                    <canvas t-ref="chartCanvas"/>
+                    <div class="donut-center">
+                        <div class="center-value"><t t-esc="formattedCenterValue"/></div>
+                        <t t-if="props.centerLabel">
+                            <div class="center-label"><t t-esc="props.centerLabel"/></div>
+                        </t>
+                    </div>
+                </div>
+                <div class="donut-legend">
+                    <t t-foreach="legendData" t-as="item" t-key="item.label">
+                        <div class="legend-item">
+                            <span class="legend-color" t-att-style="'background-color: ' + item.color"/>
+                            <span class="legend-label"><t t-esc="item.label"/></span>
+                            <span class="legend-value"><t t-esc="item.formattedValue"/></span>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- =================================================================== -->
+    <!-- GAUGE CHART                                                         -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.GaugeChart">
+        <div class="ops-gauge-container">
+            <div class="gauge-title"><t t-esc="props.title"/></div>
+            <div class="gauge-wrapper">
+                <div t-ref="gaugeChart"/>
+            </div>
+            <div class="gauge-value">
+                <div class="value-number"><t t-esc="formattedValue"/></div>
+                <div class="value-label"><t t-esc="percentage.toFixed(0)"/>% of target</div>
+            </div>
+            <div class="gauge-zones">
+                <span><t t-esc="props.min || 0"/></span>
+                <span><t t-esc="props.max || 100"/></span>
+            </div>
+        </div>
+    </t>
+
+    <!-- =================================================================== -->
+    <!-- FUNNEL CHART                                                        -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.FunnelChart">
+        <div class="ops-chart-container ops-funnel-chart">
+            <div class="chart-header">
+                <div>
+                    <h3 class="chart-title"><t t-esc="props.title"/></h3>
+                    <t t-if="props.subtitle">
+                        <div class="chart-subtitle"><t t-esc="props.subtitle"/></div>
+                    </t>
+                </div>
+            </div>
+            <div class="chart-body">
+                <t t-foreach="processedData" t-as="stage" t-key="stage.label">
+                    <div class="funnel-stage" t-on-click="() => this.onStageClick(stage)">
+                        <div class="stage-bar"
+                             t-att-style="'width: ' + stage.width + '%; background-color: ' + stage.color">
+                        </div>
+                        <div class="stage-info">
+                            <div class="stage-name"><t t-esc="stage.label"/></div>
+                            <t t-if="stage.count !== undefined">
+                                <div class="stage-count"><t t-esc="stage.count"/> deals</div>
+                            </t>
+                        </div>
+                        <div class="stage-value"><t t-esc="stage.formattedValue"/></div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <!-- =================================================================== -->
+    <!-- BULLET CHART                                                        -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.BulletChart">
+        <div class="ops-chart-container ops-bullet-chart">
+            <div class="chart-header">
+                <h3 class="chart-title"><t t-esc="props.title"/></h3>
+            </div>
+            <div class="chart-body">
+                <t t-foreach="processedData" t-as="item" t-key="item.label">
+                    <div class="bullet-row">
+                        <div class="bullet-header">
+                            <span class="bullet-label"><t t-esc="item.label"/></span>
+                            <span class="bullet-values">
+                                <span class="actual"><t t-esc="item.formattedActual"/></span>
+                                / <t t-esc="item.formattedTarget"/>
+                            </span>
+                        </div>
+                        <div class="bullet-bar">
+                            <div class="bullet-actual"
+                                 t-att-style="'width: ' + item.actualWidth + '%; background-color: ' + item.color"/>
+                            <div class="bullet-target"
+                                 t-att-style="'left: ' + item.targetPosition + '%'"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <!-- =================================================================== -->
+    <!-- ALERT LIST                                                          -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.AlertList">
+        <div class="ops-chart-container ops-alert-list">
+            <div class="chart-header">
+                <h3 class="chart-title"><t t-esc="props.title"/></h3>
+            </div>
+            <div class="chart-body">
+                <t t-if="props.alerts and props.alerts.length">
+                    <t t-foreach="props.alerts" t-as="alert" t-key="alert_index">
+                        <div t-attf-class="alert-card #{getSeverityClass(alert.severity)}"
+                             t-on-click="() => this.onAlertClick(alert)">
+                            <div t-attf-class="alert-icon #{alert.severity || 'info'}">
+                                <i t-attf-class="fa #{getSeverityIcon(alert.severity)}"/>
+                            </div>
+                            <div class="alert-content">
+                                <div class="alert-title"><t t-esc="alert.title"/></div>
+                                <div class="alert-message"><t t-esc="alert.message"/></div>
+                            </div>
+                            <t t-if="alert.value !== undefined">
+                                <div t-attf-class="alert-value #{alert.positive ? 'positive' : 'negative'}">
+                                    <t t-esc="alert.formattedValue || alert.value"/>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="ops-dashboard-empty" style="padding: 40px 20px;">
+                        <div class="empty-icon">
+                            <i class="fa fa-check-circle" style="color: #10b981;"/>
+                        </div>
+                        <div class="empty-title">All Clear</div>
+                        <div class="empty-message">No alerts at this time</div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <!-- =================================================================== -->
+    <!-- DRILLDOWN BREADCRUMB                                                -->
+    <!-- =================================================================== -->
+    <t t-name="ops_dashboard.DrilldownBreadcrumb">
+        <div class="ops-drilldown-breadcrumb" t-if="props.path and props.path.length > 1">
+            <button class="back-btn" t-on-click="onBackClick">
+                <i class="fa fa-arrow-left"/>
+                Back
+            </button>
+
+            <t t-foreach="props.path" t-as="item" t-key="item_index">
+                <div class="breadcrumb-item"
+                     t-att-class="item_index === props.path.length - 1 ? 'current' : ''">
+                    <t t-if="item_index > 0">
+                        <span class="separator">/</span>
+                    </t>
+                    <t t-if="item_index === props.path.length - 1">
+                        <span><t t-esc="item.label"/></span>
+                    </t>
+                    <t t-else="">
+                        <a href="#" t-on-click.prevent="() => this.onItemClick(item_index)">
+                            <t t-esc="item.label"/>
+                        </a>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
