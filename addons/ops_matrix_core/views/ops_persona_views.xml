@@ -81,7 +81,7 @@
                     
                     <div class="oe_title">
                         <h1>
-                            <field name="name" placeholder="Persona Name (e.g., 'Doha Branch Manager')"/>
+                            <field name="name" placeholder="Persona Name (e.g., 'Regional Sales Manager')"/>
                         </h1>
                         <div class="text-muted">
                             <field name="code" readonly="1"/>

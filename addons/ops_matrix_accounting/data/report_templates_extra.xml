@@ -10,7 +10,7 @@
 
         Templates:
         INVENTORY:
-        1. Stock Valuation - Dubai HQ
+        1. Stock Valuation by Branch
         2. Dead Stock Audit (>180 Days)
         3. Fresh Stock (0-30 Days)
         4. Negative Stock Check
@@ -22,7 +22,7 @@
         FINANCIAL:
         7. Critical Collections (>90 Days)
         8. Unreconciled Bank Transactions
-        9. Segment P and L (Electronics)
+        9. Segment P&L by Business Unit
 
         ASSETS:
         10. New CAPEX (YTD)
@@ -32,20 +32,19 @@
 
         <!-- INVENTORY TEMPLATES -->
 
-        <!-- 1. Stock Valuation - Dubai HQ -->
-        <record id="template_stock_valuation_dubai" model="ops.report.template">
-            <field name="name">Stock Valuation - Dubai HQ</field>
+        <!-- 1. Stock Valuation by Branch -->
+        <record id="template_stock_valuation_branch" model="ops.report.template">
+            <field name="name">Stock Valuation by Branch</field>
             <field name="engine">inventory</field>
             <field name="is_global" eval="True"/>
-            <field name="description">Stock valuation report filtered for Dubai headquarters location. Shows current inventory levels and values grouped by product category for the main Dubai warehouse.</field>
+            <field name="description">Stock valuation report showing current inventory levels and values grouped by product category. Use the branch filter to select specific locations at runtime.</field>
             <field name="config_data">{
     "report_type": "valuation",
     "group_by": "category",
     "include_zero_qty": false,
     "ops_branch_ids": [],
     "location_ids": [],
-    "product_category_ids": [],
-    "branch_filter_name": "Dubai"
+    "product_category_ids": []
 }</field>
         </record>
 
@@ -191,12 +190,12 @@
 }</field>
         </record>
 
-        <!-- 9. Segment P&L (Electronics) -->
-        <record id="template_segment_pl_electronics" model="ops.report.template">
-            <field name="name">Segment P&amp;L (Electronics BU)</field>
+        <!-- 9. Segment P&L by Business Unit -->
+        <record id="template_segment_pl_bu" model="ops.report.template">
+            <field name="name">Segment P&amp;L by Business Unit</field>
             <field name="engine">financial</field>
             <field name="is_global" eval="True"/>
-            <field name="description">Profit and Loss Statement filtered for the Electronics business unit segment. Shows revenue, costs, and profitability for this specific product line.</field>
+            <field name="description">Profit and Loss Statement segmented by business unit. Shows revenue, costs, and profitability for each business unit segment. Select specific BUs at runtime.</field>
             <field name="config_data">{
     "report_type": "pl",
     "date_mode": "ytd",
@@ -206,7 +205,6 @@
     "report_format": "detailed",
     "consolidate_by_branch": false,
     "consolidate_by_bu": true,
-    "business_unit_filter_name": "Electronics",
     "branch_ids": [],
     "business_unit_ids": [],
     "account_ids": [],
