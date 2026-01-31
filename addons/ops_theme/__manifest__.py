@@ -90,23 +90,29 @@ Features:
             # 5. Dark mode
             'ops_theme/static/src/scss/_dark_mode.scss',
 
-            # 6. Color mode toggle styling
+            # 6. Complete debranding (enterprise hiding + color overrides)
+            'ops_theme/static/src/scss/_debranding.scss',
+
+            # 7. Color mode toggle styling
             'ops_theme/static/src/scss/_user_menu.scss',
 
-            # 7. JavaScript - Theme utilities
+            # 8. JavaScript - Theme utilities
             'ops_theme/static/src/js/theme_loader.js',
 
-            # 8. Color mode toggle component
+            # 9. JavaScript - Debranding (registry cleanup)
+            'ops_theme/static/src/js/debranding.js',
+
+            # 10. Color mode toggle component
             'ops_theme/static/src/js/color_mode_toggle.js',
 
-            # 9. OWL Component Patches (behavior via JS, not CSS)
+            # 11. OWL Component Patches (behavior via JS, not CSS)
             'ops_theme/static/src/views/form/form_compiler.js',
 
-            # 10. Feature extensions
+            # 12. Feature extensions
             'ops_theme/static/src/search/control_panel_refresh.js',
             'ops_theme/static/src/search/group_actions.js',
 
-            # 11. XML templates
+            # 13. XML templates
             'ops_theme/static/src/xml/user_menu.xml',
             'ops_theme/static/src/xml/control_panel.xml',
         ],

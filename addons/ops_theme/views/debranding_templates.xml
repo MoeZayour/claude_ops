@@ -2,6 +2,11 @@
 <odoo>
 
     <!-- ================================================================== -->
+    <!-- OPS THEME - COMPLETE DEBRANDING                                   -->
+    <!-- Removes ALL Odoo.com links and Enterprise features                -->
+    <!-- ================================================================== -->
+
+    <!-- ================================================================== -->
     <!-- FOOTER DEBRANDING -->
     <!-- ================================================================== -->
 
@@ -34,6 +39,40 @@
     <template id="title_debranding" inherit_id="web.layout" name="OPS Page Title" priority="100">
         <xpath expr="//title" position="replace">
             <title><t t-if="title" t-esc="title"/><t t-else="">OPS</t></title>
+        </xpath>
+    </template>
+
+    <!-- ================================================================== -->
+    <!-- INJECT DEBRANDING CSS FOR ENTERPRISE HIDING                       -->
+    <!-- ================================================================== -->
+
+    <!-- Inject inline CSS for immediate debranding (before SCSS loads) -->
+    <template id="debranding_immediate_css" inherit_id="web.layout" name="OPS Immediate Debranding CSS" priority="999">
+        <xpath expr="//head" position="inside">
+            <style type="text/css">
+                /* Hide Odoo.com account and Install App links */
+                [data-menu="odoo_account"],
+                [data-menu="install_app"],
+                a[href*="odoo.com/my"],
+                a[href*="odoo.com/account"],
+                a[href*="odoo.com/apps"] {
+                    display: none !important;
+                }
+                /* Hide enterprise-only elements */
+                .o_not_community,
+                .o_enterprise_only,
+                [data-name="enterprise"],
+                .enterprise_only {
+                    display: none !important;
+                }
+                /* Hide upgrade buttons */
+                .o_upgrade_btn,
+                .o_settings_upgrade_btn,
+                button[name="upgrade"],
+                a[href*="odoo.com/pricing"] {
+                    display: none !important;
+                }
+            </style>
         </xpath>
     </template>
 

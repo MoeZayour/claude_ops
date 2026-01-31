@@ -1,8 +1,220 @@
 // =============================================================================
 // OPS THEME - COMPLETE DEBRANDING
 // =============================================================================
-// Remove/override ALL Odoo brand colors and references
+// Remove/override ALL Odoo brand colors, references, and enterprise features
 // Odoo purple hex values: #714B67, #875A7B, #7C7BAD, #6B5B95
+// =============================================================================
+
+// =============================================================================
+// SECTION 1: USER MENU - Remove Odoo.com Links
+// =============================================================================
+
+// Target the user menu dropdown
+.o_user_menu,
+.o-dropdown--menu,
+.dropdown-menu {
+    // Hide My Odoo.com Account
+    a[data-menu="odoo_account"],
+    a[href*="odoo.com/my"],
+    a[href*="odoo.com/account"],
+    .dropdown-item[data-menu="odoo_account"] {
+        display: none !important;
+    }
+
+    // Hide Install App
+    a[data-menu="install_app"],
+    a[href*="odoo.com/apps"],
+    .dropdown-item[data-menu="install_app"] {
+        display: none !important;
+    }
+
+    // Hide any remaining odoo.com links
+    a[href*="odoo.com"]:not([href*="documentation"]):not([href*="github"]) {
+        display: none !important;
+    }
+}
+
+// =============================================================================
+// SECTION 2: ENTERPRISE FEATURES - HIDE COMPLETELY
+// =============================================================================
+
+// Hide ALL enterprise-only elements (not just badges, entire features)
+.o_not_community,
+.o_enterprise_only,
+[data-name="enterprise"],
+.enterprise_only,
+div.o_not_community,
+tr.o_not_community,
+.o_setting_box.o_not_community,
+.app_settings_block .o_not_community {
+    display: none !important;
+}
+
+// Hide enterprise feature blocks in settings
+.o_settings_container {
+    .o_not_community,
+    .o_enterprise_only,
+    [class*="enterprise"] {
+        display: none !important;
+    }
+}
+
+// =============================================================================
+// SECTION 3: UPGRADE BUTTONS & PROMPTS - REMOVE ALL
+// =============================================================================
+
+// Hide all upgrade buttons
+.o_upgrade_btn,
+.o_settings_upgrade_btn,
+button[name="upgrade"],
+button.o_upgrade_btn,
+a.o_upgrade_btn,
+.btn-upgrade,
+[data-upgrade="true"] {
+    display: none !important;
+}
+
+// Hide upgrade links
+a[href*="odoo.com/pricing"],
+a[href*="odoo.com/trial"],
+a[href*="/web/upgrade"],
+a.o_enterprise_upgrade {
+    display: none !important;
+}
+
+// Hide enterprise upgrade banners
+.o_enterprise_upgrade,
+.o_enterprise_upgrade_banner,
+.o_upgrade_banner,
+.oe_enterprise_upgrade {
+    display: none !important;
+}
+
+// =============================================================================
+// SECTION 4: ENTERPRISE BADGES & LABELS - REMOVE ALL
+// =============================================================================
+
+// Hide enterprise badges
+.o_enterprise_label,
+.badge.o_enterprise,
+span.o_enterprise_label,
+.o_field_badge.o_enterprise {
+    display: none !important;
+}
+
+// Hide "Enterprise" text labels
+.label-enterprise,
+.text-enterprise,
+[class*="enterprise_label"] {
+    display: none !important;
+}
+
+// =============================================================================
+// SECTION 5: APPS/MODULES LIST - HIDE ENTERPRISE APPS
+// =============================================================================
+
+.o_apps,
+.o_modules {
+    // Hide enterprise-only apps
+    .o_not_community,
+    .o_enterprise_only {
+        display: none !important;
+    }
+
+    // Hide enterprise labels on app cards
+    .o_enterprise_label {
+        display: none !important;
+    }
+}
+
+// In module/apps kanban view
+.o_kanban_view.o_modules_kanban {
+    .o_not_community {
+        display: none !important;
+    }
+}
+
+// =============================================================================
+// SECTION 6: SETTINGS PAGE - CLEAN UP
+// =============================================================================
+
+.o_settings_container {
+    // Hide upgrade prompts in setting descriptions
+    .text-muted a[href*="upgrade"],
+    .o_setting_right_pane a[href*="odoo.com"] {
+        display: none !important;
+    }
+
+    // Hide "Available in Enterprise" messages
+    .o_enterprise_message {
+        display: none !important;
+    }
+}
+
+// Hide the entire General Settings upgrade section if exists
+#upgrade_settings,
+.o_settings_upgrade_section {
+    display: none !important;
+}
+
+// =============================================================================
+// SECTION 7: DIALOGS & MODALS - REMOVE ENTERPRISE PROMPTS
+// =============================================================================
+
+.modal {
+    // Hide upgrade prompts in modals
+    .o_enterprise_upgrade,
+    .o_upgrade_btn,
+    a[href*="odoo.com/pricing"] {
+        display: none !important;
+    }
+}
+
+// =============================================================================
+// SECTION 8: FORM VIEWS - HIDE ENTERPRISE FIELDS
+// =============================================================================
+
+.o_form_view {
+    // Hide enterprise-only fields
+    .o_not_community,
+    .o_field_widget.o_not_community,
+    .o_form_label.o_not_community {
+        display: none !important;
+    }
+}
+
+// =============================================================================
+// SECTION 9: HELP MENU - CLEAN UP
+// =============================================================================
+
+.o_menu_systray {
+    // Hide Odoo help links
+    a[href*="odoo.com/help"],
+    a[href*="odoo.com/support"] {
+        display: none !important;
+    }
+}
+
+// In Help dropdown if exists
+.o_help_menu,
+[data-menu="help"] {
+    a[href*="odoo.com"] {
+        display: none !important;
+    }
+}
+
+// =============================================================================
+// SECTION 10: DATABASE EXPIRATION WARNINGS
+// =============================================================================
+
+// Hide database expiration warnings
+.o_database_expiration_panel,
+.o_expiration_panel {
+    display: none !important;
+}
+
+// =============================================================================
+// SECTION 11: COLOR DEBRANDING (Original content below)
 // =============================================================================
 
 // =============================================================================
