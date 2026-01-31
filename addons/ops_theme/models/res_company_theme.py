@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import base64
 from odoo import api, fields, models
 
 
@@ -7,6 +8,20 @@ class ResCompanyTheme(models.Model):
     """Extend res.company with OPS Theme settings."""
 
     _inherit = 'res.company'
+
+    # =========================================================================
+    # FAVICON
+    # =========================================================================
+    ops_favicon = fields.Binary(
+        string='Favicon',
+        attachment=True,
+        help='Custom favicon for browser tabs (recommended: 32x32 or 64x64 PNG/ICO)',
+    )
+    ops_favicon_mimetype = fields.Char(
+        string='Favicon MIME Type',
+        compute='_compute_favicon_mimetype',
+        store=True,
+    )
 
     # Theme Preset
     ops_theme_preset = fields.Selection(
@@ -170,3 +185,31 @@ class ResCompanyTheme(models.Model):
             preset = self.THEME_PRESETS.get(self.ops_theme_preset, {})
             for field_name, value in preset.items():
                 setattr(self, field_name, value)
+
+    @api.depends('ops_favicon')
+    def _compute_favicon_mimetype(self):
+        """Detect favicon MIME type from binary data header."""
+        for company in self:
+            if company.ops_favicon:
+                try:
+                    # Decode first 32 bytes to detect file type
+                    data = base64.b64decode(company.ops_favicon[:64])
+                    if data[:4] == b'\x00\x00\x01\x00':
+                        company.ops_favicon_mimetype = 'image/x-icon'
+                    elif data[:8] == b'\x89PNG\r\n\x1a\n':
+                        company.ops_favicon_mimetype = 'image/png'
+                    elif data[:2] == b'\xff\xd8':
+                        company.ops_favicon_mimetype = 'image/jpeg'
+                    elif data[:6] in (b'GIF87a', b'GIF89a'):
+                        company.ops_favicon_mimetype = 'image/gif'
+                    else:
+                        company.ops_favicon_mimetype = 'image/x-icon'
+                except Exception:
+                    company.ops_favicon_mimetype = 'image/x-icon'
+            else:
+                company.ops_favicon_mimetype = False
+
+    def get_favicon(self):
+        """Return favicon data or False to use default."""
+        self.ensure_one()
+        return self.ops_favicon if self.ops_favicon else False

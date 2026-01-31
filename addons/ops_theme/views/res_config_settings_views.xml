@@ -16,6 +16,25 @@
                 <!-- Theme Configuration Section -->
                 <app data-string="Theme" string="Theme" name="ops_theme" groups="base.group_system">
 
+                    <!-- Favicon & Branding -->
+                    <block title="Favicon &amp; Branding" name="ops_favicon_settings">
+                        <setting string="Company Favicon" help="Custom favicon for browser tabs (32x32 or 64x64 PNG/ICO recommended)">
+                            <div class="content-group">
+                                <div class="row mt-2">
+                                    <label for="ops_favicon" string="Favicon" class="col-3 col-lg-2 o_light_label"/>
+                                    <field name="ops_favicon" widget="image" class="oe_avatar"
+                                           options="{'preview_image': 'ops_favicon', 'size': [64, 64]}"/>
+                                </div>
+                                <div class="row mt-1">
+                                    <div class="col-3 col-lg-2"/>
+                                    <div class="col-9 text-muted small">
+                                        Recommended: 32x32 or 64x64 pixels, PNG or ICO format
+                                    </div>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
                     <!-- Theme Preset -->
                     <block title="Theme Configuration" name="ops_theme_settings">
                         <setting string="Theme Preset" help="Select a predefined color scheme or choose Custom for manual configuration">

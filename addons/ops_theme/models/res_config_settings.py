@@ -9,6 +9,16 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     # =========================================================================
+    # FAVICON
+    # =========================================================================
+
+    ops_favicon = fields.Binary(
+        related='company_id.ops_favicon',
+        readonly=False,
+        string='Favicon',
+    )
+
+    # =========================================================================
     # THEME PRESET
     # =========================================================================
 
@@ -127,6 +137,7 @@ class ResConfigSettings(models.TransientModel):
             'ops_success_color': '#10b981',
             'ops_warning_color': '#f59e0b',
             'ops_danger_color': '#ef4444',
+            'ops_favicon': False,
             'ops_login_background': False,
             'ops_login_tagline': 'Enterprise Resource Planning',
             'ops_login_show_logo': True,

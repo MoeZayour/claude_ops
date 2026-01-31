@@ -1,7 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <!-- Add data-color-mode attribute to html element -->
+    <!-- ===================================================================== -->
+    <!-- FAVICON - BACKEND (Replace default with company favicon)              -->
+    <!-- ===================================================================== -->
+    <template id="ops_favicon_backend" inherit_id="web.layout" name="OPS Favicon Backend" priority="100">
+        <!-- Replace any existing shortcut icon -->
+        <xpath expr="//head/link[@rel='shortcut icon']" position="replace">
+            <link rel="shortcut icon" type="image/x-icon" href="/ops_theme/favicon"/>
+        </xpath>
+        <!-- Add icon link for browsers that prefer rel="icon" -->
+        <xpath expr="//head" position="inside">
+            <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
+        </xpath>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- FAVICON - FRONTEND/LOGIN (Add to login pages)                         -->
+    <!-- ===================================================================== -->
+    <template id="ops_favicon_frontend" inherit_id="web.frontend_layout" name="OPS Favicon Frontend" priority="100">
+        <xpath expr="//head" position="inside">
+            <link rel="shortcut icon" type="image/x-icon" href="/ops_theme/favicon"/>
+            <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
+        </xpath>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- LOAD INTER FONT FROM GOOGLE FONTS                                     -->
+    <!-- ===================================================================== -->
+    <template id="ops_assets_font" inherit_id="web.layout" name="OPS Font Assets">
+        <xpath expr="//head" position="inside">
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+        </xpath>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- ADD DATA-COLOR-MODE ATTRIBUTE TO HTML ELEMENT                         -->
+    <!-- ===================================================================== -->
     <template id="ops_webclient_layout" inherit_id="web.layout" name="OPS Webclient Layout">
         <xpath expr="//html" position="attributes">
             <attribute name="data-color-mode">system</attribute>
