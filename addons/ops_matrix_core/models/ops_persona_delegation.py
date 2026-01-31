@@ -694,3 +694,21 @@ class OpsPersonaDelegation(models.Model):
                 _logger.info(f"Auto-expired delegation {delegation.id}")
             except Exception as e:
                 _logger.error(f"Failed to expire delegation {delegation.id}: {e}")
+
+    @api.model
+    def cron_check_delegation_expiry(self):
+        """
+        Cron job to check and process delegation expiry.
+        Called by ir.cron to:
+        1. Expire delegations past their end date
+        2. Notify users of expiring delegations
+        """
+        _logger.info("Running delegation expiry check...")
+
+        # First expire any past-due delegations
+        self.cron_expire_delegations()
+
+        # Then notify about upcoming expirations
+        self.cron_check_expiring_delegations()
+
+        _logger.info("Delegation expiry check complete.")

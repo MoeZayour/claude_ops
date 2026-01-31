@@ -652,7 +652,7 @@ class OpsApprovalRequest(models.Model):
         self.ensure_one()
         if self.state != 'pending':
             raise UserError(_('Only pending requests can be rejected.'))
-        
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('Reject Approval Request'),
@@ -663,3 +663,46 @@ class OpsApprovalRequest(models.Model):
                 'default_approval_request_id': self.id,
             },
         }
+
+    # ========================================================================
+    # SCHEDULED ACTIONS
+    # ========================================================================
+
+    @api.model
+    def cron_send_approval_reminders(self):
+        """
+        Cron job to send reminders for pending approval requests.
+
+        Sends reminders to approvers for requests that have been pending
+        for more than 24 hours without action.
+        """
+        _logger.info("Running approval reminder check...")
+
+        # Find pending requests older than 24 hours
+        cutoff = fields.Datetime.now() - timedelta(hours=24)
+        pending_requests = self.search([
+            ('state', '=', 'pending'),
+            ('requested_date', '<', cutoff),
+        ])
+
+        reminder_count = 0
+        for request in pending_requests:
+            try:
+                # Send reminder to all approvers
+                for approver in request.approver_ids:
+                    # Create activity as a reminder
+                    request.activity_schedule(
+                        'mail.mail_activity_data_todo',
+                        summary=_('Pending Approval Reminder: %s') % request.name,
+                        note=_(
+                            'This approval request has been pending for over 24 hours. '
+                            'Please review and take action.'
+                        ),
+                        user_id=approver.id,
+                        date_deadline=fields.Date.today(),
+                    )
+                    reminder_count += 1
+            except Exception as e:
+                _logger.warning(f"Failed to send reminder for {request.name}: {e}")
+
+        _logger.info(f"Approval reminder check complete. {reminder_count} reminders sent.")

@@ -300,7 +300,7 @@ class OpsApiKey(models.Model):
         Open audit logs for this API key
         """
         self.ensure_one()
-        
+
         return {
             'name': _('Audit Logs - %s') % self.name,
             'type': 'ir.actions.act_window',
@@ -309,3 +309,38 @@ class OpsApiKey(models.Model):
             'domain': [('api_key_id', '=', self.id)],
             'context': {'default_api_key_id': self.id}
         }
+
+    # ========================================================================
+    # SCHEDULED ACTIONS
+    # ========================================================================
+
+    @api.model
+    def cron_check_api_key_expiry(self):
+        """
+        Cron job to check API key status and log inactive keys.
+
+        Since API keys don't have expiry dates in the current model,
+        this checks for:
+        1. Keys that haven't been used in 90+ days (potential cleanup)
+        2. Logs status for monitoring
+        """
+        from datetime import timedelta
+
+        _logger.info("Running API key expiry check...")
+
+        # Find keys unused for 90 days
+        cutoff = fields.Datetime.now() - timedelta(days=90)
+        unused_keys = self.search([
+            ('active', '=', True),
+            '|',
+            ('last_used', '=', False),
+            ('last_used', '<', cutoff),
+        ])
+
+        if unused_keys:
+            _logger.warning(
+                f"Found {len(unused_keys)} API keys unused for 90+ days: "
+                f"{', '.join(unused_keys.mapped('name'))}"
+            )
+
+        _logger.info(f"API key expiry check complete. {len(unused_keys)} stale keys found.")

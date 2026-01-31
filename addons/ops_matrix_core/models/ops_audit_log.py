@@ -7,6 +7,7 @@ Comprehensive audit logging for all API requests
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from datetime import timedelta
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -293,7 +294,7 @@ class OpsAuditLog(models.Model):
         Returns:
             int: Number of logs deleted
         """
-        cutoff_date = fields.Datetime.now() - fields.Datetime.to_datetime(f'{days} days')
+        cutoff_date = fields.Datetime.now() - timedelta(days=days)
         
         old_logs = self.sudo().search([('timestamp', '<', cutoff_date)])
         count = len(old_logs)
