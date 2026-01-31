@@ -3,9 +3,15 @@
     <!--
     ====================================================
     OPS Matrix Accounting Menu Structure
-    - This file consolidates all accounting-related menus.
-    - It establishes a clear hierarchy under the main Odoo Accounting app.
-    - OVERRIDE: Renames "Invoicing" to "Accounting" in app launcher.
+    Consolidated menu hierarchy - reduces top-level menus from 10 to 6:
+    - Customers
+    - Vendors
+    - Accounting (with Management, Bank & Treasury, Period End sections)
+    - Reporting
+    - Asset Management
+    - Configuration
+
+    OVERRIDE: Renames "Invoicing" to "Accounting" in app launcher.
     ====================================================
     -->
 
@@ -22,6 +28,76 @@
         id="menu_ops_accounting_root"
         name="OPS Matrix"
         active="False"/>
+
+    <!-- =================== MANAGEMENT SECTION =================== -->
+    <!-- Section under Accounting for analytical tools, budgets, and leases -->
+
+    <menuitem id="menu_ops_accounting_management"
+        name="Management"
+        parent="account.menu_finance"
+        sequence="25"/>
+
+    <!-- Analytic Items - Native Odoo action -->
+    <menuitem id="menu_ops_analytic_items"
+        name="Analytic Items"
+        parent="menu_ops_accounting_management"
+        action="analytic.account_analytic_line_action_entries"
+        groups="analytic.group_analytic_accounting"
+        sequence="10"/>
+
+    <!-- Budgets - moved from top-level Budget Control -->
+    <menuitem id="menu_ops_budgets_sub"
+        name="Budgets"
+        parent="menu_ops_accounting_management"
+        action="action_ops_budget"
+        sequence="20"/>
+
+    <!-- Leases - moved from top-level Leases (IFRS 16) -->
+    <menuitem id="menu_ops_leases_sub"
+        name="Leases (IFRS 16)"
+        parent="menu_ops_accounting_management"
+        action="action_ops_lease"
+        sequence="30"/>
+
+    <!-- =================== BANK & TREASURY SECTION =================== -->
+    <!-- Section under Accounting for bank reconciliation and treasury management -->
+
+    <menuitem id="menu_ops_bank_treasury"
+        name="Bank &amp; Treasury"
+        parent="account.menu_finance"
+        sequence="30"/>
+
+    <!-- Bank Reconciliation - moved from top-level -->
+    <menuitem id="menu_ops_bank_reconciliation_sub"
+        name="Bank Reconciliation"
+        parent="menu_ops_bank_treasury"
+        action="action_ops_bank_reconciliation"
+        sequence="10"/>
+
+    <!-- Bank Statements - Native Odoo action -->
+    <menuitem id="menu_ops_bank_statements"
+        name="Bank Statements"
+        parent="menu_ops_bank_treasury"
+        action="account.action_bank_statement_tree"
+        sequence="20"/>
+
+    <!-- =================== DEACTIVATE OLD TOP-LEVEL MENUS =================== -->
+    <!-- These menus have been moved to sections under Accounting -->
+
+    <!-- Deactivate Budget Control top-level menu (moved to Accounting > Management > Budgets) -->
+    <record id="menu_ops_budget" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- Deactivate Bank Reconciliation top-level menu (moved to Accounting > Bank & Treasury) -->
+    <record id="menu_ops_bank_reconciliation" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- Deactivate Leases top-level menu (moved to Accounting > Management > Leases) -->
+    <record id="menu_ops_lease" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
     <!-- =================== ASSET MANAGEMENT =================== -->
 
@@ -47,6 +123,14 @@
         parent="menu_ops_asset_management"
         action="action_ops_asset_depreciation"
         sequence="20"/>
+
+    <!-- Generate Assets Entries - Calculate depreciation for assets -->
+    <menuitem
+        id="menu_ops_generate_asset_entries"
+        name="Generate Assets Entries"
+        parent="menu_ops_asset_management"
+        action="action_ops_asset_depreciation_wizard"
+        sequence="25"/>
 
     <!-- Asset Configuration Menu -->
     <menuitem
@@ -136,7 +220,7 @@
         id="menu_ops_period_end"
         name="Period End"
         parent="account.menu_finance"
-        sequence="25"/>
+        sequence="35"/>
 
     <!-- Fiscal Periods -->
     <menuitem
