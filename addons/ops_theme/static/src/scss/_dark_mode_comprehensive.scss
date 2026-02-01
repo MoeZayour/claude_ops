@@ -1,0 +1,311 @@
+/* OPS THEME - COMPREHENSIVE DARK MODE FIX v19.0.6.3.0 */
+
+/* KILL ODOO PURPLE */
+:root {
+    --o-brand-odoo: var(--ops-secondary, #3b82f6) !important;
+    --o-brand-primary: var(--ops-secondary, #3b82f6) !important;
+}
+
+.o_tag, .badge, .o_facet_value, [class*="badge"] {
+    border-color: var(--ops-secondary, #3b82f6) !important;
+}
+
+[data-color-mode="dark"] .o_res_config_settings .o_tag,
+[data-color-mode="dark"] .o_setting_box .o_tag {
+    background-color: rgba(59, 130, 246, 0.15) !important;
+    border-color: var(--ops-secondary, #3b82f6) !important;
+    color: #93c5fd !important;
+}
+
+/* SETTINGS PAGE */
+[data-color-mode="dark"] {
+    .o_base_settings, .o_res_config_settings {
+        background-color: var(--ops-bg-body, #0f172a) !important;
+    }
+
+    .o_setting_container .o_settings_container, .o_setting_box,
+    .app_settings_header, .o_horizontal_separator, h2.o_horizontal_separator {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .o_setting_box .o_setting_left_pane, .o_setting_box .o_setting_right_pane,
+    .o_base_settings .o_form_sheet, .o_base_settings .o_form_sheet_bg {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .app_settings_block .app_settings_header, .settings h2 {
+        background-color: var(--ops-bg-hover, #334155) !important;
+    }
+
+    .o_base_settings input, .o_base_settings textarea, .o_base_settings select,
+    .o_res_config_settings input, .o_res_config_settings .form-control {
+        background-color: var(--ops-bg-input, #334155) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+
+    .o_base_settings label, .o_res_config_settings label,
+    .o_setting_box label, .o_base_settings .text-muted {
+        color: var(--ops-text-secondary, #94a3b8) !important;
+    }
+}
+
+/* LIST VIEW TABLE ROWS */
+[data-color-mode="dark"] {
+    .o_list_view, .o_list_renderer {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+    }
+
+    .o_list_view thead, .o_list_view thead tr, .o_list_view thead th {
+        background-color: var(--ops-bg-hover, #334155) !important;
+        color: var(--ops-text-secondary, #94a3b8) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+
+    .o_list_view tbody tr, .o_data_row {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .o_list_view tbody tr:nth-child(even), .o_data_row:nth-child(even) {
+        background-color: var(--ops-bg-body, #0f172a) !important;
+    }
+
+    .o_list_view tbody td, .o_data_row td {
+        color: var(--ops-text-primary, #f1f5f9) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+
+    .o_list_view tbody tr:hover, .o_data_row:hover {
+        background-color: var(--ops-bg-hover, #334155) !important;
+    }
+
+    .o_data_row.o_data_row_selected {
+        background-color: rgba(59, 130, 246, 0.2) !important;
+    }
+
+    .o_list_record_selector input[type="checkbox"] {
+        accent-color: var(--ops-secondary, #3b82f6);
+    }
+}
+
+/* TOGGLE SWITCHES */
+.o_boolean_toggle .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: var(--ops-secondary, #3b82f6) !important;
+    border-color: var(--ops-secondary, #3b82f6) !important;
+}
+
+[data-color-mode="dark"] .o_boolean_toggle .custom-control-label::before {
+    background-color: var(--ops-bg-input, #334155) !important;
+    border-color: var(--ops-border, #475569) !important;
+}
+
+/* DISCUSS / CHAT */
+[data-color-mode="dark"] {
+    .o_mail_discuss_sidebar, .o_DiscussSidebar {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+    }
+
+    .o_DiscussSidebarCategory_header, .o_mail_category_header {
+        color: var(--ops-text-secondary, #94a3b8) !important;
+    }
+
+    .o_DiscussSidebarChannel, .o_mail_discuss_sidebar_item {
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .o_DiscussSidebarChannel:hover {
+        background-color: var(--ops-bg-hover, #334155) !important;
+    }
+
+    .o_DiscussSidebarChannel.o-active {
+        background-color: rgba(59, 130, 246, 0.2) !important;
+    }
+
+    .o_mail_thread, .o_Thread, .o_Message {
+        background-color: var(--ops-bg-body, #0f172a) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .o_Message_bubble, .o_mail_message_bubble {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .o_Composer, .o_mail_composer {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+    }
+
+    .o_Composer textarea {
+        background-color: var(--ops-bg-input, #334155) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+}
+
+/* DASHBOARDS AND KPI CARDS */
+[data-color-mode="dark"] {
+    .o_spreadsheet_dashboard, .o_dashboard, .o_dashboard_view {
+        background-color: var(--ops-bg-body, #0f172a) !important;
+    }
+
+    .o_dashboard_card, .o_graph_renderer, .o_pivot_renderer {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .o_kanban_view.o_dashboard_view .o_kanban_record,
+    .o_dashboard .o_aggregate {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+
+    .ops-kpi-card, .ops-dashboard-widget {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .o_dashboard table {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .o_dashboard table th {
+        background-color: var(--ops-bg-hover, #334155) !important;
+        color: var(--ops-text-secondary, #94a3b8) !important;
+    }
+
+    .o_dashboard table td {
+        color: var(--ops-text-primary, #f1f5f9) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+}
+
+/* SEARCH FACETS */
+.o_searchview .o_searchview_facet {
+    background-color: var(--ops-secondary, #3b82f6) !important;
+    border: none !important;
+    border-radius: 4px !important;
+}
+
+.o_searchview .o_searchview_facet .o_facet_value,
+.o_searchview .o_searchview_facet .o_facet_values {
+    color: #ffffff !important;
+}
+
+.o_searchview .o_searchview_facet .o_facet_remove {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* FORM INPUTS */
+[data-color-mode="dark"] {
+    input[type="text"], input[type="email"], input[type="number"],
+    input[type="password"], input[type="search"], textarea, select,
+    .form-control, .o_input {
+        background-color: var(--ops-bg-input, #334155) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+
+    input::placeholder, textarea::placeholder {
+        color: var(--ops-text-secondary, #94a3b8) !important;
+    }
+
+    input:focus, textarea:focus, select:focus, .form-control:focus {
+        border-color: var(--ops-secondary, #3b82f6) !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
+    }
+
+    .dropdown-menu {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+
+    .dropdown-menu .dropdown-item {
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .dropdown-menu .dropdown-item:hover {
+        background-color: var(--ops-bg-hover, #334155) !important;
+    }
+}
+
+/* RADIO AND CHECKBOXES */
+[data-color-mode="dark"] {
+    input[type="radio"], input[type="checkbox"] {
+        accent-color: var(--ops-secondary, #3b82f6) !important;
+    }
+
+    .o_field_radio label, .form-check-label, .custom-control-label {
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+}
+
+/* KANBAN CARDS */
+[data-color-mode="dark"] {
+    .o_kanban_view {
+        background-color: var(--ops-bg-body, #0f172a) !important;
+    }
+
+    .o_kanban_group {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+    }
+
+    .o_kanban_record {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+
+    .o_kanban_record:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+}
+
+/* MODALS */
+[data-color-mode="dark"] {
+    .modal-content {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+
+    .modal-header {
+        background-color: var(--ops-bg-hover, #334155) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+
+    .modal-header .modal-title {
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .modal-header .btn-close {
+        filter: invert(1) !important;
+    }
+
+    .modal-body, .modal-footer {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+    }
+
+    .modal-footer {
+        border-color: var(--ops-border, #475569) !important;
+    }
+}
+
+/* STATUS BAR */
+[data-color-mode="dark"] {
+    .o_statusbar_status .o_arrow_button {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+
+    .o_statusbar_status .o_arrow_button.o_arrow_button_current,
+    .o_statusbar_status .o_arrow_button.active {
+        background-color: var(--ops-secondary, #3b82f6) !important;
+        color: #ffffff !important;
+    }
+}
