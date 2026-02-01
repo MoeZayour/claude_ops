@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Matrix Core',
-    'version': '19.0.1.11.0',
+    'version': '19.0.1.12.0',
     'category': 'Operations',
     'summary': 'Core module for OPS Matrix Framework',
     'description': """
@@ -32,9 +32,11 @@
         'data/res_groups.xml',
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
+        'security/ops_corporate_audit_rules.xml',
         'views/ops_menus.xml',
         'data/ir_sequence_data.xml',
         'data/product_request_sequence.xml',
+        'data/ir_sequence_corporate_audit.xml',
         'data/ops_account_templates.xml',
 
         # 2. ACTORS (Core Personas - REQUIRED)
@@ -94,9 +96,11 @@
         'views/account_report_views.xml',
         'views/ops_api_key_views.xml',
         'views/ops_audit_log_views.xml',
+        'views/ops_corporate_audit_log_views.xml',
         'views/ops_sod_views.xml',
         'views/field_visibility_views.xml',
         'views/ops_dashboard_widget_views.xml',
+        'views/ops_security_compliance_views.xml',
 
         # STUB VIEWS (Intentionally Excluded - Schema Only, No UI):
         # 'views/ops_session_manager_views.xml',

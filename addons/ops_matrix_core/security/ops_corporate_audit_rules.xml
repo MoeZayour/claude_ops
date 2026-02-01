@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ============================================================ -->
+        <!-- CORPORATE AUDIT LOG SECURITY RULES                           -->
+        <!-- SOX/ISO 27001/GDPR Compliance Security                       -->
+        <!-- ============================================================ -->
+        
+        <!-- Rule 1: Company Isolation (Multi-tenant security) -->
+        <record id="ops_corporate_audit_log_company_rule" model="ir.rule">
+            <field name="name">Corporate Audit Log: Company Isolation</field>
+            <field name="model_id" ref="model_ops_corporate_audit_log"/>
+            <field name="domain_force">[
+                '|',
+                    ('company_id', '=', False),
+                    ('company_id', 'in', company_ids)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Rule 2: Prevent Deletion (Immutability enforcement) -->
+        <record id="ops_corporate_audit_log_no_delete_rule" model="ir.rule">
+            <field name="name">Corporate Audit Log: No Deletion Allowed</field>
+            <field name="model_id" ref="model_ops_corporate_audit_log"/>
+            <field name="domain_force">[(0, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user')), (4, ref('base.group_system')), (4, ref('ops_matrix_core.group_ops_admin_power'))]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        
+        <!-- Rule 3: Prevent Direct Creation (Only through model methods) -->
+        <record id="ops_corporate_audit_log_no_create_rule" model="ir.rule">
+            <field name="name">Corporate Audit Log: No Direct Creation</field>
+            <field name="model_id" ref="model_ops_corporate_audit_log"/>
+            <field name="domain_force">[(0, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user')), (4, ref('base.group_system')), (4, ref('ops_matrix_core.group_ops_admin_power'))]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Rule 4: Compliance Officer Review Access -->
+        <record id="ops_corporate_audit_log_review_rule" model="ir.rule">
+            <field name="name">Corporate Audit Log: Compliance Review Access</field>
+            <field name="model_id" ref="model_ops_corporate_audit_log"/>
+            <field name="domain_force">[
+                '|',
+                    ('company_id', '=', False),
+                    ('company_id', 'in', company_ids)
+            ]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_compliance_officer'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Rule 5: Branch-Level Isolation (Additional security layer) -->
+        <record id="ops_corporate_audit_log_branch_rule" model="ir.rule">
+            <field name="name">Corporate Audit Log: Branch Access Control</field>
+            <field name="model_id" ref="model_ops_corporate_audit_log"/>
+            <field name="domain_force">[
+                '|', '|',
+                    ('branch_id', '=', False),
+                    ('branch_id', 'in', user.branch_ids.ids),
+                    ('user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_user')), (4, ref('ops_matrix_core.group_ops_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- Rule 6: System Administrator Full Read Access -->
+        <record id="ops_corporate_audit_log_system_rule" model="ir.rule">
+            <field name="name">Corporate Audit Log: System Admin Read All</field>
+            <field name="model_id" ref="model_ops_corporate_audit_log"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+    </data>
+</odoo>
