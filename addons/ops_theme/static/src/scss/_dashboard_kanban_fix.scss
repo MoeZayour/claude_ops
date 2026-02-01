@@ -1,0 +1,132 @@
+/* OPS THEME - DASHBOARD & KANBAN FIX v19.0.6.4.0 */
+
+/* EMPLOYEE KANBAN CARDS */
+[data-color-mode="dark"] {
+    .o_hr_employee_kanban .o_kanban_record,
+    .o_kanban_record .oe_kanban_global_click,
+    .o_kanban_record .o_kanban_card_content {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+}
+
+/* ACCOUNTING DASHBOARD CHARTS */
+[data-color-mode="dark"] {
+    .o_account_dashboard .o_kanban_record,
+    .o_account_kanban .o_kanban_record,
+    .o_kanban_view .o_kanban_record .o_kanban_card,
+    .o_kanban_record .o_primary,
+    .o_account_dashboard_graph {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    /* Chart containers */
+    .o_graph_chart_container,
+    .o_chart_container,
+    .o_kanban_record canvas,
+    .o_kanban_card canvas {
+        background-color: transparent !important;
+    }
+}
+
+/* INVENTORY OVERVIEW BARS */
+[data-color-mode="dark"] {
+    .o_stock_reports_dashboard .o_kanban_record,
+    .o_stock_picking_type_kanban .o_kanban_record,
+    .o_kanban_record .o_stock_picking_type_card,
+    .o_primary_button + div,
+    .o_graph_barchart rect {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+    }
+
+    /* SVG bars in charts */
+    .o_graph_barchart rect,
+    .o_graph_linechart rect,
+    svg rect.o_bar {
+        fill: var(--ops-secondary, #3b82f6) !important;
+    }
+}
+
+/* SPREADSHEET DASHBOARDS (KPI CARDS) */
+[data-color-mode="dark"] {
+    .o_spreadsheet_dashboard .o_dashboard_action,
+    .o_spreadsheet_dashboard .o_spreadsheet_dashboard_cell,
+    .o_dashboard .o_dashboard_header,
+    .o_spreadsheet .o_spreadsheet_cell,
+    .o_spreadsheet_sheet,
+    .o_spreadsheet_dashboard > div,
+    div[class*="spreadsheet"],
+    .o_dashboard_card {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    /* Spreadsheet cells */
+    .o_spreadsheet_dashboard td,
+    .o_spreadsheet_dashboard .o_cell {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+        border-color: var(--ops-border, #475569) !important;
+    }
+}
+
+/* SEARCH INPUT DROPDOWN */
+[data-color-mode="dark"] {
+    .o_searchview_input_container,
+    .o_searchview_autocomplete,
+    .o_searchview .dropdown-menu,
+    .o_search_panel,
+    .o_searchview input {
+        background-color: var(--ops-bg-input, #334155) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .o_searchview_autocomplete .o_menu_item,
+    .o_searchview_autocomplete li {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+
+    .o_searchview_autocomplete .o_menu_item:hover {
+        background-color: var(--ops-bg-hover, #334155) !important;
+    }
+}
+
+/* LIST VIEW HEADER ROW (APPROVALS) */
+[data-color-mode="dark"] {
+    .o_list_view .o_list_table_grouped,
+    .o_list_view .o_group_header,
+    .o_group_header td,
+    .o_list_table .o_group_header {
+        background-color: var(--ops-bg-hover, #334155) !important;
+        color: var(--ops-text-primary, #f1f5f9) !important;
+    }
+}
+
+/* GENERIC WHITE BACKGROUNDS CATCH-ALL */
+[data-color-mode="dark"] {
+    .o_kanban_record > div,
+    .o_kanban_record > .oe_kanban_card,
+    .o_kanban_card_header,
+    .o_kanban_card_content,
+    .o_kanban_card_footer,
+    .o_kanban_record_details,
+    .o_kanban_record_body,
+    .o_kanban_record_top,
+    .o_kanban_record_bottom {
+        background-color: inherit !important;
+    }
+
+    /* Force dark on any remaining white */
+    .bg-white,
+    .bg-light,
+    [style*="background: white"],
+    [style*="background-color: white"],
+    [style*="background: #fff"],
+    [style*="background-color: #fff"],
+    [style*="background: rgb(255"],
+    [style*="background-color: rgb(255"] {
+        background-color: var(--ops-bg-card, #1e293b) !important;
+    }
+}

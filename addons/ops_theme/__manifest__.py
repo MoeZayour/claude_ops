@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.6.3.0',
+    'version': '19.0.6.4.0',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -102,6 +102,9 @@ Features:
 
             # 5.7. Comprehensive dark mode fixes
             'ops_theme/static/src/scss/_dark_mode_comprehensive.scss',
+
+            # 5.8. Dashboard and kanban dark mode fixes
+            'ops_theme/static/src/scss/_dashboard_kanban_fix.scss',
 
             # 6. Complete debranding (enterprise hiding + color overrides)
             'ops_theme/static/src/scss/_debranding.scss',
