@@ -857,21 +857,372 @@ class OpsInventoryReportWizard(models.TransientModel):
         }
 
     def action_export_excel(self):
-        """Export report to Excel (placeholder for future implementation)."""
+        """Export report to Excel with professional OPS formatting."""
         self.ensure_one()
 
+        # Security check
+        self._check_intelligence_access('Inventory')
+
+        # Validate branch access
+        if self.ops_branch_ids:
+            self._validate_branch_access(self.ops_branch_ids)
+
+        # Get report data
         report_data = self._get_report_data()
 
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Export'),
-                'message': _('Excel export will be available in a future update.'),
-                'type': 'info',
-                'sticky': False,
+        # Generate Excel file
+        try:
+            import xlsxwriter
+            from io import BytesIO
+            import base64
+
+            output = BytesIO()
+            workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+
+            # Create formats - OPS Corporate Style
+            formats = self._create_excel_formats(workbook)
+
+            # Dispatch to appropriate Excel writer
+            if self.report_type == 'valuation':
+                self._write_valuation_excel(workbook, formats, report_data)
+            elif self.report_type == 'aging':
+                self._write_aging_excel(workbook, formats, report_data)
+            elif self.report_type == 'negative':
+                self._write_negative_excel(workbook, formats, report_data)
+            elif self.report_type == 'movement':
+                self._write_movement_excel(workbook, formats, report_data)
+
+            workbook.close()
+            output.seek(0)
+
+            # Create attachment and return download action
+            date_str = self.date_to.strftime('%Y%m%d') if self.date_to else fields.Date.today().strftime('%Y%m%d')
+            filename = f"Inventory_{self.report_type}_{date_str}.xlsx"
+
+            attachment = self.env['ir.attachment'].create({
+                'name': filename,
+                'type': 'binary',
+                'datas': base64.b64encode(output.read()),
+                'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            })
+
+            # Log export
+            self._log_intelligence_report('Inventory', self.report_type, {
+                'record_count': len(report_data.get('data', [])),
+                'date_to': str(self.date_to),
+            }, 'excel')
+
+            return {
+                'type': 'ir.actions.act_url',
+                'url': f'/web/content/{attachment.id}?download=true',
+                'target': 'self',
             }
+
+        except ImportError:
+            raise UserError(_('xlsxwriter library is not installed. Please install it to export to Excel.'))
+
+    def _create_excel_formats(self, workbook):
+        """Create OPS-branded Excel formats."""
+        return {
+            # Headers
+            'title': workbook.add_format({
+                'bold': True, 'font_size': 16, 'font_color': '#1a2744',
+            }),
+            'subtitle': workbook.add_format({
+                'bold': True, 'font_size': 12, 'font_color': '#5B6BBB',
+            }),
+            'header': workbook.add_format({
+                'bold': True, 'font_size': 10, 'bg_color': '#f1f5f9',
+                'border': 1, 'border_color': '#e2e8f0',
+                'align': 'center', 'valign': 'vcenter',
+            }),
+            'header_num': workbook.add_format({
+                'bold': True, 'font_size': 10, 'bg_color': '#f1f5f9',
+                'border': 1, 'border_color': '#e2e8f0',
+                'align': 'right', 'valign': 'vcenter',
+            }),
+            # Numbers
+            'currency': workbook.add_format({
+                'num_format': '#,##0.00', 'align': 'right',
+            }),
+            'currency_positive': workbook.add_format({
+                'num_format': '#,##0.00', 'font_color': '#059669', 'align': 'right',
+            }),
+            'currency_negative': workbook.add_format({
+                'num_format': '(#,##0.00)', 'font_color': '#dc2626', 'align': 'right',
+            }),
+            'number': workbook.add_format({
+                'num_format': '#,##0.00', 'align': 'right',
+            }),
+            'integer': workbook.add_format({
+                'num_format': '#,##0', 'align': 'right',
+            }),
+            # Totals
+            'subtotal': workbook.add_format({
+                'bold': True, 'num_format': '#,##0.00', 'bg_color': '#E8EAF6',
+                'align': 'right', 'top': 1,
+            }),
+            'total': workbook.add_format({
+                'bold': True, 'num_format': '#,##0.00', 'bg_color': '#1a1a1a',
+                'font_color': 'white', 'align': 'right',
+            }),
+            'total_label': workbook.add_format({
+                'bold': True, 'bg_color': '#1a1a1a', 'font_color': 'white',
+                'align': 'right',
+            }),
+            # Text
+            'text': workbook.add_format({'valign': 'top'}),
+            'text_center': workbook.add_format({'align': 'center'}),
+            'date': workbook.add_format({'num_format': 'yyyy-mm-dd', 'align': 'center'}),
+            # Status badges (text-based in Excel)
+            'badge_good': workbook.add_format({
+                'bold': True, 'font_color': '#059669', 'align': 'center',
+            }),
+            'badge_warning': workbook.add_format({
+                'bold': True, 'font_color': '#d97706', 'align': 'center',
+            }),
+            'badge_danger': workbook.add_format({
+                'bold': True, 'font_color': '#dc2626', 'align': 'center',
+            }),
+            # Section header
+            'section': workbook.add_format({
+                'bold': True, 'font_size': 11, 'bg_color': '#1a2744',
+                'font_color': 'white',
+            }),
         }
+
+    def _write_valuation_excel(self, workbook, formats, data):
+        """Write Stock Valuation report to Excel."""
+        sheet = workbook.add_worksheet('Stock Valuation')
+
+        # Column widths
+        sheet.set_column(0, 0, 40)  # Product
+        sheet.set_column(1, 1, 35)  # Location
+        sheet.set_column(2, 2, 20)  # Category
+        sheet.set_column(3, 3, 12)  # Quantity
+        sheet.set_column(4, 4, 12)  # Unit Cost
+        sheet.set_column(5, 5, 15)  # Value
+
+        row = 0
+
+        # Header
+        sheet.write(row, 0, self.company_id.name, formats['title'])
+        row += 1
+        sheet.write(row, 0, 'Stock Valuation Report', formats['subtitle'])
+        row += 1
+        sheet.write(row, 0, f"As of: {data.get('date_to', '')}")
+        sheet.write(row, 3, f"Currency: {data.get('company_currency', 'USD')}")
+        row += 2
+
+        # Column headers
+        headers = ['Product', 'Location', 'Category', 'Quantity', 'Unit Cost', 'Value']
+        for col, header in enumerate(headers):
+            fmt = formats['header_num'] if col >= 3 else formats['header']
+            sheet.write(row, col, header, fmt)
+        row += 1
+
+        # Data rows
+        for item in data.get('data', []):
+            sheet.write(row, 0, item.get('product_name', ''), formats['text'])
+            sheet.write(row, 1, item.get('location_name', ''), formats['text'])
+            sheet.write(row, 2, item.get('category_name', ''), formats['text'])
+            sheet.write(row, 3, item.get('quantity', 0), formats['number'])
+            sheet.write(row, 4, item.get('unit_cost', 0), formats['currency'])
+            value = item.get('value', 0)
+            fmt = formats['currency_positive'] if value > 0 else formats['currency_negative'] if value < 0 else formats['currency']
+            sheet.write(row, 5, value, fmt)
+            row += 1
+
+        # Grand total
+        totals = data.get('totals', {})
+        sheet.write(row, 2, 'TOTAL', formats['total_label'])
+        sheet.write(row, 3, totals.get('total_quantity', 0), formats['total'])
+        sheet.write(row, 5, totals.get('total_value', 0), formats['total'])
+
+    def _write_aging_excel(self, workbook, formats, data):
+        """Write Inventory Aging report to Excel."""
+        sheet = workbook.add_worksheet('Inventory Aging')
+
+        sheet.set_column(0, 0, 40)  # Product
+        sheet.set_column(1, 1, 30)  # Location
+        sheet.set_column(2, 2, 12)  # Age Days
+        sheet.set_column(3, 3, 12)  # Quantity
+        sheet.set_column(4, 4, 15)  # Value
+        sheet.set_column(5, 5, 12)  # Status
+
+        row = 0
+
+        sheet.write(row, 0, self.company_id.name, formats['title'])
+        row += 1
+        sheet.write(row, 0, 'Inventory Aging Analysis', formats['subtitle'])
+        row += 1
+        sheet.write(row, 0, f"As of: {data.get('date_to', '')}")
+        row += 2
+
+        # Aging summary
+        sheet.write(row, 0, 'AGING SUMMARY', formats['section'])
+        row += 1
+        for bucket in data.get('aging_buckets', []):
+            sheet.write(row, 0, bucket.get('label', ''))
+            sheet.write(row, 3, bucket.get('total_qty', 0), formats['number'])
+            sheet.write(row, 4, bucket.get('total_value', 0), formats['currency'])
+            row += 1
+        row += 1
+
+        # Detail headers
+        headers = ['Product', 'Location', 'Age (Days)', 'Quantity', 'Value', 'Status']
+        for col, header in enumerate(headers):
+            fmt = formats['header_num'] if col in [2, 3, 4] else formats['header']
+            sheet.write(row, col, header, fmt)
+        row += 1
+
+        # Detail rows
+        p4 = data.get('aging_periods', {}).get('p4', 180)
+        for item in data.get('all_items', []):
+            age_days = item.get('age_days', 0)
+            sheet.write(row, 0, item.get('product_name', ''), formats['text'])
+            sheet.write(row, 1, item.get('location_name', ''), formats['text'])
+            sheet.write(row, 2, age_days, formats['integer'])
+            sheet.write(row, 3, item.get('quantity', 0), formats['number'])
+            sheet.write(row, 4, item.get('value', 0), formats['currency'])
+            # Status based on age
+            if age_days > p4:
+                sheet.write(row, 5, 'DEAD STOCK', formats['badge_danger'])
+            elif age_days > 90:
+                sheet.write(row, 5, 'OLD', formats['badge_warning'])
+            else:
+                sheet.write(row, 5, 'NORMAL', formats['badge_good'])
+            row += 1
+
+        # Total
+        totals = data.get('totals', {})
+        sheet.write(row, 2, 'TOTAL', formats['total_label'])
+        sheet.write(row, 3, totals.get('total_quantity', 0), formats['total'])
+        sheet.write(row, 4, totals.get('total_value', 0), formats['total'])
+
+    def _write_negative_excel(self, workbook, formats, data):
+        """Write Negative Stock Alert report to Excel."""
+        sheet = workbook.add_worksheet('Negative Stock')
+
+        sheet.set_column(0, 0, 40)  # Product
+        sheet.set_column(1, 1, 30)  # Location
+        sheet.set_column(2, 2, 12)  # Quantity
+        sheet.set_column(3, 3, 12)  # Reserved
+        sheet.set_column(4, 4, 15)  # Value
+        sheet.set_column(5, 5, 12)  # Severity
+
+        row = 0
+
+        sheet.write(row, 0, self.company_id.name, formats['title'])
+        row += 1
+        sheet.write(row, 0, 'NEGATIVE STOCK ALERT', formats['subtitle'])
+        row += 1
+
+        totals = data.get('totals', {})
+        alert_count = totals.get('alert_count', 0)
+        critical_count = totals.get('critical_count', 0)
+
+        if alert_count > 0:
+            sheet.write(row, 0, f"ALERT: {alert_count} items with negative stock. {critical_count} CRITICAL.",
+                        formats['badge_danger'])
+        else:
+            sheet.write(row, 0, "All Clear - No negative stock found", formats['badge_good'])
+        row += 2
+
+        # Headers
+        headers = ['Product', 'Location', 'Quantity', 'Reserved', 'Value', 'Severity']
+        for col, header in enumerate(headers):
+            fmt = formats['header_num'] if col in [2, 3, 4] else formats['header']
+            sheet.write(row, col, header, fmt)
+        row += 1
+
+        # Data rows
+        for item in data.get('data', []):
+            sheet.write(row, 0, item.get('product_name', ''), formats['text'])
+            sheet.write(row, 1, item.get('location_name', ''), formats['text'])
+            sheet.write(row, 2, item.get('quantity', 0), formats['currency_negative'])
+            sheet.write(row, 3, item.get('reserved_quantity', 0), formats['number'])
+            sheet.write(row, 4, item.get('value', 0), formats['currency_negative'])
+            severity = item.get('severity', 'warning')
+            fmt = formats['badge_danger'] if severity == 'critical' else formats['badge_warning']
+            sheet.write(row, 5, severity.upper(), fmt)
+            row += 1
+
+        # Total
+        if data.get('data'):
+            sheet.write(row, 1, 'TOTAL', formats['total_label'])
+            sheet.write(row, 2, totals.get('total_negative_qty', 0), formats['total'])
+            sheet.write(row, 4, totals.get('total_negative_value', 0), formats['total'])
+
+    def _write_movement_excel(self, workbook, formats, data):
+        """Write Fast/Slow Moving report to Excel."""
+        sheet = workbook.add_worksheet('Movement Analysis')
+
+        sheet.set_column(0, 0, 40)  # Product
+        sheet.set_column(1, 1, 12)  # Current Qty
+        sheet.set_column(2, 2, 15)  # Current Value
+        sheet.set_column(3, 3, 10)  # Moves
+        sheet.set_column(4, 4, 12)  # Qty Moved
+        sheet.set_column(5, 5, 10)  # Turnover
+        sheet.set_column(6, 6, 12)  # Class
+
+        row = 0
+
+        sheet.write(row, 0, self.company_id.name, formats['title'])
+        row += 1
+        sheet.write(row, 0, 'Fast vs Slow Moving Analysis', formats['subtitle'])
+        row += 1
+        sheet.write(row, 0, f"Period: {data.get('date_from', '')} to {data.get('date_to', '')}")
+        row += 2
+
+        # Movement summary
+        sheet.write(row, 0, 'MOVEMENT SUMMARY', formats['section'])
+        row += 1
+        for summary in data.get('movement_summary', []):
+            label = summary.get('label', '')
+            if label == 'Fast Moving':
+                fmt = formats['badge_good']
+            elif label == 'Slow Moving':
+                fmt = formats['badge_warning']
+            else:
+                fmt = formats['badge_danger']
+            sheet.write(row, 0, label)
+            sheet.write(row, 1, summary.get('count', 0), formats['integer'])
+            sheet.write(row, 2, summary.get('value', 0), formats['currency'])
+            row += 1
+        row += 1
+
+        # Headers
+        headers = ['Product', 'Current Qty', 'Current Value', 'Moves', 'Qty Moved', 'Turnover', 'Class']
+        for col, header in enumerate(headers):
+            fmt = formats['header_num'] if col >= 1 else formats['header']
+            sheet.write(row, col, header, fmt)
+        row += 1
+
+        # Data rows
+        for item in data.get('data', []):
+            sheet.write(row, 0, item.get('product_name', ''), formats['text'])
+            sheet.write(row, 1, item.get('current_qty', 0), formats['number'])
+            sheet.write(row, 2, item.get('current_value', 0), formats['currency'])
+            sheet.write(row, 3, item.get('move_count', 0), formats['integer'])
+            sheet.write(row, 4, item.get('qty_moved', 0), formats['number'])
+            sheet.write(row, 5, item.get('turnover_ratio', 0), formats['number'])
+
+            mv_class = item.get('movement_class', 'dead')
+            if mv_class == 'fast':
+                fmt = formats['badge_good']
+            elif mv_class == 'slow':
+                fmt = formats['badge_warning']
+            else:
+                fmt = formats['badge_danger']
+            sheet.write(row, 6, item.get('movement_label', 'Unknown'), fmt)
+            row += 1
+
+        # Total
+        totals = data.get('totals', {})
+        sheet.write(row, 0, 'TOTAL', formats['total_label'])
+        sheet.write(row, 1, totals.get('total_qty', 0), formats['total'])
+        sheet.write(row, 2, totals.get('total_value', 0), formats['total'])
 
     # ============================================
     # ONCHANGE METHODS

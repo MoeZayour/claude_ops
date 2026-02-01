@@ -51,7 +51,16 @@
                     </group>
                     <group string="Preview">
                         <field name="filter_summary" readonly="1" class="text-muted"/>
-                        <field name="record_count" readonly="1"/>
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="record_count" string="Records:"/>
+                            <field name="record_count" readonly="1" nolabel="1"/>
+                            <!-- Good size: up to 5000 records -->
+                            <span invisible="record_count &gt; 5000" class="badge text-bg-success">Good size</span>
+                            <!-- Large dataset: 5001-10000 records -->
+                            <span invisible="record_count &lt;= 5000 or record_count &gt; 10000" class="badge text-bg-warning">Large dataset</span>
+                            <!-- Very large: over 10000 records -->
+                            <span invisible="record_count &lt;= 10000" class="badge text-bg-danger">Very large</span>
+                        </div>
                         <field name="total_quantity" readonly="1" invisible="report_type == 'movement'"/>
                         <field name="total_value" readonly="1" widget="monetary"/>
                         <field name="currency_id" invisible="1"/>

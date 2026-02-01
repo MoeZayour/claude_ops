@@ -1402,3 +1402,74 @@ class OpsFinancialReportParser(models.AbstractModel):
             'opening_cash': 0.0,
             'closing_cash': net_cash_flow,
         }
+
+
+class OpsFinancialMinimalReportParser(models.AbstractModel):
+    """
+    Report parser for the MINIMAL Financial Reports template.
+
+    This parser provides the `report_data` variable to the
+    `ops_matrix_accounting.report_ops_financial_minimal` QWeb template.
+
+    v19.0.1.0: Created to fix white page issue - template needs parser
+    """
+    _name = 'report.ops_matrix_accounting.report_ops_financial_minimal'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Financial Report (Minimal) Parser'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        """
+        Get report values for the Minimal Financial Report template.
+
+        Delegates to the parent parser but ensures proper data structure
+        for the minimal template which expects `report_data` with specific keys.
+        """
+        # Get base values from parent parser
+        values = super()._get_report_values(docids, data)
+
+        # Ensure the minimal template has what it needs
+        report_data = values.get('report_data', {})
+
+        # The minimal template expects these specific keys at root level
+        if not report_data:
+            # Try to generate from wizard if no data
+            wizard = None
+            if docids:
+                wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(docids)
+            if not wizard or not wizard.exists():
+                active_id = self.env.context.get('active_id')
+                if active_id:
+                    wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(active_id)
+
+            if wizard and wizard.exists():
+                raw_data = wizard._get_report_data()
+                report_data = self._transform_enhanced_data(wizard, raw_data)
+
+        # Ensure all required keys exist for minimal template
+        company = self.env.company
+        if values.get('docs') and hasattr(values['docs'], 'company_id'):
+            company = values['docs'].company_id or self.env.company
+
+        # Add company colors if not present
+        if 'colors' not in report_data:
+            report_data['colors'] = self._get_company_colors(company)
+
+        # Ensure date fields exist
+        if 'date_from' not in report_data:
+            report_data['date_from'] = ''
+        if 'date_to' not in report_data:
+            report_data['date_to'] = ''
+
+        # Ensure company/title exist
+        if 'company' not in report_data:
+            report_data['company'] = company.name if company else ''
+        if 'title' not in report_data:
+            report_data['title'] = 'Financial Report'
+        if 'currency_symbol' not in report_data:
+            report_data['currency_symbol'] = company.currency_id.symbol if company else ''
+        if 'target_move' not in report_data:
+            report_data['target_move'] = 'Posted'
+
+        values['report_data'] = report_data
+        return values

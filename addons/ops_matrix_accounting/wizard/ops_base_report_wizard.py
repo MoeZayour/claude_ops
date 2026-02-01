@@ -33,6 +33,8 @@ class OpsBaseReportWizard(models.AbstractModel):
     - Common computed fields (report_title, filter_summary, currency_id)
     - Shared validation logic
     - Action dispatch pattern
+    - IT Admin Blindness via security mixin
+    - Branch isolation via security mixin
 
     Subclasses MUST implement:
     - _get_engine_name() -> str
@@ -49,6 +51,7 @@ class OpsBaseReportWizard(models.AbstractModel):
     - _estimate_record_count() -> int
     """
     _name = 'ops.base.report.wizard'
+    _inherit = 'ops.intelligence.security.mixin'
     _description = 'Base Report Wizard (Abstract)'
 
     # ============================================
@@ -316,6 +319,18 @@ class OpsBaseReportWizard(models.AbstractModel):
         """Main action: Validate filters and generate report."""
         self.ensure_one()
 
+        # =====================================================================
+        # SECURITY CHECK - MUST BE FIRST
+        # Enforces IT Admin Blindness and role-based access
+        # =====================================================================
+        pillar_name = self._get_pillar_name()
+        self._check_intelligence_access(pillar_name)
+
+        # Validate branch access if user selected specific branches
+        branch_field = getattr(self, 'branch_ids', None) or getattr(self, 'ops_branch_ids', None)
+        if branch_field:
+            self._validate_branch_access(branch_field)
+
         # Validate
         validation_result = self._validate_filters()
         if isinstance(validation_result, dict) and 'warning' in validation_result:
@@ -329,6 +344,23 @@ class OpsBaseReportWizard(models.AbstractModel):
 
         # Return report action
         return self._return_report_action(report_data)
+
+    def _get_pillar_name(self):
+        """
+        Get the pillar name for security checks.
+        Override in subclass if engine name doesn't match pillar name.
+        """
+        engine = 'Report'
+        if callable(getattr(self, '_get_engine_name', None)):
+            engine = self._get_engine_name()
+        # Map engine names to pillar names
+        pillar_map = {
+            'financial': 'Financial',
+            'treasury': 'Treasury',
+            'asset': 'Asset',
+            'inventory': 'Inventory',
+        }
+        return pillar_map.get(engine, engine.capitalize())
 
     def _log_report_audit(self, report_data=None):
         """
@@ -575,3 +607,96 @@ class OpsBaseReportWizard(models.AbstractModel):
         """
         company = getattr(self, 'company_id', None) or self.env.company
         return getattr(company, 'primary_color', None) or '#C9A962'
+
+    @staticmethod
+    def _get_primary_light(primary_hex):
+        """
+        Generate light background from primary color (15% opacity with white).
+
+        Args:
+            primary_hex: Hex color code (e.g., '#5B6BBB')
+
+        Returns:
+            str: Light hex color code for backgrounds
+        """
+        if not primary_hex:
+            primary_hex = '#5B6BBB'
+
+        # Remove # if present
+        hex_color = primary_hex.lstrip('#')
+
+        # Convert to RGB
+        try:
+            r = int(hex_color[0:2], 16)
+            g = int(hex_color[2:4], 16)
+            b = int(hex_color[4:6], 16)
+        except (ValueError, IndexError):
+            # Invalid hex, return default light color
+            return '#E8EAF6'
+
+        # Blend with white at 15% opacity
+        opacity = 0.15
+        light_r = int(r * opacity + 255 * (1 - opacity))
+        light_g = int(g * opacity + 255 * (1 - opacity))
+        light_b = int(b * opacity + 255 * (1 - opacity))
+
+        return '#{:02x}{:02x}{:02x}'.format(light_r, light_g, light_b)
+
+    @staticmethod
+    def _get_primary_dark(primary_hex):
+        """
+        Generate darker shade of primary color.
+
+        Args:
+            primary_hex: Hex color code (e.g., '#5B6BBB')
+
+        Returns:
+            str: Darker hex color code
+        """
+        if not primary_hex:
+            primary_hex = '#5B6BBB'
+
+        hex_color = primary_hex.lstrip('#')
+
+        try:
+            r = int(hex_color[0:2], 16)
+            g = int(hex_color[2:4], 16)
+            b = int(hex_color[4:6], 16)
+        except (ValueError, IndexError):
+            # Invalid hex, return default dark color
+            return '#3D4A8A'
+
+        factor = 0.7  # Darken by 30%
+        dark_r = int(r * factor)
+        dark_g = int(g * factor)
+        dark_b = int(b * factor)
+
+        return '#{:02x}{:02x}{:02x}'.format(dark_r, dark_g, dark_b)
+
+    def get_color_scheme(self):
+        """
+        Get complete color scheme for reports based on company primary color.
+
+        Returns:
+            dict: {
+                'primary': Primary hex color,
+                'primary_light': Light background color,
+                'primary_dark': Dark shade,
+                'navy': Standard navy for text,
+                'success': Success/positive green,
+                'danger': Danger/negative red,
+                'warning': Warning orange,
+                'gold': Meridian gold accent
+            }
+        """
+        primary = self._get_company_primary_color()
+        return {
+            'primary': primary,
+            'primary_light': self._get_primary_light(primary),
+            'primary_dark': self._get_primary_dark(primary),
+            'navy': '#1e293b',
+            'success': '#16a34a',
+            'danger': '#dc2626',
+            'warning': '#d97706',
+            'gold': '#C9A962',
+        }

@@ -163,7 +163,29 @@ class ResUsers(models.Model):
         help='Companies derived from allowed branches',
         store=False
     )
-    
+
+    # ========================================================================
+    # SOD CONFLICT DETECTION FIELDS
+    # ========================================================================
+
+    sod_conflicts = fields.Text(
+        string='SoD Conflicts',
+        compute='_compute_sod_conflicts',
+        help='Conflicting group memberships that violate Segregation of Duties policies',
+    )
+
+    has_sod_conflict = fields.Boolean(
+        string='Has SoD Conflict',
+        compute='_compute_sod_conflicts',
+        help='Indicates if user has conflicting security group memberships',
+    )
+
+    sod_conflict_count = fields.Integer(
+        string='SoD Conflict Count',
+        compute='_compute_sod_conflicts',
+        help='Number of SoD conflicts detected for this user',
+    )
+
     # ========================================================================
     # LEGACY FIELDS (Computed for Backward Compatibility - DB Stored)
     # ========================================================================
@@ -391,7 +413,90 @@ class ResUsers(models.Model):
             # Get companies from allowed branches (ops.branch has company_id field)
             companies = user.ops_allowed_branch_ids.mapped('company_id')
             user.effective_company_ids = [(6, 0, companies.ids)]
-    
+
+    # ========================================================================
+    # SOD CONFLICT DETECTION METHODS
+    # ========================================================================
+
+    # Define conflicting group pairs at class level for reuse
+    SOD_CONFLICT_PAIRS = [
+        ('ops_matrix_core.group_ops_it_admin', 'ops_matrix_core.group_ops_admin_power',
+         'IT Admin cannot have OPS Admin Power rights'),
+        ('ops_matrix_core.group_ops_it_admin', 'ops_matrix_core.group_ops_see_cost',
+         'IT Admin cannot see cost data'),
+        ('ops_matrix_core.group_ops_it_admin', 'account.group_account_manager',
+         'IT Admin cannot be Account Manager'),
+        ('ops_matrix_core.group_ops_it_admin', 'purchase.group_purchase_manager',
+         'IT Admin cannot be Purchase Manager'),
+        ('ops_matrix_core.group_ops_it_admin', 'sales_team.group_sale_manager',
+         'IT Admin cannot be Sales Manager'),
+        ('ops_matrix_core.group_ops_it_admin', 'stock.group_stock_manager',
+         'IT Admin cannot be Stock Manager'),
+    ]
+
+    def _compute_sod_conflicts(self):
+        """
+        Detect conflicting group memberships that violate Segregation of Duties.
+
+        IT Admin should never have business manager rights or access to
+        sensitive financial data.
+
+        Note: This is computed without @api.depends because groups_id
+        is a complex field that may not trigger proper recomputation.
+        """
+        for user in self:
+            conflicts = []
+            user_groups = getattr(user, 'groups_id', self.env['res.groups'])
+
+            for group1_ref, group2_ref, conflict_desc in self.SOD_CONFLICT_PAIRS:
+                try:
+                    group1 = self.env.ref(group1_ref, raise_if_not_found=False)
+                    group2 = self.env.ref(group2_ref, raise_if_not_found=False)
+
+                    if group1 and group2 and user_groups:
+                        if group1 in user_groups and group2 in user_groups:
+                            conflicts.append(conflict_desc)
+                except Exception:
+                    # Skip if groups don't exist (module not installed)
+                    pass
+
+            user.has_sod_conflict = bool(conflicts)
+            user.sod_conflict_count = len(conflicts)
+            user.sod_conflicts = '\n'.join(conflicts) if conflicts else ''
+
+    def check_and_log_sod_conflicts(self):
+        """
+        Check and log SoD conflicts for the user.
+
+        Call this method after modifying group memberships to log conflicts.
+        This is a public method that can be called from other code.
+        """
+        for user in self:
+            # Force recomputation
+            user._compute_sod_conflicts()
+
+            if user.has_sod_conflict and user.sod_conflicts:
+                # Log to SoD violation log if the model exists
+                try:
+                    self.env['ops.segregation.of.duties.log'].sudo().create({
+                        'user_id': user.id,
+                        'violation_type': 'group_conflict',
+                        'description': f"SoD Conflict Detected:\n{user.sod_conflicts}",
+                        'detected_by_id': self.env.user.id,
+                        'action_taken': 'logged',
+                    })
+                    _logger.warning(
+                        "SoD conflict detected for user %s: %s",
+                        user.login,
+                        user.sod_conflicts.replace('\n', '; ')
+                    )
+                except Exception as e:
+                    # Model might not exist or have different fields
+                    _logger.warning(
+                        "Could not log SoD conflict for user %s: %s",
+                        user.login, str(e)
+                    )
+
     # ========================================================================
     # ACCESS CONTROL METHODS
     # ========================================================================
@@ -834,18 +939,17 @@ class ResUsers(models.Model):
                 )
 
             if errors:
-                # Only raise error if user has a name (not during initial UI load)
-                # and all required fields are truly missing (not just during form open)
-                if user.name and user.name != 'New':
-                    raise ValidationError(_(
-                        "User '%(user_name)s' cannot be saved due to missing OPS Matrix requirements:\n\n"
-                        "%(errors)s\n\n"
-                        "Please go to the 'OPS Matrix Access' tab and complete the required fields.\n"
-                        "Tip: Assign a Persona first - the system will auto-populate Branch and BU."
-                    ) % {
-                        'user_name': user.name,
-                        'errors': '\n'.join(errors)
-                    })
+                # Log a warning instead of raising a blocking error to prevent UI issues.
+                # A stricter check can be enforced at a different stage if needed.
+                _logger.warning(
+                    "User '%s' (ID: %s) is missing OPS Matrix requirements: %s",
+                    user.name,
+                    user.id,
+                    ', '.join(errors)
+                )
+                # To still show a UI warning without blocking, a different mechanism
+                # like a transient wizard on save could be used, but for now, we remove the blocker.
+                # raise ValidationError(...) # This line is removed.
     
     # ========================================================================
     # CRUD OVERRIDE

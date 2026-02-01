@@ -453,13 +453,14 @@
         </table>
     </template>
 
-    <!-- Report Action for Minimal Financial Reports -->
+    <!-- Report Action for Minimal Financial Reports (Updated to use enhanced wizard) -->
     <record id="action_report_ops_financial_minimal" model="ir.actions.report">
         <field name="name">Financial Report (Minimal)</field>
-        <field name="model">ops.financial.report.wizard</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
         <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="print_report_name">'Financial_Report_Minimal_%s_%s_%s' % (object.report_type, object.date_from, object.date_to)</field>
     </record>
 

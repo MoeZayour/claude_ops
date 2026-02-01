@@ -101,30 +101,40 @@ document.addEventListener('focusout', (e) => {
 });
 
 // =============================================================================
-// SCROLL REVEAL
+// SCROLL REVEAL (with proper cleanup)
 // =============================================================================
 // Subtle animation when elements come into view
 
-const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.1
-};
+let scrollObserver = null;
+let domObserver = null;
+let observerCleanupTimeout = null;
 
-const scrollObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('ops-visible');
-            scrollObserver.unobserve(entry.target);
-        }
-    });
-}, observerOptions);
+function initScrollReveal() {
+    // Only run in web client
+    if (!document.querySelector('.o_web_client')) {
+        return;
+    }
 
-// Observe cards and list items when they're added to DOM
-const domObserver = new MutationObserver((mutations) => {
-    mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
-            if (node.nodeType === Node.ELEMENT_NODE) {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('ops-visible');
+                scrollObserver.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    domObserver = new MutationObserver((mutations) => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+                if (node.nodeType !== Node.ELEMENT_NODE) return;
+
                 // Observe kanban cards
                 const kanbanCards = node.querySelectorAll ?
                     node.querySelectorAll('.o_kanban_record') : [];
@@ -138,18 +148,50 @@ const domObserver = new MutationObserver((mutations) => {
                     node.classList.add('ops-scroll-reveal');
                     scrollObserver.observe(node);
                 }
-            }
+            });
         });
     });
-});
 
-// Start observing DOM changes (only in web client)
-if (document.querySelector('.o_web_client')) {
     domObserver.observe(document.body, {
         childList: true,
         subtree: true
     });
+
+    // Auto-cleanup DOM observer after 60 seconds to prevent memory leaks
+    // (page should be fully loaded by then, scroll observer continues working)
+    observerCleanupTimeout = setTimeout(() => {
+        if (domObserver) {
+            domObserver.disconnect();
+            domObserver = null;
+            console.log('[OPS Theme] DOM observer auto-cleanup after 60s');
+        }
+    }, 60000);
 }
+
+function cleanupScrollReveal() {
+    if (observerCleanupTimeout) {
+        clearTimeout(observerCleanupTimeout);
+        observerCleanupTimeout = null;
+    }
+    if (scrollObserver) {
+        scrollObserver.disconnect();
+        scrollObserver = null;
+    }
+    if (domObserver) {
+        domObserver.disconnect();
+        domObserver = null;
+    }
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initScrollReveal);
+} else {
+    initScrollReveal();
+}
+
+// Cleanup on page unload to prevent memory leaks
+window.addEventListener('beforeunload', cleanupScrollReveal);
 
 // Add scroll reveal styles
 const scrollRevealStyles = document.createElement('style');

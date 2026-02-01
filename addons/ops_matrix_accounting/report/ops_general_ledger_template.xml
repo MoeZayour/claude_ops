@@ -311,16 +311,22 @@
                     </ul>
                 </div>
 
-                <!-- Page Footer -->
-                <div class="ops-page-footer">
+                <!-- Page Footer - OPS Framework Branding -->
+                <div class="ops-page-footer" style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
                     <table style="width: 100%;">
                         <tr>
-                            <td class="ops-footer-text">
-                                <strong>Audit Trail:</strong> All transactions sourced from posted journal entries. |
-                                Generated: <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                            <td style="vertical-align: middle; width: 60%;">
+                                <span style="font-size: 8px; color: #94a3b8;">Powered by</span>
+                                <span style="display: inline-block; background-color: #5B6BBB; color: #ffffff;
+                                             padding: 2px 8px; border-radius: 3px; font-size: 8px; font-weight: 600;
+                                             margin-left: 5px; letter-spacing: 0.5px;">
+                                    OPS Framework
+                                </span>
                             </td>
-                            <td style="text-align: right;">
-                                <span class="ops-footer-confidential">Confidential</span>
+                            <td style="text-align: right; vertical-align: middle; width: 40%;">
+                                <span style="font-size: 9px; color: #64748b;">
+                                    Page <span class="page"/> of <span class="topage"/>
+                                </span>
                             </td>
                         </tr>
                     </table>
@@ -333,11 +339,11 @@
     <!-- Report Actions - MINIMAL DESIGN -->
     <record id="action_report_general_ledger" model="ir.actions.report">
         <field name="name">General Ledger</field>
-        <field name="model">ops.general.ledger.wizard</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">ops_matrix_accounting.report_general_ledger_minimal</field>
         <field name="report_file">ops_matrix_accounting.report_general_ledger_minimal</field>
-        <field name="binding_model_id" ref="model_ops_general_ledger_wizard"/>
+        <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>
 

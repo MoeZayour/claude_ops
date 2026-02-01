@@ -1,5 +1,6 @@
 from . import res_company
 from . import res_config_settings
+from . import ops_intelligence_security_mixin
 from . import ops_pdc
 from . import ops_budget
 from . import ops_product_category_defaults

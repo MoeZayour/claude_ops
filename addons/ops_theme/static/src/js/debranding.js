@@ -113,6 +113,18 @@ document.addEventListener('DOMContentLoaded', function() {
         childList: true,
         subtree: true
     });
+
+    // Auto-cleanup observer after 30 seconds to prevent memory leaks
+    // Page should be fully loaded by then
+    setTimeout(() => {
+        observer.disconnect();
+        console.log('[OPS Theme] Debranding observer auto-cleanup after 30s');
+    }, 30000);
+
+    // Also cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        observer.disconnect();
+    });
 });
 
-console.log('OPS Theme: Debranding module loaded');
+console.log('[OPS Theme] Debranding module loaded');

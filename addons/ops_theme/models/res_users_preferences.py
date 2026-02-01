@@ -10,11 +10,11 @@ class ResUsersPreferences(models.Model):
 
     ops_chatter_position = fields.Selection(
         selection=[
-            ('below', 'Below Form'),
-            ('right', 'Right Side Panel'),
+            ('side', 'Side'),
+            ('bottom', 'Bottom'),
         ],
         string='Chatter Position',
-        default='below',
+        default='bottom',
         help='Position of the chatter/messaging panel on form views.',
     )
 
@@ -22,10 +22,9 @@ class ResUsersPreferences(models.Model):
         selection=[
             ('light', 'Light'),
             ('dark', 'Dark'),
-            ('system', 'System Default'),
         ],
         string='Color Mode',
-        default='system',
+        default='light',
         help='Color mode for the user interface.',
     )
 

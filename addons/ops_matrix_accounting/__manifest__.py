@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.16.2.0",
+    "version": "19.0.18.0.0",  # Report Harmonization - 16 Official Corporate Reports
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -58,12 +58,13 @@
         "views/ops_pdc_payable_menus.xml",
         "views/ops_pdc_reports_menus.xml",
         "views/res_config_settings_views.xml",
-        "views/ops_financial_report_wizard_views.xml",
+        # DEPRECATED: ops_financial_report_wizard_views.xml moved to deprecated/
+        # DEPRECATED: ops_general_ledger_wizard_views.xml moved to deprecated/
         "views/ops_general_ledger_wizard_enhanced_views.xml",
-        "views/ops_general_ledger_wizard_views.xml",
         "views/ops_matrix_snapshot_views.xml",
         "views/ops_trend_analysis_views.xml",
-        "views/ops_report_menu.xml",
+        # DISABLED: ops_report_menu.xml - references deprecated ops.financial.report.wizard model
+        # "views/ops_report_menu.xml",
         "views/ops_report_template_views.xml",
         "views/ops_inventory_report_views.xml",
         "views/ops_report_audit_views.xml",
@@ -84,12 +85,14 @@
         "wizard/ops_period_close_wizard_views.xml",
         "wizard/ops_asset_report_wizard_views.xml",
         "wizard/ops_three_way_match_override_wizard_views.xml",
+        "wizard/ops_balance_sheet_wizard_views.xml",
         # "wizard/ops_asset_report_wizard.xml",  # Disabled - references AbstractModel
 
         # Menus - must load AFTER all views/wizards that define actions
         "views/accounting_menus.xml",
 
-        # Reports
+        # Reports - Shared Components
+        "report/components/ops_corporate_report_components.xml",  # Corporate report components (16 official reports)
         "report/ops_report_layout.xml",  # Corporate branding & shared styles
         "report/ops_report_minimal_styles.xml",  # Minimal report styling system
         "report/ops_general_ledger_minimal.xml",  # Minimal General Ledger
@@ -101,6 +104,7 @@
         "report/ops_inventory_report_templates.xml",  # Inventory Intelligence Reports
         "report/ops_treasury_report_templates.xml",   # Treasury Intelligence Reports
         "report/ops_daily_report_templates.xml",        # Daily Cash/Bank/Day Book Reports
+        "report/ops_balance_sheet_template.xml",        # Corporate Balance Sheet (IAS 1)
 
         # Menus
         # "views/ops_report_menu.xml",  # Disabled - references missing model
@@ -112,6 +116,7 @@
         "web.assets_backend": [
             "ops_matrix_accounting/static/src/css/ops_accounting.css",
             "ops_matrix_accounting/static/src/css/ops_report.css",
+            "ops_matrix_accounting/static/src/scss/ops_corporate_reports.scss",
         ],
     },
     "post_init_hook": "post_init_hook",

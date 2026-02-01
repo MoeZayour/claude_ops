@@ -139,11 +139,14 @@
     </record>
 
     <!-- Menu Item - DISABLED (now accessed via Settings > OPS Framework > Report Templates) -->
+    <!-- Removed: parent menu no longer exists, feature moved to Settings -->
+    <!--
     <menuitem id="menu_ops_report_templates"
               name="Report Templates"
-              parent="ops_matrix_accounting.menu_ops_financial_reports"
+              parent="account.menu_finance_reports"
               action="action_ops_report_template"
               sequence="99"
               active="False"/>
+    -->
 
 </odoo>

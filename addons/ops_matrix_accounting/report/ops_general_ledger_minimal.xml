@@ -314,14 +314,14 @@
         </t>
     </template>
 
-    <!-- Report Action for Minimal General Ledger -->
+    <!-- Report Action for Minimal General Ledger (Updated to use enhanced wizard) -->
     <record id="action_report_general_ledger_minimal" model="ir.actions.report">
         <field name="name">General Ledger (Minimal)</field>
-        <field name="model">ops.general.ledger.wizard</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">ops_matrix_accounting.report_general_ledger_minimal</field>
         <field name="report_file">ops_matrix_accounting.report_general_ledger_minimal</field>
-        <field name="binding_model_id" ref="model_ops_general_ledger_wizard"/>
+        <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>
 

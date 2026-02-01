@@ -1,4 +1,8 @@
 from odoo import models, api
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class OpsGeneralLedgerReportMinimal(models.AbstractModel):
     """
@@ -8,6 +12,12 @@ class OpsGeneralLedgerReportMinimal(models.AbstractModel):
     This parser is used by both:
     - ops.general.ledger.wizard (original wizard)
     - ops.general.ledger.wizard.enhanced (Matrix Financial Intelligence)
+
+    Data Flow:
+    - Wizard calls _get_report_data() → returns {data: [...], totals: {...}}
+    - Wizard calls report.report_action(self, data=report_data)
+    - Parser receives docids (wizard IDs) and data (pre-computed report data)
+    - Parser transforms data to template format: {accounts: [...], grand_total: {...}}
     """
     _name = 'report.ops_matrix_accounting.report_general_ledger_minimal'
     _description = 'General Ledger Report Parser (Minimal)'
@@ -21,7 +31,9 @@ class OpsGeneralLedgerReportMinimal(models.AbstractModel):
         - ops.general.ledger.wizard (original)
         - ops.general.ledger.wizard.enhanced (Matrix Financial Intelligence)
 
-        The wizard can pass pre-computed data or filter parameters.
+        Priority:
+        1. Use pre-computed data from wizard if available
+        2. Fall back to database query if no pre-computed data
         """
         if not data:
             data = {}
@@ -35,19 +47,135 @@ class OpsGeneralLedgerReportMinimal(models.AbstractModel):
                 wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(docids)
                 if wizard.exists():
                     doc_model = 'ops.general.ledger.wizard.enhanced'
+                    wizard = wizard[0] if len(wizard) > 1 else wizard
             except Exception:
                 pass
             # Fall back to original wizard
             if not wizard or not wizard.exists():
                 try:
                     wizard = self.env['ops.general.ledger.wizard'].browse(docids)
-                    doc_model = 'ops.general.ledger.wizard'
+                    if wizard.exists():
+                        doc_model = 'ops.general.ledger.wizard'
+                        wizard = wizard[0] if len(wizard) > 1 else wizard
                 except Exception:
                     wizard = None
 
+        # =====================================================================
+        # PRIORITY 1: Use pre-computed data from wizard
+        # =====================================================================
+        if data and isinstance(data, dict) and data.get('data'):
+            _logger.info("GL Report: Using pre-computed data from wizard")
+            return self._transform_wizard_data(docids, doc_model, wizard, data)
+
+        # =====================================================================
+        # PRIORITY 2: Fall back to database query
+        # =====================================================================
+        _logger.info("GL Report: Querying database (no pre-computed data)")
+        return self._query_and_build_data(docids, doc_model, wizard, data)
+
+    def _transform_wizard_data(self, docids, doc_model, wizard, data):
+        """
+        Transform wizard's pre-computed data to template format.
+
+        Wizard returns: {data: [...], totals: {...}, date_from, date_to, ...}
+        Template expects: {accounts: [...], grand_total: {...}, date_from, date_to, ...}
+        """
+        # Get dates from data or wizard
+        date_from = data.get('date_from')
+        date_to = data.get('date_to')
+        company_name = data.get('company_name', '')
+
+        if wizard:
+            if not date_from:
+                date_from = wizard.date_from
+            if not date_to:
+                date_to = wizard.date_to
+            company = wizard.company_id or self.env.company
+        else:
+            company = self.env.company
+
+        # Get the raw data lines from wizard
+        raw_data = data.get('data', [])
+        totals = data.get('totals', {})
+        report_format = data.get('report_format', 'detailed')
+
+        # Handle different data formats
+        if isinstance(raw_data, dict):
+            # Format: {detailed: [...], summary: [...]}
+            lines = raw_data.get('detailed', raw_data.get('summary', []))
+        else:
+            lines = raw_data
+
+        # Transform lines to accounts grouped structure
+        accounts_data = {}
+        for line in lines:
+            account_code = line.get('account_code', '')
+            account_name = line.get('account_name', '')
+
+            if not account_code:
+                continue
+
+            if account_code not in accounts_data:
+                accounts_data[account_code] = {
+                    'account_code': account_code,
+                    'account_name': account_name,
+                    'lines': [],
+                    'total_debit': 0.0,
+                    'total_credit': 0.0,
+                    'total_balance': 0.0,
+                }
+
+            debit = line.get('debit', 0) or 0
+            credit = line.get('credit', 0) or 0
+            balance = line.get('balance', debit - credit)
+
+            # Build line data for template
+            line_data = {
+                'account_code': account_code,
+                'account_name': account_name,
+                'move_date': line.get('date', ''),
+                'journal': line.get('journal_code', ''),
+                'partner': line.get('partner_name', ''),
+                'label': line.get('name', ''),
+                'reference': line.get('ref', ''),
+                'debit': debit,
+                'credit': credit,
+                'balance': balance,
+            }
+            accounts_data[account_code]['lines'].append(line_data)
+            accounts_data[account_code]['total_debit'] += debit
+            accounts_data[account_code]['total_credit'] += credit
+            accounts_data[account_code]['total_balance'] += balance
+
+        # Sort accounts by code
+        sorted_accounts = sorted(accounts_data.values(), key=lambda x: x['account_code'])
+
+        # Build grand totals from wizard totals or calculated
+        grand_total = {
+            'debit': totals.get('total_debit', sum(acc['total_debit'] for acc in accounts_data.values())),
+            'credit': totals.get('total_credit', sum(acc['total_credit'] for acc in accounts_data.values())),
+            'balance': totals.get('total_balance', sum(acc['total_balance'] for acc in accounts_data.values())),
+        }
+
+        return {
+            'doc_ids': docids,
+            'doc_model': doc_model,
+            'docs': wizard,
+            'data': data,
+            'accounts': sorted_accounts,
+            'grand_total': grand_total,
+            'date_from': date_from,
+            'date_to': date_to,
+            'company': company,
+        }
+
+    def _query_and_build_data(self, docids, doc_model, wizard, data):
+        """
+        Query database and build report data (fallback method).
+        Used when no pre-computed data is available.
+        """
         # Extract parameters from wizard or data dict
         if wizard and wizard.exists():
-            wizard = wizard[0] if len(wizard) > 1 else wizard
             date_from = wizard.date_from
             date_to = wizard.date_to
             target_move = getattr(wizard, 'target_move', 'posted')
@@ -149,6 +277,7 @@ class OpsGeneralLedgerReportMinimal(models.AbstractModel):
         return {
             'doc_ids': docids,
             'doc_model': doc_model,
+            'docs': wizard,
             'data': data,
             'accounts': sorted_accounts,
             'grand_total': grand_total,

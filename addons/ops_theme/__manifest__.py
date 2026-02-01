@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.6.4.0',
+    'version': '19.0.6.6.1',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -120,6 +120,10 @@ Features:
 
             # 10. Color mode toggle component
             'ops_theme/static/src/js/color_mode_toggle.js',
+
+            # 10.5. User menu items (color mode toggle, chatter toggle)
+            'ops_theme/static/src/js/user_menu_items.js',
+            'ops_theme/static/src/js/chatter_toggle.js',
 
             # 11. OWL Component Patches (behavior via JS, not CSS)
             'ops_theme/static/src/views/form/form_compiler.js',

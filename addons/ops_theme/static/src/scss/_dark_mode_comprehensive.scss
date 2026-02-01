@@ -1,263 +1,664 @@
-/* OPS THEME - COMPREHENSIVE DARK MODE FIX v19.0.6.3.0 */
+/* OPS THEME - COMPREHENSIVE DARK MODE FIX v19.0.6.5.0 */
 
-/* KILL ODOO PURPLE */
+/* =============================================================================
+   KILL ODOO PURPLE - Global brand override
+   ============================================================================= */
 :root {
     --o-brand-odoo: var(--ops-secondary, #3b82f6) !important;
     --o-brand-primary: var(--ops-secondary, #3b82f6) !important;
 }
 
-.o_tag, .badge, .o_facet_value, [class*="badge"] {
-    border-color: var(--ops-secondary, #3b82f6) !important;
-}
-
-[data-color-mode="dark"] .o_res_config_settings .o_tag,
-[data-color-mode="dark"] .o_setting_box .o_tag {
-    background-color: rgba(59, 130, 246, 0.15) !important;
-    border-color: var(--ops-secondary, #3b82f6) !important;
-    color: #93c5fd !important;
-}
-
-/* SETTINGS PAGE */
+/* =============================================================================
+   LIST VIEW - Complete dark mode fix
+   ============================================================================= */
 [data-color-mode="dark"] {
-    .o_base_settings, .o_res_config_settings {
-        background-color: var(--ops-bg-body, #0f172a) !important;
+    /* List container */
+    .o_list_view {
+        background-color: #0f172a !important;
     }
 
-    .o_setting_container .o_settings_container, .o_setting_box,
-    .app_settings_header, .o_horizontal_separator, h2.o_horizontal_separator {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    .o_list_renderer {
+        background-color: #1e293b !important;
     }
 
-    .o_setting_box .o_setting_left_pane, .o_setting_box .o_setting_right_pane,
-    .o_base_settings .o_form_sheet, .o_base_settings .o_form_sheet_bg {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    /* Table element */
+    .o_list_table {
+        background-color: #1e293b !important;
     }
 
-    .app_settings_block .app_settings_header, .settings h2 {
-        background-color: var(--ops-bg-hover, #334155) !important;
+    /* Table header */
+    .o_list_table thead,
+    .o_list_table thead tr,
+    .o_list_table thead th,
+    .o_list_view thead,
+    .o_list_view thead tr,
+    .o_list_view thead th {
+        background-color: #334155 !important;
+        color: #94a3b8 !important;
+        border-color: #475569 !important;
     }
 
-    .o_base_settings input, .o_base_settings textarea, .o_base_settings select,
-    .o_res_config_settings input, .o_res_config_settings .form-control {
-        background-color: var(--ops-bg-input, #334155) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
-        border-color: var(--ops-border, #475569) !important;
+    /* Table body rows - CRITICAL FIX */
+    .o_list_table tbody tr,
+    .o_list_table tbody tr.o_data_row,
+    .o_list_view tbody tr,
+    .o_data_row,
+    table.o_list_table tr {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
     }
 
-    .o_base_settings label, .o_res_config_settings label,
-    .o_setting_box label, .o_base_settings .text-muted {
-        color: var(--ops-text-secondary, #94a3b8) !important;
-    }
-}
-
-/* LIST VIEW TABLE ROWS */
-[data-color-mode="dark"] {
-    .o_list_view, .o_list_renderer {
-        background-color: var(--ops-bg-card, #1e293b) !important;
+    /* Alternating rows */
+    .o_list_table tbody tr:nth-child(even),
+    .o_list_view tbody tr:nth-child(even),
+    .o_data_row:nth-child(even) {
+        background-color: #263548 !important;
     }
 
-    .o_list_view thead, .o_list_view thead tr, .o_list_view thead th {
-        background-color: var(--ops-bg-hover, #334155) !important;
-        color: var(--ops-text-secondary, #94a3b8) !important;
-        border-color: var(--ops-border, #475569) !important;
+    /* Table cells */
+    .o_list_table tbody td,
+    .o_list_view tbody td,
+    .o_data_row td {
+        background-color: inherit !important;
+        color: #f1f5f9 !important;
+        border-color: #334155 !important;
     }
 
-    .o_list_view tbody tr, .o_data_row {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    /* Hover state */
+    .o_list_table tbody tr:hover,
+    .o_list_view tbody tr:hover,
+    .o_data_row:hover {
+        background-color: #334155 !important;
     }
 
-    .o_list_view tbody tr:nth-child(even), .o_data_row:nth-child(even) {
-        background-color: var(--ops-bg-body, #0f172a) !important;
+    .o_list_table tbody tr:hover td,
+    .o_data_row:hover td {
+        background-color: inherit !important;
     }
 
-    .o_list_view tbody td, .o_data_row td {
-        color: var(--ops-text-primary, #f1f5f9) !important;
-        border-color: var(--ops-border, #475569) !important;
-    }
-
-    .o_list_view tbody tr:hover, .o_data_row:hover {
-        background-color: var(--ops-bg-hover, #334155) !important;
-    }
-
-    .o_data_row.o_data_row_selected {
+    /* Selected row */
+    .o_data_row.o_data_row_selected,
+    .o_list_table tbody tr.o_data_row_selected {
         background-color: rgba(59, 130, 246, 0.2) !important;
     }
 
-    .o_list_record_selector input[type="checkbox"] {
-        accent-color: var(--ops-secondary, #3b82f6);
+    /* Footer row (totals) */
+    .o_list_table tfoot,
+    .o_list_table tfoot tr,
+    .o_list_table tfoot td {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
     }
 }
 
-/* TOGGLE SWITCHES */
-.o_boolean_toggle .custom-control-input:checked ~ .custom-control-label::before {
-    background-color: var(--ops-secondary, #3b82f6) !important;
-    border-color: var(--ops-secondary, #3b82f6) !important;
+/* =============================================================================
+   SEARCH FACETS / FILTER TAGS - Better visibility
+   ============================================================================= */
+.o_searchview .o_searchview_facet,
+.o_facet_tag {
+    background-color: #3b82f6 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
 }
 
-[data-color-mode="dark"] .o_boolean_toggle .custom-control-label::before {
-    background-color: var(--ops-bg-input, #334155) !important;
-    border-color: var(--ops-border, #475569) !important;
+.o_searchview .o_searchview_facet:hover,
+.o_facet_tag:hover {
+    background-color: #2563eb !important;
 }
 
-/* DISCUSS / CHAT */
+.o_searchview .o_searchview_facet .o_facet_value,
+.o_searchview .o_searchview_facet .o_facet_values,
+.o_facet_tag .o_facet_value {
+    color: #ffffff !important;
+}
+
+.o_searchview .o_searchview_facet .o_facet_remove,
+.o_facet_tag .o_facet_remove {
+    color: rgba(255, 255, 255, 0.9) !important;
+    opacity: 1 !important;
+}
+
+.o_searchview .o_searchview_facet .o_facet_remove:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+}
+
 [data-color-mode="dark"] {
-    .o_mail_discuss_sidebar, .o_DiscussSidebar {
-        background-color: var(--ops-bg-card, #1e293b) !important;
+    .o_searchview {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
     }
 
-    .o_DiscussSidebarCategory_header, .o_mail_category_header {
-        color: var(--ops-text-secondary, #94a3b8) !important;
+    .o_searchview_input {
+        color: #f1f5f9 !important;
     }
 
-    .o_DiscussSidebarChannel, .o_mail_discuss_sidebar_item {
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    .o_searchview_input::placeholder {
+        color: #64748b !important;
+    }
+}
+
+/* =============================================================================
+   CALENDAR / DATE PICKER - Dark mode
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Bootstrap datepicker */
+    .datepicker,
+    .datepicker-dropdown,
+    .bootstrap-datetimepicker-widget,
+    .o_datetime_picker,
+    .ui-datepicker {
+        background-color: #1e293b !important;
+        border-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .datepicker table,
+    .bootstrap-datetimepicker-widget table,
+    .o_datetime_picker table {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    .datepicker table thead,
+    .datepicker table thead tr,
+    .datepicker table thead th,
+    .bootstrap-datetimepicker-widget table thead th {
+        background-color: #334155 !important;
+        color: #94a3b8 !important;
+    }
+
+    .datepicker table tbody td,
+    .bootstrap-datetimepicker-widget table tbody td,
+    .o_datetime_picker td {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-color: #334155 !important;
+    }
+
+    .datepicker table tbody td:hover,
+    .bootstrap-datetimepicker-widget table tbody td:hover,
+    .o_datetime_picker td:hover {
+        background-color: #334155 !important;
+    }
+
+    .datepicker table tbody td.active,
+    .datepicker table tbody td.today,
+    .bootstrap-datetimepicker-widget td.active,
+    .o_datetime_picker td.o_selected {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    .datepicker table tbody td.disabled,
+    .datepicker table tbody td.old,
+    .datepicker table tbody td.new {
+        color: #64748b !important;
+    }
+
+    /* Odoo's date picker popover */
+    .o_popover,
+    .o_datetime_picker_root {
+        background-color: #1e293b !important;
+        border-color: #475569 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .o_datetime_picker_header {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o_datetime_picker_header button {
+        color: #f1f5f9 !important;
+    }
+
+    .o_datetime_picker .o_date_item_cell {
+        color: #f1f5f9 !important;
+    }
+
+    .o_datetime_picker .o_date_item_cell:hover {
+        background-color: #334155 !important;
+    }
+
+    .o_datetime_picker .o_date_item_cell.o_today {
+        border-color: #3b82f6 !important;
+    }
+
+    .o_datetime_picker .o_date_item_cell.o_selected {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    .o_datetime_picker .o_date_item_cell.o_out_of_range {
+        color: #475569 !important;
+    }
+}
+
+/* =============================================================================
+   NOTEBOOK TABS - Form view tabs
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Tab container */
+    .o_notebook,
+    .nav-tabs {
+        border-color: #334155 !important;
+    }
+
+    /* Tab items */
+    .o_notebook .nav-tabs .nav-link,
+    .nav-tabs .nav-link,
+    .o_notebook_headers .nav-link {
+        background-color: transparent !important;
+        color: #94a3b8 !important;
+        border-color: transparent !important;
+    }
+
+    .o_notebook .nav-tabs .nav-link:hover,
+    .nav-tabs .nav-link:hover,
+    .o_notebook_headers .nav-link:hover {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    .o_notebook .nav-tabs .nav-link.active,
+    .nav-tabs .nav-link.active,
+    .o_notebook_headers .nav-link.active {
+        background-color: #1e293b !important;
+        color: #3b82f6 !important;
+        border-color: #334155 #334155 #1e293b !important;
+        border-bottom-color: transparent !important;
+    }
+
+    /* Tab content area */
+    .o_notebook .tab-content,
+    .tab-content {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+}
+
+/* =============================================================================
+   X2MANY TABLES (One2many/Many2many in forms)
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* X2many container */
+    .o_field_x2many,
+    .o_field_one2many,
+    .o_field_many2many {
+        background-color: transparent !important;
+    }
+
+    .o_field_x2many .o_list_renderer,
+    .o_field_one2many .o_list_renderer,
+    .o_field_many2many .o_list_renderer {
+        background-color: #1e293b !important;
+        border-color: #475569 !important;
+    }
+
+    /* X2many table */
+    .o_field_x2many .o_list_table,
+    .o_field_one2many .o_list_table,
+    .o_field_many2many .o_list_table {
+        background-color: #1e293b !important;
+    }
+
+    /* X2many header */
+    .o_field_x2many .o_list_table thead th,
+    .o_field_one2many .o_list_table thead th,
+    .o_field_many2many .o_list_table thead th {
+        background-color: #334155 !important;
+        color: #94a3b8 !important;
+        border-color: #475569 !important;
+    }
+
+    /* X2many rows */
+    .o_field_x2many .o_list_table tbody tr,
+    .o_field_one2many .o_list_table tbody tr,
+    .o_field_many2many .o_list_table tbody tr,
+    .o_field_x2many .o_data_row,
+    .o_field_one2many .o_data_row,
+    .o_field_many2many .o_data_row {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o_field_x2many .o_list_table tbody tr:nth-child(even),
+    .o_field_one2many .o_list_table tbody tr:nth-child(even) {
+        background-color: #263548 !important;
+    }
+
+    /* X2many cells */
+    .o_field_x2many .o_list_table tbody td,
+    .o_field_one2many .o_list_table tbody td,
+    .o_field_many2many .o_list_table tbody td {
+        background-color: inherit !important;
+        color: #f1f5f9 !important;
+        border-color: #334155 !important;
+    }
+
+    /* X2many hover */
+    .o_field_x2many .o_list_table tbody tr:hover,
+    .o_field_one2many .o_list_table tbody tr:hover {
+        background-color: #334155 !important;
+    }
+
+    /* Add line link */
+    .o_field_x2many_list_row_add a,
+    .o_field_one2many_list_row_add a {
+        color: #3b82f6 !important;
+    }
+
+    /* Section and note rows */
+    .o_is_line_section td {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o_is_line_note td {
+        background-color: #263548 !important;
+        color: #94a3b8 !important;
+    }
+}
+
+/* =============================================================================
+   FORM VIEW - Sheet, totals, and general styling
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Form sheet background */
+    .o_form_sheet_bg {
+        background-color: #0f172a !important;
+    }
+
+    .o_form_sheet {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    /* Group headers */
+    .o_group .o_group_header,
+    .o_inner_group .o_group_header,
+    .o_horizontal_separator {
+        background-color: #334155 !important;
+        color: #94a3b8 !important;
+    }
+
+    /* Form labels */
+    .o_form_label,
+    .o_form_view label {
+        color: #94a3b8 !important;
+    }
+
+    /* Form readonly text */
+    .o_form_view .o_readonly_modifier,
+    .o_form_view span.o_field_widget {
+        color: #f1f5f9 !important;
+    }
+
+    /* Totals section (sale order, invoice) */
+    .oe_subtotal_footer,
+    .o_order_summary,
+    .o_so_total {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    .oe_subtotal_footer td,
+    .oe_subtotal_footer th {
+        color: #f1f5f9 !important;
+        background-color: transparent !important;
+    }
+
+    .oe_subtotal_footer_separator {
+        border-color: #334155 !important;
+    }
+
+    /* Total row highlight */
+    .oe_subtotal_footer .oe_subtotal_footer_separator td,
+    .o_total_row {
+        color: #f1f5f9 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Stat buttons */
+    .oe_stat_button {
+        background-color: #0f172a !important;
+        border-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .oe_stat_button:hover {
+        background-color: #334155 !important;
+    }
+
+    .oe_stat_button .o_stat_value {
+        color: #f1f5f9 !important;
+    }
+
+    .oe_stat_button .o_stat_text {
+        color: #94a3b8 !important;
+    }
+}
+
+/* =============================================================================
+   AUTOCOMPLETE / DROPDOWN MENUS
+   ============================================================================= */
+[data-color-mode="dark"] {
+    .o-autocomplete--dropdown-menu,
+    .o_searchview_autocomplete,
+    .dropdown-menu,
+    .o_dropdown_menu {
+        background-color: #1e293b !important;
+        border-color: #475569 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .o-autocomplete--dropdown-item,
+    .o_menu_item,
+    .dropdown-item {
+        color: #f1f5f9 !important;
+        background-color: transparent !important;
+    }
+
+    .o-autocomplete--dropdown-item:hover,
+    .o_menu_item:hover,
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o-autocomplete--dropdown-item.focus,
+    .dropdown-item.active {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+}
+
+/* =============================================================================
+   SETTINGS PAGE
+   ============================================================================= */
+[data-color-mode="dark"] {
+    .o_base_settings,
+    .o_res_config_settings {
+        background-color: #0f172a !important;
+    }
+
+    .o_setting_container .o_settings_container,
+    .o_setting_box,
+    .app_settings_header,
+    .o_horizontal_separator,
+    h2.o_horizontal_separator {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o_setting_box .o_setting_left_pane,
+    .o_setting_box .o_setting_right_pane,
+    .o_base_settings .o_form_sheet,
+    .o_base_settings .o_form_sheet_bg {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    .app_settings_block .app_settings_header,
+    .settings h2 {
+        background-color: #334155 !important;
+    }
+
+    .o_base_settings label,
+    .o_res_config_settings label,
+    .o_setting_box label,
+    .o_base_settings .text-muted {
+        color: #94a3b8 !important;
+    }
+}
+
+/* =============================================================================
+   DISCUSS / CHAT
+   ============================================================================= */
+[data-color-mode="dark"] {
+    .o_mail_discuss_sidebar,
+    .o_DiscussSidebar {
+        background-color: #1e293b !important;
+    }
+
+    .o_DiscussSidebarCategory_header,
+    .o_mail_category_header {
+        color: #94a3b8 !important;
+    }
+
+    .o_DiscussSidebarChannel,
+    .o_mail_discuss_sidebar_item {
+        color: #f1f5f9 !important;
     }
 
     .o_DiscussSidebarChannel:hover {
-        background-color: var(--ops-bg-hover, #334155) !important;
+        background-color: #334155 !important;
     }
 
     .o_DiscussSidebarChannel.o-active {
         background-color: rgba(59, 130, 246, 0.2) !important;
     }
 
-    .o_mail_thread, .o_Thread, .o_Message {
-        background-color: var(--ops-bg-body, #0f172a) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    .o_mail_thread,
+    .o_Thread,
+    .o_Message {
+        background-color: #0f172a !important;
+        color: #f1f5f9 !important;
     }
 
-    .o_Message_bubble, .o_mail_message_bubble {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    .o_Message_bubble,
+    .o_mail_message_bubble {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
     }
 
-    .o_Composer, .o_mail_composer {
-        background-color: var(--ops-bg-card, #1e293b) !important;
+    .o_Composer,
+    .o_mail_composer {
+        background-color: #1e293b !important;
     }
 
     .o_Composer textarea {
-        background-color: var(--ops-bg-input, #334155) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
     }
 }
 
-/* DASHBOARDS AND KPI CARDS */
+/* =============================================================================
+   MODALS
+   ============================================================================= */
 [data-color-mode="dark"] {
-    .o_spreadsheet_dashboard, .o_dashboard, .o_dashboard_view {
-        background-color: var(--ops-bg-body, #0f172a) !important;
+    .modal-content {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
     }
 
-    .o_dashboard_card, .o_graph_renderer, .o_pivot_renderer {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    .modal-header {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
     }
 
-    .o_kanban_view.o_dashboard_view .o_kanban_record,
-    .o_dashboard .o_aggregate {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
-        border-color: var(--ops-border, #475569) !important;
+    .modal-header .modal-title {
+        color: #f1f5f9 !important;
     }
 
-    .ops-kpi-card, .ops-dashboard-widget {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    .modal-header .btn-close {
+        filter: invert(1) !important;
     }
 
-    .o_dashboard table {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    .modal-body,
+    .modal-footer {
+        background-color: #1e293b !important;
     }
 
-    .o_dashboard table th {
-        background-color: var(--ops-bg-hover, #334155) !important;
-        color: var(--ops-text-secondary, #94a3b8) !important;
-    }
-
-    .o_dashboard table td {
-        color: var(--ops-text-primary, #f1f5f9) !important;
-        border-color: var(--ops-border, #475569) !important;
+    .modal-footer {
+        border-color: #475569 !important;
     }
 }
 
-/* SEARCH FACETS */
-.o_searchview .o_searchview_facet {
-    background-color: var(--ops-secondary, #3b82f6) !important;
-    border: none !important;
-    border-radius: 4px !important;
-}
-
-.o_searchview .o_searchview_facet .o_facet_value,
-.o_searchview .o_searchview_facet .o_facet_values {
-    color: #ffffff !important;
-}
-
-.o_searchview .o_searchview_facet .o_facet_remove {
-    color: rgba(255, 255, 255, 0.8) !important;
-}
-
-/* FORM INPUTS */
+/* =============================================================================
+   STATUS BAR
+   ============================================================================= */
 [data-color-mode="dark"] {
-    input[type="text"], input[type="email"], input[type="number"],
-    input[type="password"], input[type="search"], textarea, select,
-    .form-control, .o_input {
-        background-color: var(--ops-bg-input, #334155) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
-        border-color: var(--ops-border, #475569) !important;
+    .o_statusbar_status .o_arrow_button {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
     }
 
-    input::placeholder, textarea::placeholder {
-        color: var(--ops-text-secondary, #94a3b8) !important;
-    }
-
-    input:focus, textarea:focus, select:focus, .form-control:focus {
-        border-color: var(--ops-secondary, #3b82f6) !important;
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
-    }
-
-    .dropdown-menu {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
-        border-color: var(--ops-border, #475569) !important;
-    }
-
-    .dropdown-menu .dropdown-item {
-        color: var(--ops-text-primary, #f1f5f9) !important;
-    }
-
-    .dropdown-menu .dropdown-item:hover {
-        background-color: var(--ops-bg-hover, #334155) !important;
+    .o_statusbar_status .o_arrow_button.o_arrow_button_current,
+    .o_statusbar_status .o_arrow_button.active {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
     }
 }
 
-/* RADIO AND CHECKBOXES */
+/* =============================================================================
+   TOOLTIPS
+   ============================================================================= */
 [data-color-mode="dark"] {
-    input[type="radio"], input[type="checkbox"] {
-        accent-color: var(--ops-secondary, #3b82f6) !important;
+    .tooltip,
+    .tooltip-inner {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
     }
 
-    .o_field_radio label, .form-check-label, .custom-control-label {
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    .tooltip.bs-tooltip-top .tooltip-arrow::before {
+        border-top-color: #f1f5f9 !important;
+    }
+
+    .tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+        border-bottom-color: #f1f5f9 !important;
     }
 }
 
-/* KANBAN CARDS */
+/* =============================================================================
+   KANBAN VIEW
+   ============================================================================= */
 [data-color-mode="dark"] {
     .o_kanban_view {
-        background-color: var(--ops-bg-body, #0f172a) !important;
+        background-color: #0f172a !important;
     }
 
     .o_kanban_group {
-        background-color: var(--ops-bg-card, #1e293b) !important;
+        background-color: #1e293b !important;
+    }
+
+    .o_kanban_group_header {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
     }
 
     .o_kanban_record {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
-        border-color: var(--ops-border, #475569) !important;
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-color: #334155 !important;
     }
 
     .o_kanban_record:hover {
@@ -265,47 +666,2454 @@
     }
 }
 
-/* MODALS */
+/* =============================================================================
+   FORM INPUTS (general)
+   ============================================================================= */
 [data-color-mode="dark"] {
-    .modal-content {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
-        border-color: var(--ops-border, #475569) !important;
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="password"],
+    input[type="search"],
+    input[type="date"],
+    input[type="datetime-local"],
+    textarea,
+    select,
+    .form-control,
+    .o_input {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
     }
 
-    .modal-header {
-        background-color: var(--ops-bg-hover, #334155) !important;
-        border-color: var(--ops-border, #475569) !important;
+    input::placeholder,
+    textarea::placeholder {
+        color: #64748b !important;
     }
 
-    .modal-header .modal-title {
-        color: var(--ops-text-primary, #f1f5f9) !important;
+    input:focus,
+    textarea:focus,
+    select:focus,
+    .form-control:focus,
+    .o_input:focus {
+        background-color: #334155 !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
     }
 
-    .modal-header .btn-close {
-        filter: invert(1) !important;
+    /* Radio and checkbox */
+    input[type="radio"],
+    input[type="checkbox"] {
+        accent-color: #3b82f6 !important;
     }
 
-    .modal-body, .modal-footer {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-    }
-
-    .modal-footer {
-        border-color: var(--ops-border, #475569) !important;
+    .form-check-label,
+    .custom-control-label {
+        color: #f1f5f9 !important;
     }
 }
 
-/* STATUS BAR */
+/* =============================================================================
+   TAGS AND BADGES
+   ============================================================================= */
 [data-color-mode="dark"] {
-    .o_statusbar_status .o_arrow_button {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
-        border-color: var(--ops-border, #475569) !important;
+    .o_tag,
+    .badge {
+        background-color: rgba(59, 130, 246, 0.2) !important;
+        color: #93c5fd !important;
+        border-color: rgba(59, 130, 246, 0.4) !important;
     }
 
-    .o_statusbar_status .o_arrow_button.o_arrow_button_current,
-    .o_statusbar_status .o_arrow_button.active {
-        background-color: var(--ops-secondary, #3b82f6) !important;
+    .o_field_many2many_tags .o_tag {
+        background-color: rgba(59, 130, 246, 0.2) !important;
+        color: #93c5fd !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+    }
+}
+
+/* =============================================================================
+   FIX 1: NOTEBOOK TABS - White bar above tabs
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Notebook wrapper and container */
+    .o_notebook,
+    .o_notebook_content,
+    .o_notebook_headers,
+    .o_form_view .o_notebook,
+    .o_inner_group,
+    .o_group {
+        background-color: transparent !important;
+    }
+
+    /* The area above/around the tabs */
+    .o_notebook > .nav-tabs,
+    .o_notebook > .o_notebook_headers,
+    .o_notebook .nav-tabs {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    /* Tab pane content wrapper */
+    .o_notebook > .tab-content,
+    .o_notebook_content,
+    .tab-pane {
+        background-color: #1e293b !important;
+    }
+
+    /* Any white gaps in form view */
+    .o_form_view .o_group,
+    .o_form_view .o_inner_group,
+    .o_form_view .o_notebook_content {
+        background-color: transparent !important;
+    }
+
+    /* Table wrapper in notebook */
+    .o_notebook .o_field_x2many,
+    .o_notebook .o_list_renderer {
+        background-color: #1e293b !important;
+    }
+}
+
+/* =============================================================================
+   FIX 2: CHATTER - White background in message thread
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Main chatter container */
+    .o-mail-Chatter,
+    .o_ChatterContainer,
+    .o-mail-Chatter-content,
+    .o_Chatter {
+        background-color: #0f172a !important;
+    }
+
+    /* Thread area */
+    .o-mail-Thread,
+    .o_Thread,
+    .o-mail-Chatter .o-mail-Thread,
+    .o_mail_thread {
+        background-color: #0f172a !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Individual messages */
+    .o-mail-Message,
+    .o_Message,
+    .o-mail-Message-core,
+    .o-mail-Message-content {
+        background-color: transparent !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Message sidebar with avatar */
+    .o-mail-Message-sidebar {
+        background-color: transparent !important;
+    }
+
+    /* Tracking value changes */
+    .o-mail-Message-tracking,
+    .o_Message_tracking,
+    .o-mail-MessageInThread {
+        background-color: transparent !important;
+        color: #94a3b8 !important;
+    }
+
+    /* Chatter scrollable area */
+    .o-mail-Chatter-scrollable,
+    .o-mail-Thread-content {
+        background-color: #0f172a !important;
+    }
+
+    /* Followers section */
+    .o-mail-Followers,
+    .o_Followers {
+        background-color: transparent !important;
+    }
+
+    /* Activity section */
+    .o-mail-Activity,
+    .o_Activity {
+        background-color: transparent !important;
+    }
+
+    /* Composer area */
+    .o-mail-Composer-coreMain,
+    .o-mail-Composer-textInput {
+        background-color: #1e293b !important;
+    }
+}
+
+/* =============================================================================
+   FIX 3: BREADCRUMB - White background on breadcrumb elements
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Breadcrumb container */
+    .o_breadcrumb,
+    .breadcrumb,
+    .o_control_panel .o_breadcrumb {
+        background-color: transparent !important;
+    }
+
+    /* Breadcrumb items */
+    .o_breadcrumb .breadcrumb-item,
+    .breadcrumb-item,
+    .o_breadcrumb_item {
+        background-color: transparent !important;
+        color: #94a3b8 !important;
+    }
+
+    /* Breadcrumb links */
+    .o_breadcrumb a,
+    .breadcrumb-item a,
+    .o_back_button {
+        background-color: transparent !important;
+        color: #94a3b8 !important;
+    }
+
+    .o_breadcrumb a:hover,
+    .breadcrumb-item a:hover {
+        color: #f1f5f9 !important;
+    }
+
+    /* Active breadcrumb (current page) */
+    .o_breadcrumb .breadcrumb-item.active,
+    .breadcrumb-item.active,
+    .o_breadcrumb .active {
+        background-color: transparent !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Last child styling */
+    .o_breadcrumb .o_last_breadcrumb_item,
+    .o_breadcrumb .breadcrumb-item:last-child {
+        background-color: transparent !important;
+    }
+
+    /* Editable breadcrumb input */
+    .o_breadcrumb input,
+    .o_breadcrumb .o_input {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    /* Control panel header area */
+    .o_control_panel_main,
+    .o_control_panel_breadcrumbs {
+        background-color: transparent !important;
+    }
+}
+
+/* =============================================================================
+   ADDITIONAL: Form view general cleanup
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Form view content areas */
+    .o_form_view,
+    .o_form_renderer {
+        background-color: #0f172a !important;
+    }
+
+    /* Inner content area */
+    .o_form_view .o_content,
+    .o_action .o_content {
+        background-color: #0f172a !important;
+    }
+
+    /* Any remaining white gaps */
+    .o_form_view > div,
+    .o_form_sheet_bg > div {
+        background-color: inherit !important;
+    }
+}
+
+/* =============================================================================
+   FIX 4: X2MANY TABLE ALIGNMENT - Table shifted left issue
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Fix table container alignment */
+    .o_field_x2many .o_list_renderer,
+    .o_field_one2many .o_list_renderer,
+    .o_field_many2many .o_list_renderer {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Fix table element alignment */
+    .o_field_x2many .o_list_table,
+    .o_field_one2many .o_list_table,
+    .o_field_many2many .o_list_table {
+        width: 100% !important;
+        margin-left: 0 !important;
+        table-layout: auto !important;
+    }
+
+    /* Fix notebook content containing x2many */
+    .o_notebook .tab-pane .o_field_x2many,
+    .tab-content .o_field_x2many {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Fix form sheet inner groups alignment */
+    .o_form_sheet .o_group,
+    .o_form_sheet .o_inner_group {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+    }
+}
+
+/* Light mode also needs alignment fix */
+.o_field_x2many .o_list_table,
+.o_field_one2many .o_list_table {
+    width: 100% !important;
+    margin-left: 0 !important;
+}
+
+/* =============================================================================
+   FIX 5: TOTALS ALIGNMENT - Right-align totals section
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Totals footer - right align */
+    .oe_subtotal_footer {
+        text-align: right !important;
+        float: right !important;
+        width: auto !important;
+        min-width: 300px !important;
+    }
+
+    .oe_subtotal_footer td,
+    .oe_subtotal_footer th {
+        text-align: right !important;
+        padding-right: 12px !important;
+    }
+
+    /* Amount values right-aligned */
+    .oe_subtotal_footer .oe_right,
+    .oe_subtotal_footer .o_price_total,
+    .oe_subtotal_footer td:last-child {
+        text-align: right !important;
+    }
+
+    /* Order total styling */
+    .o_so_total,
+    .o_order_total,
+    .o_total_row {
+        text-align: right !important;
+    }
+
+    /* Ensure the totals wrapper is right-aligned */
+    .o_form_sheet .oe_subtotal_footer_separator,
+    .o_sale_order .oe_subtotal_footer {
+        margin-left: auto !important;
+        margin-right: 0 !important;
+    }
+}
+
+/* Light mode also needs totals alignment */
+.oe_subtotal_footer {
+    text-align: right !important;
+    float: right !important;
+}
+
+/* =============================================================================
+   FIX 6: TAB SELECTION INDICATOR - Bottom border on active tab
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Tab navigation container */
+    .o_notebook .nav-tabs,
+    .nav-tabs {
+        border-bottom: 1px solid #334155 !important;
+    }
+
+    /* Active tab styling with selection indicator */
+    .o_notebook .nav-tabs .nav-link.active,
+    .nav-tabs .nav-link.active,
+    .o_notebook_headers .nav-link.active {
+        background-color: #1e293b !important;
+        color: #3b82f6 !important;
+        border: 1px solid #334155 !important;
+        border-bottom: 3px solid #3b82f6 !important;
+        margin-bottom: -1px !important;
+        position: relative !important;
+    }
+
+    /* Non-active tabs */
+    .o_notebook .nav-tabs .nav-link:not(.active),
+    .nav-tabs .nav-link:not(.active) {
+        border-bottom: 1px solid transparent !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Hover state for non-active tabs */
+    .o_notebook .nav-tabs .nav-link:not(.active):hover,
+    .nav-tabs .nav-link:not(.active):hover {
+        border-bottom: 2px solid #475569 !important;
+    }
+}
+
+/* Light mode tab indicator */
+.o_notebook .nav-tabs .nav-link.active,
+.nav-tabs .nav-link.active {
+    border-bottom: 3px solid #3b82f6 !important;
+    margin-bottom: -1px !important;
+}
+
+/* =============================================================================
+   FIX 7: CHATTER HEADER & CONTAINER - Specific class targeting
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Chatter top bar (sticky header with buttons) */
+    .o-mail-Chatter-top,
+    .o-mail-Chatter-top.d-print-none,
+    .o-mail-Chatter-top.position-sticky,
+    div.o-mail-Chatter-top {
+        background-color: #1e293b !important;
+        border-bottom: 1px solid #334155 !important;
+    }
+
+    /* Chatter container wrapper */
+    .o-mail-ChatterContainer,
+    .o-mail-ChatterContainer.o-mail-Form-chatter,
+    .o-mail-Form-chatter,
+    div.o-mail-ChatterContainer {
+        background-color: #0f172a !important;
+    }
+
+    /* Chatter buttons in header */
+    .o-mail-Chatter-top .btn,
+    .o-mail-Chatter-top button {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    .o-mail-Chatter-top .btn:hover,
+    .o-mail-Chatter-top button:hover {
+        background-color: #475569 !important;
+    }
+
+    /* Chatter button icons */
+    .o-mail-Chatter-top .fa,
+    .o-mail-Chatter-top .oi {
+        color: #94a3b8 !important;
+    }
+
+    /* Followers/activity count badges */
+    .o-mail-Chatter-top .badge,
+    .o-mail-Chatter-topbar .badge {
+        background-color: #3b82f6 !important;
         color: #ffffff !important;
+    }
+
+    /* Chatter separator/divider */
+    .o-mail-Chatter hr,
+    .o-mail-Chatter-content hr {
+        border-color: #334155 !important;
+    }
+
+    /* Log note vs Send message toggle */
+    .o-mail-Chatter-sendMessage,
+    .o-mail-Chatter-logNote {
+        background-color: transparent !important;
+    }
+
+    /* Suggested recipients */
+    .o-mail-SuggestedRecipient,
+    .o-mail-Chatter .o_suggested_recipients {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Full width chatter in form */
+    .o_form_view .o-mail-Form-chatter {
+        background-color: #0f172a !important;
+        border-left: 1px solid #334155 !important;
+    }
+}
+
+/* =============================================================================
+   FIX 8: MAIN O_CONTENT - Dark mode for main content area
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Main content wrapper */
+    main.o_content,
+    .o_content,
+    .o_action_manager .o_content {
+        background-color: #0f172a !important;
+    }
+
+    /* Kanban view within content */
+    .o_content .o_kanban_view,
+    .o_content .o_kanban_renderer {
+        background-color: #0f172a !important;
+    }
+
+    /* Kanban ungrouped view */
+    .o_kanban_ungrouped,
+    .o_kanban_renderer.o_kanban_ungrouped {
+        background-color: #0f172a !important;
+    }
+
+    /* Kanban records in ungrouped view */
+    .o_kanban_ungrouped .o_kanban_record {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    /* Kanban ghost records (placeholders) */
+    .o_kanban_ghost,
+    .o_kanban_record.o_kanban_ghost {
+        background-color: transparent !important;
+        border: none !important;
+    }
+
+    /* Content scrollable area */
+    .o_content_scrollable,
+    .o_action .o_content {
+        background-color: #0f172a !important;
+    }
+
+    /* Dashboard and reporting views */
+    .o_content .o_dashboard,
+    .o_content .o_graph_renderer,
+    .o_content .o_pivot_renderer {
+        background-color: #0f172a !important;
+    }
+}
+
+/* =============================================================================
+   FIX 9: SEARCHVIEW FACET - Filter tags in search bar
+   ============================================================================= */
+
+/* ----- LIGHT MODE ----- */
+.o_searchview_facet,
+div.o_searchview_facet {
+    background-color: #3b82f6 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+    padding: 2px 8px !important;
+    margin: 2px 4px !important;
+    transition: all 0.15s ease !important;
+}
+
+.o_searchview_facet:hover,
+div.o_searchview_facet:hover {
+    background-color: #2563eb !important;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Facet label (field name) */
+.o_searchview_facet .o_facet_with_domain,
+.o_searchview_facet .o_facet_value,
+.o_searchview_facet .o_facet_values,
+.o_searchview_facet span {
+    color: #ffffff !important;
+}
+
+/* Remove button */
+.o_searchview_facet .o_facet_remove,
+.o_searchview_facet button {
+    color: rgba(255, 255, 255, 0.85) !important;
+    background: transparent !important;
+    border: none !important;
+    opacity: 1 !important;
+}
+
+.o_searchview_facet .o_facet_remove:hover,
+.o_searchview_facet button:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+}
+
+/* ----- DARK MODE ----- */
+[data-color-mode="dark"] {
+    .o_searchview_facet,
+    div.o_searchview_facet {
+        background-color: #3b82f6 !important;
+        border: none !important;
+        color: #ffffff !important;
+    }
+
+    .o_searchview_facet:hover,
+    div.o_searchview_facet:hover {
+        background-color: #60a5fa !important;
+        box-shadow: 0 2px 6px rgba(96, 165, 250, 0.4) !important;
+    }
+
+    /* Facet text */
+    .o_searchview_facet .o_facet_with_domain,
+    .o_searchview_facet .o_facet_value,
+    .o_searchview_facet .o_facet_values,
+    .o_searchview_facet span {
+        color: #ffffff !important;
+    }
+
+    /* Remove button in dark mode */
+    .o_searchview_facet .o_facet_remove,
+    .o_searchview_facet button {
+        color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    .o_searchview_facet .o_facet_remove:hover,
+    .o_searchview_facet button:hover {
+        color: #ffffff !important;
+        background-color: rgba(255, 255, 255, 0.25) !important;
+    }
+
+    /* Search bar container in dark mode */
+    .o_searchview,
+    .o_cp_searchview {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    .o_searchview_input_container,
+    .o_searchview_input {
+        background-color: transparent !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o_searchview_input::placeholder {
+        color: #64748b !important;
+    }
+
+    /* Favorites dropdown button */
+    .o_searchview .o_dropdown_toggler,
+    .o_favorites_menu_button {
+        background-color: transparent !important;
+        color: #94a3b8 !important;
+    }
+
+    .o_searchview .o_dropdown_toggler:hover,
+    .o_favorites_menu_button:hover {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+}
+
+/* =============================================================================
+   FIX 10: DISCUSS / MAIL MODULE - Complete dark mode
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Main Discuss container */
+    .o-mail-Discuss,
+    .o_mail_discuss,
+    div.o-mail-Discuss {
+        background-color: #0f172a !important;
+    }
+
+    /* Discuss Sidebar */
+    .o-mail-DiscussSidebar,
+    .o-mail-DiscussSidebar-resizablePanelContainer,
+    .o_DiscussSidebar {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    /* Sidebar categories (Channels, Direct Messages, etc.) */
+    .o-mail-DiscussSidebarCategory,
+    .o-mail-DiscussSidebarCategory-header {
+        background-color: transparent !important;
+        color: #94a3b8 !important;
+    }
+
+    /* Sidebar items (individual channels/conversations) */
+    .o-mail-DiscussSidebarChannel,
+    .o-mail-DiscussSidebarItem {
+        background-color: transparent !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o-mail-DiscussSidebarChannel:hover,
+    .o-mail-DiscussSidebarItem:hover {
+        background-color: #334155 !important;
+    }
+
+    /* Active/selected channel */
+    .o-mail-DiscussSidebarChannel.o-active,
+    .o-mail-DiscussSidebarItem.o-active,
+    .o-mail-DiscussSidebarChannel[data-active="true"] {
+        background-color: rgba(59, 130, 246, 0.2) !important;
+        border-left: 3px solid #3b82f6 !important;
+    }
+
+    /* Starred messages section */
+    .o-mail-DiscussSidebar .fa-star,
+    .o-mail-DiscussSidebar .oi-star {
+        color: #fbbf24 !important;
+    }
+
+    /* Search in sidebar */
+    .o-mail-DiscussSidebar input,
+    .o-mail-DiscussSidebar .o_searchview {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    /* Discuss Content Area */
+    .o-mail-DiscussContent,
+    .o-mail-DiscussContent-main,
+    .o-mail-DiscussContent-core {
+        background-color: #0f172a !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Discuss Content Header */
+    .o-mail-DiscussContent-header {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* "No conversation selected" message */
+    .o-mail-DiscussContent-core .d-flex.justify-content-center,
+    .o-mail-Discuss .text-muted {
+        color: #64748b !important;
+    }
+
+    /* Thread/Message area in Discuss */
+    .o-mail-Thread,
+    .o-mail-Thread-content {
+        background-color: #0f172a !important;
+    }
+
+    /* Individual messages */
+    .o-mail-Message {
+        background-color: transparent !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o-mail-Message:hover {
+        background-color: rgba(51, 65, 85, 0.3) !important;
+    }
+
+    /* Message author name */
+    .o-mail-Message-author,
+    .o-mail-Message-authorName {
+        color: #93c5fd !important;
+    }
+
+    /* Message date/time */
+    .o-mail-Message-date,
+    .o-mail-Message-time {
+        color: #64748b !important;
+    }
+
+    /* Message body */
+    .o-mail-Message-body,
+    .o-mail-Message-content {
+        color: #f1f5f9 !important;
+    }
+
+    /* Composer (message input) */
+    .o-mail-Composer,
+    .o-mail-Composer-input,
+    .o-mail-Composer-coreMain {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    .o-mail-Composer textarea,
+    .o-mail-Composer input {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    .o-mail-Composer textarea::placeholder {
+        color: #64748b !important;
+    }
+
+    /* Composer buttons */
+    .o-mail-Composer-buttons .btn,
+    .o-mail-Composer button {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    .o-mail-Composer-buttons .btn:hover,
+    .o-mail-Composer button:hover {
+        background-color: #475569 !important;
+    }
+
+    /* Send button */
+    .o-mail-Composer .btn-primary,
+    .o-mail-Composer-send {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    /* Emoji picker */
+    .o-mail-EmojiPicker,
+    .o_emoji_picker {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    /* Attachment preview */
+    .o-mail-AttachmentCard,
+    .o-mail-Attachment {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Channel settings/info panel */
+    .o-mail-ChannelMemberList,
+    .o-mail-ChannelInvitationForm {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Notification/Activity badges */
+    .o-mail-DiscussSidebar .badge,
+    .o-mail-DiscussSidebarChannel .badge {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+}
+
+/* =============================================================================
+   FIX 11: LIST FOOTER - Complete row styling (no right-side gap)
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* List footer - full width styling */
+    .o_list_footer,
+    tfoot.o_list_footer,
+    .o_list_table tfoot {
+        background-color: #334155 !important;
+    }
+
+    /* All cells in footer must have same background */
+    .o_list_footer tr,
+    .o_list_footer tr td,
+    .o_list_table tfoot tr,
+    .o_list_table tfoot td,
+    tfoot.o_list_footer td {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    /* Empty cells on the right side */
+    .o_list_footer td.w-print-0,
+    .o_list_footer td.p-print-0,
+    .o_list_footer td:empty,
+    .o_list_table tfoot td.w-print-0,
+    .o_list_table tfoot td:last-child {
+        background-color: #334155 !important;
+    }
+
+    /* Number cells in footer (totals) */
+    .o_list_footer td.o_list_number,
+    .o_list_table tfoot td.o_list_number {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        font-weight: 600 !important;
+    }
+
+    /* Ensure the footer row spans full width */
+    .o_list_footer tr {
+        width: 100% !important;
+    }
+
+    /* Fix for the table container to not clip footer */
+    .o_list_renderer,
+    .o_list_view {
+        overflow: visible !important;
+    }
+
+    /* Ensure footer stays connected to table */
+    .o_list_table {
+        border-collapse: collapse !important;
+    }
+
+    .o_list_table tfoot tr td {
+        border-top: 1px solid #475569 !important;
+    }
+}
+
+/* Light mode footer styling for consistency */
+.o_list_footer,
+tfoot.o_list_footer,
+.o_list_table tfoot {
+    background-color: #f1f5f9 !important;
+}
+
+.o_list_footer tr td,
+.o_list_table tfoot td,
+tfoot.o_list_footer td {
+    background-color: #f1f5f9 !important;
+}
+
+/* =============================================================================
+   FIX 12: NOTIFICATION TOASTS & ALERTS - Dark mode styling
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Notification container */
+    .o_notification_manager,
+    .o_notification_container {
+        /* Keep container transparent */
+    }
+
+    /* Individual notifications/toasts */
+    .o_notification,
+    .o_notification_body,
+    .toast,
+    .o_toast {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* Success notification */
+    .o_notification.o_notification_success,
+    .o_notification.border-success,
+    .toast.bg-success {
+        background-color: #166534 !important;
+        border-color: #22c55e !important;
+        color: #ffffff !important;
+    }
+
+    /* Info notification */
+    .o_notification.o_notification_info,
+    .o_notification.border-info,
+    .toast.bg-info {
+        background-color: #1e40af !important;
+        border-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    /* Warning notification */
+    .o_notification.o_notification_warning,
+    .o_notification.border-warning,
+    .toast.bg-warning {
+        background-color: #854d0e !important;
+        border-color: #eab308 !important;
+        color: #ffffff !important;
+    }
+
+    /* Danger/Error notification */
+    .o_notification.o_notification_danger,
+    .o_notification.border-danger,
+    .toast.bg-danger,
+    .o_notification_error {
+        background-color: #991b1b !important;
+        border-color: #ef4444 !important;
+        color: #ffffff !important;
+    }
+
+    /* Notification title */
+    .o_notification_title,
+    .toast-header {
+        background-color: transparent !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    /* Notification content text */
+    .o_notification_content,
+    .toast-body {
+        color: #f1f5f9 !important;
+    }
+
+    /* Close button */
+    .o_notification .btn-close,
+    .o_notification .o_notification_close,
+    .toast .btn-close {
+        filter: invert(1) !important;
+        opacity: 0.8 !important;
+    }
+
+    .o_notification .btn-close:hover,
+    .toast .btn-close:hover {
+        opacity: 1 !important;
+    }
+
+    /* Connection restored / status notifications */
+    .o_notification[class*="connection"],
+    .o_notification_bar {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border: 1px solid #475569 !important;
+    }
+}
+
+/* =============================================================================
+   FIX 13: ERROR MODALS & DIALOGS - Dark mode styling
+   ============================================================================= */
+[data-color-mode="dark"] {
+    /* Error dialog */
+    .o_error_dialog,
+    .o_technical_modal,
+    .modal-content.bg-danger,
+    .modal.o_error_dialog .modal-content {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border: 1px solid #ef4444 !important;
+    }
+
+    /* Error modal header */
+    .o_error_dialog .modal-header,
+    .o_technical_modal .modal-header {
+        background-color: #991b1b !important;
+        color: #ffffff !important;
+        border-bottom: 1px solid #dc2626 !important;
+    }
+
+    /* Error modal body */
+    .o_error_dialog .modal-body,
+    .o_technical_modal .modal-body {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Error traceback/details */
+    .o_error_dialog pre,
+    .o_error_dialog code,
+    .o_technical_modal pre,
+    .o_error_detail {
+        background-color: #0f172a !important;
+        color: #fca5a5 !important;
+        border-color: #475569 !important;
+        padding: 12px !important;
+        border-radius: 6px !important;
+    }
+
+    /* Warning dialogs */
+    .o_warning_dialog .modal-header,
+    .modal.alert-warning .modal-header {
+        background-color: #854d0e !important;
+        color: #ffffff !important;
+    }
+
+    /* Confirmation dialogs */
+    .o_dialog,
+    .modal-dialog .modal-content {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Alert boxes inside modals */
+    .modal .alert,
+    .modal-body .alert {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    .modal .alert-danger,
+    .modal-body .alert-danger {
+        background-color: rgba(239, 68, 68, 0.2) !important;
+        border-color: #ef4444 !important;
+        color: #fca5a5 !important;
+    }
+
+    .modal .alert-warning,
+    .modal-body .alert-warning {
+        background-color: rgba(234, 179, 8, 0.2) !important;
+        border-color: #eab308 !important;
+        color: #fde047 !important;
+    }
+
+    .modal .alert-success,
+    .modal-body .alert-success {
+        background-color: rgba(34, 197, 94, 0.2) !important;
+        border-color: #22c55e !important;
+        color: #86efac !important;
+    }
+
+    .modal .alert-info,
+    .modal-body .alert-info {
+        background-color: rgba(59, 130, 246, 0.2) !important;
+        border-color: #3b82f6 !important;
+        color: #93c5fd !important;
+    }
+}
+
+/* =============================================================================
+   FIX 14: CHATTER COMPOSER TOOLBAR - Icons and button styling
+   ============================================================================= */
+
+/* Kill Odoo purple globally - ensure our blue is used */
+:root {
+    --o-brand-odoo: #3b82f6 !important;
+    --o-brand-primary: #3b82f6 !important;
+    --primary: #3b82f6 !important;
+}
+
+[data-color-mode="dark"] {
+    /* Composer toolbar container */
+    .o-mail-Composer-toolbarButtons,
+    .o-mail-Composer-toolbar,
+    .o-mail-Composer-actions {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    /* Toolbar buttons */
+    .o-mail-Composer-toolbarButtons button,
+    .o-mail-Composer-toolbar button,
+    .o-mail-Composer-actions button,
+    .o-mail-Composer button.btn {
+        background-color: transparent !important;
+        border: 1px solid #475569 !important;
+        color: #94a3b8 !important;
+        border-radius: 6px !important;
+    }
+
+    .o-mail-Composer-toolbarButtons button:hover,
+    .o-mail-Composer-toolbar button:hover,
+    .o-mail-Composer-actions button:hover {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #3b82f6 !important;
+    }
+
+    /* Active/selected toolbar button - replace purple with blue */
+    .o-mail-Composer-toolbarButtons button.active,
+    .o-mail-Composer-toolbarButtons button[aria-pressed="true"],
+    .o-mail-Composer-toolbarButtons button.o-active,
+    .o-mail-Composer-toolbar button.active,
+    .o-mail-Composer button.btn-primary,
+    .o-mail-Composer button.active {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    /* Icons inside composer buttons */
+    .o-mail-Composer-toolbarButtons button i,
+    .o-mail-Composer-toolbarButtons button .fa,
+    .o-mail-Composer-toolbarButtons button .oi,
+    .o-mail-Composer-toolbar button i,
+    .o-mail-Composer button i {
+        color: inherit !important;
+        font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", FontAwesome !important;
+    }
+
+    /* Emoji button */
+    .o-mail-Composer-emoji,
+    .o-mail-Composer button[title*="emoji"],
+    .o-mail-Composer button[aria-label*="emoji"] {
+        background-color: transparent !important;
+    }
+
+    /* Attachment button */
+    .o-mail-Composer-attachment,
+    .o-mail-Composer button[title*="attach"],
+    .o-mail-Composer button[aria-label*="attach"] {
+        background-color: transparent !important;
+    }
+
+    /* Full editor toggle */
+    .o-mail-Composer-fullComposer,
+    .o-mail-Composer button[title*="full"],
+    .o-mail-Composer button[aria-label*="expand"] {
+        background-color: transparent !important;
+    }
+
+    /* Text input area in composer */
+    .o-mail-Composer-input,
+    .o-mail-Composer-textInput,
+    .o-mail-Composer .o_input,
+    .o-mail-Composer textarea {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    .o-mail-Composer-input::placeholder,
+    .o-mail-Composer textarea::placeholder {
+        color: #64748b !important;
+    }
+
+    /* Focus state */
+    .o-mail-Composer-input:focus,
+    .o-mail-Composer textarea:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
+    }
+
+    /* Command suggestions dropdown */
+    .o-mail-Composer-suggestionList,
+    .o-mail-Composer .o-autocomplete-dropdown {
+        background-color: #1e293b !important;
+        border-color: #475569 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .o-mail-Composer-suggestionList-item,
+    .o-mail-Composer .o-autocomplete-dropdown-item {
+        color: #f1f5f9 !important;
+    }
+
+    .o-mail-Composer-suggestionList-item:hover,
+    .o-mail-Composer .o-autocomplete-dropdown-item:hover {
+        background-color: #334155 !important;
+    }
+}
+
+/* Light mode - also fix purple color */
+.o-mail-Composer-toolbarButtons button.active,
+.o-mail-Composer-toolbarButtons button[aria-pressed="true"],
+.o-mail-Composer button.btn-primary {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+/* Global purple override for any remaining Odoo brand colors */
+.btn-primary,
+.bg-primary {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+}
+
+.text-primary {
+    color: #3b82f6 !important;
+}
+
+.border-primary {
+    border-color: #3b82f6 !important;
+}
+
+/* =============================================================================
+   FIX 15: CHATTER POSITION TOGGLE - Right/Bottom positioning
+   ============================================================================= */
+
+/* Default: Chatter at BOTTOM (when NOT ops-chatter-right-enabled) */
+html:not(.ops-chatter-right-enabled) .o_form_view {
+    /* Form content takes full width, chatter below */
+    .o_form_sheet_bg {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+    }
+
+    .o-mail-Form-chatter,
+    .o-mail-ChatterContainer {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        border-left: none !important;
+        border-top: 1px solid var(--ops-border, #e2e8f0) !important;
+        margin-top: 16px !important;
+    }
+}
+
+/* When chatter is RIGHT (side panel) */
+html.ops-chatter-right-enabled .o_form_view,
+.o_form_view.ops-chatter-right {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    flex-direction: row !important;
+
+    /* Form content on the left */
+    .o_form_sheet_bg {
+        flex: 1 1 auto !important;
+        max-width: calc(100% - 400px) !important;
+        min-width: 50% !important;
+    }
+
+    /* Chatter on the right as side panel */
+    .o-mail-Form-chatter,
+    .o-mail-ChatterContainer {
+        flex: 0 0 400px !important;
+        max-width: 400px !important;
+        width: 400px !important;
+        min-height: 100% !important;
+        border-left: 1px solid var(--ops-border, #e2e8f0) !important;
+        border-top: none !important;
+        margin-top: 0 !important;
+        position: sticky !important;
+        top: 0 !important;
+        align-self: flex-start !important;
+        max-height: calc(100vh - 100px) !important;
+        overflow-y: auto !important;
+    }
+}
+
+/* Dark mode adjustments for chatter position */
+[data-color-mode="dark"] {
+    html:not(.ops-chatter-right-enabled) .o_form_view {
+        .o-mail-Form-chatter,
+        .o-mail-ChatterContainer {
+            border-top-color: #334155 !important;
+        }
+    }
+
+    html.ops-chatter-right-enabled .o_form_view,
+    .o_form_view.ops-chatter-right {
+        .o-mail-Form-chatter,
+        .o-mail-ChatterContainer {
+            border-left-color: #334155 !important;
+        }
+    }
+}
+
+/* Responsive: Force bottom on small screens */
+@media (max-width: 1200px) {
+    html.ops-chatter-right-enabled .o_form_view,
+    .o_form_view.ops-chatter-right {
+        flex-wrap: wrap !important;
+
+        .o_form_sheet_bg {
+            flex: 1 1 100% !important;
+            max-width: 100% !important;
+        }
+
+        .o-mail-Form-chatter,
+        .o-mail-ChatterContainer {
+            flex: 1 1 100% !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            border-left: none !important;
+            border-top: 1px solid var(--ops-border, #334155) !important;
+            margin-top: 16px !important;
+            position: relative !important;
+            max-height: none !important;
+        }
+    }
+}
+
+/* =============================================================================
+   FIX 16: NOTEBOOK TABLE ALIGNMENT - Match table width to notebook headers
+   ============================================================================= */
+
+/* Notebook container consistency */
+.o_notebook {
+    width: 100% !important;
+}
+
+/* Notebook headers container */
+.o_notebook_headers {
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+/* Tab content area - match header width */
+.o_notebook_content,
+.o_notebook .tab-content {
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+/* Tab pane inside content */
+.o_notebook .tab-pane {
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+/* X2many field inside notebook - full width */
+.o_notebook .o_field_x2many,
+.o_notebook .o_field_one2many,
+.o_notebook .o_field_many2many {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* List renderer inside notebook */
+.o_notebook .o_list_renderer {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+/* Table inside notebook - match container width exactly */
+.o_notebook .o_list_table {
+    width: 100% !important;
+    margin: 0 !important;
+    table-layout: fixed !important;
+}
+
+/* Ensure header row of table aligns with notebook tabs */
+.o_notebook .o_list_table thead {
+    width: 100% !important;
+}
+
+/* Form sheet notebook alignment */
+.o_form_sheet .o_notebook {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Inner group containing notebook */
+.o_form_sheet .o_inner_group .o_notebook,
+.o_form_sheet .o_group .o_notebook {
+    width: 100% !important;
+}
+
+/* Horizontal flex for notebook in form */
+.o_notebook.d-flex {
+    width: 100% !important;
+}
+
+/* Dark mode specific adjustments */
+[data-color-mode="dark"] {
+    .o_notebook {
+        border-color: #334155 !important;
+    }
+
+    .o_notebook_headers {
+        border-bottom-color: #334155 !important;
+    }
+
+    .o_notebook_content {
+        background-color: transparent !important;
+    }
+
+    /* Ensure table header matches notebook tab styling */
+    .o_notebook .o_list_table thead th {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+    }
+}
+
+/* =============================================================================
+   FIX 17: STATUS BAR WIDGET - Remove Odoo purple, use OPS theme colors
+   ============================================================================= */
+
+/* ----- LIGHT MODE ----- */
+.o_field_statusbar,
+.o_statusbar_status {
+    /* Container styling */
+}
+
+/* Status bar arrow buttons - default (not current, not done) */
+.o_statusbar_status .o_arrow_button,
+.o_field_statusbar .o_arrow_button {
+    background-color: #e2e8f0 !important;
+    color: #64748b !important;
+    border-color: #cbd5e1 !important;
+}
+
+.o_statusbar_status .o_arrow_button::before,
+.o_statusbar_status .o_arrow_button::after {
+    border-left-color: #e2e8f0 !important;
+}
+
+/* Hover state */
+.o_statusbar_status .o_arrow_button:hover,
+.o_field_statusbar .o_arrow_button:hover {
+    background-color: #cbd5e1 !important;
+    color: #475569 !important;
+}
+
+/* Current/Active state - use our blue */
+.o_statusbar_status .o_arrow_button.o_arrow_button_current,
+.o_statusbar_status .o_arrow_button.active,
+.o_statusbar_status .o_arrow_button[aria-checked="true"],
+.o_field_statusbar .o_arrow_button.o_arrow_button_current {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+}
+
+.o_statusbar_status .o_arrow_button.o_arrow_button_current::before,
+.o_statusbar_status .o_arrow_button.o_arrow_button_current::after,
+.o_statusbar_status .o_arrow_button.active::before,
+.o_statusbar_status .o_arrow_button.active::after {
+    border-left-color: #3b82f6 !important;
+}
+
+/* Done/Completed states (stages before current) */
+.o_statusbar_status .o_arrow_button.disabled:not(.o_arrow_button_current),
+.o_statusbar_status .o_arrow_button[disabled]:not(.o_arrow_button_current) {
+    background-color: #dbeafe !important;
+    color: #3b82f6 !important;
+    border-color: #93c5fd !important;
+}
+
+.o_statusbar_status .o_arrow_button.disabled::before,
+.o_statusbar_status .o_arrow_button.disabled::after {
+    border-left-color: #dbeafe !important;
+}
+
+/* Clickable future states */
+.o_statusbar_status .o_arrow_button:not(.disabled):not(.o_arrow_button_current) {
+    cursor: pointer !important;
+}
+
+/* Status bar dropdown (if any) */
+.o_statusbar_status .dropdown-menu,
+.o_statusbar_status_more {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.o_statusbar_status .dropdown-item {
+    color: #334155 !important;
+}
+
+.o_statusbar_status .dropdown-item:hover {
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
+}
+
+/* ----- DARK MODE ----- */
+[data-color-mode="dark"] {
+    /* Status bar container */
+    .o_field_statusbar,
+    .o_statusbar_status {
+        background-color: transparent !important;
+    }
+
+    /* Default state (not current, not done) */
+    .o_statusbar_status .o_arrow_button,
+    .o_field_statusbar .o_arrow_button {
+        background-color: #334155 !important;
+        color: #94a3b8 !important;
+        border-color: #475569 !important;
+    }
+
+    .o_statusbar_status .o_arrow_button::before,
+    .o_statusbar_status .o_arrow_button::after {
+        border-left-color: #334155 !important;
+    }
+
+    /* Hover state */
+    .o_statusbar_status .o_arrow_button:hover,
+    .o_field_statusbar .o_arrow_button:hover {
+        background-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o_statusbar_status .o_arrow_button:hover::before,
+    .o_statusbar_status .o_arrow_button:hover::after {
+        border-left-color: #475569 !important;
+    }
+
+    /* Current/Active state - our blue */
+    .o_statusbar_status .o_arrow_button.o_arrow_button_current,
+    .o_statusbar_status .o_arrow_button.active,
+    .o_statusbar_status .o_arrow_button[aria-checked="true"],
+    .o_field_statusbar .o_arrow_button.o_arrow_button_current {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+        border-color: #3b82f6 !important;
+    }
+
+    .o_statusbar_status .o_arrow_button.o_arrow_button_current::before,
+    .o_statusbar_status .o_arrow_button.o_arrow_button_current::after,
+    .o_statusbar_status .o_arrow_button.active::before,
+    .o_statusbar_status .o_arrow_button.active::after {
+        border-left-color: #3b82f6 !important;
+    }
+
+    /* Done/Completed states */
+    .o_statusbar_status .o_arrow_button.disabled:not(.o_arrow_button_current),
+    .o_statusbar_status .o_arrow_button[disabled]:not(.o_arrow_button_current) {
+        background-color: rgba(59, 130, 246, 0.2) !important;
+        color: #93c5fd !important;
+        border-color: rgba(59, 130, 246, 0.4) !important;
+    }
+
+    .o_statusbar_status .o_arrow_button.disabled::before,
+    .o_statusbar_status .o_arrow_button.disabled::after {
+        border-left-color: rgba(59, 130, 246, 0.2) !important;
+    }
+
+    /* Status bar dropdown */
+    .o_statusbar_status .dropdown-menu,
+    .o_statusbar_status_more {
+        background-color: #1e293b !important;
+        border-color: #475569 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .o_statusbar_status .dropdown-item {
+        color: #f1f5f9 !important;
+    }
+
+    .o_statusbar_status .dropdown-item:hover {
+        background-color: #334155 !important;
+        color: #ffffff !important;
+    }
+
+    /* More button (...) */
+    .o_statusbar_status_more_button,
+    .o_statusbar_status .o_arrow_button_more {
+        background-color: #334155 !important;
+        color: #94a3b8 !important;
+        border-color: #475569 !important;
+    }
+
+    .o_statusbar_status_more_button:hover,
+    .o_statusbar_status .o_arrow_button_more:hover {
+        background-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    // =========================================================================
+    // FIX 18: Search Panel Sidebar - Dark Mode
+    // =========================================================================
+    // The search panel on the left side of list/kanban views
+    // =========================================================================
+
+    /* Main search panel container */
+    .o_search_panel,
+    .o_search_panel_sidebar,
+    .o_search_panel.bg-view,
+    div.bg-view.h-100.o_search_panel_sidebar {
+        background-color: #1e293b !important;
+        border-right: 1px solid #334155 !important;
+    }
+
+    /* Search panel header */
+    .o_search_panel .o_search_panel_header,
+    .o_search_panel_section_header {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-bottom: 1px solid #334155 !important;
+    }
+
+    /* Search panel section titles */
+    .o_search_panel .o_search_panel_label,
+    .o_search_panel .o_search_panel_label_title,
+    .o_search_panel_section .o_search_panel_section_header {
+        color: #94a3b8 !important;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+
+    /* Category/Filter items */
+    .o_search_panel .o_search_panel_category_value,
+    .o_search_panel .o_search_panel_filter_value,
+    .o_search_panel_category_value,
+    .o_search_panel_filter_value {
+        color: #e2e8f0 !important;
+        background-color: transparent !important;
+        border-radius: 4px;
+        margin: 2px 4px;
+        padding: 6px 8px !important;
+        transition: background-color 0.15s ease;
+    }
+
+    /* Hover state */
+    .o_search_panel .o_search_panel_category_value:hover,
+    .o_search_panel .o_search_panel_filter_value:hover,
+    .o_search_panel_category_value:hover,
+    .o_search_panel_filter_value:hover {
+        background-color: #334155 !important;
+        color: #ffffff !important;
+    }
+
+    /* Selected/Active state */
+    .o_search_panel .o_search_panel_category_value.active,
+    .o_search_panel .o_search_panel_category_value.selected,
+    .o_search_panel .o_search_panel_filter_value.active,
+    .o_search_panel .o_search_panel_category_value[aria-selected="true"],
+    .o_search_panel_category_value.active,
+    .o_search_panel_category_value.selected {
+        background-color: rgba(59, 130, 246, 0.2) !important;
+        color: #3b82f6 !important;
+        border-left: 3px solid #3b82f6 !important;
+    }
+
+    /* Item counts/badges */
+    .o_search_panel .o_search_panel_counter,
+    .o_search_panel_counter {
+        color: #64748b !important;
+        background-color: #334155 !important;
+        border-radius: 10px;
+        padding: 1px 6px;
+        font-size: 0.75rem;
+    }
+
+    /* Checkboxes in filter panel */
+    .o_search_panel input[type="checkbox"],
+    .o_search_panel_filter_value input[type="checkbox"] {
+        accent-color: #3b82f6 !important;
+    }
+
+    /* Search input in panel */
+    .o_search_panel .o_search_panel_input,
+    .o_search_panel input[type="text"],
+    .o_search_panel .form-control {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o_search_panel input::placeholder {
+        color: #64748b !important;
+    }
+
+    /* Expand/collapse icons */
+    .o_search_panel .o_toggle_fold,
+    .o_search_panel .fa-caret-down,
+    .o_search_panel .fa-caret-right {
+        color: #64748b !important;
+    }
+
+    .o_search_panel .o_toggle_fold:hover {
+        color: #94a3b8 !important;
+    }
+
+    /* Empty state message */
+    .o_search_panel .o_search_panel_empty,
+    .o_search_panel_no_result {
+        color: #64748b !important;
+        font-style: italic;
+    }
+
+    /* Scrollbar styling for search panel */
+    .o_search_panel::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .o_search_panel::-webkit-scrollbar-track {
+        background: #1e293b;
+    }
+
+    .o_search_panel::-webkit-scrollbar-thumb {
+        background: #475569;
+        border-radius: 3px;
+    }
+
+    .o_search_panel::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+    }
+}
+
+// =============================================================================
+// FIX 18B: Search Panel Sidebar - Light Mode
+// =============================================================================
+// Consistent styling for light mode
+// =============================================================================
+
+.o_search_panel,
+.o_search_panel_sidebar,
+div.bg-view.h-100.o_search_panel_sidebar {
+    background-color: #f8fafc !important;
+    border-right: 1px solid #e2e8f0 !important;
+}
+
+/* Search panel section titles - Light mode */
+.o_search_panel .o_search_panel_label,
+.o_search_panel .o_search_panel_label_title,
+.o_search_panel_section .o_search_panel_section_header {
+    color: #64748b !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+/* Category/Filter items - Light mode */
+.o_search_panel .o_search_panel_category_value,
+.o_search_panel .o_search_panel_filter_value,
+.o_search_panel_category_value,
+.o_search_panel_filter_value {
+    color: #334155 !important;
+    background-color: transparent !important;
+    border-radius: 4px;
+    margin: 2px 4px;
+    padding: 6px 8px !important;
+    transition: background-color 0.15s ease;
+}
+
+/* Hover state - Light mode */
+.o_search_panel .o_search_panel_category_value:hover,
+.o_search_panel .o_search_panel_filter_value:hover {
+    background-color: #e2e8f0 !important;
+    color: #1e293b !important;
+}
+
+/* Selected/Active state - Light mode */
+.o_search_panel .o_search_panel_category_value.active,
+.o_search_panel .o_search_panel_category_value.selected,
+.o_search_panel .o_search_panel_filter_value.active,
+.o_search_panel .o_search_panel_category_value[aria-selected="true"] {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    color: #3b82f6 !important;
+    border-left: 3px solid #3b82f6 !important;
+}
+
+/* Item counts/badges - Light mode */
+.o_search_panel .o_search_panel_counter,
+.o_search_panel_counter {
+    color: #64748b !important;
+    background-color: #e2e8f0 !important;
+    border-radius: 10px;
+    padding: 1px 6px;
+    font-size: 0.75rem;
+}
+
+/* =============================================================================
+   FIX 19: KANBAN VIEW - Complete styling for light and dark modes
+   ============================================================================= */
+
+// -----------------------------------------------------------------------------
+// 19A: Override Odoo Kanban Color Classes - Replace purple with blue palette
+// -----------------------------------------------------------------------------
+
+/* Odoo uses o_kanban_color_0 through o_kanban_color_11 for card colors.
+   We override these to use a consistent blue-based palette. */
+
+// Light mode kanban colors - subtle backgrounds
+.o_kanban_record.o_kanban_color_0 { background-color: #f8fafc !important; }  // Default - very light gray
+.o_kanban_record.o_kanban_color_1 { background-color: #fef3c7 !important; }  // Amber light
+.o_kanban_record.o_kanban_color_2 { background-color: #fed7aa !important; }  // Orange light
+.o_kanban_record.o_kanban_color_3 { background-color: #fecaca !important; }  // Red light
+.o_kanban_record.o_kanban_color_4 { background-color: #dbeafe !important; }  // Blue light (our primary)
+.o_kanban_record.o_kanban_color_5 { background-color: #d1fae5 !important; }  // Green light
+.o_kanban_record.o_kanban_color_6 { background-color: #e0e7ff !important; }  // Indigo light
+.o_kanban_record.o_kanban_color_7 { background-color: #fce7f3 !important; }  // Pink light
+.o_kanban_record.o_kanban_color_8 { background-color: #f3e8ff !important; }  // Purple → Violet light
+.o_kanban_record.o_kanban_color_9 { background-color: #ccfbf1 !important; }  // Teal light
+.o_kanban_record.o_kanban_color_10 { background-color: #e2e8f0 !important; } // Slate light
+.o_kanban_record.o_kanban_color_11 { background-color: #bfdbfe !important; } // Blue medium (was purple!)
+
+// Ensure text is readable on light backgrounds
+.o_kanban_record[class*="o_kanban_color_"] {
+    color: #1e293b !important;
+}
+
+.o_kanban_record[class*="o_kanban_color_"] .o_kanban_record_title,
+.o_kanban_record[class*="o_kanban_color_"] .o_kanban_record_headings,
+.o_kanban_record[class*="o_kanban_color_"] strong {
+    color: #0f172a !important;
+}
+
+.o_kanban_record[class*="o_kanban_color_"] .text-muted,
+.o_kanban_record[class*="o_kanban_color_"] small {
+    color: #64748b !important;
+}
+
+// -----------------------------------------------------------------------------
+// 19B: Dark Mode Kanban Color Classes
+// -----------------------------------------------------------------------------
+
+[data-color-mode="dark"] {
+    // Dark mode kanban colors - deeper backgrounds with good contrast
+    .o_kanban_record.o_kanban_color_0 { background-color: #1e293b !important; }  // Default slate
+    .o_kanban_record.o_kanban_color_1 { background-color: #78350f !important; }  // Amber dark
+    .o_kanban_record.o_kanban_color_2 { background-color: #7c2d12 !important; }  // Orange dark
+    .o_kanban_record.o_kanban_color_3 { background-color: #7f1d1d !important; }  // Red dark
+    .o_kanban_record.o_kanban_color_4 { background-color: #1e3a5f !important; }  // Blue dark (our primary)
+    .o_kanban_record.o_kanban_color_5 { background-color: #14532d !important; }  // Green dark
+    .o_kanban_record.o_kanban_color_6 { background-color: #312e81 !important; }  // Indigo dark
+    .o_kanban_record.o_kanban_color_7 { background-color: #831843 !important; }  // Pink dark
+    .o_kanban_record.o_kanban_color_8 { background-color: #4c1d95 !important; }  // Violet dark
+    .o_kanban_record.o_kanban_color_9 { background-color: #134e4a !important; }  // Teal dark
+    .o_kanban_record.o_kanban_color_10 { background-color: #334155 !important; } // Slate dark
+    .o_kanban_record.o_kanban_color_11 { background-color: #1e40af !important; } // Blue deeper (was purple!)
+
+    // Text colors for dark mode kanban
+    .o_kanban_record[class*="o_kanban_color_"] {
+        color: #f1f5f9 !important;
+    }
+
+    .o_kanban_record[class*="o_kanban_color_"] .o_kanban_record_title,
+    .o_kanban_record[class*="o_kanban_color_"] .o_kanban_record_headings,
+    .o_kanban_record[class*="o_kanban_color_"] strong {
+        color: #ffffff !important;
+    }
+
+    .o_kanban_record[class*="o_kanban_color_"] .text-muted,
+    .o_kanban_record[class*="o_kanban_color_"] small {
+        color: #94a3b8 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 19C: Kanban View Container - Light Mode
+// -----------------------------------------------------------------------------
+
+/* Kanban view main container */
+.o_kanban_view,
+.o_kanban_renderer {
+    background-color: #f8fafc !important;
+}
+
+/* Ungrouped kanban (grid layout) */
+.o_kanban_ungrouped {
+    background-color: #f8fafc !important;
+}
+
+/* Kanban records/cards - default styling */
+.o_kanban_record {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    transition: box-shadow 0.2s ease, transform 0.2s ease !important;
+}
+
+.o_kanban_record:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Kanban ghost (placeholder for empty columns) */
+.o_kanban_ghost,
+.o_kanban_record.o_kanban_ghost {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Kanban header (in grouped view) */
+.o_kanban_header {
+    background-color: #f1f5f9 !important;
+    color: #334155 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.o_kanban_header .o_kanban_header_title {
+    color: #1e293b !important;
+    font-weight: 600 !important;
+}
+
+/* Kanban column */
+.o_kanban_group {
+    background-color: #f1f5f9 !important;
+    border-radius: 8px !important;
+}
+
+/* Add record button in kanban */
+.o_kanban_quick_add,
+.o_kanban_add_column {
+    color: #3b82f6 !important;
+}
+
+.o_kanban_quick_add:hover,
+.o_kanban_add_column:hover {
+    color: #2563eb !important;
+    background-color: #eff6ff !important;
+}
+
+// -----------------------------------------------------------------------------
+// 19D: Kanban View Container - Dark Mode
+// -----------------------------------------------------------------------------
+
+[data-color-mode="dark"] {
+    /* Kanban view main container */
+    .o_kanban_view,
+    .o_kanban_renderer {
+        background-color: #0f172a !important;
+    }
+
+    /* Ungrouped kanban */
+    .o_kanban_ungrouped {
+        background-color: #0f172a !important;
+    }
+
+    /* Kanban records/cards */
+    .o_kanban_record {
+        background-color: #1e293b !important;
+        border: 1px solid #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o_kanban_record:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        border-color: #475569 !important;
+    }
+
+    /* Kanban header */
+    .o_kanban_header {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-bottom: 1px solid #334155 !important;
+    }
+
+    .o_kanban_header .o_kanban_header_title {
+        color: #ffffff !important;
+    }
+
+    /* Kanban column */
+    .o_kanban_group {
+        background-color: #1e293b !important;
+    }
+
+    /* Kanban ghost */
+    .o_kanban_ghost,
+    .o_kanban_record.o_kanban_ghost {
+        background-color: transparent !important;
+        border: none !important;
+    }
+
+    /* Add record button */
+    .o_kanban_quick_add,
+    .o_kanban_add_column {
+        color: #60a5fa !important;
+    }
+
+    .o_kanban_quick_add:hover,
+    .o_kanban_add_column:hover {
+        color: #93c5fd !important;
+        background-color: rgba(59, 130, 246, 0.15) !important;
+    }
+
+    /* Kanban record content */
+    .o_kanban_record .o_kanban_record_title,
+    .o_kanban_record .o_kanban_record_headings {
+        color: #f1f5f9 !important;
+    }
+
+    .o_kanban_record strong {
+        color: #ffffff !important;
+    }
+
+    .o_kanban_record .text-muted {
+        color: #94a3b8 !important;
+    }
+
+    /* Kanban record buttons */
+    .o_kanban_record .btn,
+    .o_kanban_record button {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o_kanban_record .btn:hover,
+    .o_kanban_record button:hover {
+        background-color: #475569 !important;
+        color: #ffffff !important;
+    }
+
+    .o_kanban_record .btn-primary {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    /* Kanban record badges */
+    .o_kanban_record .badge {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .o_kanban_record .badge.bg-primary,
+    .o_kanban_record .badge.badge-primary {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    /* Kanban record tags */
+    .o_kanban_record .o_tag,
+    .o_kanban_record .o_kanban_tags span {
+        background-color: rgba(59, 130, 246, 0.2) !important;
+        color: #93c5fd !important;
+        border-radius: 4px !important;
+    }
+
+    /* Progress bars in kanban */
+    .o_kanban_record .progress {
+        background-color: #334155 !important;
+    }
+
+    .o_kanban_record .progress-bar {
+        background-color: #3b82f6 !important;
+    }
+
+    /* Monetary fields */
+    .o_kanban_record .o_field_monetary,
+    .o_kanban_record .o_monetary {
+        color: #10b981 !important;
+        font-weight: 600 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 19E: Dashboard Kanban Specific Styling
+// -----------------------------------------------------------------------------
+
+/* Dashboard kanban view */
+.o_account_dashboard_kanban_view,
+.o_dashboard_kanban,
+.o_kanban_view.o_kanban_dashboard {
+    background-color: #f8fafc !important;
+}
+
+/* Dashboard cards */
+.o_account_dashboard_kanban_view .o_kanban_record,
+.o_dashboard_kanban .o_kanban_record {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Dashboard card hover */
+.o_account_dashboard_kanban_view .o_kanban_record:hover,
+.o_dashboard_kanban .o_kanban_record:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Dashboard KPIs */
+.o_kanban_record .o_kanban_primary_left,
+.o_kanban_record .o_kanban_primary_right {
+    color: #1e293b !important;
+}
+
+[data-color-mode="dark"] {
+    /* Dashboard kanban */
+    .o_account_dashboard_kanban_view,
+    .o_dashboard_kanban,
+    .o_kanban_view.o_kanban_dashboard {
+        background-color: #0f172a !important;
+    }
+
+    /* Dashboard cards */
+    .o_account_dashboard_kanban_view .o_kanban_record,
+    .o_dashboard_kanban .o_kanban_record {
+        background-color: #1e293b !important;
+        border: 1px solid #334155 !important;
+    }
+
+    .o_account_dashboard_kanban_view .o_kanban_record:hover,
+    .o_dashboard_kanban .o_kanban_record:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+        border-color: #475569 !important;
+    }
+
+    /* Dashboard KPIs */
+    .o_kanban_record .o_kanban_primary_left,
+    .o_kanban_record .o_kanban_primary_right {
+        color: #f1f5f9 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 19F: Kanban Dropdown/Actions Menu
+// -----------------------------------------------------------------------------
+
+/* Kanban card dropdown menu */
+.o_kanban_record .dropdown-menu,
+.o_kanban_record .o_dropdown_menu {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.o_kanban_record .dropdown-item {
+    color: #334155 !important;
+}
+
+.o_kanban_record .dropdown-item:hover {
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
+}
+
+[data-color-mode="dark"] {
+    .o_kanban_record .dropdown-menu,
+    .o_kanban_record .o_dropdown_menu {
+        background-color: #1e293b !important;
+        border-color: #475569 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .o_kanban_record .dropdown-item {
+        color: #f1f5f9 !important;
+    }
+
+    .o_kanban_record .dropdown-item:hover {
+        background-color: #334155 !important;
+        color: #ffffff !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 19G: Graph/Chart in Kanban Cards (Dashboard)
+// -----------------------------------------------------------------------------
+
+/* Charts inside kanban cards */
+.o_kanban_record .o_graph_renderer,
+.o_kanban_record canvas {
+    background-color: transparent !important;
+}
+
+[data-color-mode="dark"] {
+    /* Chart axis labels */
+    .o_kanban_record .o_graph_renderer text,
+    .o_kanban_record .apexcharts-text {
+        fill: #94a3b8 !important;
+    }
+
+    /* Chart grid lines */
+    .o_kanban_record .o_graph_renderer line,
+    .o_kanban_record .apexcharts-gridline {
+        stroke: #334155 !important;
+    }
+
+    /* Chart tooltip */
+    .o_kanban_record .apexcharts-tooltip,
+    .o_graph_renderer .tooltip {
+        background-color: #1e293b !important;
+        border-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+}
+
+/* =============================================================================
+   FIX 20: NOTE EDITOR & ADD PRODUCT/SECTION/NOTE LINKS
+   ============================================================================= */
+
+// -----------------------------------------------------------------------------
+// 20A: Note Editable Field - Light Mode
+// -----------------------------------------------------------------------------
+
+/* Note editor container */
+.note-editable,
+.odoo-editor-editable,
+div.note-editable.odoo-editor-editable {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    padding: 12px !important;
+    min-height: 60px !important;
+}
+
+.note-editable:focus,
+.odoo-editor-editable:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    outline: none !important;
+}
+
+/* Placeholder text in note editor */
+.note-editable[placeholder]:empty::before,
+.odoo-editor-editable[placeholder]:empty::before {
+    color: #94a3b8 !important;
+}
+
+/* Spell-check underline styling */
+.note-editable [class*="spell"],
+.odoo-editor-editable .misspelled,
+.note-editable u[style*="wavy"],
+.odoo-editor-editable u[style*="wavy"] {
+    text-decoration-color: #ef4444 !important;
+}
+
+// -----------------------------------------------------------------------------
+// 20B: Note Editable Field - Dark Mode
+// -----------------------------------------------------------------------------
+
+[data-color-mode="dark"] {
+    /* Note editor container */
+    .note-editable,
+    .odoo-editor-editable,
+    div.note-editable.odoo-editor-editable {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border: 1px solid #475569 !important;
+    }
+
+    .note-editable:focus,
+    .odoo-editor-editable:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+    }
+
+    /* Placeholder text */
+    .note-editable[placeholder]:empty::before,
+    .odoo-editor-editable[placeholder]:empty::before {
+        color: #64748b !important;
+    }
+
+    /* Spell-check underline */
+    .note-editable [class*="spell"],
+    .odoo-editor-editable .misspelled {
+        text-decoration-color: #f87171 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 20C: Add Product/Section/Note Links - Light Mode
+// -----------------------------------------------------------------------------
+
+/* The "Add a product", "Add a section", "Add a note", "Catalog" links */
+.o_field_x2many_list_row_add a,
+.o_field_x2many .o_field_x2many_list_row_add a,
+.o_list_renderer .o_field_x2many_list_row_add a,
+td.o_field_x2many_list_row_add a,
+a.o_field_x2many_list_row_add {
+    color: #3b82f6 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    transition: color 0.15s ease !important;
+}
+
+.o_field_x2many_list_row_add a:hover,
+.o_field_x2many .o_field_x2many_list_row_add a:hover,
+td.o_field_x2many_list_row_add a:hover {
+    color: #2563eb !important;
+    text-decoration: underline !important;
+}
+
+/* Multiple links in the same row */
+.o_field_x2many_list_row_add {
+    background-color: transparent !important;
+}
+
+.o_field_x2many_list_row_add td,
+td.o_field_x2many_list_row_add {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+// -----------------------------------------------------------------------------
+// 20D: Add Product/Section/Note Links - Dark Mode
+// -----------------------------------------------------------------------------
+
+[data-color-mode="dark"] {
+    /* Links */
+    .o_field_x2many_list_row_add a,
+    .o_field_x2many .o_field_x2many_list_row_add a,
+    .o_list_renderer .o_field_x2many_list_row_add a,
+    td.o_field_x2many_list_row_add a,
+    a.o_field_x2many_list_row_add {
+        color: #60a5fa !important;
+    }
+
+    .o_field_x2many_list_row_add a:hover,
+    .o_field_x2many .o_field_x2many_list_row_add a:hover,
+    td.o_field_x2many_list_row_add a:hover {
+        color: #93c5fd !important;
+    }
+
+    /* Row background */
+    .o_field_x2many_list_row_add td,
+    td.o_field_x2many_list_row_add {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 20E: Section & Note Rows in Order Lines - Light Mode
+// -----------------------------------------------------------------------------
+
+/* Section rows (bold headers) */
+.o_data_row.o_is_section td,
+tr.o_is_section td {
+    background-color: #f1f5f9 !important;
+    color: #1e293b !important;
+    font-weight: 600 !important;
+    border-color: #e2e8f0 !important;
+}
+
+/* Note rows (the actual note content) */
+.o_data_row.o_is_note td,
+tr.o_is_note td {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-style: italic !important;
+    border-color: #e2e8f0 !important;
+}
+
+// -----------------------------------------------------------------------------
+// 20F: Section & Note Rows in Order Lines - Dark Mode
+// -----------------------------------------------------------------------------
+
+[data-color-mode="dark"] {
+    /* Section rows */
+    .o_data_row.o_is_section td,
+    tr.o_is_section td {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    /* Note rows */
+    .o_data_row.o_is_note td,
+    tr.o_is_note td {
+        background-color: #1e293b !important;
+        color: #94a3b8 !important;
+        border-color: #334155 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 20G: HTML Editor/Rich Text Fields - General
+// -----------------------------------------------------------------------------
+
+/* HTML editor wrapper */
+.o_field_html,
+.o_field_html .odoo-editor-editable,
+.o_field_html .note-editable {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+}
+
+/* Editor toolbar */
+.o_field_html .o_editor_toolbar,
+.odoo-editor-toolbar {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+.o_field_html .o_editor_toolbar button,
+.odoo-editor-toolbar button {
+    color: #64748b !important;
+    background-color: transparent !important;
+}
+
+.o_field_html .o_editor_toolbar button:hover,
+.odoo-editor-toolbar button:hover {
+    color: #1e293b !important;
+    background-color: #e2e8f0 !important;
+}
+
+.o_field_html .o_editor_toolbar button.active,
+.odoo-editor-toolbar button.active {
+    color: #3b82f6 !important;
+    background-color: #dbeafe !important;
+}
+
+[data-color-mode="dark"] {
+    /* HTML editor */
+    .o_field_html,
+    .o_field_html .odoo-editor-editable,
+    .o_field_html .note-editable {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Editor toolbar */
+    .o_field_html .o_editor_toolbar,
+    .odoo-editor-toolbar {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+    }
+
+    .o_field_html .o_editor_toolbar button,
+    .odoo-editor-toolbar button {
+        color: #94a3b8 !important;
+    }
+
+    .o_field_html .o_editor_toolbar button:hover,
+    .odoo-editor-toolbar button:hover {
+        color: #f1f5f9 !important;
+        background-color: #475569 !important;
+    }
+
+    .o_field_html .o_editor_toolbar button.active,
+    .odoo-editor-toolbar button.active {
+        color: #60a5fa !important;
+        background-color: rgba(59, 130, 246, 0.2) !important;
     }
 }

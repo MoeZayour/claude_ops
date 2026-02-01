@@ -490,5 +490,41 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
+        <!-- IT Admin Blindness: Asset - BLOCKED -->
+        <record id="rule_it_admin_blind_asset" model="ir.rule">
+            <field name="name">IT Admin Blindness: Assets</field>
+            <field name="model_id" ref="model_ops_asset"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- IT Admin Blindness: Asset Category - BLOCKED -->
+        <record id="rule_it_admin_blind_asset_category" model="ir.rule">
+            <field name="name">IT Admin Blindness: Asset Categories</field>
+            <field name="model_id" ref="model_ops_asset_category"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- IT Admin Blindness: Asset Depreciation - BLOCKED -->
+        <record id="rule_it_admin_blind_asset_depreciation" model="ir.rule">
+            <field name="name">IT Admin Blindness: Asset Depreciation</field>
+            <field name="model_id" ref="model_ops_asset_depreciation"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
     </data>
 </odoo>

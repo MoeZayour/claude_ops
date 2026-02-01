@@ -1,7 +1,7 @@
 # Base class MUST be imported first
 from . import ops_base_report_wizard
-from . import ops_financial_report_wizard
-from . import ops_general_ledger_wizard
+# DEPRECATED: ops_financial_report_wizard and ops_general_ledger_wizard moved to deprecated/
+# Use ops_general_ledger_wizard_enhanced (Matrix Financial Intelligence) instead
 from . import ops_general_ledger_wizard_enhanced
 from . import ops_treasury_report_wizard
 from . import ops_asset_report_wizard
@@ -14,3 +14,4 @@ from . import ops_daily_reports_wizard
 # Phase 5: Advanced Features
 from . import ops_asset_impairment_wizard
 from . import ops_fx_revaluation_wizard
+from . import ops_balance_sheet_wizard

@@ -53,19 +53,27 @@
                         </div>
                     </div>
 
-                    <!-- Quick Stats -->
+                    <!-- Quick Stats with Good Size Indicator -->
                     <div class="alert alert-info" role="alert">
                         <div class="row">
-                            <div class="col-4">
+                            <div class="col-3">
                                 <strong>Matching Assets:</strong>
                                 <field name="asset_count" readonly="1"/>
                             </div>
-                            <div class="col-4">
+                            <div class="col-3 text-end">
+                                <!-- Good size: up to 1000 assets -->
+                                <span invisible="asset_count &gt; 1000" class="badge text-bg-success">Good size</span>
+                                <!-- Large dataset: 1001-2000 assets -->
+                                <span invisible="asset_count &lt;= 1000 or asset_count &gt; 2000" class="badge text-bg-warning">Large dataset</span>
+                                <!-- Very large: over 2000 assets -->
+                                <span invisible="asset_count &lt;= 2000" class="badge text-bg-danger">Very large</span>
+                            </div>
+                            <div class="col-3">
                                 <strong>Total Gross Value:</strong>
                                 <field name="total_gross_value" readonly="1" widget="monetary"
                                        options="{'currency_field': 'currency_id'}"/>
                             </div>
-                            <div class="col-4">
+                            <div class="col-3">
                                 <strong>Total NBV:</strong>
                                 <field name="total_nbv" readonly="1" widget="monetary"
                                        options="{'currency_field': 'currency_id'}"/>

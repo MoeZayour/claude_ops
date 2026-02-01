@@ -13,7 +13,7 @@ import { registry } from "@web/core/registry";
 // PAGE LOADER CONTROLLER
 // =============================================================================
 
-class OPSPageLoader {
+class PageLoaderController {
     constructor() {
         this.loaderElement = null;
         this.isShowing = false;
@@ -86,7 +86,7 @@ class OPSPageLoader {
 }
 
 // Create global loader instance
-const pageLoader = new OPSPageLoader();
+const pageLoader = new PageLoaderController();
 
 // Expose to window for manual control
 window.OPSTheme = window.OPSTheme || {};
