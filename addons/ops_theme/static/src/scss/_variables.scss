@@ -1,60 +1,74 @@
 // =============================================================================
-// OPS THEME v2.0 - CSS VARIABLES
+// OPS THEME - CSS CUSTOM PROPERTIES (Single Source of Truth)
 // =============================================================================
-// Design System: LIGHT mode is ALWAYS default
-// Dark mode ONLY when data-color-mode="dark" is explicitly set
+//
+// IMPORTANT: Light mode is the DEFAULT. Dark mode only applies when
+// [data-color-mode="dark"] is set on the <html> element.
+//
+// DO NOT put dark colors in :root - they will leak into light mode!
+//
+// =============================================================================
+
+// =============================================================================
+// LIGHT MODE (DEFAULT)
 // =============================================================================
 
 :root {
-    // =========================================================================
-    // BRAND COLORS (Company-configurable via Settings)
-    // =========================================================================
-    --ops-primary: #1e293b;           // Deep slate - headers, navbar
-    --ops-secondary: #3b82f6;         // Blue - buttons, links, accents
-    --ops-secondary-hover: #2563eb;   // Blue darker - hover states
-    --ops-secondary-rgb: 59, 130, 246; // For rgba() usage
-
-    // Derived colors
+    // -------------------------------------------------------------------------
+    // BRAND COLORS
+    // -------------------------------------------------------------------------
+    --ops-primary: #1e293b;
+    --ops-primary-rgb: 30, 41, 59;
     --ops-primary-hover: #0f172a;
     --ops-primary-light: rgba(30, 41, 59, 0.1);
+
+    --ops-secondary: #3b82f6;
+    --ops-secondary-rgb: 59, 130, 246;
+    --ops-secondary-hover: #2563eb;
     --ops-secondary-light: rgba(59, 130, 246, 0.1);
 
-    // =========================================================================
-    // SEMANTIC COLORS
-    // =========================================================================
-    --ops-success: #10b981;           // Green - positive states
-    --ops-warning: #f59e0b;           // Amber - warnings
-    --ops-danger: #ef4444;            // Red - errors, destructive
-    --ops-info: #06b6d4;              // Cyan - informational
+    --ops-success: #10b981;
+    --ops-success-rgb: 16, 185, 129;
+    --ops-warning: #f59e0b;
+    --ops-warning-rgb: 245, 158, 11;
+    --ops-danger: #ef4444;
+    --ops-danger-rgb: 239, 68, 68;
+    --ops-info: #06b6d4;
+    --ops-info-rgb: 6, 182, 212;
 
-    // =========================================================================
-    // LIGHT MODE SURFACES (DEFAULT - Always)
-    // =========================================================================
-    --ops-bg-body: #f1f5f9;           // Page background (slate-100)
-    --ops-bg-card: #ffffff;           // Card/panel background
-    --ops-bg-input: #ffffff;          // Input background
-    --ops-bg-hover: #f8fafc;          // Hover state background
-    --ops-bg-selected: #eff6ff;       // Selected row (blue tint)
+    // -------------------------------------------------------------------------
+    // LIGHT MODE BACKGROUNDS (white/light gray)
+    // -------------------------------------------------------------------------
+    --ops-bg-body: #f1f5f9;           // Page background - LIGHT
+    --ops-bg-card: #ffffff;            // Cards, panels - WHITE
+    --ops-bg-input: #ffffff;           // Form inputs - WHITE
+    --ops-bg-hover: #f8fafc;           // Hover states - VERY LIGHT
+    --ops-bg-selected: #eff6ff;        // Selected items - LIGHT BLUE TINT
+    --ops-bg-navbar: var(--ops-primary); // Navbar stays dark (brand)
+    --ops-bg-dropdown: #ffffff;        // Dropdown menus - WHITE
+    --ops-bg-modal: #ffffff;           // Modal backgrounds - WHITE
+    --ops-bg-tooltip: #1e293b;         // Tooltips - DARK (inverted)
 
-    // =========================================================================
-    // LIGHT MODE TEXT (DEFAULT - Always)
-    // =========================================================================
-    --ops-text-primary: #1e293b;      // Primary text (slate-800)
-    --ops-text-secondary: #64748b;    // Secondary text (slate-500)
-    --ops-text-muted: #94a3b8;        // Muted text (slate-400)
-    --ops-text-disabled: #cbd5e1;     // Disabled text (slate-300)
-    --ops-text-inverse: #ffffff;      // Text on dark backgrounds
+    // -------------------------------------------------------------------------
+    // LIGHT MODE TEXT (dark text on light backgrounds)
+    // -------------------------------------------------------------------------
+    --ops-text-primary: #1e293b;       // Main text - DARK
+    --ops-text-secondary: #64748b;     // Secondary - MEDIUM
+    --ops-text-muted: #94a3b8;         // Muted - LIGHT
+    --ops-text-disabled: #cbd5e1;      // Disabled - VERY LIGHT
+    --ops-text-inverse: #ffffff;       // Text on dark bg - WHITE
+    --ops-text-link: var(--ops-secondary);
 
-    // =========================================================================
-    // BORDERS & DIVIDERS
-    // =========================================================================
-    --ops-border: #e2e8f0;            // Default border (slate-200)
-    --ops-border-focus: #3b82f6;      // Focus state border
-    --ops-divider: #f1f5f9;           // Subtle divider
+    // -------------------------------------------------------------------------
+    // LIGHT MODE BORDERS
+    // -------------------------------------------------------------------------
+    --ops-border: #e2e8f0;             // Default border - LIGHT
+    --ops-border-focus: var(--ops-secondary);
+    --ops-divider: #f1f5f9;
 
-    // =========================================================================
-    // SHADOWS (Depth System)
-    // =========================================================================
+    // -------------------------------------------------------------------------
+    // SHADOWS
+    // -------------------------------------------------------------------------
     --ops-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
                      0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -64,9 +78,9 @@
                      0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --ops-card-shadow: var(--ops-shadow-md);
 
-    // =========================================================================
-    // BORDER RADIUS
-    // =========================================================================
+    // -------------------------------------------------------------------------
+    // RADIUS & TRANSITIONS
+    // -------------------------------------------------------------------------
     --ops-radius-sm: 4px;
     --ops-radius-md: 8px;
     --ops-radius-lg: 12px;
@@ -74,27 +88,25 @@
     --ops-radius-full: 9999px;
     --ops-border-radius: var(--ops-radius-md);
 
-    // =========================================================================
-    // TRANSITIONS (Smooth by default)
-    // =========================================================================
     --ops-transition-fast: 150ms ease;
     --ops-transition-normal: 250ms ease;
+    --ops-transition-base: 200ms ease;
     --ops-transition-slow: 300ms ease;
 
-    // =========================================================================
+    // -------------------------------------------------------------------------
     // TYPOGRAPHY
-    // =========================================================================
+    // -------------------------------------------------------------------------
     --ops-font-family: 'Inter', -apple-system, BlinkMacSystemFont,
                        'Segoe UI', Roboto, sans-serif;
-    --ops-font-size-xs: 0.75rem;      // 12px
-    --ops-font-size-sm: 0.875rem;     // 14px
-    --ops-font-size-base: 1rem;       // 16px
-    --ops-font-size-lg: 1.125rem;     // 18px
-    --ops-font-size-xl: 1.25rem;      // 20px
+    --ops-font-size-xs: 0.75rem;
+    --ops-font-size-sm: 0.875rem;
+    --ops-font-size-base: 1rem;
+    --ops-font-size-lg: 1.125rem;
+    --ops-font-size-xl: 1.25rem;
 
-    // =========================================================================
+    // -------------------------------------------------------------------------
     // Z-INDEX SCALE
-    // =========================================================================
+    // -------------------------------------------------------------------------
     --ops-z-dropdown: 1000;
     --ops-z-sticky: 1020;
     --ops-z-fixed: 1030;
@@ -104,48 +116,61 @@
     --ops-z-tooltip: 1070;
     --ops-z-loader: 9999;
 
-    // =========================================================================
+    // -------------------------------------------------------------------------
     // NAVBAR
-    // =========================================================================
+    // -------------------------------------------------------------------------
     --ops-navbar-bg: var(--ops-primary);
     --ops-navbar-text: #ffffff;
 
-    // =========================================================================
+    // -------------------------------------------------------------------------
     // REPORT STYLES
-    // =========================================================================
+    // -------------------------------------------------------------------------
     --ops-report-header-bg: var(--ops-primary);
 }
 
 // =============================================================================
-// DARK MODE OVERRIDES
-// =============================================================================
-// ONLY applied when data-color-mode="dark" is EXPLICITLY set
-// Never auto-apply based on system preference to avoid confusion
+// DARK MODE (only when explicitly enabled)
 // =============================================================================
 
-[data-color-mode="dark"] {
-    // Surfaces
-    --ops-bg-body: #0f172a;           // Slate-900
-    --ops-bg-card: #1e293b;           // Slate-800
-    --ops-bg-input: #334155;          // Slate-700
-    --ops-bg-hover: #334155;          // Slate-700
-    --ops-bg-selected: #1e3a5f;       // Blue tint dark
+[data-color-mode="dark"],
+html.ops-dark-mode {
+    // -------------------------------------------------------------------------
+    // DARK MODE BACKGROUNDS
+    // -------------------------------------------------------------------------
+    --ops-bg-body: #0f172a;            // Page background - VERY DARK
+    --ops-bg-card: #1e293b;            // Cards - DARK
+    --ops-bg-input: #334155;           // Inputs - MEDIUM DARK
+    --ops-bg-hover: #334155;           // Hover - MEDIUM DARK
+    --ops-bg-selected: #1e3a5f;        // Selected - DARK BLUE
+    --ops-bg-navbar: #0f172a;          // Navbar - VERY DARK
+    --ops-bg-dropdown: #1e293b;        // Dropdowns - DARK
+    --ops-bg-modal: #1e293b;           // Modals - DARK
+    --ops-bg-tooltip: #f1f5f9;         // Tooltips - LIGHT (inverted)
 
-    // Text
-    --ops-text-primary: #f1f5f9;      // Slate-100
-    --ops-text-secondary: #94a3b8;    // Slate-400
-    --ops-text-muted: #64748b;        // Slate-500
-    --ops-text-disabled: #475569;     // Slate-600
+    // -------------------------------------------------------------------------
+    // DARK MODE TEXT (light text on dark backgrounds)
+    // -------------------------------------------------------------------------
+    --ops-text-primary: #f1f5f9;       // Main text - LIGHT
+    --ops-text-secondary: #94a3b8;     // Secondary - MEDIUM
+    --ops-text-muted: #64748b;         // Muted - DARKER
+    --ops-text-disabled: #475569;      // Disabled
+    --ops-text-inverse: #1e293b;       // Text on light bg - DARK
 
-    // Borders
-    --ops-border: #334155;            // Slate-700
-    --ops-divider: #1e293b;           // Slate-800
+    // -------------------------------------------------------------------------
+    // DARK MODE BORDERS
+    // -------------------------------------------------------------------------
+    --ops-border: #334155;             // Border - VISIBLE ON DARK
+    --ops-divider: #1e293b;
 
-    // Derived colors (increase visibility in dark mode)
+    // -------------------------------------------------------------------------
+    // DARK MODE DERIVED COLORS
+    // -------------------------------------------------------------------------
     --ops-primary-light: rgba(30, 41, 59, 0.3);
     --ops-secondary-light: rgba(59, 130, 246, 0.2);
 
-    // Shadows (more pronounced in dark mode)
+    // -------------------------------------------------------------------------
+    // DARK MODE SHADOWS (more pronounced)
+    // -------------------------------------------------------------------------
     --ops-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
     --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
                      0 2px 4px -1px rgba(0, 0, 0, 0.2);
@@ -156,7 +181,7 @@
 }
 
 // =============================================================================
-// EXPLICIT LIGHT MODE (for overriding if needed)
+// EXPLICIT LIGHT MODE (for forcing light mode if needed)
 // =============================================================================
 
 [data-color-mode="light"] {

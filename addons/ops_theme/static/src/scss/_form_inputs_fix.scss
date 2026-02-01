@@ -1,0 +1,149 @@
+// =============================================================================
+// OPS THEME - FORM INPUT FIXES
+// =============================================================================
+// Ensures all form inputs are readable in both light and dark mode.
+// Uses CSS variables from _variables.scss
+// =============================================================================
+
+// Form inputs, textareas, selects - ensure readable in light mode
+.o_web_client {
+    input.o_input,
+    input.form-control,
+    textarea.o_input,
+    textarea.form-control,
+    select.o_input,
+    select.form-control,
+    .o_field_widget input,
+    .o_field_widget textarea,
+    .o_field_widget select {
+        background-color: var(--ops-bg-input) !important;
+        color: var(--ops-text-primary) !important;
+        border-color: var(--ops-border) !important;
+
+        &::placeholder {
+            color: var(--ops-text-muted) !important;
+        }
+
+        &:focus {
+            border-color: var(--ops-secondary) !important;
+            box-shadow: 0 0 0 2px rgba(var(--ops-secondary-rgb), 0.2) !important;
+        }
+
+        &:disabled,
+        &[readonly] {
+            background-color: var(--ops-bg-hover) !important;
+            color: var(--ops-text-secondary) !important;
+        }
+    }
+
+    // Dropdown/select styling
+    .o_field_many2one input,
+    .o_field_many2many_tags input {
+        background-color: var(--ops-bg-input) !important;
+        color: var(--ops-text-primary) !important;
+    }
+
+    // Tags in many2many fields
+    .o_field_many2many_tags .badge {
+        background-color: var(--ops-secondary) !important;
+        color: var(--ops-text-inverse) !important;
+    }
+
+    // Form labels
+    label.o_form_label,
+    .o_field_widget label,
+    .o_td_label label {
+        color: var(--ops-text-primary) !important;
+    }
+
+    // Form groups
+    .o_group {
+        .o_group_col_6,
+        .o_inner_group {
+            background-color: transparent;
+        }
+    }
+
+    // Form sheet background
+    .o_form_sheet_bg {
+        background-color: var(--ops-bg-body) !important;
+    }
+
+    .o_form_sheet {
+        background-color: var(--ops-bg-card) !important;
+        color: var(--ops-text-primary) !important;
+    }
+
+    // Settings page specific fixes
+    .o_base_settings {
+        .o_setting_left_pane,
+        .o_setting_right_pane {
+            background-color: var(--ops-bg-card);
+            color: var(--ops-text-primary);
+        }
+
+        .o_settings_container {
+            background-color: var(--ops-bg-body);
+        }
+
+        .o_setting_box {
+            background-color: var(--ops-bg-card);
+            border-color: var(--ops-border);
+
+            .o_setting_left_pane {
+                color: var(--ops-text-primary);
+            }
+
+            .o_form_label,
+            label {
+                color: var(--ops-text-primary) !important;
+            }
+
+            .text-muted {
+                color: var(--ops-text-secondary) !important;
+            }
+        }
+    }
+
+    // Horizontal separators (section headers)
+    .o_horizontal_separator {
+        background-color: var(--ops-bg-hover) !important;
+        color: var(--ops-text-secondary) !important;
+    }
+}
+
+// =============================================================================
+// ENSURE LIGHT MODE IS EXPLICIT
+// =============================================================================
+// When no data-color-mode or data-color-mode="light", ensure white backgrounds
+
+html:not([data-color-mode="dark"]) .o_web_client {
+    // Force light backgrounds for inputs
+    input.o_input,
+    input.form-control,
+    textarea.o_input,
+    textarea.form-control,
+    select.o_input,
+    select.form-control {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+        border-color: #e2e8f0 !important;
+    }
+
+    // Form sheet
+    .o_form_sheet {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+    }
+
+    .o_form_sheet_bg {
+        background-color: #f1f5f9 !important;
+    }
+
+    // Labels
+    .o_form_label,
+    .o_td_label label,
+    label.o_form_label {
+        color: #64748b !important;
+    }
+}

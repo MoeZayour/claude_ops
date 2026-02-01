@@ -1,0 +1,172 @@
+// =============================================================================
+// OPS THEME - CHATTER FIXES
+// =============================================================================
+// Ensures chatter messages are readable in both light and dark modes.
+// Uses CSS variables from _variables.scss
+// =============================================================================
+
+.o_web_client {
+    // -------------------------------------------------------------------------
+    // CHATTER CONTAINER
+    // -------------------------------------------------------------------------
+    .o_ChatterContainer,
+    .o-mail-Chatter {
+        background-color: var(--ops-bg-card);
+        color: var(--ops-text-primary);
+    }
+
+    // -------------------------------------------------------------------------
+    // MESSAGE CONTENT
+    // -------------------------------------------------------------------------
+    .o-mail-Message,
+    .o_Message {
+        background-color: var(--ops-bg-card);
+
+        .o-mail-Message-content,
+        .o_Message_content,
+        .o-mail-Message-body,
+        .o_Message_body {
+            color: var(--ops-text-primary) !important;
+        }
+
+        .o-mail-Message-author,
+        .o_Message_authorName {
+            color: var(--ops-text-primary) !important;
+            font-weight: 600;
+        }
+
+        .o-mail-Message-date,
+        .o_Message_date {
+            color: var(--ops-text-muted) !important;
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // NOTE MESSAGES (yellow background in light mode)
+    // -------------------------------------------------------------------------
+    .o-mail-Message.o-isNote,
+    .o_Message_note,
+    .o-mail-Message[data-is-note="true"] {
+        background-color: #fef9c3 !important; // Light yellow
+        color: #713f12 !important;
+
+        .o-mail-Message-content,
+        .o_Message_content,
+        .o-mail-Message-body {
+            color: #713f12 !important;
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // COMPOSER
+    // -------------------------------------------------------------------------
+    .o-mail-Composer,
+    .o_Composer {
+        background-color: var(--ops-bg-card);
+        border-color: var(--ops-border);
+
+        textarea {
+            background-color: var(--ops-bg-input) !important;
+            color: var(--ops-text-primary) !important;
+            border-color: var(--ops-border) !important;
+
+            &::placeholder {
+                color: var(--ops-text-muted) !important;
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // ACTIVITY SECTION
+    // -------------------------------------------------------------------------
+    .o-mail-Activity,
+    .o_Activity {
+        color: var(--ops-text-primary);
+
+        .o-mail-Activity-user,
+        .o_Activity_user {
+            color: var(--ops-text-primary);
+        }
+
+        .o-mail-Activity-summary,
+        .o_Activity_summary {
+            color: var(--ops-text-secondary);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // FOLLOWERS
+    // -------------------------------------------------------------------------
+    .o-mail-Followers,
+    .o_Followers {
+        color: var(--ops-text-primary);
+    }
+
+    // -------------------------------------------------------------------------
+    // THREAD MESSAGES
+    // -------------------------------------------------------------------------
+    .o-mail-Thread,
+    .o_Thread {
+        .o-mail-Thread-separator,
+        .o_Thread_separator {
+            color: var(--ops-text-muted);
+            border-color: var(--ops-border);
+        }
+    }
+}
+
+// =============================================================================
+// DARK MODE SPECIFIC OVERRIDES
+// =============================================================================
+
+[data-color-mode="dark"] .o_web_client {
+    // Note messages in dark mode
+    .o-mail-Message.o-isNote,
+    .o_Message_note,
+    .o-mail-Message[data-is-note="true"] {
+        background-color: #854d0e !important; // Dark amber
+        color: #fef9c3 !important;
+
+        .o-mail-Message-content,
+        .o_Message_content,
+        .o-mail-Message-body {
+            color: #fef9c3 !important;
+        }
+    }
+}
+
+// =============================================================================
+// EXPLICIT LIGHT MODE
+// =============================================================================
+
+html:not([data-color-mode="dark"]) .o_web_client {
+    .o_ChatterContainer,
+    .o-mail-Chatter {
+        background-color: #ffffff;
+    }
+
+    .o-mail-Message,
+    .o_Message {
+        background-color: #ffffff;
+
+        .o-mail-Message-content,
+        .o-mail-Message-body,
+        .o_Message_content {
+            color: #1e293b !important;
+        }
+
+        .o-mail-Message-author,
+        .o_Message_authorName {
+            color: #1e293b !important;
+        }
+
+        .o-mail-Message-date {
+            color: #94a3b8 !important;
+        }
+    }
+
+    .o-mail-Composer textarea {
+        background-color: #ffffff !important;
+        color: #1e293b !important;
+    }
+}

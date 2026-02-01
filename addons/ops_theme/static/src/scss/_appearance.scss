@@ -4,53 +4,9 @@
 // Following MuK Theme's philosophy: Style APPEARANCE only.
 // NO layout changes, NO overflow hacks, NO z-index wars.
 // Let Odoo's OWL components handle behavior.
-// Total: ~250 lines (down from ~7000)
+//
+// NOTE: CSS variables are defined in _variables.scss (single source of truth)
 // =============================================================================
-
-// =============================================================================
-// CSS CUSTOM PROPERTIES
-// =============================================================================
-:root {
-    // Brand Colors
-    --ops-primary: #1e293b;
-    --ops-secondary: #3b82f6;
-    --ops-secondary-hover: #2563eb;
-
-    // Surfaces
-    --ops-bg-body: #f1f5f9;
-    --ops-bg-card: #ffffff;
-    --ops-bg-hover: #f8fafc;
-
-    // Text
-    --ops-text-primary: #1e293b;
-    --ops-text-secondary: #64748b;
-    --ops-text-muted: #94a3b8;
-    --ops-text-inverse: #ffffff;
-
-    // Borders
-    --ops-border: #e2e8f0;
-    --ops-border-focus: #3b82f6;
-
-    // Shadows
-    --ops-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --ops-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --ops-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-
-    // Border Radius
-    --ops-radius-sm: 4px;
-    --ops-radius-md: 6px;
-    --ops-radius-lg: 8px;
-}
-
-// Dark mode overrides
-[data-color-mode="dark"] {
-    --ops-bg-body: #0f172a;
-    --ops-bg-card: #1e293b;
-    --ops-bg-hover: #334155;
-    --ops-text-primary: #f1f5f9;
-    --ops-text-secondary: #94a3b8;
-    --ops-border: #334155;
-}
 
 // =============================================================================
 // NAVBAR - Appearance only (colors, no layout changes)

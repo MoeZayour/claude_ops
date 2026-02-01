@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.6.0.0',
+    'version': '19.0.6.1.0',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -66,6 +66,9 @@ Features:
         # BACKEND ASSETS - Complete theme styling
         # =================================================================
         'web.assets_backend': [
+            # 0. CSS Variables (single source of truth - load FIRST)
+            'ops_theme/static/src/scss/_variables.scss',
+
             # 1. Typography (loads Inter font)
             'ops_theme/static/src/scss/_typography.scss',
 
@@ -75,6 +78,7 @@ Features:
 
             # 3. Enhanced component styling
             'ops_theme/static/src/scss/_form_controls.scss',
+            'ops_theme/static/src/scss/_form_inputs_fix.scss',
             'ops_theme/static/src/scss/_cards.scss',
             'ops_theme/static/src/scss/_badges_enhanced.scss',
             'ops_theme/static/src/scss/_buttons_enhanced.scss',
@@ -88,6 +92,9 @@ Features:
 
             # 5. Dark mode
             'ops_theme/static/src/scss/_dark_mode.scss',
+
+            # 5.5. Chatter readability fix
+            'ops_theme/static/src/scss/_chatter_fix.scss',
 
             # 6. Complete debranding (enterprise hiding + color overrides)
             'ops_theme/static/src/scss/_debranding.scss',
