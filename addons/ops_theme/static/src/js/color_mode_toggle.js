@@ -2,39 +2,84 @@
 /**
  * OPS Theme - Color Mode Toggle
  * =============================
- * Handles light/dark mode switching with proper defaults.
+ * Handles light/dark mode switching with server-side preference sync.
  *
- * ARCHITECTURE:
- * - Default: LIGHT mode (professional ERP default)
- * - User preference stored in localStorage AND database
- * - Applies [data-color-mode="light|dark"] on <html> element
- * - CSS variables in _variables.scss respond to this attribute
+ * Priority:
+ * 1. HTML attribute (set by server via template)
+ * 2. localStorage (for persistence)
+ * 3. Default: 'light'
  */
 
 // =============================================================================
-// EARLY INITIALIZATION (runs before DOM ready to prevent flash)
+// EARLY INITIALIZATION (before DOM ready to prevent flash)
 // =============================================================================
 
 (function() {
     'use strict';
 
-    // Get stored preference, default to 'light'
-    const storedMode = localStorage.getItem('ops_color_mode');
-    const effectiveMode = storedMode || 'light';
+    // First, check if server already set the attribute via template
+    let serverMode = document.documentElement.getAttribute('data-color-mode');
 
-    // Apply immediately to prevent flash of wrong theme
-    document.documentElement.setAttribute('data-color-mode', effectiveMode);
-
-    // Also set class for any legacy CSS that uses .ops-dark-mode class
-    if (effectiveMode === 'dark') {
-        document.documentElement.classList.add('ops-dark-mode');
-    } else {
-        document.documentElement.classList.remove('ops-dark-mode');
+    // If server set a valid mode, use it
+    if (serverMode === 'light' || serverMode === 'dark') {
+        localStorage.setItem('ops_color_mode', serverMode);
+        applyColorMode(serverMode);
+        return;
     }
+
+    // Otherwise, try localStorage
+    let effectiveMode = localStorage.getItem('ops_color_mode');
+
+    // Default to light if nothing stored
+    if (!effectiveMode || (effectiveMode !== 'light' && effectiveMode !== 'dark')) {
+        effectiveMode = 'light';
+    }
+
+    // Apply immediately to prevent flash
+    applyColorMode(effectiveMode);
 })();
 
+/**
+ * Apply color mode to DOM
+ */
+function applyColorMode(mode) {
+    if (mode !== 'light' && mode !== 'dark') {
+        mode = 'light';
+    }
+
+    document.documentElement.setAttribute('data-color-mode', mode);
+
+    // Legacy class support
+    if (mode === 'dark') {
+        document.documentElement.classList.add('ops-dark-mode');
+        document.body?.classList.add('ops-dark-mode');
+    } else {
+        document.documentElement.classList.remove('ops-dark-mode');
+        document.body?.classList.remove('ops-dark-mode');
+    }
+}
+
 // =============================================================================
-// COLOR MODE API
+// SYNC WITH SERVER ON DOM READY
+// =============================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait a tick for Odoo session to be available
+    setTimeout(() => {
+        if (window.odoo && window.odoo.session_info) {
+            const serverMode = window.odoo.session_info.ops_color_mode;
+            if (serverMode && (serverMode === 'light' || serverMode === 'dark')) {
+                // Server preference takes precedence
+                localStorage.setItem('ops_color_mode', serverMode);
+                applyColorMode(serverMode);
+                console.log('OPS Theme: Applied server color mode:', serverMode);
+            }
+        }
+    }, 100);
+});
+
+// =============================================================================
+// PUBLIC API
 // =============================================================================
 
 /**
@@ -42,28 +87,19 @@
  * @param {string} mode - 'light' or 'dark'
  */
 window.setOpsColorMode = function(mode) {
-    const validModes = ['light', 'dark'];
-    if (!validModes.includes(mode)) {
-        console.warn('OPS Theme: Invalid color mode:', mode);
+    if (mode !== 'light' && mode !== 'dark') {
+        console.warn('OPS Theme: Invalid color mode:', mode, '- using light');
         mode = 'light';
     }
 
     // Apply to DOM
-    document.documentElement.setAttribute('data-color-mode', mode);
-
-    // Toggle class for legacy support
-    if (mode === 'dark') {
-        document.documentElement.classList.add('ops-dark-mode');
-    } else {
-        document.documentElement.classList.remove('ops-dark-mode');
-    }
+    applyColorMode(mode);
 
     // Persist to localStorage
     localStorage.setItem('ops_color_mode', mode);
 
-    // If Odoo session available, save to user preferences
-    if (window.odoo && window.odoo.session_info && window.odoo.session_info.user_id) {
-        // Fire and forget - don't block UI for this
+    // Save to server if session available
+    if (window.odoo && window.odoo.session_info && window.odoo.session_info.uid) {
         fetch('/web/dataset/call_kw/res.users/write', {
             method: 'POST',
             headers: {
@@ -75,12 +111,12 @@ window.setOpsColorMode = function(mode) {
                 params: {
                     model: 'res.users',
                     method: 'write',
-                    args: [[window.odoo.session_info.user_id], { ops_color_mode: mode }],
+                    args: [[window.odoo.session_info.uid], { ops_color_mode: mode }],
                     kwargs: {},
                 },
                 id: Math.floor(Math.random() * 1000000),
             }),
-        }).catch(err => console.warn('OPS Theme: Could not save color mode preference:', err));
+        }).catch(err => console.warn('OPS Theme: Could not save preference:', err));
     }
 
     console.log('OPS Theme: Color mode set to', mode);
@@ -102,19 +138,5 @@ window.toggleOpsColorMode = function() {
     window.setOpsColorMode(current === 'light' ? 'dark' : 'light');
 };
 
-// =============================================================================
-// SYNC WITH SERVER ON PAGE LOAD
-// =============================================================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    // If Odoo session has color mode preference, use it
-    if (window.odoo && window.odoo.session_info && window.odoo.session_info.color_mode) {
-        const serverMode = window.odoo.session_info.color_mode;
-        const localMode = localStorage.getItem('ops_color_mode');
-
-        // Server preference takes precedence if different
-        if (serverMode && serverMode !== localMode) {
-            window.setOpsColorMode(serverMode);
-        }
-    }
-});
+// Export for module usage
+export { applyColorMode };

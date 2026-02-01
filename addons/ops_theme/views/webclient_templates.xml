@@ -37,11 +37,14 @@
     </template>
 
     <!-- ===================================================================== -->
-    <!-- ADD DATA-COLOR-MODE ATTRIBUTE TO HTML ELEMENT                         -->
+    <!-- ADD DATA-COLOR-MODE ATTRIBUTE TO HTML ELEMENT (Dynamic from user)     -->
     <!-- ===================================================================== -->
     <template id="ops_webclient_layout" inherit_id="web.layout" name="OPS Webclient Layout">
         <xpath expr="//html" position="attributes">
-            <attribute name="data-color-mode">system</attribute>
+            <!-- Dynamic color mode from user preference, defaults to 'light' -->
+            <attribute name="t-att-data-color-mode">request.env.user.ops_color_mode or 'light'</attribute>
+            <!-- Chatter position for FormCompiler -->
+            <attribute name="t-att-data-chatter-position">request.env.user.ops_chatter_position or 'bottom'</attribute>
         </xpath>
     </template>
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.6.1.0',
+    'version': '19.0.6.2.0',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -95,6 +95,10 @@ Features:
 
             # 5.5. Chatter readability fix
             'ops_theme/static/src/scss/_chatter_fix.scss',
+
+            # 5.6. Settings layout and error fields
+            'ops_theme/static/src/scss/_settings_layout.scss',
+            'ops_theme/static/src/scss/_error_fields.scss',
 
             # 6. Complete debranding (enterprise hiding + color overrides)
             'ops_theme/static/src/scss/_debranding.scss',

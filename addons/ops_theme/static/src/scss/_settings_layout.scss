@@ -1,0 +1,282 @@
+// =============================================================================
+// OPS THEME - SETTINGS PAGE LAYOUT FIXES
+// =============================================================================
+// Makes settings pages use 2-column layout where appropriate
+// =============================================================================
+
+.o_base_settings {
+    // Main settings container
+    .o_settings_container {
+        background-color: var(--ops-bg-body);
+
+        // Settings boxes - use grid for 2-column layout
+        .o_setting_box {
+            background-color: var(--ops-bg-card);
+            border: 1px solid var(--ops-border);
+            border-radius: var(--ops-radius-md);
+            margin-bottom: 12px;
+
+            // Inner content - 2 columns on wide screens
+            .o_setting_left_pane {
+                color: var(--ops-text-primary);
+            }
+
+            .o_setting_right_pane {
+                color: var(--ops-text-primary);
+
+                // Labels
+                label {
+                    color: var(--ops-text-primary);
+                    font-weight: 500;
+                }
+
+                // Help text
+                .text-muted {
+                    color: var(--ops-text-muted) !important;
+                }
+            }
+        }
+
+        // Section headers
+        .o_settings_header {
+            color: var(--ops-text-primary);
+            font-weight: 600;
+        }
+    }
+
+    // Sidebar
+    .o_setting_left_pane {
+        background-color: var(--ops-bg-card);
+        border-right: 1px solid var(--ops-border);
+    }
+
+    // Form groups inside settings - 2 column grid
+    .o_group {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr !important;
+        }
+
+        // Inner groups span full width
+        .o_inner_group {
+            grid-column: span 1;
+        }
+
+        // Full-width elements
+        &.o_group_col_12,
+        .o_group_col_12 {
+            grid-column: span 2;
+
+            @media (max-width: 768px) {
+                grid-column: span 1;
+            }
+        }
+    }
+}
+
+// =============================================================================
+// THEME SETTINGS SPECIFIC LAYOUT
+// =============================================================================
+
+.o_base_settings {
+    // Color pickers - make them inline/compact
+    .o_field_color {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        input[type="color"] {
+            width: 40px;
+            height: 40px;
+            padding: 2px;
+            border: 1px solid var(--ops-border);
+            border-radius: var(--ops-radius-sm);
+            cursor: pointer;
+
+            &::-webkit-color-swatch-wrapper {
+                padding: 2px;
+            }
+
+            &::-webkit-color-swatch {
+                border-radius: 4px;
+            }
+        }
+    }
+
+    // Brand Colors section - 2 column grid for color pickers
+    .o_setting_box:has(.o_field_color) {
+        .o_setting_right_pane {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+            }
+
+            // Each color field
+            > div {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    }
+
+    // Radio buttons alignment
+    .o_radio_input {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-right: 16px;
+
+        input[type="radio"] {
+            margin: 0;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--ops-secondary);
+        }
+
+        label {
+            margin: 0;
+            cursor: pointer;
+        }
+    }
+
+    // Radio group horizontal layout
+    .o_field_radio {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+
+        .o_radio_item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+    }
+
+    // Image/Binary field alignment
+    .o_field_image,
+    .o_field_binary_file {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+
+        img {
+            max-width: 120px;
+            max-height: 80px;
+            border-radius: var(--ops-radius-sm);
+            border: 1px solid var(--ops-border);
+        }
+
+        .o_select_file_button {
+            flex-shrink: 0;
+        }
+    }
+}
+
+// =============================================================================
+// USER FORM LAYOUT (Settings > Users)
+// =============================================================================
+
+.o_form_view[data-model="res.users"] {
+    // Make the form 2-column
+    .o_group {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    // Section separators
+    .o_horizontal_separator {
+        grid-column: span 2;
+        margin: 16px 0 8px 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--ops-border);
+        color: var(--ops-text-primary);
+        font-weight: 600;
+
+        @media (max-width: 768px) {
+            grid-column: span 1;
+        }
+    }
+}
+
+// =============================================================================
+// USER PREFERENCES MODAL
+// =============================================================================
+
+.modal-dialog:has(.o_res_users_preferences) {
+    // Preferences form 2-column
+    .o_group {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+
+        @media (max-width: 576px) {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    // Display section full width
+    .o_horizontal_separator {
+        grid-column: span 2;
+
+        @media (max-width: 576px) {
+            grid-column: span 1;
+        }
+    }
+
+    // Radio buttons inline
+    .o_field_radio {
+        display: flex;
+        gap: 20px;
+
+        .o_radio_item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            input[type="radio"] {
+                width: 16px;
+                height: 16px;
+                margin: 0;
+                accent-color: var(--ops-secondary);
+            }
+
+            label {
+                margin: 0;
+                font-weight: 400;
+            }
+        }
+    }
+}
+
+// =============================================================================
+// GENERAL FORM 2-COLUMN LAYOUT
+// =============================================================================
+
+.o_form_view {
+    .o_inner_group {
+        // Ensure inner groups use proper grid
+        display: grid;
+        grid-template-columns: minmax(150px, auto) 1fr;
+        gap: 8px 12px;
+        align-items: center;
+
+        // Labels on left
+        .o_td_label,
+        > label {
+            text-align: right;
+            padding-right: 8px;
+        }
+    }
+}

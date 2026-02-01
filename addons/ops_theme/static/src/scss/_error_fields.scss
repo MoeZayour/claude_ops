@@ -1,0 +1,120 @@
+// =============================================================================
+// OPS THEME - ERROR FIELD VISIBILITY
+// =============================================================================
+// Makes required field errors visible with proper red styling
+// =============================================================================
+
+.o_web_client {
+    // Required field with error
+    .o_field_invalid,
+    .o_field_widget.o_field_invalid,
+    .form-control.is-invalid,
+    input.o_field_invalid,
+    select.o_field_invalid,
+    textarea.o_field_invalid {
+        border-color: var(--ops-danger) !important;
+        border-width: 2px !important;
+        background-color: rgba(var(--ops-danger-rgb), 0.05) !important;
+
+        &:focus {
+            border-color: var(--ops-danger) !important;
+            box-shadow: 0 0 0 3px rgba(var(--ops-danger-rgb), 0.2) !important;
+        }
+    }
+
+    // Nested input inside invalid field widget
+    .o_field_invalid input,
+    .o_field_invalid select,
+    .o_field_invalid textarea,
+    .o_field_widget.o_field_invalid input,
+    .o_field_widget.o_field_invalid select {
+        border-color: var(--ops-danger) !important;
+        border-width: 2px !important;
+    }
+
+    // Many2one invalid
+    .o_field_many2one.o_field_invalid {
+        .o_input_dropdown {
+            border-color: var(--ops-danger) !important;
+            border-width: 2px !important;
+        }
+
+        input {
+            border-color: var(--ops-danger) !important;
+        }
+    }
+
+    // Many2many tags invalid
+    .o_field_many2many_tags.o_field_invalid {
+        border: 2px solid var(--ops-danger) !important;
+        border-radius: var(--ops-radius-sm);
+        padding: 2px;
+    }
+
+    // Required field indicator - left border
+    .o_required_modifier .o_input,
+    .o_required_modifier input.o_input,
+    .o_required_modifier select.o_input,
+    .o_required_modifier textarea.o_input {
+        border-left: 3px solid var(--ops-warning) !important;
+
+        &:focus {
+            border-left-color: var(--ops-secondary) !important;
+        }
+    }
+
+    // Error notification
+    .o_notification.border-danger,
+    .o_notification_danger {
+        border-left: 4px solid var(--ops-danger) !important;
+        background-color: rgba(var(--ops-danger-rgb), 0.1) !important;
+    }
+
+    // Field help/error text
+    .o_field_widget .text-danger,
+    .invalid-feedback {
+        color: var(--ops-danger) !important;
+        font-size: 0.85em;
+        margin-top: 4px;
+    }
+
+    // Statusbar error state
+    .o_statusbar_status .o_arrow_button.o_invalid {
+        background-color: var(--ops-danger) !important;
+        color: white !important;
+    }
+
+    // Form error banner
+    .alert-danger,
+    .o_form_view .alert-danger {
+        background-color: rgba(var(--ops-danger-rgb), 0.1) !important;
+        border-color: var(--ops-danger) !important;
+        color: var(--ops-danger) !important;
+
+        a {
+            color: var(--ops-danger) !important;
+            text-decoration: underline;
+        }
+    }
+}
+
+// =============================================================================
+// DARK MODE ADJUSTMENTS
+// =============================================================================
+
+[data-color-mode="dark"],
+.ops-dark-mode {
+    .o_field_invalid,
+    .o_field_widget.o_field_invalid {
+        background-color: rgba(var(--ops-danger-rgb), 0.15) !important;
+    }
+
+    .o_notification.border-danger,
+    .o_notification_danger {
+        background-color: rgba(var(--ops-danger-rgb), 0.2) !important;
+    }
+
+    .alert-danger {
+        background-color: rgba(var(--ops-danger-rgb), 0.2) !important;
+    }
+}
