@@ -1,0 +1,416 @@
+// =============================================================================
+// OPS THEME v2.0 - BUTTONS
+// =============================================================================
+// Modern button styling - OPS Blue (replaces Odoo purple)
+// SAFE: Only uses colors, borders, and shadows
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// BASE BUTTON STYLES
+// -----------------------------------------------------------------------------
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                color 0.2s ease;
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    &:disabled,
+    &.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+// Small button
+.btn-sm {
+    padding: 4px 10px;
+    font-size: 0.8125rem;
+    border-radius: 6px;
+}
+
+// Large button
+.btn-lg {
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 10px;
+}
+
+// -----------------------------------------------------------------------------
+// PRIMARY BUTTON - OPS Blue (kills the purple)
+// -----------------------------------------------------------------------------
+
+.btn-primary {
+    background-color: var(--ops-secondary, #3b82f6) !important;
+    border-color: var(--ops-secondary, #3b82f6) !important;
+    color: white !important;
+
+    &:hover:not(:disabled) {
+        background-color: var(--ops-secondary-hover, #2563eb) !important;
+        border-color: var(--ops-secondary-hover, #2563eb) !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    }
+
+    &:active:not(:disabled) {
+        background-color: #1d4ed8 !important;
+        border-color: #1d4ed8 !important;
+    }
+
+    &:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECONDARY BUTTON
+// -----------------------------------------------------------------------------
+
+.btn-secondary {
+    background-color: var(--ops-bg-card, #ffffff);
+    border-color: var(--ops-border, #e2e8f0);
+    color: var(--ops-text-primary, #1e293b);
+
+    &:hover:not(:disabled) {
+        background-color: var(--ops-bg-hover, #f8fafc);
+        border-color: var(--ops-text-disabled, #94a3b8);
+        color: var(--ops-text-primary, #1e293b);
+    }
+
+    &:active:not(:disabled) {
+        background-color: var(--ops-bg-selected, #e2e8f0);
+    }
+}
+
+// Dark mode secondary
+[data-color-mode="dark"] .btn-secondary {
+    background-color: var(--ops-bg-elevated, #334155);
+    border-color: var(--ops-border, #475569);
+    color: var(--ops-text-primary, #f1f5f9);
+
+    &:hover:not(:disabled) {
+        background-color: var(--ops-bg-hover, #475569);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SUCCESS BUTTON
+// -----------------------------------------------------------------------------
+
+.btn-success {
+    background-color: var(--ops-success, #10b981) !important;
+    border-color: var(--ops-success, #10b981) !important;
+    color: white !important;
+
+    &:hover:not(:disabled) {
+        background-color: #059669 !important;
+        border-color: #059669 !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    }
+
+    &:active:not(:disabled) {
+        background-color: #047857 !important;
+    }
+
+    &:focus {
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// DANGER BUTTON
+// -----------------------------------------------------------------------------
+
+.btn-danger {
+    background-color: var(--ops-danger, #ef4444) !important;
+    border-color: var(--ops-danger, #ef4444) !important;
+    color: white !important;
+
+    &:hover:not(:disabled) {
+        background-color: #dc2626 !important;
+        border-color: #dc2626 !important;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+    }
+
+    &:active:not(:disabled) {
+        background-color: #b91c1c !important;
+    }
+
+    &:focus {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// WARNING BUTTON
+// -----------------------------------------------------------------------------
+
+.btn-warning {
+    background-color: var(--ops-warning, #f59e0b) !important;
+    border-color: var(--ops-warning, #f59e0b) !important;
+    color: white !important;
+
+    &:hover:not(:disabled) {
+        background-color: #d97706 !important;
+        border-color: #d97706 !important;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+    }
+
+    &:active:not(:disabled) {
+        background-color: #b45309 !important;
+    }
+
+    &:focus {
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// INFO BUTTON
+// -----------------------------------------------------------------------------
+
+.btn-info {
+    background-color: var(--ops-info, #06b6d4) !important;
+    border-color: var(--ops-info, #06b6d4) !important;
+    color: white !important;
+
+    &:hover:not(:disabled) {
+        background-color: #0891b2 !important;
+        border-color: #0891b2 !important;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);
+    }
+
+    &:active:not(:disabled) {
+        background-color: #0e7490 !important;
+    }
+
+    &:focus {
+        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.3);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// LIGHT BUTTON
+// -----------------------------------------------------------------------------
+
+.btn-light {
+    background-color: var(--ops-bg-hover, #f1f5f9);
+    border-color: var(--ops-border, #e2e8f0);
+    color: var(--ops-text-primary, #1e293b);
+
+    &:hover:not(:disabled) {
+        background-color: var(--ops-bg-selected, #e2e8f0);
+        border-color: var(--ops-text-disabled, #94a3b8);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// DARK BUTTON
+// -----------------------------------------------------------------------------
+
+.btn-dark {
+    background-color: var(--ops-primary, #1e293b) !important;
+    border-color: var(--ops-primary, #1e293b) !important;
+    color: white !important;
+
+    &:hover:not(:disabled) {
+        background-color: #0f172a !important;
+        border-color: #0f172a !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// LINK BUTTON
+// -----------------------------------------------------------------------------
+
+.btn-link {
+    color: var(--ops-secondary, #3b82f6);
+    text-decoration: none;
+    background: transparent;
+    border-color: transparent;
+
+    &:hover:not(:disabled) {
+        color: var(--ops-secondary-hover, #2563eb);
+        text-decoration: underline;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// OUTLINE BUTTONS
+// -----------------------------------------------------------------------------
+
+.btn-outline-primary {
+    color: var(--ops-secondary, #3b82f6);
+    border-color: var(--ops-secondary, #3b82f6);
+    background: transparent;
+
+    &:hover:not(:disabled) {
+        background-color: var(--ops-secondary, #3b82f6);
+        color: white;
+    }
+}
+
+.btn-outline-secondary {
+    color: var(--ops-text-secondary, #64748b);
+    border-color: var(--ops-border, #e2e8f0);
+    background: transparent;
+
+    &:hover:not(:disabled) {
+        background-color: var(--ops-bg-hover, #f1f5f9);
+        color: var(--ops-text-primary, #1e293b);
+    }
+}
+
+.btn-outline-success {
+    color: var(--ops-success, #10b981);
+    border-color: var(--ops-success, #10b981);
+    background: transparent;
+
+    &:hover:not(:disabled) {
+        background-color: var(--ops-success, #10b981);
+        color: white;
+    }
+}
+
+.btn-outline-danger {
+    color: var(--ops-danger, #ef4444);
+    border-color: var(--ops-danger, #ef4444);
+    background: transparent;
+
+    &:hover:not(:disabled) {
+        background-color: var(--ops-danger, #ef4444);
+        color: white;
+    }
+}
+
+.btn-outline-warning {
+    color: var(--ops-warning, #f59e0b);
+    border-color: var(--ops-warning, #f59e0b);
+    background: transparent;
+
+    &:hover:not(:disabled) {
+        background-color: var(--ops-warning, #f59e0b);
+        color: white;
+    }
+}
+
+.btn-outline-info {
+    color: var(--ops-info, #06b6d4);
+    border-color: var(--ops-info, #06b6d4);
+    background: transparent;
+
+    &:hover:not(:disabled) {
+        background-color: var(--ops-info, #06b6d4);
+        color: white;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// BUTTON ICONS
+// -----------------------------------------------------------------------------
+
+.btn {
+    i, .fa, .oi {
+        margin-right: 6px;
+
+        &:last-child:not(:first-child) {
+            margin-right: 0;
+            margin-left: 6px;
+        }
+
+        &:only-child {
+            margin: 0;
+        }
+    }
+}
+
+// Icon-only button
+.btn-icon {
+    padding: 8px;
+    line-height: 1;
+
+    i, .fa, .oi {
+        margin: 0;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// BUTTON GROUPS
+// -----------------------------------------------------------------------------
+
+.btn-group {
+    .btn {
+        border-radius: 0;
+
+        &:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        &:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        &:not(:last-child) {
+            border-right-width: 0;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// ODOO ACTION BUTTONS
+// -----------------------------------------------------------------------------
+
+.o_statusbar_buttons {
+    .btn {
+        margin-right: 8px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+// Control panel buttons
+.o_control_panel .btn {
+    &.o_switch_view {
+        padding: 6px 10px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// LOADING STATE
+// -----------------------------------------------------------------------------
+
+.btn.ops-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+
+    &::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 50%;
+        left: 50%;
+        margin-top: -8px;
+        margin-left: -8px;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: ops-spin 0.6s linear infinite;
+    }
+}
+
+@keyframes ops-spin {
+    to { transform: rotate(360deg); }
+}

@@ -1,0 +1,77 @@
+// =============================================================================
+// OPS THEME - APP GRID (HOME MENU)
+// =============================================================================
+// SAFE: Only colors, borders, shadows - no display/flex/grid overrides
+
+// Home menu styling - colors only
+.o_home_menu {
+    background-color: var(--ops-bg-body, #f8fafc);
+
+    // Search bar - colors and borders only
+    .o_home_menu_search {
+        input,
+        .o_home_menu_search_input {
+            background-color: var(--ops-bg-card, #fff);
+            border: 1px solid var(--ops-border, #e2e8f0);
+            border-radius: 0.75rem;
+            color: var(--ops-text-primary, #1e293b);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+            &::placeholder {
+                color: var(--ops-text-disabled, #94a3b8);
+            }
+
+            &:focus {
+                outline: none;
+                border-color: var(--ops-secondary, #3b82f6);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+        }
+
+        .o_home_menu_search_icon,
+        .fa-search {
+            color: var(--ops-text-secondary, #64748b);
+        }
+    }
+
+    // Individual app card - colors and shadows only
+    .o_app {
+        background-color: var(--ops-bg-card, #fff);
+        border: 1px solid var(--ops-border, #e2e8f0);
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        text-decoration: none;
+        transition: box-shadow 0.2s, border-color 0.2s;
+
+        &:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-color: var(--ops-secondary, #3b82f6);
+            text-decoration: none;
+        }
+
+        // App name
+        .o_caption {
+            font-weight: 500;
+            color: var(--ops-text-primary, #1e293b);
+        }
+    }
+}
+
+// =============================================================================
+// Home Menu Toggle Button - colors only
+// =============================================================================
+.o_menu_toggle {
+    color: #fff;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: rgba(255,255,255,0.1);
+    }
+}
+
+// =============================================================================
+// Background
+// =============================================================================
+.o_home_menu_background {
+    background-color: var(--ops-bg-body, #f8fafc);
+}

@@ -1,0 +1,313 @@
+// =============================================================================
+// OPS THEME - WIZARD/MODAL LAYOUT
+// =============================================================================
+// Two columns, auto-width for better use of modal space
+// =============================================================================
+
+// Modal dialog sizing
+.modal-dialog {
+    max-width: 900px !important;
+    width: 90vw !important;
+
+    &.modal-sm {
+        max-width: 400px !important;
+    }
+
+    &.modal-lg {
+        max-width: 1000px !important;
+    }
+
+    &.modal-xl {
+        max-width: 1200px !important;
+    }
+}
+
+// Modal content
+.modal-content {
+    border-radius: 12px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important;
+    border: none !important;
+    background-color: #ffffff !important;
+}
+
+// Modal header
+.modal-header {
+    padding: 16px 24px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+
+    .modal-title {
+        font-size: 1.25rem !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+    }
+
+    .btn-close {
+        opacity: 0.5 !important;
+
+        &:hover {
+            opacity: 1 !important;
+        }
+    }
+}
+
+// Modal body - two column layout
+.modal-body {
+    padding: 24px !important;
+    background-color: #ffffff !important;
+
+    // Form groups in modal - two columns
+    .o_group {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px 32px !important;
+
+        > .o_inner_group {
+            grid-column: span 1 !important;
+        }
+
+        // Full width elements
+        > table,
+        > .o_field_x2many,
+        > .o_horizontal_separator {
+            grid-column: span 2 !important;
+        }
+    }
+
+    // Inner group in modal
+    .o_inner_group {
+        display: grid !important;
+        grid-template-columns: minmax(100px, 140px) 1fr !important;
+        gap: 8px 12px !important;
+        align-items: center !important;
+    }
+
+    // Section headers
+    .o_horizontal_separator,
+    h2, h3, h4 {
+        grid-column: span 2 !important;
+        margin-top: 16px !important;
+        padding-bottom: 8px !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+    }
+
+    // Form labels
+    .o_form_label {
+        color: #64748b !important;
+        font-size: 13px !important;
+    }
+
+    // Input fields
+    input.o_input,
+    select.o_input,
+    .o_input {
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 6px !important;
+        padding: 8px 12px !important;
+        color: #1e293b !important;
+
+        &:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+    }
+}
+
+// Modal footer
+.modal-footer {
+    padding: 16px 24px !important;
+    border-top: 1px solid #e2e8f0 !important;
+    gap: 8px !important;
+    background-color: #f8fafc !important;
+
+    .btn {
+        min-width: 100px !important;
+    }
+
+    .btn-primary {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: #ffffff !important;
+
+        &:hover {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+        }
+    }
+
+    .btn-secondary {
+        background-color: #ffffff !important;
+        border-color: #e2e8f0 !important;
+        color: #1e293b !important;
+
+        &:hover {
+            background-color: #f8fafc !important;
+            border-color: #3b82f6 !important;
+        }
+    }
+}
+
+// Wizard specific
+.o_dialog {
+    .modal-body {
+        max-height: 70vh !important;
+        overflow-y: auto !important;
+    }
+
+    // Ensure form view inside dialog uses full width
+    .o_form_view {
+        width: 100% !important;
+        padding: 0 !important;
+        background: transparent !important;
+
+        .o_form_sheet_bg {
+            padding: 0 !important;
+            background: transparent !important;
+        }
+
+        .o_form_sheet {
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+        }
+    }
+}
+
+// Wizard radio buttons - ensure no overlap
+.modal-body {
+    .o_field_radio,
+    .o_radio_input,
+    .o_field_selection_radio {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+
+        .o_radio_item,
+        .form-check {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            padding: 8px 12px !important;
+            background: #f8fafc !important;
+            border-radius: 6px !important;
+            border: 1px solid #e2e8f0 !important;
+            cursor: pointer !important;
+            transition: all 0.15s ease !important;
+
+            &:hover {
+                background: #f1f5f9 !important;
+                border-color: #3b82f6 !important;
+            }
+
+            input[type="radio"] {
+                flex-shrink: 0 !important;
+                width: 18px !important;
+                height: 18px !important;
+                margin-top: 2px !important;
+            }
+
+            label {
+                margin: 0 !important;
+                line-height: 1.5 !important;
+                cursor: pointer !important;
+                flex: 1 !important;
+            }
+        }
+    }
+}
+
+// Wizard fields - ensure proper sizing
+.modal-body {
+    .o_field_many2one,
+    .o_field_many2many,
+    .o_field_selection {
+        min-width: 200px !important;
+    }
+
+    .o_field_many2many_tags {
+        min-width: 250px !important;
+    }
+}
+
+// Responsive - single column on small modals
+@media (max-width: 768px) {
+    .modal-dialog {
+        max-width: 95vw !important;
+        margin: 10px auto !important;
+    }
+
+    .modal-body .o_group {
+        grid-template-columns: 1fr !important;
+
+        > .o_inner_group {
+            grid-column: span 1 !important;
+        }
+    }
+}
+
+// =============================================================================
+// DARK MODE OVERRIDES
+// =============================================================================
+[data-color-mode="dark"] {
+    .modal-content {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    .modal-header {
+        background-color: #1e293b !important;
+        border-bottom-color: #334155 !important;
+
+        .modal-title {
+            color: #f1f5f9 !important;
+        }
+    }
+
+    .modal-body {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+
+        .o_form_label {
+            color: #94a3b8 !important;
+        }
+
+        input.o_input,
+        select.o_input,
+        .o_input {
+            background-color: #334155 !important;
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+
+        .o_horizontal_separator,
+        h2, h3, h4 {
+            color: #f1f5f9 !important;
+            border-bottom-color: #334155 !important;
+        }
+
+        .o_radio_item,
+        .form-check {
+            background: #334155 !important;
+            border-color: #475569 !important;
+
+            &:hover {
+                background: #475569 !important;
+            }
+        }
+    }
+
+    .modal-footer {
+        background-color: #0f172a !important;
+        border-top-color: #334155 !important;
+
+        .btn-secondary {
+            background-color: #334155 !important;
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+    }
+}

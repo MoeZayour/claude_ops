@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.5.1.0',
+    'version': '19.0.6.0.0',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -38,7 +38,6 @@ Features:
     'data': [
         'security/ir.model.access.csv',
         'views/res_config_settings_views.xml',
-        'views/res_company_views.xml',
         'views/res_users_views.xml',
         'views/login_templates.xml',
         'views/webclient_templates.xml',

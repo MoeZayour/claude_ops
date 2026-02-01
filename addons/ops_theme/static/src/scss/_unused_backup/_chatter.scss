@@ -4,6 +4,51 @@
 // LIGHT MODE DEFAULT - hardcoded fallbacks for readability
 // =============================================================================
 
+// =============================================================================
+// CHATTER - Full width when at bottom
+// =============================================================================
+
+// Chatter at bottom of form - full width
+.o_form_view {
+    // When chatter is below form
+    & + .o-mail-Chatter,
+    .o_form_sheet_bg .o-mail-Chatter {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 20px !important;
+        margin-top: 24px !important;
+        border-top: 2px solid #e2e8f0 !important;
+        background: #fafafa !important;
+    }
+}
+
+// Chatter content
+.o-mail-Chatter {
+    width: 100% !important;
+
+    .o-mail-Chatter-top {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding-bottom: 16px !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        margin-bottom: 16px !important;
+    }
+
+    .o-mail-Thread {
+        max-height: 400px !important;
+        overflow-y: auto !important;
+    }
+}
+
+// Chatter on side (if enabled)
+.o-mail-Form-chatter:has(.o-mail-Chatter) {
+    min-width: 350px !important;
+    max-width: 400px !important;
+    padding: 16px !important;
+    border-left: 1px solid #e2e8f0 !important;
+}
+
 // Chatter container - LIGHT MODE DEFAULT
 .o_FormRenderer_chatterContainer {
     background-color: #ffffff !important;
@@ -14,9 +59,17 @@
     background-color: #ffffff !important;
 }
 
+// =============================================================================
+// CHATTER MAIN STYLES
+// =============================================================================
+
+// Chatter container - full viewport width
 .o_Chatter,
 .o-mail-Chatter {
-    padding: 1rem;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 16px !important;
+    margin: 0 !important;
     background-color: #ffffff !important;
     color: #1e293b !important;
 
@@ -222,10 +275,120 @@
 }
 
 // =============================================================================
-// CHATTER POSITION: BELOW (Default)
+// CHATTER POSITION: SIDE (Default Odoo behavior)
 // =============================================================================
 .o_form_view .o_FormRenderer_chatterContainer {
     border-top: 1px solid #e2e8f0 !important;
+}
+
+// =============================================================================
+// CHATTER POSITION: BOTTOM (via FormCompiler patch)
+// =============================================================================
+// When chatter is in form sheet (bottom position)
+.o-isInFormSheetBg {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-top: 2px solid #e2e8f0 !important;
+    padding-top: 24px;
+    margin-top: 24px;
+    flex: none !important;
+
+    .o-mail-Chatter,
+    .o_Chatter {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .o-mail-Thread,
+    .o_MessageList {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    // Ensure composer takes full width
+    .o-mail-Composer,
+    .o_Composer {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+// =============================================================================
+// CHATTER - Enhanced styling when at bottom
+// =============================================================================
+
+// Chatter container at bottom of form - FULL WIDTH
+.o_form_sheet_bg .o-mail-Chatter,
+.o-isInFormSheetBg .o-mail-Chatter,
+.o_form_view .o_form_sheet_bg .o-mail-Chatter {
+    width: 100% !important;
+    max-width: 100% !important;
+    background: #ffffff !important;
+    padding: 24px 0 0 0 !important;
+    margin: 24px 0 0 0 !important;
+    border-top: 2px solid #e2e8f0 !important;
+    border-radius: 0 !important;
+}
+
+// Chatter content area - full width
+.o-mail-Chatter-content {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+// When chatter is at bottom of page (outside form)
+.o_form_view + .o-mail-Chatter,
+.o_action > .o-mail-Chatter {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 24px 16px !important;
+    border-top: 2px solid #e2e8f0;
+    background: #fafafa;
+}
+
+// Chatter header with buttons
+.o-mail-Chatter-top,
+.o-mail-Chatter .o-mail-Chatter-top {
+    padding-bottom: 16px !important;
+    margin-bottom: 16px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+// Send message button
+.o-mail-Chatter .btn-primary,
+.o-mail-Chatter-sendMessage {
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+
+    &:hover {
+        background: #2563eb !important;
+        border-color: #2563eb !important;
+    }
+}
+
+// Message thread
+.o-mail-Thread {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+// Individual messages
+.o-mail-Message {
+    padding: 12px 0 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+// Empty chatter state
+.o-mail-Thread-empty {
+    padding: 40px 20px !important;
+    text-align: center !important;
+    color: #94a3b8 !important;
+}
+
+// Hide chatter when t-if="false" is set
+.o-mail-Form-chatter[t-if="false"] {
+    display: none !important;
 }
 
 // =============================================================================

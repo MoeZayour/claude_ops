@@ -1,0 +1,298 @@
+// =============================================================================
+// OPS THEME v3.5 - DROPDOWNS (Minimal Safe Version)
+// =============================================================================
+// PRINCIPLE: Style APPEARANCE only. Do NOT touch visibility or positioning.
+// Let Odoo's OWL components handle show/hide logic completely.
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// SECTION 1: OVERFLOW - Allow dropdowns to escape containers
+// -----------------------------------------------------------------------------
+
+// Navbar MUST allow overflow
+.o_main_navbar,
+nav.o_main_navbar {
+    overflow: visible !important;
+
+    > *,
+    .o_menu_brand,
+    .o_menu_sections,
+    .o_menu_systray,
+    .o_navbar_apps_menu,
+    .o_user_menu {
+        overflow: visible !important;
+    }
+}
+
+// Form containers
+.o_form_view,
+.o_form_renderer,
+.o_form_sheet_bg,
+.o_form_sheet,
+.o_notebook,
+.o_notebook_content,
+.tab-content,
+.tab-pane,
+.o_group,
+.o_inner_group {
+    overflow: visible !important;
+}
+
+// List containers
+.o_list_view,
+.o_list_renderer {
+    overflow: visible !important;
+}
+
+// Control panel
+.o_control_panel,
+.o_control_panel_main {
+    overflow: visible !important;
+}
+
+// Settings
+.o_settings_container,
+.app_settings_block,
+.o_setting_box {
+    overflow: visible !important;
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 2: Z-INDEX - Ensure dropdowns appear above other content
+// -----------------------------------------------------------------------------
+
+.dropdown-menu,
+.o-dropdown--menu {
+    z-index: 1050 !important;
+}
+
+.o_main_navbar .dropdown-menu,
+.o_main_navbar .o-dropdown--menu {
+    z-index: 1100 !important;
+}
+
+.o-autocomplete--dropdown-menu,
+.o_select_menu_menu,
+.ui-autocomplete {
+    z-index: 1200 !important;
+}
+
+.modal .dropdown-menu,
+.modal .o-dropdown--menu,
+.o_dialog .dropdown-menu,
+.o_dialog .o-dropdown--menu {
+    z-index: 1300 !important;
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 3: DROPDOWN STYLING - Appearance only
+// -----------------------------------------------------------------------------
+
+.dropdown-menu,
+.o-dropdown--menu {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    padding: 6px 0 !important;
+    min-width: 160px;
+}
+
+// Dropdown items
+.dropdown-menu .dropdown-item,
+.dropdown-menu a:not(.btn),
+.o-dropdown--menu .o-dropdown-item,
+.o-dropdown--menu .o-navigable {
+    padding: 10px 16px !important;
+    color: #1e293b !important;
+    font-size: 14px;
+
+    &:hover,
+    &:focus {
+        background: #f1f5f9 !important;
+        color: #1e293b !important;
+    }
+
+    &.active,
+    &.selected {
+        background: #eff6ff !important;
+        color: #3b82f6 !important;
+    }
+
+    .fa, .oi, i {
+        margin-right: 10px;
+        width: 16px;
+        text-align: center;
+    }
+}
+
+.dropdown-divider {
+    margin: 6px 0 !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 4: AUTOCOMPLETE / MANY2ONE
+// -----------------------------------------------------------------------------
+
+.o-autocomplete--dropdown-menu {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    padding: 4px 0 !important;
+    max-height: 300px;
+    overflow-y: auto;
+
+    .o-autocomplete--dropdown-item {
+        padding: 10px 14px !important;
+        color: #1e293b !important;
+        cursor: pointer;
+
+        &:hover,
+        &.focus,
+        &.o-navigable--focus {
+            background: #f1f5f9 !important;
+        }
+    }
+
+    .o_m2o_dropdown_option {
+        color: #3b82f6 !important;
+        border-top: 1px solid #e2e8f0;
+        margin-top: 4px;
+    }
+}
+
+// jQuery UI autocomplete
+.ui-autocomplete {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    list-style: none !important;
+    padding: 4px 0 !important;
+    margin: 0 !important;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1200 !important;
+
+    .ui-menu-item-wrapper {
+        padding: 10px 14px !important;
+
+        &.ui-state-active {
+            background: #f1f5f9 !important;
+            color: #1e293b !important;
+            border: none !important;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 5: SELECT MENU
+// -----------------------------------------------------------------------------
+
+.o_select_menu_menu {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    z-index: 1200 !important;
+
+    .o_select_menu_item {
+        padding: 10px 14px !important;
+        cursor: pointer;
+
+        &:hover,
+        &.o_select_active {
+            background: #f1f5f9 !important;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 6: NAVBAR SPECIFIC
+// -----------------------------------------------------------------------------
+
+// Apps menu
+.o_navbar_apps_menu {
+    .dropdown-menu,
+    .o-dropdown--menu {
+        min-width: 280px;
+        padding: 12px !important;
+    }
+
+    .o_app {
+        color: #1e293b !important;
+        border-radius: 8px;
+
+        &:hover {
+            background: #f1f5f9 !important;
+        }
+    }
+}
+
+// User menu
+.o_user_menu {
+    .dropdown-menu,
+    .o-dropdown--menu {
+        min-width: 200px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 7: SCROLLBAR STYLING
+// -----------------------------------------------------------------------------
+
+.dropdown-menu,
+.o-dropdown--menu,
+.o-autocomplete--dropdown-menu,
+.ui-autocomplete {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 8: DARK MODE
+// -----------------------------------------------------------------------------
+
+.dark-skin,
+[data-color-mode="dark"] {
+    .dropdown-menu,
+    .o-dropdown--menu,
+    .o-autocomplete--dropdown-menu,
+    .o_select_menu_menu,
+    .ui-autocomplete {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .dropdown-menu .dropdown-item,
+    .dropdown-menu a:not(.btn),
+    .o-dropdown--menu .o-dropdown-item,
+    .o-autocomplete--dropdown-item,
+    .o_select_menu_item,
+    .ui-menu-item-wrapper {
+        color: #f1f5f9 !important;
+
+        &:hover,
+        &:focus,
+        &.ui-state-active {
+            background: #334155 !important;
+        }
+    }
+}

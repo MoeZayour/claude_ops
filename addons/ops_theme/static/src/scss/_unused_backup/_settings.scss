@@ -1,0 +1,337 @@
+// =============================================================================
+// OPS THEME v3.5 - SETTINGS PAGE (Complete Rewrite)
+// =============================================================================
+// Two-column layout for settings, proper spacing
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// SECTION 1: SETTINGS CONTAINER
+// -----------------------------------------------------------------------------
+
+.o_settings_container {
+    padding: 24px !important;
+    background: #f8fafc !important;
+    overflow: visible !important;
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 2: APP SETTINGS BLOCK - TWO COLUMNS
+// -----------------------------------------------------------------------------
+
+.app_settings_block {
+    background: transparent !important;
+    overflow: visible !important;
+
+    // FORCE TWO COLUMN GRID
+    > .row,
+    .row.mt16,
+    .row.mt-4,
+    .row.g-3 {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px 24px !important;
+        margin: 0 0 24px 0 !important;
+        padding: 0 !important;
+
+        // Remove Bootstrap row styles
+        &::before,
+        &::after {
+            display: none !important;
+        }
+    }
+
+    // Column classes should span properly
+    .col-12.col-lg-6,
+    .col-lg-6,
+    .col-md-6,
+    [class*="col-"] {
+        grid-column: span 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        flex: none !important;
+    }
+
+    // Full width columns
+    .col-12:not(.col-lg-6):not(.col-md-6) {
+        grid-column: span 2 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 3: SETTING BOX (Individual Cards)
+// -----------------------------------------------------------------------------
+
+.o_setting_box {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 16px 20px !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+
+    // Left pane (toggle/checkbox)
+    .o_setting_left_pane {
+        display: flex !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        margin-bottom: 8px !important;
+
+        .o_field_boolean,
+        .o_field_widget {
+            flex-shrink: 0 !important;
+            margin-top: 2px !important;
+        }
+    }
+
+    // Right pane (label/description)
+    .o_setting_right_pane {
+        flex: 1 !important;
+        min-width: 0 !important;
+
+        // Label
+        .o_form_label,
+        > label,
+        > span.o_form_label {
+            display: block !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            color: #1e293b !important;
+            margin-bottom: 4px !important;
+            line-height: 1.4 !important;
+        }
+
+        // Description
+        .text-muted,
+        .o_setting_description,
+        > span:not(.o_form_label) {
+            display: block !important;
+            font-size: 13px !important;
+            color: #64748b !important;
+            line-height: 1.5 !important;
+            margin-bottom: 8px !important;
+        }
+
+        // Nested fields
+        .o_field_widget {
+            margin-top: 8px !important;
+        }
+
+        // Dependent settings
+        .o_setting_dependency {
+            margin-top: 12px !important;
+            padding-top: 12px !important;
+            border-top: 1px solid #f1f5f9 !important;
+        }
+    }
+
+    // Inner form group for fields inside setting
+    .o_inner_group {
+        display: grid !important;
+        grid-template-columns: minmax(80px, 120px) 1fr !important;
+        gap: 8px 12px !important;
+        margin-top: 12px !important;
+
+        .o_td_label label {
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            color: #64748b !important;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 4: SECTION HEADERS
+// -----------------------------------------------------------------------------
+
+.app_settings_header,
+.o_settings_header {
+    grid-column: span 2 !important;
+    margin: 32px 0 16px 0 !important;
+    padding-bottom: 12px !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+
+    &:first-child {
+        margin-top: 0 !important;
+    }
+}
+
+// Section titles
+.app_settings_block h2,
+.o_settings_container h2 {
+    grid-column: span 2 !important;
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    margin: 24px 0 12px 0 !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+
+    .o_setting_app_name {
+        font-size: inherit !important;
+        font-weight: inherit !important;
+    }
+}
+
+// Horizontal separators
+.o_horizontal_separator {
+    grid-column: span 2 !important;
+    margin: 16px 0 !important;
+    padding: 0 !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 5: ENTERPRISE BADGES
+// -----------------------------------------------------------------------------
+
+.badge.text-bg-info,
+.badge:contains("Enterprise") {
+    background: #3b82f6 !important;
+    color: #ffffff !important;
+    font-size: 11px !important;
+    padding: 3px 8px !important;
+    border-radius: 4px !important;
+    font-weight: 500 !important;
+    margin-left: 8px !important;
+    vertical-align: middle !important;
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 6: FORM FIELDS IN SETTINGS
+// -----------------------------------------------------------------------------
+
+.o_settings_container {
+    // Input fields
+    input.o_input,
+    select.o_input,
+    .o_input {
+        min-width: 180px !important;
+        max-width: 100% !important;
+    }
+
+    // Dropdowns
+    .o_field_many2one,
+    .o_field_selection {
+        min-width: 200px !important;
+        max-width: 100% !important;
+    }
+
+    // Radio buttons
+    .o_field_radio {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+
+        .o_radio_item {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+    }
+
+    // Links
+    a.btn-link,
+    .o_setting_right_pane a {
+        color: #3b82f6 !important;
+        font-size: 13px !important;
+
+        &:hover {
+            color: #2563eb !important;
+            text-decoration: underline !important;
+        }
+
+        .fa, .oi {
+            margin-right: 4px !important;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 7: SIDEBAR (Settings Menu)
+// -----------------------------------------------------------------------------
+
+.o_base_settings .o_setting_left_pane_anchor {
+    .nav-link {
+        padding: 10px 16px !important;
+        color: #64748b !important;
+        border-radius: 6px !important;
+        margin: 2px 0 !important;
+
+        &:hover {
+            background: #f1f5f9 !important;
+            color: #1e293b !important;
+        }
+
+        &.active {
+            background: #eff6ff !important;
+            color: #3b82f6 !important;
+            font-weight: 500 !important;
+        }
+
+        img, .o_setting_app_icon {
+            margin-right: 10px !important;
+            width: 24px !important;
+            height: 24px !important;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 8: RESPONSIVE
+// -----------------------------------------------------------------------------
+
+@media (max-width: 992px) {
+    .app_settings_block > .row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .col-12.col-lg-6,
+    .col-lg-6 {
+        grid-column: span 1 !important;
+    }
+
+    .col-12:not(.col-lg-6) {
+        grid-column: span 1 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 9: DARK MODE
+// -----------------------------------------------------------------------------
+
+.dark-skin,
+[data-color-mode="dark"] {
+    .o_settings_container {
+        background: #0f172a !important;
+    }
+
+    .o_setting_box {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+
+        .o_form_label,
+        > label {
+            color: #f1f5f9 !important;
+        }
+
+        .text-muted,
+        .o_setting_description {
+            color: #94a3b8 !important;
+        }
+    }
+
+    .app_settings_block h2,
+    .o_settings_container h2 {
+        color: #f1f5f9 !important;
+        border-bottom-color: #334155 !important;
+    }
+
+    .o_horizontal_separator {
+        border-top-color: #334155 !important;
+    }
+}

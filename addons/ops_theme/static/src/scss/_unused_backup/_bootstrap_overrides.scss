@@ -1,0 +1,100 @@
+// =============================================================================
+// OPS THEME - BOOTSTRAP VARIABLE OVERRIDES
+// =============================================================================
+// Override Bootstrap's primary color at the source BEFORE compilation
+// This file loads via web._assets_primary_variables to override Odoo defaults
+// =============================================================================
+
+// =============================================================================
+// ODOO BRAND COLORS - Override purple (#714B67) with slate/blue
+// =============================================================================
+$o-brand-odoo: #1e293b !default;
+$o-brand-primary: #3b82f6 !default;
+$o-community-color: #1e293b !default;
+$o-enterprise-color: #1e293b !default;
+$o-enterprise-action-color: #3b82f6 !default;
+
+// =============================================================================
+// BOOTSTRAP PRIMARY COLORS
+// =============================================================================
+$primary: #3b82f6 !default;
+$secondary: #64748b !default;
+$success: #10b981 !default;
+$info: #06b6d4 !default;
+$warning: #f59e0b !default;
+$danger: #ef4444 !default;
+$light: #f8fafc !default;
+$dark: #1e293b !default;
+
+// =============================================================================
+// THEME COLOR MAP
+// =============================================================================
+$theme-colors: (
+    "primary": $primary,
+    "secondary": $secondary,
+    "success": $success,
+    "info": $info,
+    "warning": $warning,
+    "danger": $danger,
+    "light": $light,
+    "dark": $dark,
+) !default;
+
+// =============================================================================
+// LINK COLORS
+// =============================================================================
+$link-color: #3b82f6 !default;
+$link-hover-color: #2563eb !default;
+
+// =============================================================================
+// COMPONENT COLORS (derived from primary)
+// =============================================================================
+$component-active-bg: #3b82f6 !default;
+$component-active-color: #ffffff !default;
+
+// =============================================================================
+// FORM CONTROL FOCUS
+// =============================================================================
+$input-focus-border-color: #3b82f6 !default;
+$input-focus-box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !default;
+
+// =============================================================================
+// DROPDOWN LINK ACTIVE
+// =============================================================================
+$dropdown-link-active-bg: #3b82f6 !default;
+$dropdown-link-active-color: #ffffff !default;
+
+// =============================================================================
+// NAV TABS
+// =============================================================================
+$nav-tabs-link-active-color: #3b82f6 !default;
+$nav-tabs-link-active-border-color: #3b82f6 !default;
+
+// =============================================================================
+// PAGINATION
+// =============================================================================
+$pagination-active-bg: #3b82f6 !default;
+$pagination-active-border-color: #3b82f6 !default;
+
+// =============================================================================
+// LIST GROUP
+// =============================================================================
+$list-group-active-bg: #3b82f6 !default;
+$list-group-active-border-color: #3b82f6 !default;
+
+// =============================================================================
+// PROGRESS BAR
+// =============================================================================
+$progress-bar-bg: #3b82f6 !default;
+
+// =============================================================================
+// BADGE
+// =============================================================================
+$badge-font-weight: 500 !default;
+
+// =============================================================================
+// ALERT VARIATIONS - ensure consistent colors
+// =============================================================================
+$alert-bg-scale: -80% !default;
+$alert-border-scale: -70% !default;
+$alert-color-scale: 40% !default;

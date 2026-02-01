@@ -218,39 +218,12 @@
 
 // -----------------------------------------------------------------------------
 // BUTTON LOADING STATE
+// SAFE: Opt-in class, no position overrides on Odoo buttons
 // -----------------------------------------------------------------------------
 
 .btn.ops-loading {
-    position: relative;
     pointer-events: none;
-
-    &::after {
-        content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        top: 50%;
-        left: 50%;
-        margin-top: -8px;
-        margin-left: -8px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top-color: white;
-        border-radius: 50%;
-        animation: ops-spin-loader 0.6s linear infinite;
-    }
-
-    // Hide button text while loading
-    color: transparent !important;
-}
-
-// Secondary button loading (dark spinner)
-.btn-secondary.ops-loading,
-.btn-outline-primary.ops-loading,
-.btn-light.ops-loading {
-    &::after {
-        border-color: rgba(0, 0, 0, 0.2);
-        border-top-color: var(--ops-text-primary, #1e293b);
-    }
+    opacity: 0.7;
 }
 
 // -----------------------------------------------------------------------------
