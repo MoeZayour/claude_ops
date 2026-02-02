@@ -216,6 +216,19 @@ class OpsInventoryReportWizard(models.TransientModel):
         """Return Many2many fields for template save/load."""
         return ['ops_branch_ids', 'location_ids', 'product_category_ids']
 
+    def _get_report_template_xmlid(self):
+        """Return XML ID of report template based on report_type."""
+        self.ensure_one()
+
+        template_mapping = {
+            'valuation': 'ops_matrix_accounting.report_stock_valuation',
+            'aging': 'ops_matrix_accounting.report_inventory_aging',
+            'movement': 'ops_matrix_accounting.report_inventory_movement',
+            'negative': 'ops_matrix_accounting.report_negative_stock',
+        }
+
+        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_stock_valuation')
+
     def _add_filter_summary_parts(self, parts):
         """Add inventory-specific filter descriptions."""
         # Replace generic date with as_of for inventory

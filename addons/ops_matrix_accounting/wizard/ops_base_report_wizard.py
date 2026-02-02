@@ -700,3 +700,51 @@ class OpsBaseReportWizard(models.AbstractModel):
             'warning': '#d97706',
             'gold': '#C9A962',
         }
+
+    # =========================================================================
+    # UI VIEW FEATURE
+    # =========================================================================
+
+    def action_view_report(self):
+        """
+        Open report in UI View mode (browser preview with toolbar).
+
+        Returns:
+            dict: Action to open report HTML in new tab
+        """
+        self.ensure_one()
+
+        # Run validation
+        validation_result = self._validate_filters()
+        if isinstance(validation_result, dict) and 'warning' in validation_result:
+            return validation_result
+
+        # Security check
+        engine_name = self._get_engine_name()
+        if engine_name:
+            self._check_intelligence_access(engine_name)
+
+        # Get report template name
+        template_name = self._get_report_template_xmlid()
+
+        # Return action to open in new tab with controller
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        url = f'{base_url}/ops/report/html/{template_name}?wizard_id={self.id}'
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
+
+    def _get_report_template_xmlid(self):
+        """
+        Get the XML ID of the report template for this wizard.
+        Must be overridden by child classes.
+
+        Returns:
+            str: XML ID of report template (e.g., 'ops_matrix_accounting.report_general_ledger')
+        """
+        raise NotImplementedError(
+            "Wizards must implement _get_report_template_xmlid() to use UI View feature"
+        )

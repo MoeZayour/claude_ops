@@ -304,6 +304,24 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         """Return Many2many fields for template save/load."""
         return ['branch_ids', 'business_unit_ids', 'account_ids', 'journal_ids', 'partner_ids']
 
+    def _get_report_template_xmlid(self):
+        """Return XML ID of report template based on report_type."""
+        self.ensure_one()
+
+        template_mapping = {
+            'gl': 'ops_matrix_accounting.report_general_ledger',
+            'tb': 'ops_matrix_accounting.report_trial_balance',
+            'pl': 'ops_matrix_accounting.report_profit_loss',
+            'bs': 'ops_matrix_accounting.report_balance_sheet',
+            'cf': 'ops_matrix_accounting.report_cash_flow',
+            'aged_receivable': 'ops_matrix_accounting.report_aged_receivable',
+            'aged_payable': 'ops_matrix_accounting.report_aged_payable',
+            'partner': 'ops_matrix_accounting.report_partner_ledger',
+            'statement': 'ops_matrix_accounting.report_statement_account',
+        }
+
+        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_general_ledger')
+
     def _add_filter_summary_parts(self, parts):
         """Add financial-specific filter descriptions."""
         # Date handling differs by report type

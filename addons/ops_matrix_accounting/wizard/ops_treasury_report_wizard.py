@@ -175,6 +175,18 @@ class OpsTreasuryReportWizard(models.TransientModel):
         """Return Many2many fields for template save/load."""
         return ['branch_ids', 'partner_ids', 'bank_ids']
 
+    def _get_report_template_xmlid(self):
+        """Return XML ID of report template based on report_type."""
+        self.ensure_one()
+
+        template_mapping = {
+            'registry': 'ops_matrix_accounting.report_pdc_registry',
+            'maturity': 'ops_matrix_accounting.report_pdc_maturity',
+            'on_hand': 'ops_matrix_accounting.report_pdc_on_hand',
+        }
+
+        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_pdc_registry')
+
     def _add_filter_summary_parts(self, parts):
         """Add treasury-specific filter descriptions."""
         # Override date display for maturity dates

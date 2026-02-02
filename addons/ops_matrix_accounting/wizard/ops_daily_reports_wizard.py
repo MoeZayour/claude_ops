@@ -247,6 +247,10 @@ class OpsCashBookWizard(models.TransientModel):
             'target': 'new',
         }
 
+    def _get_report_template_xmlid(self):
+        """Return XML ID of the cash book report template."""
+        return 'ops_matrix_accounting.report_cash_book'
+
 
 class OpsDayBookWizard(models.TransientModel):
     """Day Book Report Wizard - All transactions for a day."""
@@ -464,6 +468,10 @@ class OpsDayBookWizard(models.TransientModel):
             'url': f'/web/content/{attachment.id}?download=true',
             'target': 'new',
         }
+
+    def _get_report_template_xmlid(self):
+        """Return XML ID of the day book report template."""
+        return 'ops_matrix_accounting.report_day_book'
 
 
 class OpsBankBookWizard(models.TransientModel):
@@ -756,3 +764,7 @@ class OpsBankBookWizard(models.TransientModel):
             'url': f'/web/content/{attachment.id}?download=true',
             'target': 'new',
         }
+
+    def _get_report_template_xmlid(self):
+        """Return XML ID of the bank book report template."""
+        return 'ops_matrix_accounting.report_bank_book'

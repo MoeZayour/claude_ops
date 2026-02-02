@@ -193,6 +193,18 @@ class OpsAssetReportWizard(models.TransientModel):
         """Return Many2many fields for template save/load."""
         return ['branch_ids', 'business_unit_ids', 'asset_category_ids']
 
+    def _get_report_template_xmlid(self):
+        """Return XML ID of report template based on report_type."""
+        self.ensure_one()
+
+        template_mapping = {
+            'register': 'ops_matrix_accounting.report_asset_register',
+            'depreciation': 'ops_matrix_accounting.report_depreciation_schedule',
+            'disposal': 'ops_matrix_accounting.report_asset_disposal',
+        }
+
+        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_asset_register')
+
     def _add_filter_summary_parts(self, parts):
         """Add asset-specific filter descriptions."""
         # Handle date display based on report type
