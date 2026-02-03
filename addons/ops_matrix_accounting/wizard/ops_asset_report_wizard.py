@@ -757,17 +757,68 @@ class OpsAssetReportWizard(models.TransientModel):
         }
 
     def action_export_excel(self):
-        """Export report to Excel."""
+        """
+        Export Asset Intelligence report to Excel.
+
+        Uses Phase 5 corporate Excel format structure.
+        Generates file directly using xlsxwriter (no report_xlsx dependency).
+        """
         self.ensure_one()
 
+        try:
+            import xlsxwriter
+        except ImportError:
+            raise UserError(_("xlsxwriter Python library is not installed. Cannot generate Excel reports."))
+
+        import io
+        import base64
+
+        # Get report data
         report_data = self._get_report_data()
 
+        # Create in-memory Excel file
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+
+        try:
+            # Generate Excel report using the XLSX report generator
+            xlsx_report = self.env['report.ops_matrix_accounting.report_asset_xlsx']
+            xlsx_report.generate_xlsx_report(workbook, report_data, self)
+        finally:
+            workbook.close()
+
+        # Get file content
+        output.seek(0)
+        file_content = output.read()
+        output.close()
+
+        # Encode to base64
+        file_content_b64 = base64.b64encode(file_content)
+
+        # Generate filename
+        report_type_labels = {
+            'register': 'Asset_Register',
+            'forecast': 'Depreciation_Forecast',
+            'disposal': 'Disposal_Analysis',
+            'movement': 'Asset_Movement',
+        }
+        report_label = report_type_labels.get(self.report_type, 'Asset_Report')
+        filename = f"OPS_{report_label}_{fields.Date.today().strftime('%Y%m%d')}.xlsx"
+
+        # Create attachment and return download action
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,
+            'type': 'binary',
+            'datas': file_content_b64,
+            'res_model': self._name,
+            'res_id': self.id,
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
+
         return {
-            'type': 'ir.actions.report',
-            'report_name': 'ops_matrix_accounting.report_asset_xlsx',
-            'report_type': 'xlsx',
-            'data': report_data,
-            'config': False,
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'self',
         }
 
     # ============================================

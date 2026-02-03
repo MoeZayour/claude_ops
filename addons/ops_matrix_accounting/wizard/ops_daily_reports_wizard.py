@@ -12,6 +12,13 @@ from odoo.exceptions import UserError
 from datetime import datetime, timedelta
 import logging
 import io
+import base64
+
+try:
+    import xlsxwriter
+    XLSXWRITER_AVAILABLE = True
+except ImportError:
+    XLSXWRITER_AVAILABLE = False
 
 _logger = logging.getLogger(__name__)
 
@@ -19,7 +26,12 @@ _logger = logging.getLogger(__name__)
 class OpsCashBookWizard(models.TransientModel):
     """Cash Book Report Wizard."""
     _name = 'ops.cash.book.wizard'
+    _inherit = 'ops.intelligence.security.mixin'
     _description = 'Cash Book Report'
+
+    def _get_engine_name(self):
+        """Return engine name for security checks."""
+        return 'financial'
 
     company_id = fields.Many2one(
         'res.company', string='Company',
@@ -151,17 +163,41 @@ class OpsCashBookWizard(models.TransientModel):
             'currency': self.company_id.currency_id,
         }
 
+    def action_view_report(self):
+        """Open report in UI View mode (browser preview with toolbar)."""
+        self.ensure_one()
+
+        # Get report template name
+        template_name = self._get_report_template_xmlid()
+
+        # Return action to open in new tab with controller
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        url = f'{base_url}/ops/report/html/{template_name}?wizard_id={self.id}'
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
+
+    def action_generate_report(self):
+        """Alias for action_print_pdf for UI consistency."""
+        return self.action_print_pdf()
+
     def action_print_pdf(self):
-        """Generate PDF report."""
+        """Generate PDF report with security checks."""
+        self.ensure_one()
+        # Security: IT Admin Blindness & Persona Access
+        self._check_intelligence_access('financial')
         data = {'wizard_id': self.id, 'report_data': self._get_report_data()}
         return self.env.ref('ops_matrix_accounting.action_report_cash_book').report_action(self, data=data)
 
     def action_export_excel(self):
-        """Export to Excel."""
-        try:
-            import xlsxwriter
-        except ImportError:
+        """Export to Excel using Phase 5 corporate design."""
+        if not XLSXWRITER_AVAILABLE:
             raise UserError(_('xlsxwriter library is required for Excel export. Please install it.'))
+
+        from ..report.excel_styles import get_corporate_excel_formats
 
         data = self._get_report_data()
 
@@ -169,58 +205,114 @@ class OpsCashBookWizard(models.TransientModel):
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
         worksheet = workbook.add_worksheet('Cash Book')
 
-        # Formats
-        header_format = workbook.add_format({
-            'bold': True, 'align': 'center', 'valign': 'vcenter',
-            'font_size': 14, 'bg_color': '#4472C4', 'font_color': 'white'
-        })
-        subheader_format = workbook.add_format({
-            'bold': True, 'align': 'left', 'font_size': 11
-        })
-        col_header_format = workbook.add_format({
-            'bold': True, 'align': 'center', 'bg_color': '#D9E1F2',
-            'border': 1
-        })
-        money_format = workbook.add_format({'num_format': '#,##0.00', 'border': 1})
-        date_format = workbook.add_format({'num_format': 'yyyy-mm-dd', 'border': 1})
-        text_format = workbook.add_format({'border': 1})
-        total_format = workbook.add_format({
-            'bold': True, 'num_format': '#,##0.00', 'bg_color': '#E2EFDA', 'border': 1
-        })
+        # Get corporate formats
+        formats = get_corporate_excel_formats(workbook, self.company_id)
 
-        # Title
-        worksheet.merge_range('A1:H1', f"Cash Book - {data['company']}", header_format)
-        worksheet.write('A2', f"Period: {data['date_from']} to {data['date_to']}", subheader_format)
-        worksheet.write('A3', f"Journals: {data['journals']}", subheader_format)
-        worksheet.write('A4', f"Branches: {data['branches']}", subheader_format)
+        # Phase 5 Corporate Header Structure
+        row = 0
+        # Row 0: Company name
+        worksheet.write(row, 0, self.company_id.name, formats['company_name'])
+        row += 1
 
-        # Opening Balance
-        worksheet.write('A6', 'Opening Balance:', subheader_format)
-        worksheet.write('B6', data['opening_balance'], money_format)
+        # Row 1: Report title
+        worksheet.write(row, 0, 'Cash Book', formats['report_title'])
+        row += 1
 
-        # Column Headers
+        # Row 2: Report period
+        worksheet.write(row, 0, f"Period: {data['date_from']} to {data['date_to']}", formats['metadata'])
+        row += 1
+
+        # Row 3: Generated timestamp and user
+        generated = fields.Datetime.now().strftime('%Y-%m-%d %H:%M')
+        worksheet.write(row, 0, f"Generated: {generated} by {self.env.user.name}", formats['metadata'])
+        row += 2
+
+        # Row 5: Filter bar with journal and currency info
+        filter_text = f"Journal: {data['journals']} | Currency: {self.company_id.currency_id.name} | Branches: {data['branches']} | Status: {data['target_move']}"
+        worksheet.merge_range(row, 0, row, 7, filter_text, formats['filter_bar'])
+        row += 1
+
+        # Row 6: Opening Balance
+        worksheet.write(row, 0, 'Opening Balance:', formats['subtotal_label'])
+        # Apply value-based formatting for opening balance
+        opening_val = data['opening_balance']
+        if opening_val > 0:
+            opening_fmt = formats['number']
+        elif opening_val < 0:
+            opening_fmt = formats['number_negative']
+        else:
+            opening_fmt = formats['number_zero']
+        worksheet.write(row, 1, opening_val, opening_fmt)
+        row += 1
+
+        # Table headers row
         headers = ['Date', 'Reference', 'Partner', 'Account', 'Description', 'Debit', 'Credit', 'Balance']
-        for col, header in enumerate(headers):
-            worksheet.write(7, col, header, col_header_format)
+        for col in range(5):
+            worksheet.write(row, col, headers[col], formats['table_header'])
+        for col in range(5, 8):
+            worksheet.write(row, col, headers[col], formats['table_header_num'])
 
-        # Data rows
-        row = 8
-        for line in data['lines']:
-            worksheet.write(row, 0, str(line['date']), date_format)
-            worksheet.write(row, 1, line['ref'], text_format)
-            worksheet.write(row, 2, line['partner'], text_format)
-            worksheet.write(row, 3, line['account'], text_format)
-            worksheet.write(row, 4, line['label'], text_format)
-            worksheet.write(row, 5, line['debit'], money_format)
-            worksheet.write(row, 6, line['credit'], money_format)
-            worksheet.write(row, 7, line['balance'], money_format)
+        # Freeze panes below header row
+        worksheet.freeze_panes(row + 1, 0)
+        row += 1
+
+        # Data rows with alternating format
+        for idx, line in enumerate(data['lines']):
+            is_alt = (idx % 2 == 1)
+            text_fmt = formats['text_alt'] if is_alt else formats['text']
+
+            # Date
+            worksheet.write(row, 0, str(line['date']), text_fmt)
+            # Reference
+            worksheet.write(row, 1, line['ref'], text_fmt)
+            # Partner
+            worksheet.write(row, 2, line['partner'], text_fmt)
+            # Account
+            worksheet.write(row, 3, line['account'], text_fmt)
+            # Description
+            worksheet.write(row, 4, line['label'], text_fmt)
+
+            # Debit - value-based formatting
+            debit_val = line['debit']
+            if debit_val > 0:
+                debit_fmt = formats['number_alt'] if is_alt else formats['number']
+            elif debit_val < 0:
+                debit_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+            else:
+                debit_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+            worksheet.write(row, 5, debit_val, debit_fmt)
+
+            # Credit - value-based formatting
+            credit_val = line['credit']
+            if credit_val > 0:
+                credit_fmt = formats['number_alt'] if is_alt else formats['number']
+            elif credit_val < 0:
+                credit_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+            else:
+                credit_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+            worksheet.write(row, 6, credit_val, credit_fmt)
+
+            # Balance - value-based formatting
+            balance_val = line['balance']
+            if balance_val > 0:
+                balance_fmt = formats['number_alt'] if is_alt else formats['number']
+            elif balance_val < 0:
+                balance_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+            else:
+                balance_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+            worksheet.write(row, 7, balance_val, balance_fmt)
+
             row += 1
 
-        # Totals
-        worksheet.write(row, 4, 'TOTALS', col_header_format)
-        worksheet.write(row, 5, data['total_debit'], total_format)
-        worksheet.write(row, 6, data['total_credit'], total_format)
-        worksheet.write(row, 7, data['closing_balance'], total_format)
+        # Total row
+        worksheet.write(row, 0, 'TOTALS', formats['total_label'])
+        worksheet.write(row, 1, '', formats['total_label'])
+        worksheet.write(row, 2, '', formats['total_label'])
+        worksheet.write(row, 3, '', formats['total_label'])
+        worksheet.write(row, 4, '', formats['total_label'])
+        worksheet.write(row, 5, data['total_debit'], formats['total_number'])
+        worksheet.write(row, 6, data['total_credit'], formats['total_number'])
+        worksheet.write(row, 7, data['closing_balance'], formats['total_number'])
 
         # Set column widths
         worksheet.set_column('A:A', 12)
@@ -230,14 +322,18 @@ class OpsCashBookWizard(models.TransientModel):
         worksheet.set_column('E:E', 30)
         worksheet.set_column('F:H', 15)
 
+        # Page setup: Landscape, A4, fit to 1 page wide
+        worksheet.set_landscape()
+        worksheet.set_paper(9)  # A4
+        worksheet.fit_to_pages(1, 0)
+
         workbook.close()
         output.seek(0)
 
-        # Create attachment
         attachment = self.env['ir.attachment'].create({
             'name': f'Cash_Book_{self.date_from}_{self.date_to}.xlsx',
             'type': 'binary',
-            'datas': output.read().encode('base64') if hasattr(output.read(), 'encode') else __import__('base64').b64encode(output.getvalue()),
+            'datas': base64.b64encode(output.getvalue()),
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })
 
@@ -255,7 +351,12 @@ class OpsCashBookWizard(models.TransientModel):
 class OpsDayBookWizard(models.TransientModel):
     """Day Book Report Wizard - All transactions for a day."""
     _name = 'ops.day.book.wizard'
+    _inherit = 'ops.intelligence.security.mixin'
     _description = 'Day Book Report'
+
+    def _get_engine_name(self):
+        """Return engine name for security checks."""
+        return 'financial'
 
     company_id = fields.Many2one(
         'res.company', string='Company',
@@ -363,17 +464,41 @@ class OpsDayBookWizard(models.TransientModel):
             'currency': self.company_id.currency_id,
         }
 
+    def action_view_report(self):
+        """Open report in UI View mode (browser preview with toolbar)."""
+        self.ensure_one()
+
+        # Get report template name
+        template_name = self._get_report_template_xmlid()
+
+        # Return action to open in new tab with controller
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        url = f'{base_url}/ops/report/html/{template_name}?wizard_id={self.id}'
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
+
+    def action_generate_report(self):
+        """Alias for action_print_pdf for UI consistency."""
+        return self.action_print_pdf()
+
     def action_print_pdf(self):
-        """Generate PDF report."""
+        """Generate PDF report with security checks."""
+        self.ensure_one()
+        # Security: IT Admin Blindness & Persona Access
+        self._check_intelligence_access('financial')
         data = {'wizard_id': self.id, 'report_data': self._get_report_data()}
         return self.env.ref('ops_matrix_accounting.action_report_day_book').report_action(self, data=data)
 
     def action_export_excel(self):
-        """Export to Excel."""
-        try:
-            import xlsxwriter
-        except ImportError:
+        """Export to Excel using Phase 5 corporate design."""
+        if not XLSXWRITER_AVAILABLE:
             raise UserError(_('xlsxwriter library is required for Excel export. Please install it.'))
+
+        from ..report.excel_styles import get_corporate_excel_formats
 
         data = self._get_report_data()
 
@@ -381,81 +506,119 @@ class OpsDayBookWizard(models.TransientModel):
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
         worksheet = workbook.add_worksheet('Day Book')
 
-        # Formats
-        header_format = workbook.add_format({
-            'bold': True, 'align': 'center', 'valign': 'vcenter',
-            'font_size': 14, 'bg_color': '#4472C4', 'font_color': 'white'
-        })
-        journal_format = workbook.add_format({
-            'bold': True, 'align': 'left', 'font_size': 12,
-            'bg_color': '#D9E1F2', 'border': 1
-        })
-        move_format = workbook.add_format({
-            'bold': True, 'align': 'left', 'bg_color': '#FCE4D6', 'border': 1
-        })
-        col_header_format = workbook.add_format({
-            'bold': True, 'align': 'center', 'bg_color': '#E2EFDA', 'border': 1
-        })
-        money_format = workbook.add_format({'num_format': '#,##0.00', 'border': 1})
-        text_format = workbook.add_format({'border': 1})
-        total_format = workbook.add_format({
-            'bold': True, 'num_format': '#,##0.00', 'bg_color': '#E2EFDA', 'border': 1
-        })
+        # Get corporate formats
+        formats = get_corporate_excel_formats(workbook, self.company_id)
 
-        # Title
-        worksheet.merge_range('A1:F1', f"Day Book - {data['company']}", header_format)
-        worksheet.write('A2', f"Date: {data['date']}")
-        worksheet.write('A3', f"Branches: {data['branches']}")
+        # Phase 5 Corporate Header Structure
+        row = 0
+        # Row 0: Company name
+        worksheet.write(row, 0, self.company_id.name, formats['company_name'])
+        row += 1
 
-        row = 5
+        # Row 1: Report title
+        worksheet.write(row, 0, 'Day Book', formats['report_title'])
+        row += 1
+
+        # Row 2: Report date
+        worksheet.write(row, 0, f"Date: {data['date']}", formats['metadata'])
+        row += 1
+
+        # Row 3: Generated timestamp and user
+        generated = fields.Datetime.now().strftime('%Y-%m-%d %H:%M')
+        worksheet.write(row, 0, f"Generated: {generated} by {self.env.user.name}", formats['metadata'])
+        row += 2
+
+        # Row 5: Filter bar with journal and currency info
+        filter_text = f"Journal: {data['journals_filter']} | Currency: {self.company_id.currency_id.name} | Branches: {data['branches']} | Status: {data['target_move']}"
+        worksheet.merge_range(row, 0, row, 3, filter_text, formats['filter_bar'])
+        row += 2
+
+        # Table headers row
+        headers = ['Account', 'Description', 'Debit', 'Credit']
+        worksheet.write(row, 0, headers[0], formats['table_header'])
+        worksheet.write(row, 1, headers[1], formats['table_header'])
+        worksheet.write(row, 2, headers[2], formats['table_header_num'])
+        worksheet.write(row, 3, headers[3], formats['table_header_num'])
+
+        # Freeze panes below header row
+        worksheet.freeze_panes(row + 1, 0)
+        row += 1
+
+        # Data rows grouped by journal
+        line_count = 0
+
         for journal_data in data['journals_data']:
-            # Journal header
-            worksheet.merge_range(row, 0, row, 5, f"Journal: {journal_data['journal']}", journal_format)
+            # Journal header (subtotal style)
+            worksheet.merge_range(row, 0, row, 3, f"Journal: {journal_data['journal']}", formats['subtotal_label'])
             row += 1
 
             for move in journal_data['moves']:
                 # Move header
-                worksheet.merge_range(row, 0, row, 5,
-                    f"{move['name']} - {move['partner']} - {move['ref']}", move_format)
+                move_header = f"{move['name']} - {move['partner']}"
+                if move['ref']:
+                    move_header += f" - {move['ref']}"
+                worksheet.merge_range(row, 0, row, 3, move_header, formats['subtotal_label'])
                 row += 1
 
-                # Column headers
-                worksheet.write(row, 0, 'Account', col_header_format)
-                worksheet.write(row, 1, 'Description', col_header_format)
-                worksheet.write(row, 2, 'Debit', col_header_format)
-                worksheet.write(row, 3, 'Credit', col_header_format)
-                row += 1
-
-                # Lines
+                # Lines with alternating row format
                 for line in move['lines']:
-                    worksheet.write(row, 0, line['account'], text_format)
-                    worksheet.write(row, 1, line['label'], text_format)
-                    worksheet.write(row, 2, line['debit'], money_format)
-                    worksheet.write(row, 3, line['credit'], money_format)
+                    is_alt = (line_count % 2 == 1)
+                    text_fmt = formats['text_alt'] if is_alt else formats['text']
+
+                    # Account
+                    worksheet.write(row, 0, line['account'], text_fmt)
+                    # Description
+                    worksheet.write(row, 1, line['label'], text_fmt)
+
+                    # Debit - value-based formatting
+                    debit_val = line['debit']
+                    if debit_val > 0:
+                        debit_fmt = formats['number_alt'] if is_alt else formats['number']
+                    elif debit_val < 0:
+                        debit_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+                    else:
+                        debit_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+                    worksheet.write(row, 2, debit_val, debit_fmt)
+
+                    # Credit - value-based formatting
+                    credit_val = line['credit']
+                    if credit_val > 0:
+                        credit_fmt = formats['number_alt'] if is_alt else formats['number']
+                    elif credit_val < 0:
+                        credit_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+                    else:
+                        credit_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+                    worksheet.write(row, 3, credit_val, credit_fmt)
+
                     row += 1
+                    line_count += 1
 
-                row += 1  # Space between moves
+            # Journal subtotal
+            worksheet.write(row, 0, '', formats['subtotal_label'])
+            worksheet.write(row, 1, f"Journal Total: {journal_data['journal']}", formats['subtotal_label'])
+            worksheet.write(row, 2, journal_data['total_debit'], formats['subtotal_number'])
+            worksheet.write(row, 3, journal_data['total_credit'], formats['subtotal_number'])
+            row += 1
 
-            # Journal total
-            worksheet.write(row, 1, f"Journal Total: {journal_data['journal']}", col_header_format)
-            worksheet.write(row, 2, journal_data['total_debit'], total_format)
-            worksheet.write(row, 3, journal_data['total_credit'], total_format)
-            row += 2
-
-        # Grand totals
-        worksheet.write(row, 1, 'GRAND TOTAL', col_header_format)
-        worksheet.write(row, 2, data['grand_total_debit'], total_format)
-        worksheet.write(row, 3, data['grand_total_credit'], total_format)
+        # Grand total row
+        worksheet.write(row, 0, '', formats['total_label'])
+        worksheet.write(row, 1, 'GRAND TOTAL', formats['total_label'])
+        worksheet.write(row, 2, data['grand_total_debit'], formats['total_number'])
+        worksheet.write(row, 3, data['grand_total_credit'], formats['total_number'])
 
         # Set column widths
         worksheet.set_column('A:A', 30)
         worksheet.set_column('B:B', 40)
         worksheet.set_column('C:D', 15)
 
+        # Page setup: Landscape, A4, fit to 1 page wide
+        worksheet.set_landscape()
+        worksheet.set_paper(9)  # A4
+        worksheet.fit_to_pages(1, 0)
+
         workbook.close()
         output.seek(0)
 
-        import base64
         attachment = self.env['ir.attachment'].create({
             'name': f'Day_Book_{self.date}.xlsx',
             'type': 'binary',
@@ -477,7 +640,12 @@ class OpsDayBookWizard(models.TransientModel):
 class OpsBankBookWizard(models.TransientModel):
     """Bank Book Report Wizard."""
     _name = 'ops.bank.book.wizard'
+    _inherit = 'ops.intelligence.security.mixin'
     _description = 'Bank Book Report'
+
+    def _get_engine_name(self):
+        """Return engine name for security checks."""
+        return 'financial'
 
     company_id = fields.Many2one(
         'res.company', string='Company',
@@ -631,83 +799,161 @@ class OpsBankBookWizard(models.TransientModel):
             'currency': self.company_id.currency_id,
         }
 
+    def action_view_report(self):
+        """Open report in UI View mode (browser preview with toolbar)."""
+        self.ensure_one()
+
+        # Get report template name
+        template_name = self._get_report_template_xmlid()
+
+        # Return action to open in new tab with controller
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        url = f'{base_url}/ops/report/html/{template_name}?wizard_id={self.id}'
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
+
+    def action_generate_report(self):
+        """Alias for action_print_pdf for UI consistency."""
+        return self.action_print_pdf()
+
     def action_print_pdf(self):
-        """Generate PDF report."""
+        """Generate PDF report with security checks."""
+        self.ensure_one()
+        # Security: IT Admin Blindness & Persona Access
+        self._check_intelligence_access('financial')
         data = {'wizard_id': self.id, 'report_data': self._get_report_data()}
         return self.env.ref('ops_matrix_accounting.action_report_bank_book').report_action(self, data=data)
 
     def action_export_excel(self):
-        """Export to Excel."""
-        try:
-            import xlsxwriter
-        except ImportError:
+        """Export to Excel using Phase 5 corporate design."""
+        if not XLSXWRITER_AVAILABLE:
             raise UserError(_('xlsxwriter library is required for Excel export. Please install it.'))
+
+        from ..report.excel_styles import get_corporate_excel_formats
 
         data = self._get_report_data()
 
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
 
-        # Formats
-        header_format = workbook.add_format({
-            'bold': True, 'align': 'center', 'valign': 'vcenter',
-            'font_size': 14, 'bg_color': '#4472C4', 'font_color': 'white'
-        })
-        bank_format = workbook.add_format({
-            'bold': True, 'align': 'left', 'font_size': 12,
-            'bg_color': '#D9E1F2', 'border': 1
-        })
-        subheader_format = workbook.add_format({
-            'bold': True, 'align': 'left', 'font_size': 11
-        })
-        col_header_format = workbook.add_format({
-            'bold': True, 'align': 'center', 'bg_color': '#E2EFDA', 'border': 1
-        })
-        money_format = workbook.add_format({'num_format': '#,##0.00', 'border': 1})
-        date_format = workbook.add_format({'num_format': 'yyyy-mm-dd', 'border': 1})
-        text_format = workbook.add_format({'border': 1})
-        total_format = workbook.add_format({
-            'bold': True, 'num_format': '#,##0.00', 'bg_color': '#E2EFDA', 'border': 1
-        })
+        # Get corporate formats
+        formats = get_corporate_excel_formats(workbook, self.company_id)
 
+        # Create worksheets for each bank
         for bank_data in data['banks_data']:
             # Create worksheet for each bank
             ws_name = bank_data['journal_code'][:31] if len(bank_data['journal_code']) > 31 else bank_data['journal_code']
             worksheet = workbook.add_worksheet(ws_name)
 
-            # Title
-            worksheet.merge_range('A1:H1', f"Bank Book - {data['company']}", header_format)
-            worksheet.merge_range('A2:H2', f"Bank: {bank_data['journal']} ({bank_data['account']})", bank_format)
-            worksheet.write('A3', f"Period: {data['date_from']} to {data['date_to']}", subheader_format)
-            worksheet.write('A4', f"Branches: {data['branches']}", subheader_format)
+            # Phase 5 Corporate Header Structure
+            row = 0
+            # Row 0: Company name
+            worksheet.write(row, 0, self.company_id.name, formats['company_name'])
+            row += 1
 
-            # Opening Balance
-            worksheet.write('A6', 'Opening Balance:', subheader_format)
-            worksheet.write('B6', bank_data['opening_balance'], money_format)
+            # Row 1: Report title
+            worksheet.write(row, 0, f"Bank Book - {bank_data['journal']}", formats['report_title'])
+            row += 1
 
-            # Column Headers
+            # Row 2: Report period
+            worksheet.write(row, 0, f"Period: {data['date_from']} to {data['date_to']}", formats['metadata'])
+            row += 1
+
+            # Row 3: Generated timestamp and user
+            generated = fields.Datetime.now().strftime('%Y-%m-%d %H:%M')
+            worksheet.write(row, 0, f"Generated: {generated} by {self.env.user.name}", formats['metadata'])
+            row += 2
+
+            # Row 5: Filter bar with journal and currency info
+            filter_text = f"Journal: {bank_data['journal']} | Currency: {self.company_id.currency_id.name} | Branches: {data['branches']} | Status: {data['target_move']}"
+            worksheet.merge_range(row, 0, row, 7, filter_text, formats['filter_bar'])
+            row += 1
+
+            # Row 6: Opening Balance
+            worksheet.write(row, 0, 'Opening Balance:', formats['subtotal_label'])
+            # Apply value-based formatting for opening balance
+            opening_val = bank_data['opening_balance']
+            if opening_val > 0:
+                opening_fmt = formats['number']
+            elif opening_val < 0:
+                opening_fmt = formats['number_negative']
+            else:
+                opening_fmt = formats['number_zero']
+            worksheet.write(row, 1, opening_val, opening_fmt)
+            row += 1
+
+            # Table headers row
             headers = ['Date', 'Reference', 'Partner', 'Account', 'Description', 'Debit', 'Credit', 'Balance']
-            for col, hdr in enumerate(headers):
-                worksheet.write(7, col, hdr, col_header_format)
+            for col in range(5):
+                worksheet.write(row, col, headers[col], formats['table_header'])
+            for col in range(5, 8):
+                worksheet.write(row, col, headers[col], formats['table_header_num'])
 
-            # Data rows
-            row = 8
-            for line in bank_data['lines']:
-                worksheet.write(row, 0, str(line['date']), date_format)
-                worksheet.write(row, 1, line['ref'], text_format)
-                worksheet.write(row, 2, line['partner'], text_format)
-                worksheet.write(row, 3, line['account'], text_format)
-                worksheet.write(row, 4, line['label'], text_format)
-                worksheet.write(row, 5, line['debit'], money_format)
-                worksheet.write(row, 6, line['credit'], money_format)
-                worksheet.write(row, 7, line['balance'], money_format)
+            # Freeze panes below header row
+            worksheet.freeze_panes(row + 1, 0)
+            row += 1
+
+            # Data rows with alternating format
+            for idx, line in enumerate(bank_data['lines']):
+                is_alt = (idx % 2 == 1)
+                text_fmt = formats['text_alt'] if is_alt else formats['text']
+
+                # Date
+                worksheet.write(row, 0, str(line['date']), text_fmt)
+                # Reference
+                worksheet.write(row, 1, line['ref'], text_fmt)
+                # Partner
+                worksheet.write(row, 2, line['partner'], text_fmt)
+                # Account
+                worksheet.write(row, 3, line['account'], text_fmt)
+                # Description
+                worksheet.write(row, 4, line['label'], text_fmt)
+
+                # Debit - value-based formatting
+                debit_val = line['debit']
+                if debit_val > 0:
+                    debit_fmt = formats['number_alt'] if is_alt else formats['number']
+                elif debit_val < 0:
+                    debit_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+                else:
+                    debit_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+                worksheet.write(row, 5, debit_val, debit_fmt)
+
+                # Credit - value-based formatting
+                credit_val = line['credit']
+                if credit_val > 0:
+                    credit_fmt = formats['number_alt'] if is_alt else formats['number']
+                elif credit_val < 0:
+                    credit_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+                else:
+                    credit_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+                worksheet.write(row, 6, credit_val, credit_fmt)
+
+                # Balance - value-based formatting
+                balance_val = line['balance']
+                if balance_val > 0:
+                    balance_fmt = formats['number_alt'] if is_alt else formats['number']
+                elif balance_val < 0:
+                    balance_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+                else:
+                    balance_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+                worksheet.write(row, 7, balance_val, balance_fmt)
+
                 row += 1
 
-            # Totals
-            worksheet.write(row, 4, 'TOTALS', col_header_format)
-            worksheet.write(row, 5, bank_data['total_debit'], total_format)
-            worksheet.write(row, 6, bank_data['total_credit'], total_format)
-            worksheet.write(row, 7, bank_data['closing_balance'], total_format)
+            # Total row
+            worksheet.write(row, 0, 'TOTALS', formats['total_label'])
+            worksheet.write(row, 1, '', formats['total_label'])
+            worksheet.write(row, 2, '', formats['total_label'])
+            worksheet.write(row, 3, '', formats['total_label'])
+            worksheet.write(row, 4, '', formats['total_label'])
+            worksheet.write(row, 5, bank_data['total_debit'], formats['total_number'])
+            worksheet.write(row, 6, bank_data['total_credit'], formats['total_number'])
+            worksheet.write(row, 7, bank_data['closing_balance'], formats['total_number'])
 
             # Set column widths
             worksheet.set_column('A:A', 12)
@@ -717,41 +963,118 @@ class OpsBankBookWizard(models.TransientModel):
             worksheet.set_column('E:E', 30)
             worksheet.set_column('F:H', 15)
 
+            # Page setup: Landscape, A4, fit to 1 page wide
+            worksheet.set_landscape()
+            worksheet.set_paper(9)  # A4
+            worksheet.fit_to_pages(1, 0)
+
         # Summary worksheet
         summary = workbook.add_worksheet('Summary')
-        summary.merge_range('A1:E1', f"Bank Book Summary - {data['company']}", header_format)
-        summary.write('A2', f"Period: {data['date_from']} to {data['date_to']}", subheader_format)
 
-        # Summary headers
-        summary.write(4, 0, 'Bank Account', col_header_format)
-        summary.write(4, 1, 'Opening', col_header_format)
-        summary.write(4, 2, 'Debit', col_header_format)
-        summary.write(4, 3, 'Credit', col_header_format)
-        summary.write(4, 4, 'Closing', col_header_format)
+        # Phase 5 Corporate Header Structure for Summary
+        row = 0
+        # Row 0: Company name
+        summary.write(row, 0, self.company_id.name, formats['company_name'])
+        row += 1
 
-        row = 5
-        for bank_data in data['banks_data']:
-            summary.write(row, 0, bank_data['journal'], text_format)
-            summary.write(row, 1, bank_data['opening_balance'], money_format)
-            summary.write(row, 2, bank_data['total_debit'], money_format)
-            summary.write(row, 3, bank_data['total_credit'], money_format)
-            summary.write(row, 4, bank_data['closing_balance'], money_format)
+        # Row 1: Report title
+        summary.write(row, 0, 'Bank Book Summary', formats['report_title'])
+        row += 1
+
+        # Row 2: Report period
+        summary.write(row, 0, f"Period: {data['date_from']} to {data['date_to']}", formats['metadata'])
+        row += 1
+
+        # Row 3: Generated timestamp and user
+        generated = fields.Datetime.now().strftime('%Y-%m-%d %H:%M')
+        summary.write(row, 0, f"Generated: {generated} by {self.env.user.name}", formats['metadata'])
+        row += 2
+
+        # Row 5: Filter bar with currency info
+        filter_text = f"Journal: All Banks | Currency: {self.company_id.currency_id.name} | Branches: {data['branches']} | Status: {data['target_move']}"
+        summary.merge_range(row, 0, row, 4, filter_text, formats['filter_bar'])
+        row += 2
+
+        # Summary headers row
+        summary.write(row, 0, 'Bank Account', formats['table_header'])
+        summary.write(row, 1, 'Opening', formats['table_header_num'])
+        summary.write(row, 2, 'Debit', formats['table_header_num'])
+        summary.write(row, 3, 'Credit', formats['table_header_num'])
+        summary.write(row, 4, 'Closing', formats['table_header_num'])
+
+        # Freeze panes below header row
+        summary.freeze_panes(row + 1, 0)
+        row += 1
+
+        # Data rows
+        for idx, bank_data in enumerate(data['banks_data']):
+            is_alt = (idx % 2 == 1)
+            text_fmt = formats['text_alt'] if is_alt else formats['text']
+
+            # Bank name
+            summary.write(row, 0, bank_data['journal'], text_fmt)
+
+            # Opening - value-based formatting
+            opening_val = bank_data['opening_balance']
+            if opening_val > 0:
+                opening_fmt = formats['number_alt'] if is_alt else formats['number']
+            elif opening_val < 0:
+                opening_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+            else:
+                opening_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+            summary.write(row, 1, opening_val, opening_fmt)
+
+            # Debit - value-based formatting
+            debit_val = bank_data['total_debit']
+            if debit_val > 0:
+                debit_fmt = formats['number_alt'] if is_alt else formats['number']
+            elif debit_val < 0:
+                debit_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+            else:
+                debit_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+            summary.write(row, 2, debit_val, debit_fmt)
+
+            # Credit - value-based formatting
+            credit_val = bank_data['total_credit']
+            if credit_val > 0:
+                credit_fmt = formats['number_alt'] if is_alt else formats['number']
+            elif credit_val < 0:
+                credit_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+            else:
+                credit_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+            summary.write(row, 3, credit_val, credit_fmt)
+
+            # Closing - value-based formatting
+            closing_val = bank_data['closing_balance']
+            if closing_val > 0:
+                closing_fmt = formats['number_alt'] if is_alt else formats['number']
+            elif closing_val < 0:
+                closing_fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+            else:
+                closing_fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
+            summary.write(row, 4, closing_val, closing_fmt)
+
             row += 1
 
-        # Grand totals
-        summary.write(row, 0, 'GRAND TOTAL', col_header_format)
-        summary.write(row, 1, data['grand_opening'], total_format)
-        summary.write(row, 2, data['grand_debit'], total_format)
-        summary.write(row, 3, data['grand_credit'], total_format)
-        summary.write(row, 4, data['grand_closing'], total_format)
+        # Grand total row
+        summary.write(row, 0, 'GRAND TOTAL', formats['total_label'])
+        summary.write(row, 1, data['grand_opening'], formats['total_number'])
+        summary.write(row, 2, data['grand_debit'], formats['total_number'])
+        summary.write(row, 3, data['grand_credit'], formats['total_number'])
+        summary.write(row, 4, data['grand_closing'], formats['total_number'])
 
+        # Set column widths
         summary.set_column('A:A', 30)
         summary.set_column('B:E', 15)
+
+        # Page setup: Landscape, A4, fit to 1 page wide
+        summary.set_landscape()
+        summary.set_paper(9)  # A4
+        summary.fit_to_pages(1, 0)
 
         workbook.close()
         output.seek(0)
 
-        import base64
         attachment = self.env['ir.attachment'].create({
             'name': f'Bank_Book_{self.date_from}_{self.date_to}.xlsx',
             'type': 'binary',

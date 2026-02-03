@@ -490,3 +490,260 @@ def apply_standard_widths(worksheet, columns):
     for col_idx, col_type in enumerate(columns):
         width = COLUMN_WIDTHS.get(col_type, 15)
         worksheet.set_column(col_idx, col_idx, width)
+
+
+# ===========================================
+# CORPORATE EXCEL FORMATS (Phase 5)
+# ===========================================
+
+def get_corporate_excel_formats(workbook, company):
+    """
+    Generate OPS corporate Excel formats based on company primary color.
+
+    This function creates a complete set of xlsxwriter format objects for
+    corporate-branded Excel exports, matching the visual design of PDF reports.
+
+    Args:
+        workbook: xlsxwriter workbook object
+        company: res.company record
+
+    Returns:
+        dict: Format objects keyed by name
+            - company_name: Company header (16pt bold)
+            - report_title: Report title (14pt bold)
+            - metadata: Report metadata (9pt gray)
+            - filter_bar: Filter summary bar (primary color light bg)
+            - table_header: Column headers (primary bg, white text)
+            - table_header_num: Column headers for numbers (right-aligned)
+            - text: Regular text cell
+            - text_alt: Alternating row text cell
+            - number: Number cell (positive)
+            - number_alt: Alternating row number
+            - number_negative: Negative number (red with parentheses)
+            - number_negative_alt: Alternating negative
+            - number_zero: Zero value (gray)
+            - number_zero_alt: Alternating zero
+            - subtotal_label: Subtotal row label
+            - subtotal_number: Subtotal row number
+            - total_label: Grand total label
+            - total_number: Grand total number
+            - percentage: Percentage format
+
+    Usage:
+        formats = get_corporate_excel_formats(workbook, self.company_id)
+        worksheet.write(0, 0, company.name, formats['company_name'])
+        worksheet.write(row, col, value, formats['number'])
+    """
+    primary_hex = company.primary_color or '#5B6BBB'
+
+    # Convert hex to RGB for xlsxwriter
+    hex_color = primary_hex.lstrip('#')
+    try:
+        primary_rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    except (ValueError, IndexError):
+        primary_rgb = (91, 107, 187)  # Default OPS blue
+
+    # Calculate light version (15% opacity with white)
+    light_rgb = tuple(int(c * 0.15 + 255 * 0.85) for c in primary_rgb)
+    light_hex = '#{:02x}{:02x}{:02x}'.format(*light_rgb)
+
+    formats = {
+        # Company header
+        'company_name': workbook.add_format({
+            'font_size': 16,
+            'bold': True,
+            'font_color': '#1e293b',
+            'font_name': 'Arial',
+        }),
+
+        # Report title
+        'report_title': workbook.add_format({
+            'font_size': 14,
+            'bold': True,
+            'font_color': '#1e293b',
+            'font_name': 'Arial',
+        }),
+
+        # Report metadata
+        'metadata': workbook.add_format({
+            'font_size': 9,
+            'font_color': '#64748b',
+            'font_name': 'Arial',
+        }),
+
+        # Filter bar
+        'filter_bar': workbook.add_format({
+            'font_size': 9,
+            'bg_color': light_hex,
+            'border': 1,
+            'border_color': primary_hex,
+            'font_name': 'Arial',
+        }),
+
+        # Table header
+        'table_header': workbook.add_format({
+            'font_size': 9,
+            'bold': True,
+            'font_color': '#ffffff',
+            'bg_color': primary_hex,
+            'border': 1,
+            'align': 'center',
+            'valign': 'vcenter',
+            'text_wrap': False,
+            'font_name': 'Arial',
+        }),
+
+        # Table header (right-aligned for numbers)
+        'table_header_num': workbook.add_format({
+            'font_size': 9,
+            'bold': True,
+            'font_color': '#ffffff',
+            'bg_color': primary_hex,
+            'border': 1,
+            'align': 'right',
+            'valign': 'vcenter',
+            'font_name': 'Arial',
+        }),
+
+        # Regular text cell
+        'text': workbook.add_format({
+            'font_size': 9,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'font_name': 'Arial',
+        }),
+
+        # Regular text cell (alternating row)
+        'text_alt': workbook.add_format({
+            'font_size': 9,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'bg_color': '#f8fafc',
+            'font_name': 'Arial',
+        }),
+
+        # Number cell (positive)
+        'number': workbook.add_format({
+            'font_size': 9,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'align': 'right',
+            'num_format': '#,##0.00',
+            'font_name': 'Consolas',
+        }),
+
+        # Number cell (positive, alternating row)
+        'number_alt': workbook.add_format({
+            'font_size': 9,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'bg_color': '#f8fafc',
+            'align': 'right',
+            'num_format': '#,##0.00',
+            'font_name': 'Consolas',
+        }),
+
+        # Number cell (negative)
+        'number_negative': workbook.add_format({
+            'font_size': 9,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'align': 'right',
+            'num_format': '(#,##0.00)',
+            'font_color': '#dc2626',
+            'font_name': 'Consolas',
+        }),
+
+        # Number cell (negative, alternating row)
+        'number_negative_alt': workbook.add_format({
+            'font_size': 9,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'bg_color': '#f8fafc',
+            'align': 'right',
+            'num_format': '(#,##0.00)',
+            'font_color': '#dc2626',
+            'font_name': 'Consolas',
+        }),
+
+        # Number cell (zero)
+        'number_zero': workbook.add_format({
+            'font_size': 9,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'align': 'right',
+            'num_format': '#,##0.00',
+            'font_color': '#94a3b8',
+            'font_name': 'Consolas',
+        }),
+
+        # Number cell (zero, alternating row)
+        'number_zero_alt': workbook.add_format({
+            'font_size': 9,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'bg_color': '#f8fafc',
+            'align': 'right',
+            'num_format': '#,##0.00',
+            'font_color': '#94a3b8',
+            'font_name': 'Consolas',
+        }),
+
+        # Subtotal row
+        'subtotal_label': workbook.add_format({
+            'font_size': 9,
+            'bold': True,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'bg_color': light_hex,
+            'font_color': '#475569',
+            'font_name': 'Arial',
+        }),
+
+        'subtotal_number': workbook.add_format({
+            'font_size': 9,
+            'bold': True,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'bg_color': light_hex,
+            'align': 'right',
+            'num_format': '#,##0.00',
+            'font_color': '#475569',
+            'font_name': 'Consolas',
+        }),
+
+        # Total row
+        'total_label': workbook.add_format({
+            'font_size': 10,
+            'bold': True,
+            'border': 2,
+            'border_color': '#1e293b',
+            'bg_color': primary_hex,
+            'font_color': '#ffffff',
+            'font_name': 'Arial',
+        }),
+
+        'total_number': workbook.add_format({
+            'font_size': 10,
+            'bold': True,
+            'border': 2,
+            'border_color': '#1e293b',
+            'bg_color': primary_hex,
+            'font_color': '#ffffff',
+            'align': 'right',
+            'num_format': '#,##0.00',
+            'font_name': 'Consolas',
+        }),
+
+        # Percentage format
+        'percentage': workbook.add_format({
+            'font_size': 9,
+            'border': 1,
+            'border_color': '#e2e8f0',
+            'align': 'right',
+            'num_format': '0.0%',
+            'font_name': 'Consolas',
+        }),
+    }
+
+    return formats

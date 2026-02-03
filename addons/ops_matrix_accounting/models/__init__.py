@@ -15,6 +15,7 @@ from . import ops_fiscal_period
 from . import account_move
 from . import purchase_order
 from . import ops_report_template
+from . import ops_report_helpers
 from . import ops_report_audit
 from . import ops_recurring
 from . import ops_journal_template

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!--
+    ===================================================
+    OPS Matrix Daily Reports - Phase 3 Corporate UI
+    Cash Book, Day Book, Bank Book
+    ===================================================
+    -->
+
     <!-- ==================== CASH BOOK WIZARD ==================== -->
 
     <record id="view_ops_cash_book_wizard_form" model="ir.ui.view">
@@ -7,37 +14,83 @@
         <field name="model">ops.cash.book.wizard</field>
         <field name="arch" type="xml">
             <form string="Cash Book Report">
-                <group>
-                    <group string="Period">
-                        <field name="date_from"/>
-                        <field name="date_to"/>
-                        <field name="company_id" groups="base.group_multi_company"/>
-                    </group>
-                    <group string="Filters">
-                        <field name="journal_ids" widget="many2many_tags"
-                               options="{'no_create': True}"/>
-                        <field name="ops_branch_ids" widget="many2many_tags"
-                               options="{'no_create': True}"/>
-                        <field name="target_move" widget="radio"/>
-                    </group>
+
+                <!-- ==================== REPORT SELECTION ==================== -->
+                <group name="report_type_section" string="📊 Cash Book" class="ops_wizard_section">
+                    <div class="text-muted">
+                        <p>Daily cash receipts and payments report with opening and closing balances.</p>
+                    </div>
                 </group>
-                <group>
+
+                <!-- ==================== REPORTING PERIOD ==================== -->
+                <group name="period_section" string="📅 Reporting Period" class="ops_wizard_section">
                     <group>
-                        <field name="sort_by" widget="radio"/>
+                        <field name="date_from"
+                               help="Start date of cash book period"/>
+                        <field name="date_to"
+                               help="End date of cash book period"/>
                     </group>
                     <group>
-                        <field name="display_account" widget="radio"/>
+                        <field name="company_id"
+                               options="{'no_create': True}"
+                               groups="base.group_multi_company"
+                               help="Company to report on"/>
+                        <field name="target_move"
+                               widget="radio"
+                               help="Include all entries or posted entries only"/>
                     </group>
                 </group>
+
+                <!-- ==================== SCOPE & FILTERS ==================== -->
+                <group name="scope_section" string="🎯 Scope &amp; Filters" class="ops_wizard_section">
+                    <group>
+                        <field name="journal_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True}"
+                               placeholder="All Cash Journals"
+                               help="Filter by specific cash journals (leave empty for all)"/>
+                        <field name="ops_branch_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True, 'color_field': 'color'}"
+                               placeholder="All Branches"
+                               help="Filter by specific branches (leave empty for all authorized branches)"/>
+                    </group>
+                    <group>
+                        <field name="sort_by"
+                               widget="radio"
+                               help="Sort order for transactions"/>
+                        <field name="display_account"
+                               widget="radio"
+                               help="Filter accounts by activity"/>
+                    </group>
+                </group>
+
+                <!-- ==================== ACTION BUTTONS ==================== -->
                 <footer>
-                    <button name="action_print_pdf" type="object"
-                            string="Print PDF" class="oe_highlight"
-                            icon="fa-file-pdf-o"/>
-                    <button name="action_export_excel" type="object"
-                            string="Export Excel" class="btn-secondary"
-                            icon="fa-file-excel-o"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button name="action_view_report"
+                            string="View Report"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-eye"
+                            help="Open report in browser for preview"/>
+                    <button name="action_print_pdf"
+                            string="Print PDF"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-print"
+                            help="Generate PDF for printing or download"/>
+                    <button name="action_export_excel"
+                            string="Export Excel"
+                            type="object"
+                            class="btn-success"
+                            icon="fa-file-excel-o"
+                            help="Export data to Excel spreadsheet"/>
+                    <button string="Cancel"
+                            class="btn-default"
+                            icon="fa-times"
+                            special="cancel"/>
                 </footer>
+
             </form>
         </field>
     </record>
@@ -49,30 +102,75 @@
         <field name="model">ops.day.book.wizard</field>
         <field name="arch" type="xml">
             <form string="Day Book Report">
-                <group>
-                    <group string="Date">
-                        <field name="date"/>
-                        <field name="company_id" groups="base.group_multi_company"/>
+
+                <!-- ==================== REPORT SELECTION ==================== -->
+                <group name="report_type_section" string="📊 Day Book" class="ops_wizard_section">
+                    <div class="text-muted">
+                        <p>Daily journal entries report showing all transactions for a specific date.</p>
+                    </div>
+                </group>
+
+                <!-- ==================== REPORTING DATE ==================== -->
+                <group name="period_section" string="📅 Reporting Date" class="ops_wizard_section">
+                    <group>
+                        <field name="date"
+                               help="Date for day book report"/>
+                        <field name="company_id"
+                               options="{'no_create': True}"
+                               groups="base.group_multi_company"
+                               help="Company to report on"/>
                     </group>
-                    <group string="Filters">
-                        <field name="journal_ids" widget="many2many_tags"
-                               options="{'no_create': True}"
-                               placeholder="All Journals"/>
-                        <field name="ops_branch_ids" widget="many2many_tags"
-                               options="{'no_create': True}"
-                               placeholder="All Branches"/>
-                        <field name="target_move" widget="radio"/>
+                    <group>
+                        <field name="target_move"
+                               widget="radio"
+                               help="Include all entries or posted entries only"/>
                     </group>
                 </group>
+
+                <!-- ==================== SCOPE & FILTERS ==================== -->
+                <group name="scope_section" string="🎯 Scope &amp; Filters" class="ops_wizard_section">
+                    <group>
+                        <field name="journal_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True}"
+                               placeholder="All Journals"
+                               help="Filter by specific journals (leave empty for all)"/>
+                    </group>
+                    <group>
+                        <field name="ops_branch_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True, 'color_field': 'color'}"
+                               placeholder="All Branches"
+                               help="Filter by specific branches (leave empty for all authorized branches)"/>
+                    </group>
+                </group>
+
+                <!-- ==================== ACTION BUTTONS ==================== -->
                 <footer>
-                    <button name="action_print_pdf" type="object"
-                            string="Print PDF" class="oe_highlight"
-                            icon="fa-file-pdf-o"/>
-                    <button name="action_export_excel" type="object"
-                            string="Export Excel" class="btn-secondary"
-                            icon="fa-file-excel-o"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button name="action_view_report"
+                            string="View Report"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-eye"
+                            help="Open report in browser for preview"/>
+                    <button name="action_print_pdf"
+                            string="Print PDF"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-print"
+                            help="Generate PDF for printing or download"/>
+                    <button name="action_export_excel"
+                            string="Export Excel"
+                            type="object"
+                            class="btn-success"
+                            icon="fa-file-excel-o"
+                            help="Export data to Excel spreadsheet"/>
+                    <button string="Cancel"
+                            class="btn-default"
+                            icon="fa-times"
+                            special="cancel"/>
                 </footer>
+
             </form>
         </field>
     </record>
@@ -84,34 +182,79 @@
         <field name="model">ops.bank.book.wizard</field>
         <field name="arch" type="xml">
             <form string="Bank Book Report">
-                <group>
-                    <group string="Period">
-                        <field name="date_from"/>
-                        <field name="date_to"/>
-                        <field name="company_id" groups="base.group_multi_company"/>
-                    </group>
-                    <group string="Filters">
-                        <field name="journal_ids" widget="many2many_tags"
-                               options="{'no_create': True}"/>
-                        <field name="ops_branch_ids" widget="many2many_tags"
-                               options="{'no_create': True}"/>
-                        <field name="target_move" widget="radio"/>
-                    </group>
+
+                <!-- ==================== REPORT SELECTION ==================== -->
+                <group name="report_type_section" string="📊 Bank Book" class="ops_wizard_section">
+                    <div class="text-muted">
+                        <p>Bank receipts and payments report with opening and closing balances per bank account.</p>
+                    </div>
                 </group>
-                <group>
+
+                <!-- ==================== REPORTING PERIOD ==================== -->
+                <group name="period_section" string="📅 Reporting Period" class="ops_wizard_section">
                     <group>
-                        <field name="group_by_journal"/>
+                        <field name="date_from"
+                               help="Start date of bank book period"/>
+                        <field name="date_to"
+                               help="End date of bank book period"/>
+                    </group>
+                    <group>
+                        <field name="company_id"
+                               options="{'no_create': True}"
+                               groups="base.group_multi_company"
+                               help="Company to report on"/>
+                        <field name="target_move"
+                               widget="radio"
+                               help="Include all entries or posted entries only"/>
                     </group>
                 </group>
+
+                <!-- ==================== SCOPE & FILTERS ==================== -->
+                <group name="scope_section" string="🎯 Scope &amp; Filters" class="ops_wizard_section">
+                    <group>
+                        <field name="journal_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True}"
+                               placeholder="All Bank Journals"
+                               help="Filter by specific bank journals (leave empty for all)"/>
+                        <field name="ops_branch_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True, 'color_field': 'color'}"
+                               placeholder="All Branches"
+                               help="Filter by specific branches (leave empty for all authorized branches)"/>
+                    </group>
+                    <group>
+                        <field name="group_by_journal"
+                               help="Group transactions by bank journal/account"/>
+                    </group>
+                </group>
+
+                <!-- ==================== ACTION BUTTONS ==================== -->
                 <footer>
-                    <button name="action_print_pdf" type="object"
-                            string="Print PDF" class="oe_highlight"
-                            icon="fa-file-pdf-o"/>
-                    <button name="action_export_excel" type="object"
-                            string="Export Excel" class="btn-secondary"
-                            icon="fa-file-excel-o"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button name="action_view_report"
+                            string="View Report"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-eye"
+                            help="Open report in browser for preview"/>
+                    <button name="action_print_pdf"
+                            string="Print PDF"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-print"
+                            help="Generate PDF for printing or download"/>
+                    <button name="action_export_excel"
+                            string="Export Excel"
+                            type="object"
+                            class="btn-success"
+                            icon="fa-file-excel-o"
+                            help="Export data to Excel spreadsheet"/>
+                    <button string="Cancel"
+                            class="btn-default"
+                            icon="fa-times"
+                            special="cancel"/>
                 </footer>
+
             </form>
         </field>
     </record>
@@ -138,4 +281,5 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
+
 </odoo>

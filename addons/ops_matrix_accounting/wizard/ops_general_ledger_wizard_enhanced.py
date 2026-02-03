@@ -26,6 +26,10 @@ from odoo.tools import date_utils, float_round
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import logging
+import xlsxwriter
+from io import BytesIO
+import base64
+from ..report.excel_styles import get_corporate_excel_formats
 
 _logger = logging.getLogger(__name__)
 
@@ -1766,15 +1770,16 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
 
     def _return_report_action(self, data):
         """Return appropriate report action based on report type."""
+        # Corporate report action XML IDs (Phase 4 redesigned templates)
         report_xml_ids = {
-            'gl': 'ops_matrix_accounting.report_general_ledger_matrix',
-            'tb': 'ops_matrix_accounting.report_trial_balance_matrix',
-            'pl': 'ops_matrix_accounting.report_profit_loss_matrix',
-            'bs': 'ops_matrix_accounting.report_balance_sheet_matrix',
-            'cf': 'ops_matrix_accounting.report_cash_flow_matrix',
-            'aged': 'ops_matrix_accounting.report_aged_partner_matrix',
-            'partner': 'ops_matrix_accounting.report_partner_ledger_matrix',
-            'soa': 'ops_matrix_accounting.report_statement_of_account_matrix',
+            'gl': 'ops_matrix_accounting.action_report_general_ledger_corporate',
+            'tb': 'ops_matrix_accounting.action_report_trial_balance_corporate',
+            'pl': 'ops_matrix_accounting.action_report_profit_loss_corporate',
+            'bs': 'ops_matrix_accounting.action_report_balance_sheet_corporate',
+            'cf': 'ops_matrix_accounting.action_report_cash_flow_corporate',
+            'aged': 'ops_matrix_accounting.action_report_aged_partner_corporate',
+            'partner': 'ops_matrix_accounting.action_report_general_ledger_corporate',  # Partner ledger uses GL template
+            'soa': 'ops_matrix_accounting.action_report_general_ledger_corporate',  # Statement of Account uses GL template
         }
 
         xml_id = report_xml_ids.get(self.report_type, report_xml_ids['gl'])
@@ -1786,12 +1791,166 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
     # ============================================
 
     def action_export_to_excel(self):
-        """Export report to Excel format."""
+        """Export report to Excel with corporate formatting."""
         self.ensure_one()
 
+        # Security check
+        self._check_intelligence_access(self._get_engine_name())
+
+        # Get report data
         report_data = self._get_report_data()
-        report = self.env.ref('ops_matrix_accounting.report_financial_matrix_xlsx')
-        return report.report_action(self, data=report_data)
+
+        # Create Excel workbook
+        output = BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+
+        # Get corporate formats
+        formats = get_corporate_excel_formats(workbook, self.company_id)
+
+        # Create worksheet
+        report_titles = {
+            'gl': 'General Ledger',
+            'tb': 'Trial Balance',
+            'pl': 'Profit & Loss',
+            'bs': 'Balance Sheet',
+            'cf': 'Cash Flow',
+            'aged': 'Aged Partner Balance',
+            'partner_ledger': 'Partner Ledger',
+            'soa': 'Statement of Account',
+        }
+        sheet_name = report_titles.get(self.report_type, 'Report')[:31]
+        worksheet = workbook.add_worksheet(sheet_name)
+
+        # Set column widths
+        worksheet.set_column('A:A', 12)  # Date
+        worksheet.set_column('B:B', 15)  # Journal/Code
+        worksheet.set_column('C:C', 20)  # Reference
+        worksheet.set_column('D:D', 25)  # Partner/Account
+        worksheet.set_column('E:E', 35)  # Description
+        worksheet.set_column('F:H', 15)  # Numbers
+
+        row = 0
+
+        # Company header
+        worksheet.write(row, 0, self.company_id.name, formats['company_name'])
+        row += 1
+
+        # Report title
+        worksheet.write(row, 0, sheet_name, formats['report_title'])
+        row += 1
+
+        # Period
+        period_text = f"Period: {self.date_from} to {self.date_to}"
+        worksheet.write(row, 0, period_text, formats['metadata'])
+        row += 1
+
+        # Generated info
+        generated_text = f"Generated: {fields.Datetime.now().strftime('%Y-%m-%d %H:%M')} by {self.env.user.name}"
+        worksheet.write(row, 0, generated_text, formats['metadata'])
+        row += 2
+
+        # Filter bar
+        filter_parts = []
+        if self.branch_ids:
+            filter_parts.append(f"Branches: {', '.join(self.branch_ids.mapped('name'))}")
+        if self.business_unit_ids:
+            filter_parts.append(f"BUs: {', '.join(self.business_unit_ids.mapped('name'))}")
+        filter_text = ' | '.join(filter_parts) if filter_parts else 'All Data'
+        worksheet.merge_range(row, 0, row, 7, f"Scope: {filter_text} | Currency: {self.company_id.currency_id.name}", formats['filter_bar'])
+        row += 2
+
+        # Table headers
+        headers = ['Date', 'Journal', 'Reference', 'Partner', 'Description', 'Debit', 'Credit', 'Balance']
+        for col, header in enumerate(headers):
+            fmt = formats['table_header_num'] if col >= 5 else formats['table_header']
+            worksheet.write(row, col, header, fmt)
+        row += 1
+
+        # Freeze panes
+        worksheet.freeze_panes(row, 0)
+
+        # Data rows
+        lines = report_data.get('lines', []) or report_data.get('accounts', []) or []
+
+        # Handle different data structures based on report format
+        if not lines:
+            data = report_data.get('data', {})
+            if isinstance(data, dict):
+                if 'detailed' in data:
+                    lines = data['detailed']
+                elif 'summary' in data:
+                    lines = data['summary']
+            elif isinstance(data, list):
+                lines = data
+
+        total_debit = 0
+        total_credit = 0
+
+        for idx, line in enumerate(lines):
+            alt = idx % 2 == 1
+
+            # Get values based on data structure
+            date_val = line.get('date', '')
+            journal = line.get('journal', line.get('journal_code', line.get('code', '')))
+            ref = line.get('reference', line.get('ref', line.get('move_name', '')))
+            partner = line.get('partner', line.get('partner_name', ''))
+            desc = line.get('description', line.get('name', line.get('label', line.get('account_name', ''))))
+            debit = float(line.get('debit', 0) or 0)
+            credit = float(line.get('credit', 0) or 0)
+            balance = float(line.get('balance', debit - credit) or 0)
+
+            total_debit += debit
+            total_credit += credit
+
+            # Write text columns
+            worksheet.write(row, 0, str(date_val), formats['text_alt'] if alt else formats['text'])
+            worksheet.write(row, 1, journal, formats['text_alt'] if alt else formats['text'])
+            worksheet.write(row, 2, ref, formats['text_alt'] if alt else formats['text'])
+            worksheet.write(row, 3, partner, formats['text_alt'] if alt else formats['text'])
+            worksheet.write(row, 4, desc, formats['text_alt'] if alt else formats['text'])
+
+            # Write number columns with value-based formatting
+            for col, value in [(5, debit), (6, credit), (7, balance)]:
+                if abs(value) < 0.01:
+                    fmt = formats['number_zero_alt'] if alt else formats['number_zero']
+                elif value < 0:
+                    fmt = formats['number_negative_alt'] if alt else formats['number_negative']
+                else:
+                    fmt = formats['number_alt'] if alt else formats['number']
+                worksheet.write(row, col, abs(value) if col < 7 else value, fmt)
+
+            row += 1
+
+        # Total row
+        worksheet.write(row, 0, 'GRAND TOTAL', formats['total_label'])
+        for col in range(1, 5):
+            worksheet.write(row, col, '', formats['total_label'])
+        worksheet.write(row, 5, total_debit, formats['total_number'])
+        worksheet.write(row, 6, total_credit, formats['total_number'])
+        worksheet.write(row, 7, total_debit - total_credit, formats['total_number'])
+
+        # Print settings
+        worksheet.set_landscape()
+        worksheet.fit_to_pages(1, 0)
+        worksheet.set_paper(9)  # A4
+
+        workbook.close()
+        output.seek(0)
+
+        # Create attachment
+        filename = f"{sheet_name.replace(' ', '_')}_{fields.Date.today()}.xlsx"
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,
+            'datas': base64.b64encode(output.read()),
+            'type': 'binary',
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'self',
+        }
 
     def action_view_transactions(self):
         """Open filtered journal entries in list view."""

@@ -3117,3 +3117,707 @@ tr.o_is_note td {
         background-color: rgba(59, 130, 246, 0.2) !important;
     }
 }
+
+/* =============================================================================
+   FIX 21: OPS DASHBOARD - Custom dashboard components styling
+   ============================================================================= */
+
+// -----------------------------------------------------------------------------
+// 21A: Action Manager & Main Container - Light Mode
+// -----------------------------------------------------------------------------
+
+/* Action manager container */
+.o_action_manager {
+    background-color: #f8fafc !important;
+}
+
+/* OPS Dashboard main containers */
+.ops-dashboard,
+.ops-dashboard-v2,
+div.ops-dashboard {
+    background-color: #f8fafc !important;
+}
+
+.ops-dashboard-container {
+    background-color: #f8fafc !important;
+    padding: 20px !important;
+}
+
+/* Dashboard header */
+.ops-dashboard-header {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 16px 20px !important;
+    border-radius: 8px !important;
+    margin-bottom: 16px !important;
+}
+
+.ops-dashboard-header h1,
+.ops-dashboard-header h2,
+.ops-dashboard-header .title {
+    color: #1e293b !important;
+    font-weight: 600 !important;
+}
+
+/* Filter panel */
+.ops-filter-panel {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+    margin-bottom: 16px !important;
+}
+
+.ops-filter-panel label {
+    color: #64748b !important;
+}
+
+.ops-filter-panel select,
+.ops-filter-panel input {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #1e293b !important;
+}
+
+/* Dashboard grid */
+.ops-dashboard-grid {
+    background-color: transparent !important;
+    display: grid !important;
+    gap: 16px !important;
+}
+
+/* Auto-refresh indicator */
+.auto-refresh-indicator {
+    background-color: #f1f5f9 !important;
+    color: #64748b !important;
+    border-radius: 20px !important;
+    padding: 6px 12px !important;
+    font-size: 0.85rem !important;
+}
+
+// -----------------------------------------------------------------------------
+// 21B: Dashboard Cards/KPIs - Light Mode
+// -----------------------------------------------------------------------------
+
+/* Dashboard cards */
+.ops-dashboard .card,
+.ops-dashboard-grid .card,
+.ops-kpi-card,
+.ops-dashboard [class*="card"] {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    transition: box-shadow 0.2s ease, transform 0.2s ease !important;
+}
+
+.ops-dashboard .card:hover,
+.ops-dashboard-grid .card:hover,
+.ops-kpi-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Card headers */
+.ops-dashboard .card-header,
+.ops-kpi-card .card-header {
+    background-color: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
+}
+
+/* Card body */
+.ops-dashboard .card-body,
+.ops-kpi-card .card-body {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+}
+
+/* KPI values */
+.ops-dashboard .kpi-value,
+.ops-dashboard .value,
+.ops-dashboard h2,
+.ops-dashboard h3 {
+    color: #1e293b !important;
+    font-weight: 700 !important;
+}
+
+/* KPI labels */
+.ops-dashboard .kpi-label,
+.ops-dashboard .label,
+.ops-dashboard small {
+    color: #64748b !important;
+}
+
+/* KPI icons */
+.ops-dashboard .kpi-icon,
+.ops-dashboard .icon,
+.ops-dashboard .fa,
+.ops-dashboard .oi {
+    color: #3b82f6 !important;
+}
+
+/* Time period buttons */
+.ops-dashboard .btn-group .btn,
+.ops-filter-panel .btn {
+    background-color: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+    color: #64748b !important;
+}
+
+.ops-dashboard .btn-group .btn:hover,
+.ops-filter-panel .btn:hover {
+    background-color: #e2e8f0 !important;
+    color: #334155 !important;
+}
+
+.ops-dashboard .btn-group .btn.active,
+.ops-dashboard .btn-group .btn[aria-pressed="true"],
+.ops-filter-panel .btn.active {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+/* Refresh button */
+.ops-dashboard .btn-refresh,
+.ops-dashboard button[class*="refresh"] {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+.ops-dashboard .btn-refresh:hover {
+    background-color: #2563eb !important;
+}
+
+// -----------------------------------------------------------------------------
+// 21C: Action Manager & Main Container - Dark Mode
+// -----------------------------------------------------------------------------
+
+[data-color-mode="dark"] {
+    /* Action manager */
+    .o_action_manager {
+        background-color: #0f172a !important;
+    }
+
+    /* OPS Dashboard main containers */
+    .ops-dashboard,
+    .ops-dashboard-v2,
+    div.ops-dashboard {
+        background-color: #0f172a !important;
+    }
+
+    .ops-dashboard-container {
+        background-color: #0f172a !important;
+    }
+
+    /* Dashboard header */
+    .ops-dashboard-header {
+        background-color: #1e293b !important;
+        border-bottom: 1px solid #334155 !important;
+    }
+
+    .ops-dashboard-header h1,
+    .ops-dashboard-header h2,
+    .ops-dashboard-header .title {
+        color: #f1f5f9 !important;
+    }
+
+    /* Filter panel */
+    .ops-filter-panel {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    .ops-filter-panel label {
+        color: #94a3b8 !important;
+    }
+
+    .ops-filter-panel select,
+    .ops-filter-panel input {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Dashboard grid */
+    .ops-dashboard-grid {
+        background-color: transparent !important;
+    }
+
+    /* Auto-refresh indicator */
+    .auto-refresh-indicator {
+        background-color: #334155 !important;
+        color: #94a3b8 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 21D: Dashboard Cards/KPIs - Dark Mode
+// -----------------------------------------------------------------------------
+
+[data-color-mode="dark"] {
+    /* Dashboard cards */
+    .ops-dashboard .card,
+    .ops-dashboard-grid .card,
+    .ops-kpi-card,
+    .ops-dashboard [class*="card"] {
+        background-color: #1e293b !important;
+        border: 1px solid #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .ops-dashboard .card:hover,
+    .ops-dashboard-grid .card:hover,
+    .ops-kpi-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+        border-color: #475569 !important;
+    }
+
+    /* Card headers */
+    .ops-dashboard .card-header,
+    .ops-kpi-card .card-header {
+        background-color: #334155 !important;
+        border-bottom: 1px solid #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Card body */
+    .ops-dashboard .card-body,
+    .ops-kpi-card .card-body {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* KPI values */
+    .ops-dashboard .kpi-value,
+    .ops-dashboard .value,
+    .ops-dashboard h2,
+    .ops-dashboard h3 {
+        color: #ffffff !important;
+    }
+
+    /* KPI labels */
+    .ops-dashboard .kpi-label,
+    .ops-dashboard .label,
+    .ops-dashboard small {
+        color: #94a3b8 !important;
+    }
+
+    /* KPI icons */
+    .ops-dashboard .kpi-icon,
+    .ops-dashboard .icon,
+    .ops-dashboard .fa,
+    .ops-dashboard .oi {
+        color: #60a5fa !important;
+    }
+
+    /* Time period buttons */
+    .ops-dashboard .btn-group .btn,
+    .ops-filter-panel .btn {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+        color: #94a3b8 !important;
+    }
+
+    .ops-dashboard .btn-group .btn:hover,
+    .ops-filter-panel .btn:hover {
+        background-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .ops-dashboard .btn-group .btn.active,
+    .ops-dashboard .btn-group .btn[aria-pressed="true"],
+    .ops-filter-panel .btn.active {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    /* Refresh button */
+    .ops-dashboard .btn-refresh,
+    .ops-dashboard button[class*="refresh"] {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    .ops-dashboard .btn-refresh:hover {
+        background-color: #60a5fa !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 21E: Dashboard Charts & Graphs - Dark Mode
+// -----------------------------------------------------------------------------
+
+[data-color-mode="dark"] {
+    /* Chart containers */
+    .ops-dashboard .chart-container,
+    .ops-dashboard canvas {
+        background-color: transparent !important;
+    }
+
+    /* Chart.js / ApexCharts text */
+    .ops-dashboard .apexcharts-text,
+    .ops-dashboard .apexcharts-legend-text {
+        fill: #94a3b8 !important;
+        color: #94a3b8 !important;
+    }
+
+    /* Chart gridlines */
+    .ops-dashboard .apexcharts-gridline,
+    .ops-dashboard .apexcharts-xaxis-tick {
+        stroke: #334155 !important;
+    }
+
+    /* Chart tooltip */
+    .ops-dashboard .apexcharts-tooltip {
+        background-color: #1e293b !important;
+        border-color: #475569 !important;
+        color: #f1f5f9 !important;
+    }
+
+    .ops-dashboard .apexcharts-tooltip-title {
+        background-color: #334155 !important;
+        border-color: #475569 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 21F: Dashboard Tables & Lists - Dark Mode
+// -----------------------------------------------------------------------------
+
+[data-color-mode="dark"] {
+    /* Tables in dashboard */
+    .ops-dashboard table,
+    .ops-dashboard .table {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    .ops-dashboard table thead th,
+    .ops-dashboard .table thead th {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    .ops-dashboard table tbody td,
+    .ops-dashboard .table tbody td {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-color: #334155 !important;
+    }
+
+    .ops-dashboard table tbody tr:hover td,
+    .ops-dashboard .table tbody tr:hover td {
+        background-color: #334155 !important;
+    }
+
+    /* Lists */
+    .ops-dashboard ul,
+    .ops-dashboard ol,
+    .ops-dashboard li {
+        color: #f1f5f9 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 21G: Filters Dropdown/Collapsible - Both Modes
+// -----------------------------------------------------------------------------
+
+/* Filters section header */
+.ops-dashboard .filters-header,
+.ops-dashboard [class*="filter"] .header {
+    cursor: pointer !important;
+}
+
+/* Light mode */
+.ops-dashboard .filters-content,
+.ops-dashboard [class*="filter-content"] {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+}
+
+[data-color-mode="dark"] {
+    .ops-dashboard .filters-content,
+    .ops-dashboard [class*="filter-content"] {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+}
+
+/* =============================================================================
+   FIX 22: ODOO APP DASHBOARDS - Purchase, Sales, Inventory, etc.
+   ============================================================================= */
+
+// -----------------------------------------------------------------------------
+// 22A: Purchase Dashboard - Light Mode
+// -----------------------------------------------------------------------------
+
+/* Purchase dashboard main container */
+.o_purchase_dashboard,
+div.o_purchase_dashboard {
+    background-color: #f8fafc !important;
+    border-bottom-color: #e2e8f0 !important;
+}
+
+/* Status/KPI cards in purchase dashboard */
+.o_purchase_dashboard .o_purchase_stats,
+.o_purchase_dashboard [class*="stats"],
+.o_purchase_dashboard .row > div {
+    background-color: transparent !important;
+}
+
+/* Individual stat boxes */
+.o_purchase_dashboard .o_purchase_stats > div,
+.o_purchase_dashboard .stat-box,
+.o_purchase_dashboard [class*="stat-"] {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    color: #1e293b !important;
+}
+
+/* Stat values/numbers */
+.o_purchase_dashboard .o_primary,
+.o_purchase_dashboard .o_value,
+.o_purchase_dashboard h2,
+.o_purchase_dashboard strong {
+    color: #1e293b !important;
+}
+
+/* Stat labels */
+.o_purchase_dashboard .o_label,
+.o_purchase_dashboard small,
+.o_purchase_dashboard span {
+    color: #64748b !important;
+}
+
+// -----------------------------------------------------------------------------
+// 22B: Purchase Dashboard - Dark Mode
+// -----------------------------------------------------------------------------
+
+[data-color-mode="dark"] {
+    /* Purchase dashboard container */
+    .o_purchase_dashboard,
+    div.o_purchase_dashboard {
+        background-color: #0f172a !important;
+        border-bottom-color: #334155 !important;
+    }
+
+    /* Stat boxes */
+    .o_purchase_dashboard .o_purchase_stats > div,
+    .o_purchase_dashboard .stat-box,
+    .o_purchase_dashboard [class*="stat-"] {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Stat values */
+    .o_purchase_dashboard .o_primary,
+    .o_purchase_dashboard .o_value,
+    .o_purchase_dashboard h2,
+    .o_purchase_dashboard strong {
+        color: #ffffff !important;
+    }
+
+    /* Stat labels */
+    .o_purchase_dashboard .o_label,
+    .o_purchase_dashboard small,
+    .o_purchase_dashboard span {
+        color: #94a3b8 !important;
+    }
+
+    /* Clickable stat links */
+    .o_purchase_dashboard a {
+        color: #60a5fa !important;
+    }
+
+    .o_purchase_dashboard a:hover {
+        color: #93c5fd !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 22C: Sales Dashboard - Both Modes
+// -----------------------------------------------------------------------------
+
+/* Sales dashboard */
+.o_sale_dashboard,
+div.o_sale_dashboard {
+    background-color: #f8fafc !important;
+    border-bottom-color: #e2e8f0 !important;
+}
+
+.o_sale_dashboard .o_sale_stats > div,
+.o_sale_dashboard [class*="stat-"] {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+}
+
+[data-color-mode="dark"] {
+    .o_sale_dashboard,
+    div.o_sale_dashboard {
+        background-color: #0f172a !important;
+        border-bottom-color: #334155 !important;
+    }
+
+    .o_sale_dashboard .o_sale_stats > div,
+    .o_sale_dashboard [class*="stat-"] {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    .o_sale_dashboard .o_primary,
+    .o_sale_dashboard strong {
+        color: #ffffff !important;
+    }
+
+    .o_sale_dashboard .o_label,
+    .o_sale_dashboard small {
+        color: #94a3b8 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 22D: Inventory/Stock Dashboard - Both Modes
+// -----------------------------------------------------------------------------
+
+/* Inventory dashboard */
+.o_stock_dashboard,
+.o_inventory_dashboard,
+div.o_stock_dashboard {
+    background-color: #f8fafc !important;
+    border-bottom-color: #e2e8f0 !important;
+}
+
+[data-color-mode="dark"] {
+    .o_stock_dashboard,
+    .o_inventory_dashboard,
+    div.o_stock_dashboard {
+        background-color: #0f172a !important;
+        border-bottom-color: #334155 !important;
+    }
+
+    .o_stock_dashboard [class*="stat-"],
+    .o_inventory_dashboard [class*="stat-"] {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 22E: CRM Dashboard - Both Modes
+// -----------------------------------------------------------------------------
+
+/* CRM dashboard */
+.o_crm_dashboard,
+div.o_crm_dashboard {
+    background-color: #f8fafc !important;
+}
+
+[data-color-mode="dark"] {
+    .o_crm_dashboard,
+    div.o_crm_dashboard {
+        background-color: #0f172a !important;
+    }
+
+    .o_crm_dashboard [class*="stat-"],
+    .o_crm_dashboard .o_kanban_record {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 22F: Generic bg-view Class Fix (Used by many dashboards)
+// -----------------------------------------------------------------------------
+
+/* The bg-view class is used by many Odoo dashboards */
+.bg-view {
+    background-color: #f8fafc !important;
+}
+
+[data-color-mode="dark"] {
+    .bg-view {
+        background-color: #0f172a !important;
+    }
+
+    /* bg-view inside action manager */
+    .o_action_manager .bg-view,
+    .o_content .bg-view {
+        background-color: #0f172a !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// 22G: Dashboard Stat Cards - Universal Pattern
+// -----------------------------------------------------------------------------
+
+/* Common pattern for all Odoo dashboard stat cards */
+[class*="_dashboard"] .btn-group .btn,
+[class*="_dashboard"] [class*="stat"] {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #334155 !important;
+}
+
+[class*="_dashboard"] .btn-group .btn:hover {
+    background-color: #f1f5f9 !important;
+}
+
+[class*="_dashboard"] .btn-group .btn.active {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+[data-color-mode="dark"] {
+    [class*="_dashboard"] .btn-group .btn,
+    [class*="_dashboard"] [class*="stat"] {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+
+    [class*="_dashboard"] .btn-group .btn:hover {
+        background-color: #334155 !important;
+    }
+
+    [class*="_dashboard"] .btn-group .btn.active {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: #ffffff !important;
+    }
+
+    /* Text in dashboard stat cards */
+    [class*="_dashboard"] .o_primary,
+    [class*="_dashboard"] .o_value,
+    [class*="_dashboard"] h2,
+    [class*="_dashboard"] h3,
+    [class*="_dashboard"] strong {
+        color: #ffffff !important;
+    }
+
+    [class*="_dashboard"] .o_label,
+    [class*="_dashboard"] .text-muted,
+    [class*="_dashboard"] small {
+        color: #94a3b8 !important;
+    }
+
+    /* Links in dashboards */
+    [class*="_dashboard"] a:not(.btn) {
+        color: #60a5fa !important;
+    }
+
+    [class*="_dashboard"] a:not(.btn):hover {
+        color: #93c5fd !important;
+    }
+}

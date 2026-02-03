@@ -622,17 +622,73 @@ class OpsTreasuryReportWizard(models.TransientModel):
         }
 
     def action_export_excel(self):
-        """Export report to Excel."""
+        """
+        Export Treasury Intelligence report to Excel.
+
+        Uses Phase 5 corporate Excel format structure with dynamic branding.
+        Generates file directly using xlsxwriter (no report_xlsx dependency).
+        """
         self.ensure_one()
 
+        try:
+            import xlsxwriter
+        except ImportError:
+            raise UserError(_("xlsxwriter Python library is not installed. Cannot generate Excel reports."))
+
+        import io
+        import base64
+
+        # Get report data with security checks
         report_data = self._get_report_data()
 
+        # Create in-memory Excel file
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+
+        try:
+            # Generate Excel report using the XLSX report generator
+            xlsx_report = self.env['report.ops_matrix_accounting.report_treasury_xlsx']
+            xlsx_report.generate_xlsx_report(workbook, report_data, self)
+        finally:
+            workbook.close()
+
+        # Get file content
+        output.seek(0)
+        file_content = output.read()
+        output.close()
+
+        # Encode to base64
+        file_content_b64 = base64.b64encode(file_content)
+
+        # Generate filename based on report type
+        report_type_labels = {
+            'registry': 'PDC_Registry',
+            'maturity': 'Maturity_Analysis',
+            'on_hand': 'PDCs_In_Hand',
+        }
+        pdc_type_labels = {
+            'inbound': 'Receivable',
+            'outbound': 'Payable',
+            'both': 'All',
+        }
+        report_label = report_type_labels.get(self.report_type, 'Treasury')
+        pdc_label = pdc_type_labels.get(self.pdc_type, '')
+        filename = f"OPS_{report_label}_{pdc_label}_{fields.Date.today().strftime('%Y%m%d')}.xlsx"
+
+        # Create attachment and return download action
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,
+            'type': 'binary',
+            'datas': file_content_b64,
+            'res_model': self._name,
+            'res_id': self.id,
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
+
         return {
-            'type': 'ir.actions.report',
-            'report_name': 'ops_matrix_accounting.report_treasury_xlsx',
-            'report_type': 'xlsx',
-            'data': report_data,
-            'config': False,
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'self',
         }
 
     # ============================================

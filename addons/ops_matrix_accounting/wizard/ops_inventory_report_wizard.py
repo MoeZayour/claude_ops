@@ -25,6 +25,9 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+# Corporate Excel formatting (Phase 5)
+from ..report.excel_styles import get_corporate_excel_formats
+
 
 class OpsInventoryReportWizard(models.TransientModel):
     """Inventory Intelligence - Stock Analysis Engine"""
@@ -892,8 +895,8 @@ class OpsInventoryReportWizard(models.TransientModel):
             output = BytesIO()
             workbook = xlsxwriter.Workbook(output, {'in_memory': True})
 
-            # Create formats - OPS Corporate Style
-            formats = self._create_excel_formats(workbook)
+            # Create formats - OPS Corporate Style (Phase 5)
+            formats = get_corporate_excel_formats(workbook, self.company_id)
 
             # Dispatch to appropriate Excel writer
             if self.report_type == 'valuation':
@@ -934,76 +937,6 @@ class OpsInventoryReportWizard(models.TransientModel):
         except ImportError:
             raise UserError(_('xlsxwriter library is not installed. Please install it to export to Excel.'))
 
-    def _create_excel_formats(self, workbook):
-        """Create OPS-branded Excel formats."""
-        return {
-            # Headers
-            'title': workbook.add_format({
-                'bold': True, 'font_size': 16, 'font_color': '#1a2744',
-            }),
-            'subtitle': workbook.add_format({
-                'bold': True, 'font_size': 12, 'font_color': '#5B6BBB',
-            }),
-            'header': workbook.add_format({
-                'bold': True, 'font_size': 10, 'bg_color': '#f1f5f9',
-                'border': 1, 'border_color': '#e2e8f0',
-                'align': 'center', 'valign': 'vcenter',
-            }),
-            'header_num': workbook.add_format({
-                'bold': True, 'font_size': 10, 'bg_color': '#f1f5f9',
-                'border': 1, 'border_color': '#e2e8f0',
-                'align': 'right', 'valign': 'vcenter',
-            }),
-            # Numbers
-            'currency': workbook.add_format({
-                'num_format': '#,##0.00', 'align': 'right',
-            }),
-            'currency_positive': workbook.add_format({
-                'num_format': '#,##0.00', 'font_color': '#059669', 'align': 'right',
-            }),
-            'currency_negative': workbook.add_format({
-                'num_format': '(#,##0.00)', 'font_color': '#dc2626', 'align': 'right',
-            }),
-            'number': workbook.add_format({
-                'num_format': '#,##0.00', 'align': 'right',
-            }),
-            'integer': workbook.add_format({
-                'num_format': '#,##0', 'align': 'right',
-            }),
-            # Totals
-            'subtotal': workbook.add_format({
-                'bold': True, 'num_format': '#,##0.00', 'bg_color': '#E8EAF6',
-                'align': 'right', 'top': 1,
-            }),
-            'total': workbook.add_format({
-                'bold': True, 'num_format': '#,##0.00', 'bg_color': '#1a1a1a',
-                'font_color': 'white', 'align': 'right',
-            }),
-            'total_label': workbook.add_format({
-                'bold': True, 'bg_color': '#1a1a1a', 'font_color': 'white',
-                'align': 'right',
-            }),
-            # Text
-            'text': workbook.add_format({'valign': 'top'}),
-            'text_center': workbook.add_format({'align': 'center'}),
-            'date': workbook.add_format({'num_format': 'yyyy-mm-dd', 'align': 'center'}),
-            # Status badges (text-based in Excel)
-            'badge_good': workbook.add_format({
-                'bold': True, 'font_color': '#059669', 'align': 'center',
-            }),
-            'badge_warning': workbook.add_format({
-                'bold': True, 'font_color': '#d97706', 'align': 'center',
-            }),
-            'badge_danger': workbook.add_format({
-                'bold': True, 'font_color': '#dc2626', 'align': 'center',
-            }),
-            # Section header
-            'section': workbook.add_format({
-                'bold': True, 'font_size': 11, 'bg_color': '#1a2744',
-                'font_color': 'white',
-            }),
-        }
-
     def _write_valuation_excel(self, workbook, formats, data):
         """Write Stock Valuation report to Excel."""
         sheet = workbook.add_worksheet('Stock Valuation')
@@ -1018,39 +951,68 @@ class OpsInventoryReportWizard(models.TransientModel):
 
         row = 0
 
-        # Header
-        sheet.write(row, 0, self.company_id.name, formats['title'])
+        # Row 0: Company name
+        sheet.write(row, 0, self.company_id.name, formats['company_name'])
         row += 1
-        sheet.write(row, 0, 'Stock Valuation Report', formats['subtitle'])
-        row += 1
-        sheet.write(row, 0, f"As of: {data.get('date_to', '')}")
-        sheet.write(row, 3, f"Currency: {data.get('company_currency', 'USD')}")
-        row += 2
 
-        # Column headers
+        # Row 1: Report title
+        sheet.write(row, 0, 'Stock Valuation Report', formats['report_title'])
+        row += 1
+
+        # Row 2: Period
+        sheet.write(row, 0, f"As of: {data.get('date_to', '')}", formats['metadata'])
+        row += 1
+
+        # Row 3: Generated info
+        from odoo.fields import Datetime
+        sheet.write(row, 0, f"Generated: {Datetime.now().strftime('%Y-%m-%d %H:%M')} by {self.env.user.name}", formats['metadata'])
+        row += 1
+        row += 1
+
+        # Row 5: Filter bar (merged)
+        filter_text = f"Currency: {data.get('company_currency', 'USD')}"
+        if self.ops_branch_ids:
+            filter_text += f" | Branches: {', '.join(self.ops_branch_ids.mapped('name'))}"
+        sheet.merge_range(row, 0, row, 5, filter_text, formats['filter_bar'])
+        row += 1
+        row += 1
+
+        # Row 7: Column headers
         headers = ['Product', 'Location', 'Category', 'Quantity', 'Unit Cost', 'Value']
         for col, header in enumerate(headers):
-            fmt = formats['header_num'] if col >= 3 else formats['header']
+            fmt = formats['table_header_num'] if col >= 3 else formats['table_header']
             sheet.write(row, col, header, fmt)
         row += 1
 
-        # Data rows
-        for item in data.get('data', []):
-            sheet.write(row, 0, item.get('product_name', ''), formats['text'])
-            sheet.write(row, 1, item.get('location_name', ''), formats['text'])
-            sheet.write(row, 2, item.get('category_name', ''), formats['text'])
-            sheet.write(row, 3, item.get('quantity', 0), formats['number'])
-            sheet.write(row, 4, item.get('unit_cost', 0), formats['currency'])
+        # Row 8+: Data (freeze here)
+        sheet.freeze_panes(row, 0)
+
+        # Data rows with alternating styles
+        for idx, item in enumerate(data.get('data', [])):
+            is_alt = idx % 2 == 1
+            text_fmt = formats['text_alt'] if is_alt else formats['text']
+
+            sheet.write(row, 0, item.get('product_name', ''), text_fmt)
+            sheet.write(row, 1, item.get('location_name', ''), text_fmt)
+            sheet.write(row, 2, item.get('category_name', ''), text_fmt)
+            sheet.write(row, 3, item.get('quantity', 0), formats['number_alt'] if is_alt else formats['number'])
+            sheet.write(row, 4, item.get('unit_cost', 0), formats['number_alt'] if is_alt else formats['number'])
+
             value = item.get('value', 0)
-            fmt = formats['currency_positive'] if value > 0 else formats['currency_negative'] if value < 0 else formats['currency']
+            if value > 0:
+                fmt = formats['number_alt'] if is_alt else formats['number']
+            elif value < 0:
+                fmt = formats['number_negative_alt'] if is_alt else formats['number_negative']
+            else:
+                fmt = formats['number_zero_alt'] if is_alt else formats['number_zero']
             sheet.write(row, 5, value, fmt)
             row += 1
 
         # Grand total
         totals = data.get('totals', {})
         sheet.write(row, 2, 'TOTAL', formats['total_label'])
-        sheet.write(row, 3, totals.get('total_quantity', 0), formats['total'])
-        sheet.write(row, 5, totals.get('total_value', 0), formats['total'])
+        sheet.write(row, 3, totals.get('total_quantity', 0), formats['total_number'])
+        sheet.write(row, 5, totals.get('total_value', 0), formats['total_number'])
 
     def _write_aging_excel(self, workbook, formats, data):
         """Write Inventory Aging report to Excel."""
@@ -1065,53 +1027,69 @@ class OpsInventoryReportWizard(models.TransientModel):
 
         row = 0
 
-        sheet.write(row, 0, self.company_id.name, formats['title'])
-        row += 1
-        sheet.write(row, 0, 'Inventory Aging Analysis', formats['subtitle'])
-        row += 1
-        sheet.write(row, 0, f"As of: {data.get('date_to', '')}")
-        row += 2
-
-        # Aging summary
-        sheet.write(row, 0, 'AGING SUMMARY', formats['section'])
-        row += 1
-        for bucket in data.get('aging_buckets', []):
-            sheet.write(row, 0, bucket.get('label', ''))
-            sheet.write(row, 3, bucket.get('total_qty', 0), formats['number'])
-            sheet.write(row, 4, bucket.get('total_value', 0), formats['currency'])
-            row += 1
+        # Row 0: Company name
+        sheet.write(row, 0, self.company_id.name, formats['company_name'])
         row += 1
 
-        # Detail headers
+        # Row 1: Report title
+        sheet.write(row, 0, 'Inventory Aging Analysis', formats['report_title'])
+        row += 1
+
+        # Row 2: Period
+        sheet.write(row, 0, f"As of: {data.get('date_to', '')}", formats['metadata'])
+        row += 1
+
+        # Row 3: Generated info
+        from odoo.fields import Datetime
+        sheet.write(row, 0, f"Generated: {Datetime.now().strftime('%Y-%m-%d %H:%M')} by {self.env.user.name}", formats['metadata'])
+        row += 1
+        row += 1
+
+        # Row 5: Filter bar (merged) with aging periods
+        filter_text = f"Aging Periods: {self.aging_period_1}/{self.aging_period_2}/{self.aging_period_3}/{self.aging_period_4} days"
+        if self.ops_branch_ids:
+            filter_text += f" | Branches: {', '.join(self.ops_branch_ids.mapped('name'))}"
+        sheet.merge_range(row, 0, row, 5, filter_text, formats['filter_bar'])
+        row += 1
+        row += 1
+
+        # Row 7: Column headers
         headers = ['Product', 'Location', 'Age (Days)', 'Quantity', 'Value', 'Status']
         for col, header in enumerate(headers):
-            fmt = formats['header_num'] if col in [2, 3, 4] else formats['header']
+            fmt = formats['table_header_num'] if col in [2, 3, 4] else formats['table_header']
             sheet.write(row, col, header, fmt)
         row += 1
 
-        # Detail rows
+        # Row 8+: Data (freeze here)
+        sheet.freeze_panes(row, 0)
+
+        # Detail rows with alternating styles
         p4 = data.get('aging_periods', {}).get('p4', 180)
-        for item in data.get('all_items', []):
+        for idx, item in enumerate(data.get('all_items', [])):
+            is_alt = idx % 2 == 1
+            text_fmt = formats['text_alt'] if is_alt else formats['text']
             age_days = item.get('age_days', 0)
-            sheet.write(row, 0, item.get('product_name', ''), formats['text'])
-            sheet.write(row, 1, item.get('location_name', ''), formats['text'])
-            sheet.write(row, 2, age_days, formats['integer'])
-            sheet.write(row, 3, item.get('quantity', 0), formats['number'])
-            sheet.write(row, 4, item.get('value', 0), formats['currency'])
-            # Status based on age
+
+            sheet.write(row, 0, item.get('product_name', ''), text_fmt)
+            sheet.write(row, 1, item.get('location_name', ''), text_fmt)
+            sheet.write(row, 2, age_days, formats['number_alt'] if is_alt else formats['number'])
+            sheet.write(row, 3, item.get('quantity', 0), formats['number_alt'] if is_alt else formats['number'])
+            sheet.write(row, 4, item.get('value', 0), formats['number_alt'] if is_alt else formats['number'])
+
+            # Status based on age - Note: using text_fmt since badges don't exist in new formats
             if age_days > p4:
-                sheet.write(row, 5, 'DEAD STOCK', formats['badge_danger'])
+                sheet.write(row, 5, 'DEAD STOCK', text_fmt)
             elif age_days > 90:
-                sheet.write(row, 5, 'OLD', formats['badge_warning'])
+                sheet.write(row, 5, 'OLD', text_fmt)
             else:
-                sheet.write(row, 5, 'NORMAL', formats['badge_good'])
+                sheet.write(row, 5, 'NORMAL', text_fmt)
             row += 1
 
         # Total
         totals = data.get('totals', {})
         sheet.write(row, 2, 'TOTAL', formats['total_label'])
-        sheet.write(row, 3, totals.get('total_quantity', 0), formats['total'])
-        sheet.write(row, 4, totals.get('total_value', 0), formats['total'])
+        sheet.write(row, 3, totals.get('total_quantity', 0), formats['total_number'])
+        sheet.write(row, 4, totals.get('total_value', 0), formats['total_number'])
 
     def _write_negative_excel(self, workbook, formats, data):
         """Write Negative Stock Alert report to Excel."""
@@ -1126,46 +1104,67 @@ class OpsInventoryReportWizard(models.TransientModel):
 
         row = 0
 
-        sheet.write(row, 0, self.company_id.name, formats['title'])
-        row += 1
-        sheet.write(row, 0, 'NEGATIVE STOCK ALERT', formats['subtitle'])
+        # Row 0: Company name
+        sheet.write(row, 0, self.company_id.name, formats['company_name'])
         row += 1
 
+        # Row 1: Report title
+        sheet.write(row, 0, 'NEGATIVE STOCK ALERT', formats['report_title'])
+        row += 1
+
+        # Row 2: Period
+        sheet.write(row, 0, f"As of: {data.get('date_to', '')}", formats['metadata'])
+        row += 1
+
+        # Row 3: Generated info
+        from odoo.fields import Datetime
+        sheet.write(row, 0, f"Generated: {Datetime.now().strftime('%Y-%m-%d %H:%M')} by {self.env.user.name}", formats['metadata'])
+        row += 1
+        row += 1
+
+        # Row 5: Filter bar (merged) with alert summary
         totals = data.get('totals', {})
         alert_count = totals.get('alert_count', 0)
         critical_count = totals.get('critical_count', 0)
-
         if alert_count > 0:
-            sheet.write(row, 0, f"ALERT: {alert_count} items with negative stock. {critical_count} CRITICAL.",
-                        formats['badge_danger'])
+            filter_text = f"⚠ ALERT: {alert_count} items with negative stock ({critical_count} CRITICAL)"
         else:
-            sheet.write(row, 0, "All Clear - No negative stock found", formats['badge_good'])
-        row += 2
+            filter_text = "✓ All Clear - No negative stock found"
+        if self.ops_branch_ids:
+            filter_text += f" | Branches: {', '.join(self.ops_branch_ids.mapped('name'))}"
+        sheet.merge_range(row, 0, row, 5, filter_text, formats['filter_bar'])
+        row += 1
+        row += 1
 
-        # Headers
+        # Row 7: Column headers
         headers = ['Product', 'Location', 'Quantity', 'Reserved', 'Value', 'Severity']
         for col, header in enumerate(headers):
-            fmt = formats['header_num'] if col in [2, 3, 4] else formats['header']
+            fmt = formats['table_header_num'] if col in [2, 3, 4] else formats['table_header']
             sheet.write(row, col, header, fmt)
         row += 1
 
-        # Data rows
-        for item in data.get('data', []):
-            sheet.write(row, 0, item.get('product_name', ''), formats['text'])
-            sheet.write(row, 1, item.get('location_name', ''), formats['text'])
-            sheet.write(row, 2, item.get('quantity', 0), formats['currency_negative'])
-            sheet.write(row, 3, item.get('reserved_quantity', 0), formats['number'])
-            sheet.write(row, 4, item.get('value', 0), formats['currency_negative'])
+        # Row 8+: Data (freeze here)
+        sheet.freeze_panes(row, 0)
+
+        # Data rows with alternating styles
+        for idx, item in enumerate(data.get('data', [])):
+            is_alt = idx % 2 == 1
+            text_fmt = formats['text_alt'] if is_alt else formats['text']
+
+            sheet.write(row, 0, item.get('product_name', ''), text_fmt)
+            sheet.write(row, 1, item.get('location_name', ''), text_fmt)
+            sheet.write(row, 2, item.get('quantity', 0), formats['number_negative_alt'] if is_alt else formats['number_negative'])
+            sheet.write(row, 3, item.get('reserved_quantity', 0), formats['number_alt'] if is_alt else formats['number'])
+            sheet.write(row, 4, item.get('value', 0), formats['number_negative_alt'] if is_alt else formats['number_negative'])
             severity = item.get('severity', 'warning')
-            fmt = formats['badge_danger'] if severity == 'critical' else formats['badge_warning']
-            sheet.write(row, 5, severity.upper(), fmt)
+            sheet.write(row, 5, severity.upper(), text_fmt)
             row += 1
 
         # Total
         if data.get('data'):
             sheet.write(row, 1, 'TOTAL', formats['total_label'])
-            sheet.write(row, 2, totals.get('total_negative_qty', 0), formats['total'])
-            sheet.write(row, 4, totals.get('total_negative_value', 0), formats['total'])
+            sheet.write(row, 2, totals.get('total_negative_qty', 0), formats['total_number'])
+            sheet.write(row, 4, totals.get('total_negative_value', 0), formats['total_number'])
 
     def _write_movement_excel(self, workbook, formats, data):
         """Write Fast/Slow Moving report to Excel."""
@@ -1181,61 +1180,63 @@ class OpsInventoryReportWizard(models.TransientModel):
 
         row = 0
 
-        sheet.write(row, 0, self.company_id.name, formats['title'])
-        row += 1
-        sheet.write(row, 0, 'Fast vs Slow Moving Analysis', formats['subtitle'])
-        row += 1
-        sheet.write(row, 0, f"Period: {data.get('date_from', '')} to {data.get('date_to', '')}")
-        row += 2
-
-        # Movement summary
-        sheet.write(row, 0, 'MOVEMENT SUMMARY', formats['section'])
-        row += 1
-        for summary in data.get('movement_summary', []):
-            label = summary.get('label', '')
-            if label == 'Fast Moving':
-                fmt = formats['badge_good']
-            elif label == 'Slow Moving':
-                fmt = formats['badge_warning']
-            else:
-                fmt = formats['badge_danger']
-            sheet.write(row, 0, label)
-            sheet.write(row, 1, summary.get('count', 0), formats['integer'])
-            sheet.write(row, 2, summary.get('value', 0), formats['currency'])
-            row += 1
+        # Row 0: Company name
+        sheet.write(row, 0, self.company_id.name, formats['company_name'])
         row += 1
 
-        # Headers
+        # Row 1: Report title
+        sheet.write(row, 0, 'Fast vs Slow Moving Analysis', formats['report_title'])
+        row += 1
+
+        # Row 2: Period
+        sheet.write(row, 0, f"Period: {data.get('date_from', '')} to {data.get('date_to', '')}", formats['metadata'])
+        row += 1
+
+        # Row 3: Generated info
+        from odoo.fields import Datetime
+        sheet.write(row, 0, f"Generated: {Datetime.now().strftime('%Y-%m-%d %H:%M')} by {self.env.user.name}", formats['metadata'])
+        row += 1
+        row += 1
+
+        # Row 5: Filter bar (merged) with movement criteria
+        filter_text = f"Slow Moving Threshold: < {self.slow_threshold} moves"
+        if self.ops_branch_ids:
+            filter_text += f" | Branches: {', '.join(self.ops_branch_ids.mapped('name'))}"
+        sheet.merge_range(row, 0, row, 6, filter_text, formats['filter_bar'])
+        row += 1
+        row += 1
+
+        # Row 7: Column headers
         headers = ['Product', 'Current Qty', 'Current Value', 'Moves', 'Qty Moved', 'Turnover', 'Class']
         for col, header in enumerate(headers):
-            fmt = formats['header_num'] if col >= 1 else formats['header']
+            fmt = formats['table_header_num'] if col >= 1 else formats['table_header']
             sheet.write(row, col, header, fmt)
         row += 1
 
-        # Data rows
-        for item in data.get('data', []):
-            sheet.write(row, 0, item.get('product_name', ''), formats['text'])
-            sheet.write(row, 1, item.get('current_qty', 0), formats['number'])
-            sheet.write(row, 2, item.get('current_value', 0), formats['currency'])
-            sheet.write(row, 3, item.get('move_count', 0), formats['integer'])
-            sheet.write(row, 4, item.get('qty_moved', 0), formats['number'])
-            sheet.write(row, 5, item.get('turnover_ratio', 0), formats['number'])
+        # Row 8+: Data (freeze here)
+        sheet.freeze_panes(row, 0)
+
+        # Data rows with alternating styles
+        for idx, item in enumerate(data.get('data', [])):
+            is_alt = idx % 2 == 1
+            text_fmt = formats['text_alt'] if is_alt else formats['text']
+
+            sheet.write(row, 0, item.get('product_name', ''), text_fmt)
+            sheet.write(row, 1, item.get('current_qty', 0), formats['number_alt'] if is_alt else formats['number'])
+            sheet.write(row, 2, item.get('current_value', 0), formats['number_alt'] if is_alt else formats['number'])
+            sheet.write(row, 3, item.get('move_count', 0), formats['number_alt'] if is_alt else formats['number'])
+            sheet.write(row, 4, item.get('qty_moved', 0), formats['number_alt'] if is_alt else formats['number'])
+            sheet.write(row, 5, item.get('turnover_ratio', 0), formats['percentage'])
 
             mv_class = item.get('movement_class', 'dead')
-            if mv_class == 'fast':
-                fmt = formats['badge_good']
-            elif mv_class == 'slow':
-                fmt = formats['badge_warning']
-            else:
-                fmt = formats['badge_danger']
-            sheet.write(row, 6, item.get('movement_label', 'Unknown'), fmt)
+            sheet.write(row, 6, item.get('movement_label', 'Unknown'), text_fmt)
             row += 1
 
         # Total
         totals = data.get('totals', {})
         sheet.write(row, 0, 'TOTAL', formats['total_label'])
-        sheet.write(row, 1, totals.get('total_qty', 0), formats['total'])
-        sheet.write(row, 2, totals.get('total_value', 0), formats['total'])
+        sheet.write(row, 1, totals.get('total_qty', 0), formats['total_number'])
+        sheet.write(row, 2, totals.get('total_value', 0), formats['total_number'])
 
     # ============================================
     # ONCHANGE METHODS

@@ -1,395 +1,378 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        OPS Matrix Asset Report Templates - Premium Executive Suite
-        ===========================================================
-        v19.4.0: Dynamic Company Colors + Smart Value Styling
+        ================================================================
+        OPS CORPORATE ASSET REPORTS
+        Phase 4B: Corporate Report Template Redesign
+        ================================================================
 
-        DESIGN PHILOSOPHY:
-        - Dynamic colors from company primary_color/secondary_color
-        - Smart value coloring: Green=Positive, Red=Negative, Muted=Zero
-        - Executive dashboard styling
-        - Professional finish for management review
+        DESIGN: Corporate branding with shared components
+        REPORTS: Asset Register, Depreciation Schedule
+        PILLAR: Asset Intelligence
+
+        SHARED COMPONENTS USED:
+        - report_corporate_header (logo, company info, meta)
+        - report_corporate_title (title, pillar, period)
+        - report_filter_bar (scope, filters, status)
+        - section_header_asset (green accent for asset sections)
+        - report_corporate_footer (OPS badge, page numbers)
     -->
 
-    <!-- Asset Register Report PDF Template -->
-    <record id="report_asset_register_pdf" model="ir.actions.report">
-        <field name="name">Asset Register Report</field>
-        <field name="model">ops.asset.report.wizard</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_asset_register_document</field>
-        <field name="report_file">ops_matrix_accounting.report_asset_register_document</field>
-        <field name="binding_model_id" ref="model_ops_asset_report_wizard"/>
-        <field name="binding_type">report</field>
-    </record>
+    <!-- ================================================================
+         ASSET REGISTER REPORT
+         ================================================================ -->
 
-    <template id="report_asset_register_document">
+    <template id="report_asset_register_document_corporate">
         <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="wizard">
-                <t t-call="ops_matrix_accounting.ops_external_layout">
-                    <t t-set="data" t-value="wizard._get_report_data()"/>
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="company" t-value="doc.company_id or env.company"/>
+                <t t-set="data" t-value="doc._get_report_data()"/>
 
-                    <!-- Dynamic Company Colors -->
-                    <t t-set="company" t-value="wizard.company_id or env.company"/>
-                    <t t-set="primary_color" t-value="company.primary_color or '#1a2744'"/>
-                    <t t-set="secondary_color" t-value="company.secondary_color or '#3b82f6'"/>
-                    <t t-set="primary_dark" t-value="'#0a1628'"/>
-                    <t t-set="success_color" t-value="'#059669'"/>
-                    <t t-set="danger_color" t-value="'#dc2626'"/>
-                    <t t-set="warning_color" t-value="'#d97706'"/>
+                <div class="page" style="font-family: Arial, Helvetica, sans-serif; color: #1e293b;">
 
-                    <div class="page ops-report-container" style="background: #ffffff !important; -webkit-print-color-adjust: exact !important;">
+                    <!-- Corporate Header -->
+                    <t t-call="ops_matrix_accounting.report_corporate_header"/>
 
-                        <!-- Executive Header Band -->
-                        <div t-attf-style="background: #{primary_dark} !important; padding: 20px 25px !important; margin: -10mm -10mm 0 -10mm !important; -webkit-print-color-adjust: exact !important;">
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td style="vertical-align: middle;">
-                                        <span t-attf-style="display: inline-block; width: 50px; height: 50px; background: linear-gradient(135deg, #{primary_color} 0%, #{secondary_color} 100%); border-radius: 10px; text-align: center; line-height: 50px; font-size: 24px; font-weight: bold; color: #ffffff; margin-right: 15px; -webkit-print-color-adjust: exact !important;">
-                                            <t t-esc="(data.get('company_name', 'C') or 'C')[0]"/>
-                                        </span>
-                                        <span style="display: inline-block; vertical-align: middle;">
-                                            <span style="display: block; font-size: 20px; font-weight: 700; color: #ffffff;"><t t-esc="data.get('company_name', 'Company')"/></span>
-                                            <span style="display: block; font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px;">Fixed Asset Management</span>
-                                        </span>
-                                    </td>
-                                    <td style="text-align: right; vertical-align: middle;">
-                                        <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 15px; display: inline-block;">
-                                            <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Total Assets</div>
-                                            <div style="font-size: 18px; font-weight: 600; color: #ffffff;"><t t-esc="len(data.get('assets', []))"/></div>
+                    <!-- Report Title -->
+                    <t t-call="ops_matrix_accounting.report_corporate_title">
+                        <t t-set="report_title" t-value="'Fixed Asset Register'"/>
+                        <t t-set="report_pillar" t-value="'Asset Intelligence'"/>
+                        <t t-set="date_end" t-value="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/>
+                    </t>
+
+                    <!-- Filter Info Bar -->
+                    <t t-call="ops_matrix_accounting.report_filter_bar">
+                        <t t-set="doc" t-value="doc"/>
+                    </t>
+
+                    <!-- KPI Summary Cards -->
+                    <div style="margin-bottom: 20px;">
+                        <table width="100%" style="border-collapse: separate; border-spacing: 10px 0;">
+                            <tr>
+                                <td style="width: 33%; vertical-align: top;">
+                                    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: 3px solid #2563eb; border-radius: 4px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Original Value</div>
+                                        <div style="font-size: 18px; font-weight: 700; color: #1e293b; font-family: Consolas, Monaco, monospace;">
+                                            <t t-esc="'{:,.2f}'.format(data.get('total_original', 0))"/>
                                         </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <!-- Accent Bar -->
-                        <div t-attf-style="height: 4px; background: linear-gradient(90deg, #{primary_color} 0%, #{secondary_color} 50%, #{success_color} 100%); margin: 0 -10mm 20px -10mm; -webkit-print-color-adjust: exact !important;"></div>
-
-                        <!-- Report Title Section -->
-                        <div style="text-align: center; margin-bottom: 25px;">
-                            <h2 t-attf-style="font-size: 28px; font-weight: 700; color: #{primary_color}; margin: 0 0 8px 0;">Fixed Asset Register</h2>
-                            <p style="font-size: 14px; color: #64748b; margin: 0;">Comprehensive Asset Inventory Report</p>
-                        </div>
-
-                        <!-- KPI Summary Cards -->
-                        <div style="margin-bottom: 25px;">
-                            <table style="width: 100%; border-collapse: separate; border-spacing: 10px 0;">
-                                <tr>
-                                    <td style="width: 25%; vertical-align: top;">
-                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{primary_color}; -webkit-print-color-adjust: exact !important;">
-                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Original Value</div>
-                                            <div style="font-size: 20px; font-weight: 700; color: #3b82f6;"><t t-esc="'{:,.2f}'.format(data.get('total_original', 0))"/></div>
+                                    </div>
+                                </td>
+                                <td style="width: 33%; vertical-align: top;">
+                                    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: 3px solid #dc2626; border-radius: 4px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Accum. Depreciation</div>
+                                        <div style="font-size: 18px; font-weight: 700; color: #dc2626; font-family: Consolas, Monaco, monospace;">
+                                            <t t-esc="'{:,.2f}'.format(data.get('total_depreciation', 0))"/>
                                         </div>
-                                    </td>
-                                    <td style="width: 25%; vertical-align: top;">
-                                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #dc2626; -webkit-print-color-adjust: exact !important;">
-                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Accum. Depreciation</div>
-                                            <div style="font-size: 20px; font-weight: 700; color: #dc2626;"><t t-esc="'{:,.2f}'.format(data.get('total_depreciation', 0))"/></div>
+                                    </div>
+                                </td>
+                                <td style="width: 33%; vertical-align: top;">
+                                    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: 3px solid #16a34a; border-radius: 4px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Net Book Value</div>
+                                        <div style="font-size: 18px; font-weight: 700; color: #16a34a; font-family: Consolas, Monaco, monospace;">
+                                            <t t-esc="'{:,.2f}'.format(data.get('total_book_value', 0))"/>
                                         </div>
-                                    </td>
-                                    <td style="width: 25%; vertical-align: top;">
-                                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #059669; -webkit-print-color-adjust: exact !important;">
-                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Net Book Value</div>
-                                            <div style="font-size: 20px; font-weight: 700; color: #059669;"><t t-esc="'{:,.2f}'.format(data.get('total_book_value', 0))"/></div>
-                                        </div>
-                                    </td>
-                                    <td style="width: 25%; vertical-align: top;">
-                                        <div t-attf-style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #{secondary_color}; -webkit-print-color-adjust: exact !important;">
-                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Asset Count</div>
-                                            <div t-attf-style="font-size: 20px; font-weight: 700; color: #{secondary_color};"><t t-esc="len(data.get('assets', []))"/></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
 
-                        <!-- Report Info Box -->
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 20px; -webkit-print-color-adjust: exact !important;">
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td style="width: 50%;">
-                                        <span style="font-size: 11px; color: #64748b; font-weight: 600;">REPORT TYPE:</span>
-                                        <span style="font-size: 12px; color: #1e293b; margin-left: 8px;"><t t-esc="data.get('report_type', 'Summary').title()"/></span>
+                    <!-- Asset Register Table -->
+                    <table width="100%" style="border-collapse: collapse; font-size: 9px; margin-bottom: 20px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #1e293b; background-color: #f8fafc;">
+                                <th style="text-align: left; padding: 6px 8px; font-weight: 600; color: #475569;">Code</th>
+                                <th style="text-align: left; padding: 6px 8px; font-weight: 600; color: #475569;">Description</th>
+                                <th style="text-align: left; padding: 6px 8px; font-weight: 600; color: #475569;">Category</th>
+                                <th style="text-align: left; padding: 6px 8px; font-weight: 600; color: #475569;">Acquisition</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; color: #475569;">Original Value</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; color: #475569;">Accum. Dep.</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; color: #475569;">Book Value</th>
+                                <th style="text-align: center; padding: 6px 8px; font-weight: 600; color: #475569;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="data.get('assets', [])" t-as="asset">
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 6px 8px; color: #1e293b; font-weight: 500;">
+                                        <t t-esc="asset.get('code', '-')"/>
                                     </td>
-                                    <td style="width: 50%; text-align: right;">
-                                        <span style="font-size: 11px; color: #64748b; font-weight: 600;">GENERATED:</span>
-                                        <span style="font-size: 12px; color: #1e293b; margin-left: 8px;"><t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/></span>
+                                    <td style="padding: 6px 8px; color: #475569;">
+                                        <t t-esc="asset.get('name', '-')"/>
                                     </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <!-- Asset Register Table -->
-                        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                            <thead>
-                                <tr style="background: #f1f5f9; -webkit-print-color-adjust: exact !important;">
-                                    <th style="padding: 10px 8px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Asset Code</th>
-                                    <th style="padding: 10px 8px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Description</th>
-                                    <th style="padding: 10px 8px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Category</th>
-                                    <th style="padding: 10px 8px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Acquisition</th>
-                                    <th style="padding: 10px 8px; text-align: right; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Original Value</th>
-                                    <th style="padding: 10px 8px; text-align: right; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Accum. Dep.</th>
-                                    <th style="padding: 10px 8px; text-align: right; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Book Value</th>
-                                    <th style="padding: 10px 8px; text-align: center; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="data.get('assets', [])" t-as="asset">
-                                    <tr t-attf-style="background: #{asset_odd and '#ffffff' or '#f8fafc'}; -webkit-print-color-adjust: exact !important;">
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-weight: 500;"><t t-esc="asset.get('code', '-')"/></td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #1e293b;"><t t-esc="asset.get('name', '-')"/></td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;"><t t-esc="asset.get('category', '-')"/></td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;"><t t-esc="asset.get('acquisition_date', '-')"/></td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-family: 'DejaVu Sans Mono', monospace; color: #1e293b;">
-                                            <t t-esc="'{:,.2f}'.format(asset.get('original_value', 0))"/>
-                                        </td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-family: 'DejaVu Sans Mono', monospace; color: #dc2626;">
-                                            (<t t-esc="'{:,.2f}'.format(asset.get('accumulated_depreciation', 0))"/>)
-                                        </td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-family: 'DejaVu Sans Mono', monospace;">
-                                            <t t-set="bv" t-value="asset.get('book_value', 0)"/>
-                                            <span t-attf-style="font-weight: 600; color: #{bv > 0 and '#059669' or bv &lt; 0 and '#dc2626' or '#94a3b8'};">
+                                    <td style="padding: 6px 8px; color: #64748b;">
+                                        <t t-esc="asset.get('category', '-')"/>
+                                    </td>
+                                    <td style="padding: 6px 8px; color: #64748b;">
+                                        <t t-esc="asset.get('acquisition_date', '-')"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 8px; font-family: Consolas, Monaco, monospace; color: #1e293b;">
+                                        <t t-esc="'{:,.2f}'.format(asset.get('original_value', 0))"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 8px; font-family: Consolas, Monaco, monospace; color: #dc2626;">
+                                        (<t t-esc="'{:,.2f}'.format(asset.get('accumulated_depreciation', 0))"/>)
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 8px; font-family: Consolas, Monaco, monospace;">
+                                        <t t-set="bv" t-value="asset.get('book_value', 0)"/>
+                                        <span t-attf-style="font-weight: 600; color: #{bv > 0 and '#16a34a' or bv &lt; 0 and '#dc2626' or '#94a3b8'};">
+                                            <t t-if="bv &lt; 0">
+                                                (<t t-esc="'{:,.2f}'.format(abs(bv))"/>)
+                                            </t>
+                                            <t t-elif="bv == 0">-</t>
+                                            <t t-else="">
                                                 <t t-esc="'{:,.2f}'.format(bv)"/>
-                                            </span>
-                                        </td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">
-                                            <t t-set="status" t-value="asset.get('state', 'draft')"/>
-                                            <span t-attf-style="display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 9px; font-weight: 600; color: #ffffff; background: #{status == 'running' and '#059669' or status == 'close' and '#94a3b8' or '#d97706'}; -webkit-print-color-adjust: exact !important;">
-                                                <t t-esc="status.title()"/>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </t>
-                                <t t-if="not data.get('assets')">
-                                    <tr>
-                                        <td colspan="8" style="padding: 30px; text-align: center; color: #94a3b8; font-style: italic;">
-                                            No assets found matching the criteria
-                                        </td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                            <tfoot t-if="data.get('assets')">
-                                <tr style="background: #f1f5f9; -webkit-print-color-adjust: exact !important;">
-                                    <td colspan="4" style="padding: 12px 8px; text-align: right; font-weight: 700; color: #1e293b; border-top: 2px solid #cbd5e1;">TOTAL</td>
-                                    <td style="padding: 12px 8px; text-align: right; font-weight: 700; color: #1e293b; border-top: 2px solid #cbd5e1; font-family: 'DejaVu Sans Mono', monospace;">
-                                        <t t-esc="'{:,.2f}'.format(data.get('total_original', 0))"/>
+                                            </t>
+                                        </span>
                                     </td>
-                                    <td style="padding: 12px 8px; text-align: right; font-weight: 700; color: #dc2626; border-top: 2px solid #cbd5e1; font-family: 'DejaVu Sans Mono', monospace;">
-                                        (<t t-esc="'{:,.2f}'.format(data.get('total_depreciation', 0))"/>)
+                                    <td style="text-align: center; padding: 6px 8px;">
+                                        <t t-set="status" t-value="asset.get('state', 'draft')"/>
+                                        <span t-attf-style="display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8px; font-weight: 600; color: #ffffff; background-color: #{status == 'running' and '#16a34a' or status == 'close' and '#94a3b8' or '#d97706'};">
+                                            <t t-esc="status.title()"/>
+                                        </span>
                                     </td>
-                                    <td style="padding: 12px 8px; text-align: right; font-weight: 700; color: #059669; border-top: 2px solid #cbd5e1; font-family: 'DejaVu Sans Mono', monospace;">
-                                        <t t-esc="'{:,.2f}'.format(data.get('total_book_value', 0))"/>
-                                    </td>
-                                    <td style="border-top: 2px solid #cbd5e1;"></td>
                                 </tr>
-                            </tfoot>
-                        </table>
+                            </t>
 
-                        <!-- Report Footer -->
-                        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-                            <table style="width: 100%; font-size: 10px; color: #64748b;">
+                            <!-- Empty State -->
+                            <t t-if="not data.get('assets')">
                                 <tr>
-                                    <td style="width: 70%;">
-                                        <strong style="color: #1e293b;">Notes:</strong> Book value = Original Value - Accumulated Depreciation.
-                                        All values shown in company currency.
-                                    </td>
-                                    <td style="width: 30%; text-align: right;">
-                                        <span style="font-size: 8px; color: #94a3b8;">Powered by</span>
-                                        <span style="display: inline-block; background-color: #5B6BBB; color: #ffffff;
-                                                     padding: 2px 8px; border-radius: 3px; font-size: 8px; font-weight: 600;
-                                                     margin-left: 3px; letter-spacing: 0.5px;">OPS Framework</span>
+                                    <td colspan="8" style="text-align: center; padding: 20px; color: #94a3b8; font-style: italic;">
+                                        No assets found matching the criteria
                                     </td>
                                 </tr>
-                            </table>
-                            <div style="text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #e2e8f0;">
-                                <span style="font-size: 9px; color: #94a3b8; letter-spacing: 1px;">CONFIDENTIAL - FOR INTERNAL USE ONLY</span>
-                            </div>
-                        </div>
+                            </t>
+                        </tbody>
 
+                        <!-- Totals -->
+                        <tfoot t-if="data.get('assets')">
+                            <tr style="border-top: 2px solid #1e293b; border-bottom: 3px double #1e293b; background-color: #f1f5f9;">
+                                <td colspan="4" style="padding: 10px 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #1e293b;">TOTAL</td>
+                                <td style="text-align: right; padding: 10px 8px; font-weight: 700; font-family: Consolas, Monaco, monospace; font-size: 10px;">
+                                    <t t-esc="'{:,.2f}'.format(data.get('total_original', 0))"/>
+                                </td>
+                                <td style="text-align: right; padding: 10px 8px; font-weight: 700; color: #dc2626; font-family: Consolas, Monaco, monospace; font-size: 10px;">
+                                    (<t t-esc="'{:,.2f}'.format(data.get('total_depreciation', 0))"/>)
+                                </td>
+                                <td style="text-align: right; padding: 10px 8px; font-weight: 700; color: #16a34a; font-family: Consolas, Monaco, monospace; font-size: 10px;">
+                                    <t t-esc="'{:,.2f}'.format(data.get('total_book_value', 0))"/>
+                                </td>
+                                <td style="text-align: center; padding: 10px 8px; color: #64748b; font-size: 8px;">
+                                    <t t-esc="len(data.get('assets', []))"/> assets
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Notes Section -->
+                    <div style="margin-top: 25px; background-color: #f8fafc; border-left: 3px solid #16a34a; padding: 12px 15px;">
+                        <div style="font-size: 10px; font-weight: 600; color: #1e293b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Notes to Asset Register
+                        </div>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 9px; color: #475569; line-height: 1.6;">
+                            <li>Book value = Original Value - Accumulated Depreciation</li>
+                            <li>All values shown in company currency (<t t-esc="company.currency_id.name"/>)</li>
+                            <li>Status indicators: Running (active), Close (fully depreciated), Draft (pending)</li>
+                            <li>Acquisition date represents the in-service date of the asset</li>
+                        </ul>
                     </div>
-                </t>
+
+                    <!-- Corporate Footer -->
+                    <t t-call="ops_matrix_accounting.report_corporate_footer"/>
+
+                </div>
             </t>
         </t>
     </template>
 
-    <!-- Depreciation Schedule Report PDF Template -->
-    <record id="report_depreciation_schedule_pdf" model="ir.actions.report">
-        <field name="name">Depreciation Schedule Report</field>
+    <!-- ================================================================
+         DEPRECIATION SCHEDULE REPORT
+         ================================================================ -->
+
+    <template id="report_depreciation_schedule_document_corporate">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="company" t-value="doc.company_id or env.company"/>
+                <t t-set="data" t-value="doc._get_report_data()"/>
+
+                <div class="page" style="font-family: Arial, Helvetica, sans-serif; color: #1e293b;">
+
+                    <!-- Corporate Header -->
+                    <t t-call="ops_matrix_accounting.report_corporate_header"/>
+
+                    <!-- Report Title -->
+                    <t t-call="ops_matrix_accounting.report_corporate_title">
+                        <t t-set="report_title" t-value="'Depreciation Schedule'"/>
+                        <t t-set="report_pillar" t-value="'Asset Intelligence'"/>
+                        <t t-set="date_from" t-value="data.get('date_from')"/>
+                        <t t-set="date_to" t-value="data.get('date_to')"/>
+                    </t>
+
+                    <!-- Filter Info Bar -->
+                    <t t-call="ops_matrix_accounting.report_filter_bar">
+                        <t t-set="doc" t-value="doc"/>
+                    </t>
+
+                    <!-- Summary Cards -->
+                    <div style="margin-bottom: 20px;">
+                        <table width="100%" style="border-collapse: separate; border-spacing: 10px 0;">
+                            <tr>
+                                <td style="width: 33%; vertical-align: top;">
+                                    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: 3px solid #2563eb; border-radius: 4px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Opening Value</div>
+                                        <div style="font-size: 18px; font-weight: 700; color: #1e293b; font-family: Consolas, Monaco, monospace;">
+                                            <t t-esc="'{:,.2f}'.format(data.get('total_opening', 0))"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 33%; vertical-align: top;">
+                                    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: 3px solid #dc2626; border-radius: 4px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Period Depreciation</div>
+                                        <div style="font-size: 18px; font-weight: 700; color: #dc2626; font-family: Consolas, Monaco, monospace;">
+                                            (<t t-esc="'{:,.2f}'.format(data.get('total_depreciation', 0))"/>)
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 33%; vertical-align: top;">
+                                    <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-top: 3px solid #16a34a; border-radius: 4px; padding: 12px; text-align: center;">
+                                        <div style="font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Closing Value</div>
+                                        <div style="font-size: 18px; font-weight: 700; color: #16a34a; font-family: Consolas, Monaco, monospace;">
+                                            <t t-esc="'{:,.2f}'.format(data.get('total_closing', 0))"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Depreciation Schedule Table -->
+                    <table width="100%" style="border-collapse: collapse; font-size: 9px; margin-bottom: 20px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #1e293b; background-color: #f8fafc;">
+                                <th style="text-align: left; padding: 6px 8px; font-weight: 600; color: #475569;">Asset</th>
+                                <th style="text-align: left; padding: 6px 8px; font-weight: 600; color: #475569;">Category</th>
+                                <th style="text-align: left; padding: 6px 8px; font-weight: 600; color: #475569;">Period</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; color: #475569;">Opening Value</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; color: #475569;">Depreciation</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; color: #475569;">Closing Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="data.get('depreciation_lines', [])" t-as="line">
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 6px 8px; color: #1e293b; font-weight: 500;">
+                                        <t t-esc="line.get('asset_name', '-')"/>
+                                    </td>
+                                    <td style="padding: 6px 8px; color: #64748b;">
+                                        <t t-esc="line.get('category', '-')"/>
+                                    </td>
+                                    <td style="padding: 6px 8px; color: #64748b;">
+                                        <t t-esc="line.get('period', '-')"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 8px; font-family: Consolas, Monaco, monospace; color: #1e293b;">
+                                        <t t-esc="'{:,.2f}'.format(line.get('opening_value', 0))"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 8px; font-family: Consolas, Monaco, monospace; color: #dc2626;">
+                                        (<t t-esc="'{:,.2f}'.format(line.get('depreciation_amount', 0))"/>)
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 8px; font-family: Consolas, Monaco, monospace; font-weight: 600; color: #16a34a;">
+                                        <t t-esc="'{:,.2f}'.format(line.get('closing_value', 0))"/>
+                                    </td>
+                                </tr>
+                            </t>
+
+                            <!-- Empty State -->
+                            <t t-if="not data.get('depreciation_lines')">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 20px; color: #94a3b8; font-style: italic;">
+                                        No depreciation entries found for the selected period
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+
+                        <!-- Totals -->
+                        <tfoot t-if="data.get('depreciation_lines')">
+                            <tr style="border-top: 2px solid #1e293b; border-bottom: 3px double #1e293b; background-color: #f1f5f9;">
+                                <td colspan="3" style="padding: 10px 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #1e293b;">TOTAL</td>
+                                <td style="text-align: right; padding: 10px 8px; font-weight: 700; font-family: Consolas, Monaco, monospace; font-size: 10px;">
+                                    <t t-esc="'{:,.2f}'.format(data.get('total_opening', 0))"/>
+                                </td>
+                                <td style="text-align: right; padding: 10px 8px; font-weight: 700; color: #dc2626; font-family: Consolas, Monaco, monospace; font-size: 10px;">
+                                    (<t t-esc="'{:,.2f}'.format(data.get('total_depreciation', 0))"/>)
+                                </td>
+                                <td style="text-align: right; padding: 10px 8px; font-weight: 700; color: #16a34a; font-family: Consolas, Monaco, monospace; font-size: 10px;">
+                                    <t t-esc="'{:,.2f}'.format(data.get('total_closing', 0))"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Notes Section -->
+                    <div style="margin-top: 25px; background-color: #f8fafc; border-left: 3px solid #16a34a; padding: 12px 15px;">
+                        <div style="font-size: 10px; font-weight: 600; color: #1e293b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Notes to Depreciation Schedule
+                        </div>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 9px; color: #475569; line-height: 1.6;">
+                            <li>Depreciation amounts shown are for the selected period only</li>
+                            <li>Closing value = Opening value - Period depreciation</li>
+                            <li>All values in company currency (<t t-esc="company.currency_id.name"/>)</li>
+                            <li>Depreciation calculated per asset category method (straight-line, declining balance, etc.)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Corporate Footer -->
+                    <t t-call="ops_matrix_accounting.report_corporate_footer"/>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- ================================================================
+         REPORT ACTIONS
+         ================================================================ -->
+
+    <!-- Asset Register Report PDF -->
+    <record id="report_asset_register_pdf" model="ir.actions.report">
+        <field name="name">Asset Register Report (Corporate)</field>
         <field name="model">ops.asset.report.wizard</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_accounting.report_depreciation_schedule_document</field>
-        <field name="report_file">ops_matrix_accounting.report_depreciation_schedule_document</field>
+        <field name="report_name">ops_matrix_accounting.report_asset_register_document_corporate</field>
+        <field name="report_file">ops_matrix_accounting.report_asset_register_document_corporate</field>
         <field name="binding_model_id" ref="model_ops_asset_report_wizard"/>
         <field name="binding_type">report</field>
     </record>
 
-    <template id="report_depreciation_schedule_document">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="wizard">
-                <t t-call="ops_matrix_accounting.ops_external_layout">
-                    <t t-set="data" t-value="wizard._get_report_data()"/>
+    <!-- Depreciation Schedule Report PDF -->
+    <record id="report_depreciation_schedule_pdf" model="ir.actions.report">
+        <field name="name">Depreciation Schedule Report (Corporate)</field>
+        <field name="model">ops.asset.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_depreciation_schedule_document_corporate</field>
+        <field name="report_file">ops_matrix_accounting.report_depreciation_schedule_document_corporate</field>
+        <field name="binding_model_id" ref="model_ops_asset_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
 
-                    <!-- Dynamic Company Colors -->
-                    <t t-set="company" t-value="wizard.company_id or env.company"/>
-                    <t t-set="primary_color" t-value="company.primary_color or '#1a2744'"/>
-                    <t t-set="secondary_color" t-value="company.secondary_color or '#3b82f6'"/>
-                    <t t-set="primary_dark" t-value="'#0a1628'"/>
-                    <t t-set="success_color" t-value="'#059669'"/>
-                    <t t-set="danger_color" t-value="'#dc2626'"/>
+    <!-- ================================================================
+         EXCEL EXPORTS (Phase 5 - Corporate Design System)
+         ================================================================
+         NOTE: XLSX report records temporarily disabled
+         Excel export now handled inline in wizard action_export_to_excel()
+         using xlsxwriter directly (no dependency on report_xlsx module)
+         ================================================================ -->
 
-                    <div class="page ops-report-container" style="background: #ffffff !important; -webkit-print-color-adjust: exact !important;">
-
-                        <!-- Executive Header Band -->
-                        <div t-attf-style="background: #{primary_dark} !important; padding: 20px 25px !important; margin: -10mm -10mm 0 -10mm !important; -webkit-print-color-adjust: exact !important;">
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td style="vertical-align: middle;">
-                                        <span t-attf-style="display: inline-block; width: 50px; height: 50px; background: linear-gradient(135deg, #{primary_color} 0%, #{secondary_color} 100%); border-radius: 10px; text-align: center; line-height: 50px; font-size: 24px; font-weight: bold; color: #ffffff; margin-right: 15px; -webkit-print-color-adjust: exact !important;">
-                                            <t t-esc="(data.get('company_name', 'C') or 'C')[0]"/>
-                                        </span>
-                                        <span style="display: inline-block; vertical-align: middle;">
-                                            <span style="display: block; font-size: 20px; font-weight: 700; color: #ffffff;"><t t-esc="data.get('company_name', 'Company')"/></span>
-                                            <span style="display: block; font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px;">Depreciation Analysis</span>
-                                        </span>
-                                    </td>
-                                    <td style="text-align: right; vertical-align: middle;">
-                                        <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 15px; display: inline-block;">
-                                            <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Period</div>
-                                            <div style="font-size: 12px; font-weight: 600; color: #ffffff;"><t t-esc="data.get('date_from')"/> - <t t-esc="data.get('date_to')"/></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <!-- Accent Bar -->
-                        <div t-attf-style="height: 4px; background: linear-gradient(90deg, #{primary_color} 0%, #{secondary_color} 50%, #{success_color} 100%); margin: 0 -10mm 20px -10mm; -webkit-print-color-adjust: exact !important;"></div>
-
-                        <!-- Report Title Section -->
-                        <div style="text-align: center; margin-bottom: 25px;">
-                            <h2 t-attf-style="font-size: 28px; font-weight: 700; color: #{primary_color}; margin: 0 0 8px 0;">Depreciation Schedule</h2>
-                            <p style="font-size: 14px; color: #64748b; margin: 0;">Periodic Depreciation Analysis</p>
-                        </div>
-
-                        <!-- Summary Cards -->
-                        <div style="margin-bottom: 25px;">
-                            <table style="width: 100%; border-collapse: separate; border-spacing: 10px 0;">
-                                <tr>
-                                    <td style="width: 33%; vertical-align: top;">
-                                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #3b82f6; -webkit-print-color-adjust: exact !important;">
-                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Opening Value</div>
-                                            <div style="font-size: 20px; font-weight: 700; color: #3b82f6;"><t t-esc="'{:,.2f}'.format(data.get('total_opening', 0))"/></div>
-                                        </div>
-                                    </td>
-                                    <td style="width: 33%; vertical-align: top;">
-                                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #dc2626; -webkit-print-color-adjust: exact !important;">
-                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Period Depreciation</div>
-                                            <div style="font-size: 20px; font-weight: 700; color: #dc2626;">(<t t-esc="'{:,.2f}'.format(data.get('total_depreciation', 0))"/>)</div>
-                                        </div>
-                                    </td>
-                                    <td style="width: 33%; vertical-align: top;">
-                                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; border-left: 4px solid #059669; -webkit-print-color-adjust: exact !important;">
-                                            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Closing Value</div>
-                                            <div style="font-size: 20px; font-weight: 700; color: #059669;"><t t-esc="'{:,.2f}'.format(data.get('total_closing', 0))"/></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <!-- Report Info Box -->
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 20px; -webkit-print-color-adjust: exact !important;">
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td style="width: 50%;">
-                                        <span style="font-size: 11px; color: #64748b; font-weight: 600;">COMPANY:</span>
-                                        <span style="font-size: 12px; color: #1e293b; margin-left: 8px;"><t t-esc="data.get('company_name')"/></span>
-                                    </td>
-                                    <td style="width: 50%; text-align: right;">
-                                        <span style="font-size: 11px; color: #64748b; font-weight: 600;">GENERATED:</span>
-                                        <span style="font-size: 12px; color: #1e293b; margin-left: 8px;"><t t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/></span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <!-- Depreciation Schedule Table -->
-                        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                            <thead>
-                                <tr style="background: #f1f5f9; -webkit-print-color-adjust: exact !important;">
-                                    <th style="padding: 10px 8px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Asset</th>
-                                    <th style="padding: 10px 8px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Category</th>
-                                    <th style="padding: 10px 8px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Period</th>
-                                    <th style="padding: 10px 8px; text-align: right; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Opening Value</th>
-                                    <th style="padding: 10px 8px; text-align: right; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Depreciation</th>
-                                    <th style="padding: 10px 8px; text-align: right; font-weight: 600; color: #475569; border-bottom: 2px solid #e2e8f0;">Closing Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="data.get('depreciation_lines', [])" t-as="line">
-                                    <tr t-attf-style="background: #{line_odd and '#ffffff' or '#f8fafc'}; -webkit-print-color-adjust: exact !important;">
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-weight: 500;"><t t-esc="line.get('asset_name', '-')"/></td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;"><t t-esc="line.get('category', '-')"/></td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;"><t t-esc="line.get('period', '-')"/></td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-family: 'DejaVu Sans Mono', monospace; color: #1e293b;">
-                                            <t t-esc="'{:,.2f}'.format(line.get('opening_value', 0))"/>
-                                        </td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-family: 'DejaVu Sans Mono', monospace; color: #dc2626;">
-                                            (<t t-esc="'{:,.2f}'.format(line.get('depreciation_amount', 0))"/>)
-                                        </td>
-                                        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-family: 'DejaVu Sans Mono', monospace; font-weight: 600; color: #059669;">
-                                            <t t-esc="'{:,.2f}'.format(line.get('closing_value', 0))"/>
-                                        </td>
-                                    </tr>
-                                </t>
-                                <t t-if="not data.get('depreciation_lines')">
-                                    <tr>
-                                        <td colspan="6" style="padding: 30px; text-align: center; color: #94a3b8; font-style: italic;">
-                                            No depreciation entries found for the selected period
-                                        </td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                            <tfoot t-if="data.get('depreciation_lines')">
-                                <tr style="background: #f1f5f9; -webkit-print-color-adjust: exact !important;">
-                                    <td colspan="3" style="padding: 12px 8px; text-align: right; font-weight: 700; color: #1e293b; border-top: 2px solid #cbd5e1;">TOTAL</td>
-                                    <td style="padding: 12px 8px; text-align: right; font-weight: 700; color: #1e293b; border-top: 2px solid #cbd5e1; font-family: 'DejaVu Sans Mono', monospace;">
-                                        <t t-esc="'{:,.2f}'.format(data.get('total_opening', 0))"/>
-                                    </td>
-                                    <td style="padding: 12px 8px; text-align: right; font-weight: 700; color: #dc2626; border-top: 2px solid #cbd5e1; font-family: 'DejaVu Sans Mono', monospace;">
-                                        (<t t-esc="'{:,.2f}'.format(data.get('total_depreciation', 0))"/>)
-                                    </td>
-                                    <td style="padding: 12px 8px; text-align: right; font-weight: 700; color: #059669; border-top: 2px solid #cbd5e1; font-family: 'DejaVu Sans Mono', monospace;">
-                                        <t t-esc="'{:,.2f}'.format(data.get('total_closing', 0))"/>
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
-
-                        <!-- Report Footer -->
-                        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-                            <table style="width: 100%; font-size: 10px; color: #64748b;">
-                                <tr>
-                                    <td style="width: 70%;">
-                                        <strong style="color: #1e293b;">Notes:</strong> Depreciation amounts shown are for the selected period only.
-                                        Closing value = Opening value - Period depreciation.
-                                    </td>
-                                    <td style="width: 30%; text-align: right;">
-                                        <span style="font-size: 8px; color: #94a3b8;">Powered by</span>
-                                        <span style="display: inline-block; background-color: #5B6BBB; color: #ffffff;
-                                                     padding: 2px 8px; border-radius: 3px; font-size: 8px; font-weight: 600;
-                                                     margin-left: 3px; letter-spacing: 0.5px;">OPS Framework</span>
-                                    </td>
-                                </tr>
-                            </table>
-                            <div style="text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #e2e8f0;">
-                                <span style="font-size: 9px; color: #94a3b8; letter-spacing: 1px;">CONFIDENTIAL - FOR INTERNAL USE ONLY</span>
-                            </div>
-                        </div>
-
-                    </div>
-                </t>
-            </t>
-        </t>
-    </template>
+    <!-- Asset Intelligence XLSX Report -->
+    <!--
+    <record id="report_asset_xlsx" model="ir.actions.report">
+        <field name="name">Asset Intelligence Report (Excel)</field>
+        <field name="model">ops.asset.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">ops_matrix_accounting.report_asset_xlsx</field>
+        <field name="report_file">ops_matrix_accounting.report_asset_xlsx</field>
+        <field name="binding_model_id" ref="model_ops_asset_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+    -->
 
 </odoo>

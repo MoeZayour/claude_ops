@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.6.6.1',
+    'version': '19.0.7.0.0',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -69,6 +69,9 @@ Features:
             # 0. CSS Variables (single source of truth - load FIRST)
             'ops_theme/static/src/scss/_variables.scss',
 
+            # 0.1. Extended Design Tokens (spacing, component tokens)
+            'ops_theme/static/src/scss/_00_design_tokens.scss',
+
             # 1. Typography (loads Inter font)
             'ops_theme/static/src/scss/_typography.scss',
 
@@ -89,6 +92,11 @@ Features:
             'ops_theme/static/src/scss/_list.scss',
             'ops_theme/static/src/scss/_control_panel.scss',
             'ops_theme/static/src/scss/_kanban.scss',
+
+            # 4.5. Modal and Wizard styling
+            'ops_theme/static/src/scss/_modals.scss',
+            'ops_theme/static/src/scss/patterns/_wizard_sections.scss',
+            'ops_theme/static/src/scss/_utilities.scss',
 
             # 5. Dark mode
             'ops_theme/static/src/scss/_dark_mode.scss',
