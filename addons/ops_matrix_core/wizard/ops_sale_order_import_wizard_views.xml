@@ -19,7 +19,7 @@
                         <label for="template_file" string="Need a template?"/>
                         <div>
                             <button name="action_download_template" 
-                                    string="📥 Download Excel Template" 
+                                    string="Download Excel Template" 
                                     type="object" 
                                     icon="fa-download"
                                     class="btn-link"
@@ -36,7 +36,7 @@
                     <div class="alert alert-info" role="alert" colspan="2">
                         <h4><i class="fa fa-info-circle"/> Instructions:</h4>
                         <ol style="margin-left: 20px; margin-top: 10px;">
-                            <li>Click "📥 Download Excel Template" above to get the template</li>
+                            <li>Click "Download Excel Template" above to get the template</li>
                             <li>Open the template and fill in the "Import Data" sheet with your product codes and quantities</li>
                             <li>Product codes must match existing products in the system exactly</li>
                             <li>Save the Excel file on your computer</li>
@@ -109,7 +109,7 @@
             <xpath expr="//form/header" position="inside">
                 <button name="%(action_ops_sale_order_import_wizard)d" 
                         type="action" 
-                        string="📥 Import from Excel" 
+                        string="Import from Excel" 
                         icon="fa-file-excel-o"
                         class="btn-secondary"
                         invisible="state not in ['draft', 'sent']"

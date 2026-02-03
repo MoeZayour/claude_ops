@@ -15,7 +15,7 @@
             <form string="Asset Intelligence">
 
                 <!-- ==================== TEMPLATE QUICK START ==================== -->
-                <group name="template_section" string="📁 Quick Start" class="ops_wizard_section">
+                <group name="template_section" string="Quick Start" class="ops_wizard_section">
                     <field name="report_template_id"
                            placeholder="Load a saved template or configure manually..."
                            options="{'no_create': True, 'no_open': True}"
@@ -29,7 +29,7 @@
                 </group>
 
                 <!-- ==================== REPORT TYPE SELECTION ==================== -->
-                <group name="report_type_section" string="📊 Report Selection" class="ops_wizard_section">
+                <group name="report_type_section" string="Report Selection" class="ops_wizard_section">
                     <field name="report_type"
                            widget="radio"
                            options="{'horizontal': false}"
@@ -38,7 +38,7 @@
                 </group>
 
                 <!-- ==================== DATE & PERIOD ==================== -->
-                <group name="period_section" string="📅 Reporting Period" class="ops_wizard_section">
+                <group name="period_section" string="Reporting Period" class="ops_wizard_section">
                     <group>
                         <!-- Register uses as_of_date -->
                         <field name="as_of_date"
@@ -68,7 +68,7 @@
                 </group>
 
                 <!-- ==================== SCOPE & FILTERS ==================== -->
-                <group name="scope_section" string="🎯 Scope &amp; Filters" class="ops_wizard_section">
+                <group name="scope_section" string="Scope &amp; Filters" class="ops_wizard_section">
                     <group>
                         <field name="company_id"
                                options="{'no_create': True}"
@@ -98,7 +98,7 @@
                 <notebook class="ops_wizard_notebook">
 
                     <!-- Display Options -->
-                    <page string="⚙️ Display Options" name="display_options">
+                    <page string="Display Options" name="display_options">
                         <group>
                             <group>
                                 <field name="group_by"
@@ -132,7 +132,7 @@
                 </notebook>
 
                 <!-- ==================== PREVIEW SECTION ==================== -->
-                <group name="preview_section" string="👁️ Report Preview" class="ops_wizard_section">
+                <group name="preview_section" string="Report Preview" class="ops_wizard_section">
                     <group>
                         <field name="asset_count"
                                readonly="1"

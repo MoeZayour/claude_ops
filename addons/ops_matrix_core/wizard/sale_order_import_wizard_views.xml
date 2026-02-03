@@ -17,7 +17,7 @@
                         </div>
                         <button name="action_download_template" 
                                 type="object" 
-                                string="📥 Download Template" 
+                                string="Download Template" 
                                 class="btn-primary"/>
                         <field name="import_file" filename="import_filename"/>
                         <field name="import_filename" invisible="1"/>
@@ -59,7 +59,7 @@
             <field name="arch" type="xml">
                 <form string="Import Success">
                     <div class="alert alert-success" role="alert">
-                        <h4>✅ Import Successful!</h4>
+                        <h4>Import Successful!</h4>
                     </div>
                     <group>
                         <field name="lines_imported" readonly="1"/>

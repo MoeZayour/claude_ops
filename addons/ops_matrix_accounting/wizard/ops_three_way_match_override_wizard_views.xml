@@ -7,7 +7,6 @@
         <field name="model">ops.three.way.match.override.wizard</field>
         <field name="arch" type="xml">
             <form string="Approve Three-Way Match Override">
-                <sheet>
                     <!-- Warning Banner -->
                     <div class="alert alert-warning mb-3" role="alert">
                         <i class="fa fa-exclamation-triangle me-2"/>
@@ -37,7 +36,7 @@
                     <!-- Match Details -->
                     <group string="Match Details">
                         <field name="match_details" nolabel="1" readonly="1"
-                               widget="text" style="font-family: monospace; white-space: pre-wrap;"/>
+                               widget="text" class="ops-text-mono ops-text-pre"/>
                     </group>
 
                     <separator/>
@@ -46,7 +45,7 @@
                     <group string="Override Approval">
                         <field name="override_reason" nolabel="1"
                                placeholder="Enter a detailed reason for approving this override...&#10;&#10;Examples:&#10;- Goods received but GRN not yet processed in system&#10;- Partial delivery accepted as complete per agreement&#10;- Service invoice - no receipt required"
-                               style="min-height: 100px;"/>
+                               class="ops-min-h-100"/>
                     </group>
 
                     <!-- Confirmation -->
@@ -54,7 +53,6 @@
                         <field name="confirm_override"
                                string="I have reviewed the match details and approve this override"/>
                     </group>
-                </sheet>
 
                 <footer>
                     <button name="action_approve_override" type="object"

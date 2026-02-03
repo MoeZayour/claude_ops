@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        OPS Matrix Accounting - Balance Sheet Wizard Views
+        ===================================================
+        Phase 3: Corporate UI with Card-Based Layout
+        Corporate Balance Sheet (Statement of Financial Position)
+    -->
+
+    <!-- Balance Sheet Wizard Form View -->
+    <record id="view_ops_balance_sheet_wizard_form" model="ir.ui.view">
+        <field name="name">ops.balance.sheet.wizard.form</field>
+        <field name="model">ops.balance.sheet.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Balance Sheet">
+
+                <!-- ==================== REPORT SELECTION ==================== -->
+                <group name="report_type_section" string="Statement of Financial Position" class="ops_wizard_section">
+                    <div class="text-muted">
+                        <p>Generate an IAS 1 compliant Balance Sheet with current and comparative periods, account-level detail, and variance analysis.</p>
+                    </div>
+                </group>
+
+                <!-- ==================== REPORTING PERIOD ==================== -->
+                <group name="period_section" string="Reporting Date" class="ops_wizard_section">
+                    <group>
+                        <field name="date_end"
+                               help="Balance sheet cutoff date (As of Date)"/>
+                        <field name="target_move"
+                               widget="radio"
+                               help="Include all entries or posted entries only"/>
+                    </group>
+                    <group>
+                        <field name="company_id"
+                               options="{'no_create': True, 'no_open': True}"
+                               help="Company to report on"/>
+                        <field name="currency_id"
+                               options="{'no_create': True, 'no_open': True}"
+                               help="Reporting currency"/>
+                    </group>
+                </group>
+
+                <!-- ==================== COMPARATIVE PERIOD ==================== -->
+                <group name="comparison_section" string="Comparative Period" class="ops_wizard_section">
+                    <group>
+                        <field name="show_comparison"
+                               help="Include prior period column for comparison"/>
+                        <field name="comparison_type"
+                               invisible="not show_comparison"
+                               help="Select prior period comparison method"/>
+                    </group>
+                    <group>
+                        <field name="date_comparison"
+                               invisible="not show_comparison or comparison_type != 'custom'"
+                               readonly="comparison_type != 'custom'"
+                               required="show_comparison and comparison_type == 'custom'"
+                               help="Custom comparison date"/>
+                    </group>
+                </group>
+
+                <!-- ==================== SCOPE & FILTERS ==================== -->
+                <group name="scope_section" string="Scope &amp; Filters" class="ops_wizard_section">
+                    <group>
+                        <field name="ops_branch_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True, 'color_field': 'color'}"
+                               domain="[('company_id', '=', company_id)]"
+                               help="Filter by specific branches (leave empty for all authorized branches)"/>
+                    </group>
+                    <group>
+                        <field name="ops_business_unit_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True, 'color_field': 'color'}"
+                               help="Filter by business units (leave empty for all)"/>
+                    </group>
+                </group>
+
+                <!-- ==================== ADVANCED OPTIONS ==================== -->
+                <notebook class="ops_wizard_notebook">
+
+                    <!-- Display Options -->
+                    <page string="Display Options" name="display_options">
+                        <group>
+                            <group>
+                                <field name="hierarchy_level"
+                                       help="Level of account hierarchy detail to display"/>
+                                <field name="show_account_codes"
+                                       help="Include account codes in output"/>
+                            </group>
+                            <group>
+                                <field name="show_zero_balances"
+                                       help="Include accounts with zero balances"/>
+                            </group>
+                        </group>
+
+                        <div class="alert alert-info mt-3" role="alert">
+                            <h5>Balance Sheet (IAS 1):</h5>
+                            <ul class="mb-0">
+                                <li><strong>Assets:</strong> Current Assets + Non-Current Assets</li>
+                                <li><strong>Liabilities:</strong> Current Liabilities + Non-Current Liabilities</li>
+                                <li><strong>Equity:</strong> Share Capital + Retained Earnings + Other Reserves</li>
+                                <li><strong>Balance Check:</strong> Assets = Liabilities + Equity</li>
+                            </ul>
+                        </div>
+                    </page>
+
+                </notebook>
+
+                <!-- ==================== ACTION BUTTONS ==================== -->
+                <footer>
+                    <button name="action_view_report"
+                            string="View Report"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-eye"
+                            help="Open report in browser for preview"/>
+                    <button name="action_generate_report"
+                            string="Print PDF"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-print"
+                            help="Generate PDF for printing or download"/>
+                    <button name="action_export_excel"
+                            string="Export Excel"
+                            type="object"
+                            class="btn-success"
+                            icon="fa-file-excel-o"
+                            help="Export data to Excel spreadsheet"/>
+                    <button string="Cancel"
+                            class="btn-default"
+                            icon="fa-times"
+                            special="cancel"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Balance Sheet Wizard Action -->
+    <record id="action_ops_balance_sheet_wizard" model="ir.actions.act_window">
+        <field name="name">Balance Sheet</field>
+        <field name="res_model">ops.balance.sheet.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Generate Corporate Balance Sheet
+            </p>
+            <p>
+                This wizard generates an IAS 1 compliant Balance Sheet with:
+                <ul>
+                    <li>Current and comparative period columns</li>
+                    <li>Account-level detail within each section</li>
+                    <li>Variance calculation with percentage</li>
+                    <li>Branch/Business Unit filtering</li>
+                    <li>Balance verification indicator</li>
+                </ul>
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item under Reporting -->
+    <menuitem id="menu_ops_balance_sheet_wizard"
+              name="Balance Sheet"
+              parent="account.menu_finance_reports"
+              action="action_ops_balance_sheet_wizard"
+              sequence="15"/>
+
+</odoo>
