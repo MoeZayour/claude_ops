@@ -1,192 +1,116 @@
 // =============================================================================
-// OPS THEME v3.5 - LISTS/TABLES (Complete Rewrite)
+// OPS Theme  List View Styling
 // =============================================================================
-// Auto-width tables, proper alignment, overflow handling
-// Uses CSS variables for theme compliance
+// PRINCIPLE: Color only. Odoo 19 native handles all table/column layout.
+//   - table-layout: NATIVE (do not override)
+//   - Column widths: NATIVE (do not override)
+//   - Sticky headers: NATIVE (do not override)
+//   - We only add: row colors, hover, selection color, header text, borders
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-// SECTION 1: LIST VIEW CONTAINER
+// LIST VIEW CONTAINER - Appearance Only
 // -----------------------------------------------------------------------------
 
 .o_list_view {
-    width: 100% !important;
-    padding: 16px !important;
-    background: var(--ops-bg-hover) !important;
-    overflow: visible !important;
+    background: var(--ops-bg-hover);
 }
 
 .o_list_renderer {
-    width: 100% !important;
-    background: var(--ops-bg-card) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-    overflow: visible !important;
+    background: var(--ops-bg-card);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 // -----------------------------------------------------------------------------
-// SECTION 2: TABLE STYLING
+// TABLE STYLING - Appearance Only
 // -----------------------------------------------------------------------------
 
 .o_list_table {
-    width: 100% !important;
-    table-layout: auto !important;
-    border-collapse: collapse !important;
-    overflow: visible !important;
-
-    // Header - COMPACT
+    // Header appearance
     thead {
-        background: var(--ops-bg-hover) !important;
+        background: var(--ops-bg-hover);
 
         th {
-            padding: 10px 12px !important;
-            font-weight: 600 !important;
-            font-size: 11px !important;
-            color: var(--ops-text-secondary) !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.03em !important;
-            border-bottom: 1px solid var(--ops-border) !important;
-            white-space: nowrap !important;
-            text-align: left !important;
-            vertical-align: middle !important;
-
-            &.text-center {
-                text-align: center !important;
-            }
-
-            &.text-end,
-            &.text-right {
-                text-align: right !important;
-            }
+            font-weight: 600;
+            font-size: 0.6875rem;
+            color: var(--ops-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--ops-border);
 
             &.o_column_sortable:hover {
-                background: var(--ops-bg-body) !important;
+                background: var(--ops-bg-body);
             }
         }
     }
 
-    // Body - COMPACT 40px rows
+    // Body appearance
     tbody {
         tr {
-            height: 40px !important;
-            transition: background-color 0.1s ease !important;
-
-            &:nth-child(odd) {
-                background: var(--ops-bg-card) !important;
-            }
-
-            &:nth-child(even) {
-                background: #fafafa !important;
-            }
+            transition: background-color 0.1s ease;
+            border-bottom: 1px solid var(--ops-divider);
 
             &:hover {
-                background: var(--ops-bg-body) !important;
+                background: var(--ops-bg-hover);
             }
 
-            &.o_data_row_selected {
-                background: var(--ops-bg-selected) !important;
+            &.o_data_row_selected,
+            &.o_data_row.o_row_selected,
+            &.o_data_row.o_list_record_selector_checked {
+                background: var(--ops-bg-selected);
             }
         }
 
         td {
-            padding: 8px 12px !important;
-            font-size: 13px !important;
-            color: var(--ops-text-primary) !important;
-            border-bottom: 1px solid var(--ops-divider) !important;
-            vertical-align: middle !important;
-            overflow: visible !important;
-            position: static !important;
-
-            &.text-end,
-            &.text-right {
-                text-align: right !important;
-            }
-
-            &.o_list_number {
-                text-align: right !important;
-                font-variant-numeric: tabular-nums !important;
-            }
+            font-size: 0.8125rem;
+            color: var(--ops-text-primary);
+            border-bottom: 1px solid var(--ops-divider);
         }
     }
 
-    // Checkbox column
-    .o_list_record_selector {
-        width: 40px !important;
-        min-width: 40px !important;
-        max-width: 40px !important;
-        text-align: center !important;
-    }
-
-    // Handle (drag) column
-    .o_handle_cell {
-        width: 30px !important;
-        min-width: 30px !important;
-        cursor: grab !important;
-    }
-
-    // Actions column
-    .o_list_actions_header,
-    td.o_list_button {
-        width: 50px !important;
-        text-align: center !important;
+    // Number columns - tabular nums only (not layout)
+    .o_field_integer,
+    .o_field_float,
+    .o_field_monetary,
+    .o_list_number {
+        font-variant-numeric: tabular-nums;
     }
 }
 
 // -----------------------------------------------------------------------------
-// SECTION 3: INLINE EDITING
+// INLINE EDITING - Appearance Only
 // -----------------------------------------------------------------------------
 
 .o_list_table {
     .o_selected_row {
-        background: var(--ops-bg-selected) !important;
-
-        td {
-            background: transparent !important;
-        }
-
-        // Dropdowns in selected row need high z-index
-        .o-autocomplete--dropdown-menu,
-        .dropdown-menu {
-            z-index: 1100 !important;
-        }
-    }
-
-    // Editable cell
-    .o_data_row td.o_data_cell {
-        &.o_field_cell {
-            overflow: visible !important;
-        }
+        background: var(--ops-bg-selected);
     }
 }
 
 // -----------------------------------------------------------------------------
-// SECTION 4: X2MANY TABLES (In Forms)
+// X2MANY TABLES (In Forms) - Appearance Only
 // -----------------------------------------------------------------------------
 
 .o_field_x2many {
-    width: 100% !important;
-    overflow: visible !important;
-
     .o_list_renderer {
-        box-shadow: none !important;
-        border: 1px solid var(--ops-border) !important;
+        box-shadow: none;
+        border: 1px solid var(--ops-border);
     }
 
     .o_list_table {
         thead th {
-            background: var(--ops-bg-body) !important;
-            text-align: center !important;
+            background: var(--ops-bg-body);
         }
     }
 
     // Add line buttons
     .o_field_x2many_list_row_add {
         a {
-            color: var(--ops-secondary) !important;
-            font-size: 13px !important;
+            color: var(--ops-secondary);
 
             &:hover {
-                text-decoration: underline !important;
+                text-decoration: underline;
             }
         }
     }
@@ -195,226 +119,164 @@
 // Section and note styling
 .o_section_and_note_list_view {
     .o_is_line_section td {
-        background: var(--ops-bg-hover) !important;
-        font-weight: 600 !important;
-        color: var(--ops-text-primary) !important;
+        background: var(--ops-bg-hover);
+        font-weight: 600;
+        color: var(--ops-text-primary);
     }
 
     .o_is_line_note td {
-        font-style: italic !important;
-        color: var(--ops-text-secondary) !important;
+        font-style: italic;
+        color: var(--ops-text-secondary);
     }
 }
 
 // -----------------------------------------------------------------------------
-// SECTION 5: EMPTY LISTS
+// EMPTY LISTS - Appearance Only
 // -----------------------------------------------------------------------------
-
-.o_list_table tbody tr:empty {
-    display: none !important;
-}
 
 .o_view_nocontent {
-    padding: 48px 24px !important;
-    text-align: center !important;
-    color: var(--ops-text-secondary) !important;
+    color: var(--ops-text-secondary);
 }
 
 // -----------------------------------------------------------------------------
-// SECTION 6: COLUMN TYPES
-// -----------------------------------------------------------------------------
-
-.o_list_table {
-    // Text columns - allow wrapping
-    th.o_list_text,
-    td.o_list_text,
-    th.o_list_char,
-    td.o_list_char {
-        white-space: normal !important;
-        min-width: 120px !important;
-    }
-
-    // Number columns - right align
-    th.o_list_number,
-    td.o_list_number,
-    .o_field_integer,
-    .o_field_float,
-    .o_field_monetary {
-        text-align: right !important;
-        font-variant-numeric: tabular-nums !important;
-    }
-
-    // Date columns
-    .o_field_date,
-    .o_field_datetime {
-        white-space: nowrap !important;
-    }
-
-    // Boolean columns
-    .o_field_boolean {
-        text-align: center !important;
-    }
-}
-
-// -----------------------------------------------------------------------------
-// SECTION 7: GROUPING
+// GROUPING - Appearance Only
 // -----------------------------------------------------------------------------
 
 .o_group_header {
-    background: var(--ops-bg-body) !important;
-    font-weight: 600 !important;
+    background: var(--ops-bg-body);
+    font-weight: 600;
 
     td {
-        padding: 10px 16px !important;
-        color: var(--ops-text-primary) !important;
+        color: var(--ops-text-primary);
     }
 
     .o_group_name {
-        color: var(--ops-secondary) !important;
+        color: var(--ops-secondary);
     }
 }
 
 // -----------------------------------------------------------------------------
-// SECTION 8: PAGINATION
+// PAGINATION - Appearance Only
 // -----------------------------------------------------------------------------
 
 .o_list_pager,
 .o_pager {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-
     .o_pager_value {
-        font-size: 13px !important;
-        color: var(--ops-text-secondary) !important;
+        color: var(--ops-text-secondary);
     }
 
     .o_pager_previous,
     .o_pager_next {
-        padding: 4px 8px !important;
-        color: var(--ops-text-secondary) !important;
+        color: var(--ops-text-secondary);
 
         &:hover {
-            color: var(--ops-secondary) !important;
+            color: var(--ops-secondary);
         }
 
         &.disabled {
-            opacity: 0.5 !important;
+            opacity: 0.5;
         }
     }
 }
 
 // -----------------------------------------------------------------------------
-// SECTION 9: PRIORITY STAR COLUMN
+// PRIORITY STAR - Appearance Only
 // -----------------------------------------------------------------------------
 
-.o_list_table {
-    // Favorite star column - ALIGNMENT FIX
-    td.o_list_favorite,
-    td.o_priority,
-    th.o_list_favorite,
-    th.o_priority {
-        width: 32px !important;
-        min-width: 32px !important;
-        max-width: 32px !important;
-        padding: 8px 4px !important;
-        text-align: center !important;
-    }
-}
-
-// Priority star styling
 .o_priority_star,
 .fa-star,
 .fa-star-o {
-    font-size: 14px !important;
-    color: var(--ops-text-disabled) !important;
-    cursor: pointer !important;
-    transition: color 0.15s ease !important;
+    color: var(--ops-text-disabled);
+    cursor: pointer;
+    transition: color 0.15s ease;
 
     &:hover {
-        color: #fbbf24 !important;
+        color: #fbbf24;
     }
 }
 
 .fa-star {
-    color: #fbbf24 !important;
+    color: #fbbf24;
 }
 
 // Checkbox styling
 .o-checkbox {
     input[type="checkbox"] {
-        width: 16px !important;
-        height: 16px !important;
-        border: 2px solid var(--ops-text-disabled) !important;
-        border-radius: 3px !important;
-        cursor: pointer !important;
-        transition: all 0.15s ease !important;
+        border: 2px solid var(--ops-text-disabled);
+        border-radius: 3px;
+        cursor: pointer;
+        transition: all 0.15s ease;
 
         &:checked {
-            background: var(--ops-secondary) !important;
-            border-color: var(--ops-secondary) !important;
+            background: var(--ops-secondary);
+            border-color: var(--ops-secondary);
         }
 
         &:hover {
-            border-color: var(--ops-secondary) !important;
+            border-color: var(--ops-secondary);
         }
     }
 }
 
 // -----------------------------------------------------------------------------
-// SECTION 10: DARK MODE
+// DARK MODE - Color Only
 // -----------------------------------------------------------------------------
 
-.dark-skin,
 [data-color-mode="dark"] {
     .o_list_view {
-        background: #0f172a !important;
+        background: #0f172a;
     }
 
     .o_list_renderer {
-        background: #1e293b !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+        background: #1e293b;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     .o_list_table {
         thead {
-            background: #0f172a !important;
+            background: #0f172a;
 
             th {
-                color: #94a3b8 !important;
-                border-bottom-color: #334155 !important;
+                color: #94a3b8;
+                border-bottom-color: #334155;
             }
         }
 
         tbody {
-            tr:nth-child(odd) {
-                background: #1e293b !important;
-            }
+            tr {
+                border-bottom-color: #334155;
 
-            tr:nth-child(even) {
-                background: #263548 !important;
-            }
+                &:hover {
+                    background: #334155;
+                }
 
-            tr:hover {
-                background: #0f172a !important;
+                &.o_data_row_selected,
+                &.o_data_row.o_row_selected,
+                &.o_data_row.o_list_record_selector_checked {
+                    background: rgba(59, 130, 246, 0.15);
+                }
             }
 
             td {
-                color: #f1f5f9 !important;
-                border-bottom-color: #334155 !important;
+                color: #f1f5f9;
+                border-bottom-color: #334155;
             }
         }
     }
 
     .o_group_header {
-        background: #0f172a !important;
+        background: #0f172a;
 
         td {
-            color: #f1f5f9 !important;
+            color: #f1f5f9;
         }
     }
 
     .o_field_x2many .o_list_renderer {
-        border-color: #334155 !important;
+        border-color: #334155;
+    }
+
+    .o_view_nocontent {
+        color: #64748b;
     }
 }

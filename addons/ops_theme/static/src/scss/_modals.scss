@@ -1,494 +1,311 @@
 // =============================================================================
-// OPS DESIGN SYSTEM - MODALS & WIZARDS
+// OPS Theme  Modal / Dialog Styling
 // =============================================================================
-// Corporate-styled modal dialogs with proper spacing and dark mode support
-// Uses design tokens from _00_design_tokens.scss and _variables.scss
+// PRINCIPLE: Color only. Odoo 19 native handles all modal form layout.
+//   - .o_group grid: NATIVE (do not override)
+//   - .o_inner_group grid: NATIVE (do not override)
+//   - .o_cell sizing: NATIVE (do not override)
+//   - Modal sizing (sm/md/lg/xl): NATIVE (do not override)
+//   - We only add: header color, backdrop, border-radius, shadows, button colors
 // =============================================================================
-
-// =============================================================================
-// MODAL DIALOG SIZING
-// =============================================================================
-.modal-dialog {
-    max-width: var(--ops-modal-width-lg, 800px) !important;
-    width: 90vw !important;
-    margin: var(--ops-space-8, 32px) auto !important;
-
-    &.modal-sm {
-        max-width: var(--ops-modal-width-sm, 400px) !important;
-    }
-
-    &.modal-md {
-        max-width: var(--ops-modal-width-md, 600px) !important;
-    }
-
-    &.modal-lg {
-        max-width: var(--ops-modal-width-lg, 800px) !important;
-    }
-
-    &.modal-xl {
-        max-width: var(--ops-modal-width-xl, 1000px) !important;
-    }
-}
-
-// Wizard-specific sizing
-.o_dialog .modal-dialog,
-.modal-dialog.modal-wizard {
-    max-width: var(--ops-modal-width-wizard, 900px) !important;
-}
 
 // =============================================================================
-// MODAL CONTENT CONTAINER
+// MODAL CONTENT CONTAINER - Appearance Only
 // =============================================================================
 .modal-content {
-    border: none !important;
-    border-radius: var(--ops-radius-xl, 16px) !important;
-    box-shadow: var(--ops-shadow-modal, 0 25px 50px -12px rgba(0, 0, 0, 0.25)) !important;
-    background-color: var(--ops-bg-card, #ffffff) !important;
-    overflow: hidden !important;
+    border: none;
+    border-radius: var(--ops-radius-xl, 16px);
+    box-shadow: var(--ops-shadow-modal, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+    background-color: var(--ops-bg-card, #ffffff);
+    overflow: hidden;
 }
 
 // =============================================================================
-// MODAL HEADER
+// MODAL HEADER - Appearance Only
 // =============================================================================
 .modal-header {
-    padding: var(--ops-space-4, 16px) var(--ops-space-6, 24px) !important;
-    background-color: var(--ops-bg-card, #ffffff) !important;
-    border-bottom: 1px solid var(--ops-border-default, #e2e8f0) !important;
+    background-color: var(--ops-primary, #1e293b);
+    color: var(--ops-text-inverse, #ffffff);
+    border-bottom: none;
 
     .modal-title {
-        font-size: var(--ops-text-lg, 1.125rem) !important;
-        font-weight: var(--ops-font-semibold, 600) !important;
-        color: var(--ops-text-primary, #1e293b) !important;
-        line-height: var(--ops-leading-tight, 1.25) !important;
+        font-size: var(--ops-text-lg, 1.125rem);
+        font-weight: var(--ops-font-semibold, 600);
+        color: inherit;
     }
 
     .btn-close {
-        padding: var(--ops-space-2, 8px) !important;
-        margin: calc(-1 * var(--ops-space-2, 8px)) !important;
-        opacity: 0.5 !important;
-        transition: opacity var(--ops-transition-fast, 150ms ease) !important;
+        filter: brightness(0) invert(1);
+        opacity: 0.7;
+        transition: opacity var(--ops-transition-fast, 150ms ease);
 
         &:hover {
-            opacity: 1 !important;
+            opacity: 1;
         }
 
         &:focus {
-            box-shadow: none !important;
-            opacity: 1 !important;
+            box-shadow: none;
+            opacity: 1;
         }
     }
 }
 
 // =============================================================================
-// MODAL BODY
+// MODAL BODY - Appearance Only (NO layout overrides)
 // =============================================================================
 .modal-body {
-    padding: var(--ops-space-6, 24px) !important;
-    background-color: var(--ops-bg-card, #ffffff) !important;
-    color: var(--ops-text-primary, #1e293b) !important;
-    max-height: calc(var(--ops-modal-max-height, 85vh) - 140px) !important;
-    overflow-y: auto !important;
+    background-color: var(--ops-bg-card, #ffffff);
+    color: var(--ops-text-primary, #1e293b);
 
-    // Form groups - two column layout
-    .o_group {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: var(--ops-space-4, 16px) var(--ops-space-6, 24px) !important;
-
-        > .o_inner_group {
-            grid-column: span 1 !important;
-        }
-
-        // Full width elements
-        > table,
-        > .o_field_x2many,
-        > .o_horizontal_separator,
-        > .alert {
-            grid-column: span 2 !important;
-        }
-    }
-
-    // Inner group - label + field grid
-    .o_inner_group {
-        display: grid !important;
-        grid-template-columns: minmax(100px, 140px) 1fr !important;
-        gap: var(--ops-space-2, 8px) var(--ops-space-3, 12px) !important;
-        align-items: center !important;
-    }
-
-    // Section headers
+    // Section headers - appearance only
     .o_horizontal_separator {
-        grid-column: span 2 !important;
-        margin-top: var(--ops-space-4, 16px) !important;
-        padding-bottom: var(--ops-space-2, 8px) !important;
-        border-bottom: 1px solid var(--ops-border-default, #e2e8f0) !important;
-        font-size: var(--ops-text-sm, 0.875rem) !important;
-        font-weight: var(--ops-font-semibold, 600) !important;
-        color: var(--ops-text-primary, #1e293b) !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
+        border-bottom: 1px solid var(--ops-border-default, #e2e8f0);
+        font-size: var(--ops-text-sm, 0.875rem);
+        font-weight: var(--ops-font-semibold, 600);
+        color: var(--ops-text-primary, #1e293b);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
-    // Form labels
+    // Form labels - appearance only
     .o_form_label {
-        font-size: var(--ops-text-sm, 0.875rem) !important;
-        font-weight: var(--ops-font-medium, 500) !important;
-        color: var(--ops-text-secondary, #64748b) !important;
+        font-size: var(--ops-text-sm, 0.875rem);
+        font-weight: var(--ops-font-medium, 500);
+        color: var(--ops-text-secondary, #64748b);
     }
 
-    // Input fields
+    // Input fields - appearance only
     input.o_input,
     select.o_input,
     textarea.o_input,
     .o_input {
-        height: var(--ops-input-height, 38px) !important;
-        padding: var(--ops-input-padding-y, 8px) var(--ops-input-padding-x, 12px) !important;
-        font-size: var(--ops-text-sm, 0.875rem) !important;
-        color: var(--ops-text-primary, #1e293b) !important;
-        background-color: var(--ops-bg-card, #ffffff) !important;
-        border: var(--ops-input-border-width, 1px) solid var(--ops-border-default, #e2e8f0) !important;
-        border-radius: var(--ops-radius-md, 8px) !important;
-        transition: border-color var(--ops-transition-fast, 150ms ease), box-shadow var(--ops-transition-fast, 150ms ease) !important;
+        font-size: var(--ops-text-sm, 0.875rem);
+        color: var(--ops-text-primary, #1e293b);
+        background-color: var(--ops-bg-card, #ffffff);
+        border: var(--ops-input-border-width, 1px) solid var(--ops-border-default, #e2e8f0);
+        border-radius: var(--ops-radius-md, 8px);
+        transition: border-color var(--ops-transition-fast, 150ms ease), 
+                    box-shadow var(--ops-transition-fast, 150ms ease);
 
         &::placeholder {
-            color: var(--ops-text-muted, #94a3b8) !important;
+            color: var(--ops-text-muted, #94a3b8);
         }
 
         &:hover:not(:disabled):not(:focus) {
-            border-color: var(--ops-border-strong, #cbd5e1) !important;
+            border-color: var(--ops-border-strong, #cbd5e1);
         }
 
         &:focus {
-            outline: none !important;
-            border-color: var(--ops-border-focus, #3b82f6) !important;
-            box-shadow: var(--ops-input-focus-ring, 0 0 0 3px rgba(59, 130, 246, 0.15)) !important;
+            outline: none;
+            border-color: var(--ops-border-focus, #3b82f6);
+            box-shadow: var(--ops-input-focus-ring, 0 0 0 3px rgba(59, 130, 246, 0.15));
         }
 
         &:disabled,
         &[readonly] {
-            background-color: var(--ops-surface-sunken, #f8fafc) !important;
-            color: var(--ops-text-muted, #94a3b8) !important;
-            cursor: not-allowed !important;
+            background-color: var(--ops-surface-sunken, #f8fafc);
+            color: var(--ops-text-muted, #94a3b8);
+            cursor: not-allowed;
         }
-    }
-
-    textarea.o_input {
-        height: auto !important;
-        min-height: 80px !important;
     }
 }
 
 // =============================================================================
-// MODAL FOOTER
+// MODAL FOOTER - Appearance Only
 // =============================================================================
 .modal-footer {
-    padding: var(--ops-space-4, 16px) var(--ops-space-6, 24px) !important;
-    background-color: var(--ops-surface-sunken, #f8fafc) !important;
-    border-top: 1px solid var(--ops-border-default, #e2e8f0) !important;
-    gap: var(--ops-space-3, 12px) !important;
+    background-color: var(--ops-surface-sunken, #f8fafc);
+    border-top: 1px solid var(--ops-border-default, #e2e8f0);
 
     .btn {
-        min-width: 100px !important;
-        padding: var(--ops-space-2, 8px) var(--ops-space-4, 16px) !important;
-        font-size: var(--ops-text-sm, 0.875rem) !important;
-        font-weight: var(--ops-font-medium, 500) !important;
-        border-radius: var(--ops-radius-md, 8px) !important;
-        transition: all var(--ops-transition-fast, 150ms ease) !important;
+        font-size: var(--ops-text-sm, 0.875rem);
+        font-weight: var(--ops-font-medium, 500);
+        border-radius: var(--ops-radius-md, 8px);
+        transition: all var(--ops-transition-fast, 150ms ease);
     }
 
     .btn-primary {
-        background-color: var(--ops-secondary, #3b82f6) !important;
-        border-color: var(--ops-secondary, #3b82f6) !important;
-        color: var(--ops-text-inverse, #ffffff) !important;
+        background-color: var(--ops-secondary, #3b82f6);
+        border-color: var(--ops-secondary, #3b82f6);
+        color: var(--ops-text-inverse, #ffffff);
 
         &:hover:not(:disabled) {
-            background-color: var(--ops-secondary-hover, #2563eb) !important;
-            border-color: var(--ops-secondary-hover, #2563eb) !important;
-            transform: translateY(-1px) !important;
-            box-shadow: var(--ops-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1)) !important;
-        }
-
-        &:active:not(:disabled) {
-            transform: translateY(0) !important;
+            background-color: var(--ops-secondary-hover, #2563eb);
+            border-color: var(--ops-secondary-hover, #2563eb);
         }
     }
 
     .btn-secondary,
     .btn-default {
-        background-color: var(--ops-bg-card, #ffffff) !important;
-        border-color: var(--ops-border-default, #e2e8f0) !important;
-        color: var(--ops-text-primary, #1e293b) !important;
+        background-color: var(--ops-bg-card, #ffffff);
+        border-color: var(--ops-border-default, #e2e8f0);
+        color: var(--ops-text-primary, #1e293b);
 
         &:hover:not(:disabled) {
-            background-color: var(--ops-surface-sunken, #f8fafc) !important;
-            border-color: var(--ops-border-strong, #cbd5e1) !important;
+            background-color: var(--ops-surface-sunken, #f8fafc);
+            border-color: var(--ops-border-strong, #cbd5e1);
         }
     }
 
     .btn-link {
-        color: var(--ops-text-link, #3b82f6) !important;
+        color: var(--ops-text-link, #3b82f6);
 
         &:hover {
-            color: var(--ops-text-link-hover, #2563eb) !important;
+            color: var(--ops-text-link-hover, #2563eb);
         }
     }
 }
 
 // =============================================================================
-// WIZARD FORM VIEW INSIDE MODAL
+// WIZARD FORM VIEW INSIDE MODAL - Appearance Only
 // =============================================================================
 .o_dialog {
-    .modal-body {
-        max-height: 70vh !important;
-    }
-
     .o_form_view {
-        width: 100% !important;
-        padding: 0 !important;
-        background: transparent !important;
+        background: transparent;
 
         .o_form_sheet_bg {
-            padding: 0 !important;
-            background: transparent !important;
+            background: transparent;
         }
 
         .o_form_sheet {
-            padding: 0 !important;
-            margin: 0 !important;
-            box-shadow: none !important;
-            border: none !important;
-            border-radius: 0 !important;
-            background: transparent !important;
-            max-width: none !important;
+            box-shadow: none;
+            border: none;
+            background: transparent;
         }
     }
 }
 
 // =============================================================================
-// RADIO BUTTONS IN MODALS
+// RADIO BUTTONS IN MODALS - Appearance Only
 // =============================================================================
 .modal-body {
     .o_field_radio,
     .o_radio_input,
     .o_field_selection_radio {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: var(--ops-space-3, 12px) !important;
-
         .o_radio_item,
         .form-check {
-            display: flex !important;
-            align-items: flex-start !important;
-            gap: var(--ops-space-3, 12px) !important;
-            padding: var(--ops-space-3, 12px) var(--ops-space-4, 16px) !important;
-            background: var(--ops-surface-sunken, #f8fafc) !important;
-            border: 1px solid var(--ops-border-default, #e2e8f0) !important;
-            border-radius: var(--ops-radius-md, 8px) !important;
-            cursor: pointer !important;
-            transition: all var(--ops-transition-fast, 150ms ease) !important;
+            background: var(--ops-surface-sunken, #f8fafc);
+            border: 1px solid var(--ops-border-default, #e2e8f0);
+            border-radius: var(--ops-radius-md, 8px);
+            cursor: pointer;
+            transition: all var(--ops-transition-fast, 150ms ease);
 
             &:hover {
-                background: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.05) !important;
-                border-color: var(--ops-secondary, #3b82f6) !important;
+                background: rgba(59, 130, 246, 0.05);
+                border-color: var(--ops-secondary, #3b82f6);
             }
 
             &:has(input:checked) {
-                background: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.1) !important;
-                border-color: var(--ops-secondary, #3b82f6) !important;
+                background: rgba(59, 130, 246, 0.1);
+                border-color: var(--ops-secondary, #3b82f6);
             }
 
             input[type="radio"] {
-                flex-shrink: 0 !important;
-                width: 18px !important;
-                height: 18px !important;
-                margin: 2px 0 0 0 !important;
-                accent-color: var(--ops-secondary, #3b82f6) !important;
+                accent-color: var(--ops-secondary, #3b82f6);
             }
 
             label {
-                margin: 0 !important;
-                font-size: var(--ops-text-sm, 0.875rem) !important;
-                line-height: var(--ops-leading-normal, 1.5) !important;
-                color: var(--ops-text-primary, #1e293b) !important;
-                cursor: pointer !important;
-                flex: 1 !important;
+                font-size: var(--ops-text-sm, 0.875rem);
+                color: var(--ops-text-primary, #1e293b);
+                cursor: pointer;
             }
         }
     }
 }
 
 // =============================================================================
-// FIELD SIZING IN MODALS
+// MODAL BACKDROP
 // =============================================================================
-.modal-body {
-    .o_field_many2one,
-    .o_field_many2many,
-    .o_field_selection {
-        min-width: 200px !important;
-    }
-
-    .o_field_many2many_tags {
-        min-width: 250px !important;
-    }
-
-    .o_field_date,
-    .o_field_datetime {
-        max-width: 200px !important;
-    }
-}
-
-// =============================================================================
-// MODAL ANIMATION
-// =============================================================================
-.modal.show .modal-dialog {
-    animation: ops-modal-enter var(--ops-transition-slow, 300ms) ease-out !important;
-}
-
-@keyframes ops-modal-enter {
-    from {
-        opacity: 0;
-        transform: translateY(-20px) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-// Modal backdrop
 .modal-backdrop.show {
-    background-color: rgba(15, 23, 42, 0.6) !important;
-    backdrop-filter: blur(2px) !important;
+    background-color: rgba(15, 23, 42, 0.6);
 }
 
 // =============================================================================
-// DARK MODE OVERRIDES
+// DARK MODE - Color Overrides Only
 // =============================================================================
 [data-color-mode="dark"] {
     .modal-content {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        border: 1px solid var(--ops-border-default, #334155) !important;
+        background-color: var(--ops-bg-card, #1e293b);
+        border: 1px solid var(--ops-border-default, #334155);
     }
 
     .modal-header {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        border-bottom-color: var(--ops-border-default, #334155) !important;
+        background-color: #0f172a;
+        color: #f1f5f9;
+        border-bottom: 1px solid #334155;
 
         .modal-title {
-            color: var(--ops-text-primary, #f1f5f9) !important;
-        }
-
-        .btn-close {
-            filter: invert(1) !important;
+            color: inherit;
         }
     }
 
     .modal-body {
-        background-color: var(--ops-bg-card, #1e293b) !important;
-        color: var(--ops-text-primary, #f1f5f9) !important;
+        background-color: var(--ops-bg-card, #1e293b);
+        color: var(--ops-text-primary, #f1f5f9);
 
         .o_form_label {
-            color: var(--ops-text-secondary, #94a3b8) !important;
+            color: var(--ops-text-secondary, #94a3b8);
         }
 
         input.o_input,
         select.o_input,
         textarea.o_input,
         .o_input {
-            background-color: var(--ops-bg-input, #334155) !important;
-            border-color: var(--ops-border-default, #475569) !important;
-            color: var(--ops-text-primary, #f1f5f9) !important;
+            background-color: var(--ops-bg-input, #334155);
+            border-color: var(--ops-border-default, #475569);
+            color: var(--ops-text-primary, #f1f5f9);
 
             &::placeholder {
-                color: var(--ops-text-muted, #64748b) !important;
+                color: var(--ops-text-muted, #64748b);
             }
 
             &:disabled,
             &[readonly] {
-                background-color: var(--ops-surface-sunken, #0f172a) !important;
+                background-color: var(--ops-surface-sunken, #0f172a);
             }
         }
 
         .o_horizontal_separator {
-            color: var(--ops-text-primary, #f1f5f9) !important;
-            border-bottom-color: var(--ops-border-default, #334155) !important;
+            color: var(--ops-text-primary, #f1f5f9);
+            border-bottom-color: var(--ops-border-default, #334155);
         }
 
         .o_radio_item,
         .form-check {
-            background: var(--ops-surface-elevated, #334155) !important;
-            border-color: var(--ops-border-default, #475569) !important;
+            background: var(--ops-surface-elevated, #334155);
+            border-color: var(--ops-border-default, #475569);
 
             &:hover {
-                background: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.1) !important;
+                background: rgba(59, 130, 246, 0.1);
             }
 
             &:has(input:checked) {
-                background: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.15) !important;
+                background: rgba(59, 130, 246, 0.15);
             }
 
             label {
-                color: var(--ops-text-primary, #f1f5f9) !important;
+                color: var(--ops-text-primary, #f1f5f9);
             }
         }
     }
 
     .modal-footer {
-        background-color: var(--ops-surface-sunken, #0f172a) !important;
-        border-top-color: var(--ops-border-default, #334155) !important;
+        background-color: var(--ops-surface-sunken, #0f172a);
+        border-top-color: var(--ops-border-default, #334155);
 
         .btn-secondary,
         .btn-default {
-            background-color: var(--ops-surface-elevated, #334155) !important;
-            border-color: var(--ops-border-default, #475569) !important;
-            color: var(--ops-text-primary, #f1f5f9) !important;
+            background-color: var(--ops-surface-elevated, #334155);
+            border-color: var(--ops-border-default, #475569);
+            color: var(--ops-text-primary, #f1f5f9);
 
             &:hover:not(:disabled) {
-                background-color: var(--ops-bg-card, #1e293b) !important;
+                background-color: var(--ops-bg-card, #1e293b);
             }
         }
     }
 
     .modal-backdrop.show {
-        background-color: rgba(0, 0, 0, 0.7) !important;
-    }
-}
-
-// =============================================================================
-// RESPONSIVE
-// =============================================================================
-@media (max-width: 768px) {
-    .modal-dialog {
-        max-width: 95vw !important;
-        margin: var(--ops-space-4, 16px) auto !important;
-    }
-
-    .modal-body {
-        padding: var(--ops-space-4, 16px) !important;
-
-        .o_group {
-            grid-template-columns: 1fr !important;
-
-            > .o_inner_group,
-            > table,
-            > .o_field_x2many,
-            > .alert {
-                grid-column: span 1 !important;
-            }
-        }
-
-        .o_inner_group {
-            grid-template-columns: 1fr !important;
-
-            .o_form_label {
-                text-align: left !important;
-                margin-bottom: var(--ops-space-1, 4px) !important;
-            }
-        }
-    }
-
-    .modal-header,
-    .modal-footer {
-        padding: var(--ops-space-3, 12px) var(--ops-space-4, 16px) !important;
+        background-color: rgba(0, 0, 0, 0.7);
     }
 }
