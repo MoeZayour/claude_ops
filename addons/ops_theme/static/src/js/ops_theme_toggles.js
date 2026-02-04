@@ -1,14 +1,15 @@
 /** @odoo-module **/
 /**
- * OPS Theme - User Preference Toggles (v7.6.4 - FIXED ORM CALL)
- * ==============================================================
- * Fixed: ORM.write expects [id] not session.uid directly
+ * OPS Theme - User Preference Toggles (v7.6.5 - EXTREME DEBUG)
+ * =============================================================
+ * Added extreme logging to trace exact execution flow.
  */
 
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { cookie } from "@web/core/browser/cookie";
 import { user } from "@web/core/user";
+import { session } from "@web/session";
 
 // =============================================================================
 // COLOR MODE TOGGLE
@@ -23,26 +24,42 @@ function colorModeToggleItem(env) {
         id: "ops_color_mode",
         description: isDark ? _t("☀️ Light Mode") : _t("🌙 Dark Mode"),
         callback: async function() {
+            console.log(`[OPS v7.6.5] === COLOR MODE TOGGLE CLICKED ===`);
+            console.log(`[OPS v7.6.5] Current scheme from cookie: ${currentScheme}`);
+            console.log(`[OPS v7.6.5] isDark: ${isDark}`);
+            console.log(`[OPS v7.6.5] user.userId: ${user.userId}`);
+            console.log(`[OPS v7.6.5] session.uid: ${session.uid}`);
+            
             const newScheme = isDark ? 'light' : 'dark';
-            console.log(`[OPS v7.6.4] Color: ${currentScheme} → ${newScheme}`);
+            console.log(`[OPS v7.6.5] New scheme will be: ${newScheme}`);
             
             try {
                 // Set cookie
+                console.log(`[OPS v7.6.5] Setting cookie...`);
                 cookie.set("color_scheme", newScheme);
+                const verifyC = cookie.get("color_scheme");
+                console.log(`[OPS v7.6.5] Cookie now reads: ${verifyC}`);
                 
-                // Save using user.userId (not session.uid)
-                await env.services.orm.write("res.users", [user.userId], {
+                // Save to database
+                console.log(`[OPS v7.6.5] Calling ORM.write...`);
+                const result = await env.services.orm.write("res.users", [user.userId], {
                     ops_color_mode: newScheme
                 });
-                console.log(`[OPS v7.6.4] Saved! Reloading...`);
+                console.log(`[OPS v7.6.5] ORM.write result:`, result);
+                console.log(`[OPS v7.6.5] Database saved successfully!`);
                 
-                // Reload page
-                window.location.href = window.location.pathname + window.location.search;
+                // Reload
+                console.log(`[OPS v7.6.5] About to reload...`);
+                console.log(`[OPS v7.6.5] window.location.href =`, window.location.href);
+                console.log(`[OPS v7.6.5] RELOADING NOW IN 3...2...1...`);
+                
+                window.location.href = window.location.href;
                 
             } catch (error) {
-                console.error(`[OPS v7.6.4] Error:`, error);
-                // Reload anyway to apply cookie
-                window.location.href = window.location.pathname + window.location.search;
+                console.error(`[OPS v7.6.5] EXCEPTION CAUGHT:`, error);
+                console.error(`[OPS v7.6.5] Error name:`, error.name);
+                console.error(`[OPS v7.6.5] Error message:`, error.message);
+                console.error(`[OPS v7.6.5] Error stack:`, error.stack);
             }
         },
         sequence: 5,
@@ -54,9 +71,7 @@ function colorModeToggleItem(env) {
 // =============================================================================
 
 function chatterPositionToggleItem(env) {
-    const currentPosition = env.services?.['mail.store']?.__userSettings?.chatterPosition || 
-                            user.settings?.chatterPosition || 
-                            'bottom';
+    const currentPosition = session.ops_chatter_position || 'bottom';
     const isBottom = currentPosition === 'bottom';
 
     return {
@@ -64,23 +79,27 @@ function chatterPositionToggleItem(env) {
         id: "ops_chatter_position",
         description: isBottom ? _t("📌 Chatter: Side") : _t("📌 Chatter: Bottom"),
         callback: async function() {
+            console.log(`[OPS v7.6.5] === CHATTER TOGGLE CLICKED ===`);
+            console.log(`[OPS v7.6.5] Current position: ${currentPosition}`);
+            console.log(`[OPS v7.6.5] user.userId: ${user.userId}`);
+            
             const newPosition = isBottom ? 'right' : 'bottom';
-            console.log(`[OPS v7.6.4] Chatter: ${currentPosition} → ${newPosition}`);
+            console.log(`[OPS v7.6.5] New position will be: ${newPosition}`);
             
             try {
-                // Save using user.userId
-                await env.services.orm.write("res.users", [user.userId], {
+                console.log(`[OPS v7.6.5] Calling ORM.write...`);
+                const result = await env.services.orm.write("res.users", [user.userId], {
                     ops_chatter_position: newPosition
                 });
-                console.log(`[OPS v7.6.4] Saved! Reloading...`);
+                console.log(`[OPS v7.6.5] ORM.write result:`, result);
+                console.log(`[OPS v7.6.5] Database saved successfully!`);
                 
-                // Reload page
-                window.location.href = window.location.pathname + window.location.search;
+                console.log(`[OPS v7.6.5] RELOADING NOW IN 3...2...1...`);
+                window.location.href = window.location.href;
                 
             } catch (error) {
-                console.error(`[OPS v7.6.4] Error:`, error);
-                // Reload anyway
-                window.location.href = window.location.pathname + window.location.search;
+                console.error(`[OPS v7.6.5] EXCEPTION CAUGHT:`, error);
+                console.error(`[OPS v7.6.5] Error details:`, error.message, error.stack);
             }
         },
         sequence: 10,
@@ -92,4 +111,4 @@ registry.category("user_menuitems")
     .add("ops_color_mode", colorModeToggleItem, { sequence: 5 })
     .add("ops_chatter_position", chatterPositionToggleItem, { sequence: 10 });
 
-console.log('[OPS v7.6.4] Toggles loaded (fixed ORM.write call) ✓');
+console.log('[OPS v7.6.5] Toggles loaded (EXTREME DEBUG MODE) ✓');
