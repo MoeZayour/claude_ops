@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        
+
         <!-- ============================================================ -->
         <!-- CORPORATE AUDIT LOG VIEWS                                    -->
         <!-- SOX/ISO 27001/GDPR Compliance Audit Trail                    -->
         <!-- ============================================================ -->
-        
-        <!-- Tree View: Corporate Audit Log List -->
+
+        <!-- List View: Corporate Audit Log -->
         <record id="view_ops_corporate_audit_log_tree" model="ir.ui.view">
-            <field name="name">ops.corporate.audit.log.tree</field>
+            <field name="name">ops.corporate.audit.log.list</field>
             <field name="model">ops.corporate.audit.log</field>
             <field name="arch" type="xml">
-                <tree string="Corporate Audit Log" 
-                      create="false" 
-                      edit="false" 
+                <list string="Corporate Audit Log"
+                      create="false"
+                      edit="false"
                       delete="false"
-                      default_order="timestamp desc"
+                      default_order="create_date desc"
                       decoration-info="severity == 'info'"
                       decoration-warning="severity == 'warning'"
                       decoration-danger="severity in ('error', 'critical')"
                       decoration-muted="severity == 'debug'">
-                    <field name="reference" string="Ref#"/>
-                    <field name="timestamp" string="Date/Time"/>
+                    <field name="name" string="Ref#"/>
+                    <field name="create_date" string="Date/Time"/>
                     <field name="event_type" string="Event"/>
                     <field name="event_category" string="Category"/>
                     <field name="severity" string="Severity" widget="badge"/>
                     <field name="user_login" string="User"/>
-                    <field name="model_name" string="Model"/>
-                    <field name="record_name" string="Record"/>
-                    <field name="branch_name" string="Branch"/>
+                    <field name="res_model" string="Model"/>
+                    <field name="res_name" string="Record"/>
+                    <field name="branch_id" string="Branch"/>
                     <field name="compliance_category" string="Compliance" widget="badge"/>
                     <field name="ip_address" string="IP Address"/>
                     <field name="requires_review" string="Review?" widget="boolean_toggle" readonly="1"/>
                     <field name="reviewed" string="Reviewed?" widget="boolean_toggle" readonly="1"/>
-                </tree>
+                </list>
             </field>
         </record>
-        
+
         <!-- Form View: Corporate Audit Log Details -->
         <record id="view_ops_corporate_audit_log_form" model="ir.ui.view">
             <field name="name">ops.corporate.audit.log.form</field>
@@ -45,69 +45,58 @@
             <field name="arch" type="xml">
                 <form string="Audit Log Entry" create="false" edit="false" delete="false">
                     <header>
-                        <button name="action_mark_reviewed" 
-                                string="Mark as Reviewed" 
-                                type="object" 
+                        <button name="action_mark_reviewed"
+                                string="Mark as Reviewed"
+                                type="object"
                                 class="btn-primary"
                                 invisible="reviewed or not requires_review"
                                 groups="ops_matrix_core.group_ops_compliance_officer"/>
-                        <field name="reviewed" widget="badge" 
+                        <field name="reviewed" widget="badge"
                                decoration-success="reviewed == True"
                                decoration-warning="reviewed == False and requires_review"/>
                     </header>
                     <sheet>
-                        <div class="oe_button_box" name="button_box">
-                            <button name="action_view_record" 
-                                    type="object" 
-                                    class="oe_stat_button" 
-                                    icon="fa-external-link"
-                                    string="View Record"
-                                    invisible="not model_name or not record_id"/>
-                        </div>
-                        
                         <div class="oe_title">
                             <h1>
-                                <field name="reference" readonly="1"/>
+                                <field name="name" readonly="1"/>
                             </h1>
                             <h2>
                                 <field name="event_type" readonly="1" widget="badge"/>
                             </h2>
                         </div>
-                        
+
                         <group>
                             <group string="Event Information">
-                                <field name="timestamp" readonly="1"/>
+                                <field name="create_date" string="Timestamp" readonly="1"/>
                                 <field name="event_category" readonly="1" widget="badge"/>
                                 <field name="severity" readonly="1" widget="badge"/>
                                 <field name="compliance_category" readonly="1" widget="badge"/>
                                 <field name="description" readonly="1"/>
                             </group>
-                            <group string="User & Session">
+                            <group string="User and Session">
                                 <field name="user_id" readonly="1"/>
                                 <field name="user_login" readonly="1"/>
-                                <field name="persona_name" readonly="1"/>
+                                <field name="persona_id" readonly="1"/>
                                 <field name="ip_address" readonly="1"/>
                                 <field name="user_agent" readonly="1"/>
                                 <field name="session_id" readonly="1"/>
                             </group>
                         </group>
-                        
+
                         <group>
                             <group string="Record Context">
-                                <field name="model_name" readonly="1"/>
-                                <field name="record_id" readonly="1"/>
-                                <field name="record_name" readonly="1"/>
-                                <field name="field_name" readonly="1"/>
+                                <field name="res_model" string="Model" readonly="1"/>
+                                <field name="res_id" string="Record ID" readonly="1"/>
+                                <field name="res_name" string="Record Name" readonly="1"/>
+                                <field name="changed_fields" readonly="1"/>
                             </group>
                             <group string="Matrix Context">
                                 <field name="company_id" readonly="1"/>
                                 <field name="branch_id" readonly="1"/>
-                                <field name="branch_name" readonly="1"/>
-                                <field name="business_unit_id" readonly="1"/>
                                 <field name="persona_id" readonly="1"/>
                             </group>
                         </group>
-                        
+
                         <notebook>
                             <page string="Change Details" invisible="not old_values and not new_values">
                                 <group>
@@ -118,17 +107,19 @@
                                         <field name="new_values" readonly="1" widget="text" nolabel="1"/>
                                     </group>
                                 </group>
-                            </page>
-                            
-                            <page string="Additional Context">
-                                <group>
-                                    <field name="http_method" readonly="1"/>
-                                    <field name="http_path" readonly="1"/>
-                                    <field name="request_id" readonly="1"/>
-                                    <field name="additional_info" readonly="1" widget="text"/>
+                                <group string="Change Summary">
+                                    <field name="change_summary" readonly="1" widget="text" nolabel="1"/>
                                 </group>
                             </page>
-                            
+
+                            <page string="Additional Context">
+                                <group>
+                                    <field name="action" readonly="1"/>
+                                    <field name="res_model_name" string="Model Description" readonly="1"/>
+                                    <field name="res_reference" readonly="1"/>
+                                </group>
+                            </page>
+
                             <page string="Review Information" invisible="not requires_review">
                                 <group>
                                     <group>
@@ -144,7 +135,14 @@
                                     </group>
                                 </group>
                             </page>
-                            
+
+                            <page string="Related Logs">
+                                <group>
+                                    <field name="api_audit_id" readonly="1"/>
+                                    <field name="security_audit_id" readonly="1"/>
+                                </group>
+                            </page>
+
                             <page string="Technical Details">
                                 <group>
                                     <group>
@@ -159,84 +157,43 @@
                 </form>
             </field>
         </record>
-        
+
         <!-- Search View: Comprehensive Filters -->
         <record id="view_ops_corporate_audit_log_search" model="ir.ui.view">
             <field name="name">ops.corporate.audit.log.search</field>
             <field name="model">ops.corporate.audit.log</field>
             <field name="arch" type="xml">
                 <search string="Search Audit Logs">
-                    <field name="reference" string="Reference"/>
-                    <field name="user_login" string="User"/>
-                    <field name="model_name" string="Model"/>
-                    <field name="record_name" string="Record"/>
-                    <field name="ip_address" string="IP Address"/>
-                    <field name="description" string="Description"/>
-                    
-                    <filter name="filter_today" string="Today" 
-                            domain="[('timestamp', '&gt;=', (context_today()).strftime('%Y-%m-%d'))]"/>
-                    <filter name="filter_this_week" string="This Week" 
-                            domain="[('timestamp', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
-                    <filter name="filter_this_month" string="This Month" 
-                            domain="[('timestamp', '&gt;=', (context_today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
-                    <separator/>
-                    
-                    <filter name="filter_authentication" string="Authentication" 
-                            domain="[('event_category', '=', 'authentication')]"/>
-                    <filter name="filter_data" string="Data Changes" 
-                            domain="[('event_category', '=', 'data')]"/>
-                    <filter name="filter_financial" string="Financial" 
-                            domain="[('event_category', '=', 'financial')]"/>
-                    <filter name="filter_workflow" string="Workflow" 
-                            domain="[('event_category', '=', 'workflow')]"/>
-                    <filter name="filter_security" string="Security" 
-                            domain="[('event_category', '=', 'security')]"/>
-                    <separator/>
-                    
-                    <filter name="filter_critical" string="Critical" 
-                            domain="[('severity', '=', 'critical')]"/>
-                    <filter name="filter_error" string="Error" 
-                            domain="[('severity', '=', 'error')]"/>
-                    <filter name="filter_warning" string="Warning" 
-                            domain="[('severity', '=', 'warning')]"/>
-                    <separator/>
-                    
-                    <filter name="filter_sox" string="SOX" 
-                            domain="[('compliance_category', '=', 'sox')]"/>
-                    <filter name="filter_gdpr" string="GDPR" 
-                            domain="[('compliance_category', '=', 'gdpr')]"/>
-                    <filter name="filter_iso27001" string="ISO 27001" 
-                            domain="[('compliance_category', '=', 'iso27001')]"/>
-                    <separator/>
-                    
-                    <filter name="filter_requires_review" string="Requires Review" 
-                            domain="[('requires_review', '=', True), ('reviewed', '=', False)]"/>
-                    <filter name="filter_reviewed" string="Reviewed" 
-                            domain="[('reviewed', '=', True)]"/>
-                    <separator/>
-                    
-                    <group expand="0" string="Group By">
-                        <filter name="group_event_type" string="Event Type" 
-                                context="{'group_by': 'event_type'}"/>
-                        <filter name="group_event_category" string="Event Category" 
-                                context="{'group_by': 'event_category'}"/>
-                        <filter name="group_user" string="User" 
-                                context="{'group_by': 'user_id'}"/>
-                        <filter name="group_model" string="Model" 
-                                context="{'group_by': 'model_name'}"/>
-                        <filter name="group_branch" string="Branch" 
-                                context="{'group_by': 'branch_id'}"/>
-                        <filter name="group_compliance" string="Compliance Category" 
-                                context="{'group_by': 'compliance_category'}"/>
-                        <filter name="group_severity" string="Severity" 
-                                context="{'group_by': 'severity'}"/>
-                        <filter name="group_date" string="Date" 
-                                context="{'group_by': 'timestamp:day'}"/>
+                    <field name="name"/>
+                    <field name="user_login"/>
+                    <field name="res_model"/>
+                    <field name="res_name"/>
+                    <field name="ip_address"/>
+                    <field name="description"/>
+                    <filter string="Today" name="filter_today" domain="[('create_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Week" name="filter_this_week" domain="[('create_date', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Authentication" name="filter_authentication" domain="[('event_category', '=', 'authentication')]"/>
+                    <filter string="Data Changes" name="filter_data" domain="[('event_category', '=', 'data')]"/>
+                    <filter string="Financial" name="filter_financial" domain="[('event_category', '=', 'financial')]"/>
+                    <filter string="Critical" name="filter_critical" domain="[('severity', '=', 'critical')]"/>
+                    <filter string="Error" name="filter_error" domain="[('severity', '=', 'error')]"/>
+                    <filter string="Warning" name="filter_warning" domain="[('severity', '=', 'warning')]"/>
+                    <filter string="SOX" name="filter_sox" domain="[('compliance_category', '=', 'sox')]"/>
+                    <filter string="GDPR" name="filter_gdpr" domain="[('compliance_category', '=', 'gdpr')]"/>
+                    <filter string="Requires Review" name="filter_requires_review" domain="[('requires_review', '=', True), ('reviewed', '=', False)]"/>
+                    <filter string="Reviewed" name="filter_reviewed" domain="[('reviewed', '=', True)]"/>
+                    <group>
+                        <filter string="Event Type" name="group_event_type" context="{'group_by': 'event_type'}"/>
+                        <filter string="Category" name="group_event_category" context="{'group_by': 'event_category'}"/>
+                        <filter string="User" name="group_user" context="{'group_by': 'user_id'}"/>
+                        <filter string="Branch" name="group_branch" context="{'group_by': 'branch_id'}"/>
+                        <filter string="Severity" name="group_severity" context="{'group_by': 'severity'}"/>
+                        <filter string="Date" name="group_date" context="{'group_by': 'create_date:day'}"/>
                     </group>
                 </search>
             </field>
         </record>
-        
+
         <!-- Pivot View: Analytics -->
         <record id="view_ops_corporate_audit_log_pivot" model="ir.ui.view">
             <field name="name">ops.corporate.audit.log.pivot</field>
@@ -245,28 +202,28 @@
                 <pivot string="Audit Log Analytics" sample="1">
                     <field name="event_category" type="row"/>
                     <field name="user_id" type="row"/>
-                    <field name="timestamp" type="col" interval="day"/>
+                    <field name="create_date" type="col" interval="day"/>
                 </pivot>
             </field>
         </record>
-        
+
         <!-- Graph View: Trends -->
         <record id="view_ops_corporate_audit_log_graph" model="ir.ui.view">
             <field name="name">ops.corporate.audit.log.graph</field>
             <field name="model">ops.corporate.audit.log</field>
             <field name="arch" type="xml">
                 <graph string="Audit Log Trends" type="line" sample="1">
-                    <field name="timestamp" type="row" interval="day"/>
+                    <field name="create_date" type="row" interval="day"/>
                     <field name="event_category" type="col"/>
                 </graph>
             </field>
         </record>
-        
+
         <!-- Action: Corporate Audit Log -->
         <record id="action_ops_corporate_audit_log" model="ir.actions.act_window">
             <field name="name">Corporate Audit Log</field>
             <field name="res_model">ops.corporate.audit.log</field>
-            <field name="view_mode">tree,form,pivot,graph</field>
+            <field name="view_mode">list,form,pivot,graph</field>
             <field name="context">{
                 'search_default_filter_this_week': 1,
             }</field>
@@ -288,48 +245,48 @@
                 </p>
             </field>
         </record>
-        
+
         <!-- Action: Pending Reviews -->
         <record id="action_ops_corporate_audit_log_pending_reviews" model="ir.actions.act_window">
             <field name="name">Audit Logs - Pending Review</field>
             <field name="res_model">ops.corporate.audit.log</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
             <field name="domain">[('requires_review', '=', True), ('reviewed', '=', False)]</field>
             <field name="context">{}</field>
         </record>
-        
+
         <!-- Action: SOX Compliance -->
         <record id="action_ops_corporate_audit_log_sox" model="ir.actions.act_window">
             <field name="name">SOX Compliance Audit Trail</field>
             <field name="res_model">ops.corporate.audit.log</field>
-            <field name="view_mode">tree,form,pivot,graph</field>
+            <field name="view_mode">list,form,pivot,graph</field>
             <field name="domain">[('compliance_category', '=', 'sox')]</field>
             <field name="context">{
                 'search_default_filter_this_month': 1,
                 'search_default_group_event_type': 1
             }</field>
         </record>
-        
+
         <!-- Action: GDPR Compliance -->
         <record id="action_ops_corporate_audit_log_gdpr" model="ir.actions.act_window">
             <field name="name">GDPR Data Processing Records</field>
             <field name="res_model">ops.corporate.audit.log</field>
-            <field name="view_mode">tree,form,pivot,graph</field>
+            <field name="view_mode">list,form,pivot,graph</field>
             <field name="domain">[('compliance_category', '=', 'gdpr')]</field>
             <field name="context">{
                 'search_default_filter_this_month': 1,
                 'search_default_group_user': 1
             }</field>
         </record>
-        
+
         <!-- Menu: Corporate Audit Log (under Settings > Technical) -->
         <menuitem id="menu_ops_corporate_audit_log"
                   name="Corporate Audit Log"
-                  parent="ops_settings_menu"
+                  parent="menu_ops_settings_root"
                   action="action_ops_corporate_audit_log"
                   sequence="60"
-                  groups="ops_matrix_core.group_ops_admin,ops_matrix_core.group_ops_compliance_officer"/>
-        
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_compliance_officer"/>
+
         <!-- Menu: Pending Reviews -->
         <menuitem id="menu_ops_corporate_audit_log_pending_reviews"
                   name="Audit Log Reviews"
@@ -337,7 +294,7 @@
                   action="action_ops_corporate_audit_log_pending_reviews"
                   sequence="10"
                   groups="ops_matrix_core.group_ops_compliance_officer"/>
-        
+
         <!-- Menu: SOX Compliance -->
         <menuitem id="menu_ops_corporate_audit_log_sox"
                   name="SOX Audit Trail"
@@ -345,7 +302,7 @@
                   action="action_ops_corporate_audit_log_sox"
                   sequence="20"
                   groups="ops_matrix_core.group_ops_compliance_officer"/>
-        
+
         <!-- Menu: GDPR Compliance -->
         <menuitem id="menu_ops_corporate_audit_log_gdpr"
                   name="GDPR Data Records"
@@ -353,6 +310,6 @@
                   action="action_ops_corporate_audit_log_gdpr"
                   sequence="30"
                   groups="ops_matrix_core.group_ops_compliance_officer"/>
-        
+
     </data>
 </odoo>

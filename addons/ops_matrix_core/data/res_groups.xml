@@ -131,6 +131,13 @@
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_user'))]"/>
     </record>
 
+    <!-- Compliance Officer - Oversight role for governance and audit -->
+    <record id="group_ops_compliance_officer" model="res.groups">
+        <field name="name">Compliance Officer</field>
+        <field name="comment">Compliance oversight role. Read access to governance rules, audit logs, and SoD violations. Cannot modify business transactions.</field>
+        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_user'))]"/>
+    </record>
+
     <!-- Data Export Permission -->
     <record id="group_ops_can_export" model="res.groups">
         <field name="name">Can Export Data</field>
