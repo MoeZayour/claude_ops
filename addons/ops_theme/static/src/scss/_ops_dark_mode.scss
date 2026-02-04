@@ -1,0 +1,81 @@
+///
+/// OPS Dark Mode - ONLY for OPS-custom components
+/// ================================================
+/// Native Odoo components handle their own dark mode.
+/// This file ONLY styles OPS-custom components (login, future app grid).
+///
+
+// =============================================================================
+// LOGIN PAGE (OPS CUSTOM)
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .ops-login-container {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+    
+    .ops-login-panel {
+        background: #1e293b;
+        border-color: #334155;
+    }
+    
+    .ops-login-brand {
+        color: #f1f5f9;
+    }
+    
+    .ops-login-form-panel {
+        background-color: #0f172a !important;
+        color: #f1f5f9;
+    }
+    
+    .ops-login-header h2,
+    .ops-login-header p {
+        color: #f1f5f9;
+    }
+    
+    // Form inputs in dark mode
+    .ops-login-form-panel input[type="text"],
+    .ops-login-form-panel input[type="password"],
+    .ops-login-form-panel input[type="email"] {
+        background-color: #1e293b;
+        border-color: #334155;
+        color: #f1f5f9;
+        
+        &:focus {
+            background-color: #1e293b;
+            border-color: #3b82f6;
+        }
+    }
+}
+
+// =============================================================================
+// APP GRID (OPS CUSTOM - FUTURE FEATURE)
+// =============================================================================
+
+[data-color-mode="dark"] {
+    .ops-app-grid {
+        background: #0f172a;
+    }
+    
+    .ops-app-tile {
+        background: #1e293b;
+        border-color: #334155;
+        
+        &:hover {
+            background: #334155;
+        }
+    }
+}
+
+// =============================================================================
+// DO NOT ADD OVERRIDES FOR NATIVE ODOO COMPONENTS:
+// - .o_form_view
+// - .o_list_view  
+// - .modal, .modal-content
+// - .o_settings_container
+// - .o_kanban_view
+// - .o_control_panel
+// - Any other native Odoo class
+// 
+// Odoo 19 handles its own dark mode for these components!
+// =============================================================================

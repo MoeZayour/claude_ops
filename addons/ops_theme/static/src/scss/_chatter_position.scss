@@ -1,0 +1,20 @@
+///
+/// OPS Framework - Chatter Position Toggle
+/// ========================================
+/// Allows users to toggle chatter between side and bottom positions
+///
+
+// =============================================================================
+// CHATTER POSITION CONTROL
+// =============================================================================
+
+// The actual positioning is handled by the FormRenderer patch in JS
+// This SCSS just provides any additional styling needed
+
+// Default: bottom position (no special styling needed - Odoo native)
+
+// Side position adjustments (when applied by JS patch)
+.o_form_view.o_xxl_form_view .o_form_sheet_bg {
+    // Ensure proper layout when chatter is on the side
+    // Most handling is done in JS, minimal CSS needed
+}

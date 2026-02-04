@@ -1,30 +1,32 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.8.1.0',
+    'version': '19.0.7.0.0',
     'category': 'Themes/Backend',
-    'summary': 'Premium enterprise theme with modern styling',
+    'summary': 'Minimal OPS Framework theme with clean debranding',
     'description': """
-OPS Theme v5.0 - Premium Enterprise Theme
-==========================================
+OPS Theme v7.0 - Minimal Override Philosophy
+============================================
 
-Modern, premium theme following minimal-override philosophy:
-- Inter font family with proper typography hierarchy
-- Custom-styled form controls (radio, checkbox, toggle, inputs)
-- Card and KPI dashboard styling with hover effects
-- Status badges with soft colored backgrounds
-- Enhanced buttons with hover animations
-- Clean table styling
-- Full dark mode support with system preference detection
+Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy:
 
-Features:
-- Bootstrap variable overrides for complete debranding
-- Clean slate/blue color scheme
-- Dark/Light/System mode toggle
-- Chatter position toggle via FormCompiler patch
-- List auto-refresh feature
-- Expand/Collapse all groups
-- Split-screen login page
+**What This Theme Does (6 Things):**
+1. Debranding - Replace Odoo purple with OPS Navy at Bootstrap compile time
+2. Login Screen - Split-screen branded login page
+3. Dark/Light Mode - Toggle using native Odoo data-color-mode
+4. Chatter Position - Toggle between side/bottom via user preference
+5. Clean UI - Remove odoo.com links and branding
+6. User Preferences - Save theme settings per user
+
+**What This Theme Does NOT Do:**
+- Override form view layouts (rides Odoo native)
+- Rewrite list view renderers (rides Odoo native)
+- Modify wizard/modal structure (rides Odoo native)
+- Fight OWL component rendering (uses Odoo's dark mode)
+- Inject CSS that breaks two-column forms (minimal overrides only)
+
+**Total SCSS**: ~400 lines (vs 3800+ in v6)
+**Philosophy**: Let Odoo handle component styling, we just brand the colors
     """,
     'author': 'OPS Framework',
     'website': 'https://github.com/MoeZayour/claude_ops',
@@ -33,110 +35,46 @@ Features:
         'base',
         'web',
         'mail',
-        'base_setup',
     ],
     'data': [
         'security/ir.model.access.csv',
-        'views/res_config_settings_views.xml',
-        'views/res_users_views.xml',
         'views/login_templates.xml',
         'views/webclient_templates.xml',
-        'views/debranding_templates.xml',
     ],
     'assets': {
         # =================================================================
         # PRIMARY VARIABLES - Loaded BEFORE Bootstrap compilation
         # =================================================================
-        # This is the key to proper debranding - override colors at source
+        # This is the KEY to proper debranding - override colors at source
         'web._assets_primary_variables': [
-            ('after', 'web/static/src/scss/primary_variables.scss',
-             'ops_theme/static/src/scss/_primary_variables.scss'),
+            ('prepend', 'ops_theme/static/src/scss/_primary_variables.scss'),
         ],
 
         # =================================================================
         # FRONTEND ASSETS (Login page)
         # =================================================================
         'web.assets_frontend': [
-            'ops_theme/static/src/scss/_animations_minimal.scss',
             'ops_theme/static/src/scss/_login.scss',
             'ops_theme/static/src/js/theme_loader.js',
         ],
 
         # =================================================================
-        # BACKEND ASSETS - Complete theme styling
+        # BACKEND ASSETS - Minimal theme styling
         # =================================================================
         'web.assets_backend': [
-            # 0. CSS Variables (single source of truth - load FIRST)
-            'ops_theme/static/src/scss/_variables.scss',
-
-            # 0.1. Extended Design Tokens (spacing, component tokens)
-            'ops_theme/static/src/scss/_00_design_tokens.scss',
-
-            # 1. Typography (loads Inter font)
-            'ops_theme/static/src/scss/_typography.scss',
-
-            # 2. Core appearance styling
-            'ops_theme/static/src/scss/_appearance.scss',
-            'ops_theme/static/src/scss/_animations_minimal.scss',
-
-            # 3. Enhanced component styling
-            'ops_theme/static/src/scss/_form_controls.scss',
-            'ops_theme/static/src/scss/_form_inputs_fix.scss',
-            'ops_theme/static/src/scss/_cards.scss',
-            'ops_theme/static/src/scss/_badges_enhanced.scss',
-            'ops_theme/static/src/scss/_buttons_enhanced.scss',
-            'ops_theme/static/src/scss/_tables.scss',
-
-            # 4. Layout components (navbar, list, control panel, kanban)
-            'ops_theme/static/src/scss/_navbar.scss',
-            'ops_theme/static/src/scss/_list.scss',
-            'ops_theme/static/src/scss/_control_panel.scss',
-            'ops_theme/static/src/scss/_kanban.scss',
-
-            # 4.5. Modal and Wizard styling
-            'ops_theme/static/src/scss/_modals.scss',
-            'ops_theme/static/src/scss/patterns/_wizard_sections.scss',
-            'ops_theme/static/src/scss/_utilities.scss',
-
-            # 5. Dark mode
-            'ops_theme/static/src/scss/_dark_mode.scss',
-
-            # 5.5. Chatter readability fix
-            'ops_theme/static/src/scss/_chatter_fix.scss',
-
-            # 5.6. Settings layout and error fields
-            'ops_theme/static/src/scss/_settings_layout.scss',
-            'ops_theme/static/src/scss/_error_fields.scss',
-
-            # 5.7. (Removed - merged into _dark_mode.scss)
-
-            # 5.8. Dashboard and kanban dark mode fixes
-            'ops_theme/static/src/scss/_dashboard_kanban_fix.scss',
-
-            # 6. Complete debranding (enterprise hiding + color overrides)
+            # 1. Core styling (debranding, chatter, dark mode for OPS components only)
             'ops_theme/static/src/scss/_debranding.scss',
+            'ops_theme/static/src/scss/_chatter_position.scss',
+            'ops_theme/static/src/scss/_ops_dark_mode.scss',
 
-            # 7. Color mode toggle styling
-            'ops_theme/static/src/scss/_user_menu.scss',
-
-            # 8. (theme_loader.js already in frontend assets)
-
-            # 9. JavaScript - Debranding (registry cleanup)
+            # 2. JavaScript - Theme initialization and toggles
+            'ops_theme/static/src/js/theme_loader.js',
             'ops_theme/static/src/js/debranding.js',
-
-            # 10. OPS Theme Toggles (color mode + chatter position)
             'ops_theme/static/src/js/ops_theme_toggles.js',
-
-            # 11. Chatter Position Patch (FormRenderer.mailLayout)
             'ops_theme/static/src/js/chatter_position_patch.js',
 
-            # 12. Feature extensions
-            'ops_theme/static/src/search/control_panel_refresh.js',
-            'ops_theme/static/src/search/group_actions.js',
-
-            # 13. XML templates
+            # 3. XML templates - User menu with theme toggles
             'ops_theme/static/src/xml/user_menu.xml',
-            'ops_theme/static/src/xml/control_panel.xml',
         ],
     },
     'installable': True,

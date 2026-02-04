@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ===================================================================== -->
+    <!-- FAVICON - BACKEND (Replace default with company favicon)              -->
+    <!-- ===================================================================== -->
+    <template id="ops_favicon_backend" inherit_id="web.layout" name="OPS Favicon Backend" priority="100">
+        <!-- Replace any existing shortcut icon -->
+        <xpath expr="//head/link[@rel='shortcut icon']" position="replace">
+            <link rel="shortcut icon" type="image/x-icon" href="/ops_theme/favicon"/>
+        </xpath>
+        <!-- Add icon link for browsers that prefer rel="icon" -->
+        <xpath expr="//head" position="inside">
+            <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
+        </xpath>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- FAVICON - FRONTEND/LOGIN (Add to login pages)                         -->
+    <!-- ===================================================================== -->
+    <template id="ops_favicon_frontend" inherit_id="web.frontend_layout" name="OPS Favicon Frontend" priority="100">
+        <xpath expr="//head" position="inside">
+            <link rel="shortcut icon" type="image/x-icon" href="/ops_theme/favicon"/>
+            <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
+        </xpath>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- LOAD INTER FONT FROM GOOGLE FONTS                                     -->
+    <!-- ===================================================================== -->
+    <template id="ops_assets_font" inherit_id="web.layout" name="OPS Font Assets">
+        <xpath expr="//head" position="inside">
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+        </xpath>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- SET COLOR_SCHEME COOKIE ON PAGE LOAD (Backend Webclient)              -->
+    <!-- ===================================================================== -->
+    <template id="ops_set_color_scheme_cookie" inherit_id="web.webclient_bootstrap" name="OPS Set Color Scheme Cookie" priority="100">
+        <xpath expr="//t[@t-set='head_web']//script[last()]" position="after">
+            <script id="ops.color_scheme_cookie" type="text/javascript">
+                // Set color_scheme cookie from server-provided value
+                // This is critical - Odoo's JS reads cookie.get("color_scheme")
+                (function() {
+                    var colorScheme = "<t t-esc="color_scheme"/>" || "light";
+                    // Set cookie for 1 year
+                    var expires = new Date();
+                    expires.setFullYear(expires.getFullYear() + 1);
+                    document.cookie = "color_scheme=" + colorScheme + "; path=/; expires=" + expires.toUTCString();
+                    console.log('[OPS Theme] Set color_scheme cookie to:', colorScheme);
+                })();
+            </script>
+        </xpath>
+    </template>
+
+</odoo>

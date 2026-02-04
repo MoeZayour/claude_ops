@@ -1,0 +1,62 @@
+// =============================================================================
+// OPS THEME - PRIMARY VARIABLES (Bootstrap/Odoo Overrides)
+// =============================================================================
+// This file is loaded via web._assets_primary_variables BEFORE Odoo compiles
+// Bootstrap. It overrides the default Odoo purple (#714B67) with OPS blue.
+// Following MuK Theme's minimal approach.
+// =============================================================================
+
+// Typography - Inter font family
+$font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !default;
+$font-family-base: $font-family-sans-serif !default;
+
+// Odoo Brand Colors - Override purple with slate/blue
+$o-brand-odoo: #1e293b !default;
+$o-brand-primary: #3b82f6 !default;
+$o-community-color: #1e293b !default;
+$o-enterprise-color: #1e293b !default;
+$o-enterprise-action-color: #3b82f6 !default;
+
+// Bootstrap Primary Colors
+$primary: #3b82f6 !default;
+$secondary: #64748b !default;
+$success: #10b981 !default;
+$info: #06b6d4 !default;
+$warning: #f59e0b !default;
+$danger: #ef4444 !default;
+$light: #f8fafc !default;
+$dark: #1e293b !default;
+
+// Link Colors
+$link-color: #3b82f6 !default;
+$link-hover-color: #2563eb !default;
+
+// Component Active States
+$component-active-bg: #3b82f6 !default;
+$component-active-color: #ffffff !default;
+
+// Form Focus States
+$input-focus-border-color: #3b82f6 !default;
+$input-focus-box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !default;
+
+// Dropdown Active
+$dropdown-link-active-bg: #3b82f6 !default;
+$dropdown-link-active-color: #ffffff !default;
+
+// Nav Tabs
+$nav-tabs-link-active-color: #3b82f6 !default;
+$nav-tabs-link-active-border-color: #3b82f6 !default;
+
+// Pagination
+$pagination-active-bg: #3b82f6 !default;
+$pagination-active-border-color: #3b82f6 !default;
+
+// List Group
+$list-group-active-bg: #3b82f6 !default;
+$list-group-active-border-color: #3b82f6 !default;
+
+// Progress Bar
+$progress-bar-bg: #3b82f6 !default;
+
+// Navbar badge (following MuK pattern)
+$o-navbar-badge-bg: $o-brand-primary !default;
