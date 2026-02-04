@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.8.0.0',
+    'version': '19.0.8.1.0',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -119,8 +119,7 @@ Features:
             # 7. Color mode toggle styling
             'ops_theme/static/src/scss/_user_menu.scss',
 
-            # 8. JavaScript - Theme utilities
-            'ops_theme/static/src/js/theme_loader.js',
+            # 8. (theme_loader.js already in frontend assets)
 
             # 9. JavaScript - Debranding (registry cleanup)
             'ops_theme/static/src/js/debranding.js',

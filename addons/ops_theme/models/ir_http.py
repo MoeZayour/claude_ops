@@ -1,8 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-OPS Theme - ir.http Extension
-=============================
+OPS Theme - ir.http Extension (v8.1.0)
+======================================
 Integrates theme preferences with Odoo 19's native systems.
+
+ROOT CAUSE FIX:
+- Odoo 19 CE's color_scheme() just returns 'light' (stub)
+- webclient_rendering_context() returns {'color_scheme': ..., 'session_info': ...}
+- web.layout template uses: <html t-att="html_data or {}">
+- BUT html_data is NEVER set with data-color-mode attribute!
+
+SOLUTION:
+- Override webclient_rendering_context() to include html_data with data-color-mode
+- This makes the CSS selector [data-color-mode="dark"] work
 """
 
 from odoo import models
@@ -18,9 +28,9 @@ class IrHttp(models.AbstractModel):
         """
         Override Odoo 19's color_scheme method.
         
-        Odoo 19 uses this to provide the default value for the color_scheme cookie.
-        The webclient_bootstrap template uses webclient_rendering_context() which
-        calls this method. We read from user's ops_color_mode field for persistence.
+        Odoo 19 uses this in webclient_rendering_context() to provide the
+        color_scheme value. The webclient_bootstrap template uses this to
+        conditionally load web.assets_web_dark CSS.
         """
         if request and request.session and request.session.uid:
             try:
@@ -30,6 +40,29 @@ class IrHttp(models.AbstractModel):
             except Exception:
                 pass
         return 'light'  # Default
+
+    def webclient_rendering_context(self):
+        """
+        Override to add html_data with data-color-mode attribute.
+        
+        This is THE KEY FIX:
+        - web.layout template uses: <html t-att="html_data or {}">
+        - By setting html_data = {'data-color-mode': 'dark'}, we make
+          the CSS selector [data-color-mode="dark"] work!
+        """
+        # Get the base context from parent
+        result = super().webclient_rendering_context()
+        
+        # Get color_scheme (which calls our override)
+        color_scheme = result.get('color_scheme', 'light')
+        
+        # THE FIX: Set html_data with data-color-mode attribute
+        # This makes <html t-att="html_data or {}"> render as <html data-color-mode="dark">
+        result['html_data'] = {
+            'data-color-mode': color_scheme,
+        }
+        
+        return result
 
     def session_info(self):
         """
