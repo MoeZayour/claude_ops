@@ -1,0 +1,7 @@
+// =============================================================================
+// TEMPORARILY DISABLED FOR LAYOUT DIAGNOSTIC
+// Original backed up as .phase2_backup
+// =============================================================================
+// This file intentionally left empty to test if dark mode overrides
+// are causing layout breakage. Dark mode colors will not work.
+// =============================================================================
