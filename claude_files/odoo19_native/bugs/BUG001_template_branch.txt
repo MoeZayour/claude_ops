@@ -1,0 +1,11 @@
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ir_sequence_data.xml:3:    <record id="seq_ops_branch" model="ir.sequence">
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ir_sequence_data.xml:5:        <field name="code">ops.branch</field>
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ops_governance_templates.xml:43:if hasattr(record, 'ops_branch_id') and record.ops_branch_id and record.partner_id:
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ops_governance_templates.xml:44:    branch_country = record.ops_branch_id.country_id
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ops_user_templates.xml:37:        <record id="branch_template" model="ops.branch">
+/opt/gemini_odoo19/addons/ops_matrix_core/data/res_groups.xml:72:    <record id="group_ops_branch_manager" model="res.groups">
+/opt/gemini_odoo19/addons/ops_matrix_core/data/res_groups.xml:82:        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_branch_manager')), (4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_margin'))]"/>
+/opt/gemini_odoo19/addons/ops_matrix_core/data/res_groups.xml:95:        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_branch_manager')), (4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost')), (4, ref('ops_matrix_core.group_ops_see_margin'))]"/>
+/opt/gemini_odoo19/addons/ops_matrix_core/data/res_groups.xml:101:        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_branch_manager')), (4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+/opt/gemini_odoo19/addons/ops_matrix_core/data/res_groups.xml:107:        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_branch_manager')), (4, ref('ops_matrix_core.group_ops_manager')), (4, ref('ops_matrix_core.group_ops_see_valuation'))]"/>
+148:    'post_init_hook': 'post_init_hook',

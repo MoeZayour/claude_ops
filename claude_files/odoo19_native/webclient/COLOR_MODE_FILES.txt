@@ -1,0 +1,3 @@
+/usr/lib/python3/dist-packages/odoo/addons/web/static/src/core/colors/colors.js
+/usr/lib/python3/dist-packages/odoo/addons/web/static/src/views/fields/journal_dashboard_graph/journal_dashboard_graph_field.js
+/usr/lib/python3/dist-packages/odoo/addons/web/static/src/views/graph/graph_renderer.js

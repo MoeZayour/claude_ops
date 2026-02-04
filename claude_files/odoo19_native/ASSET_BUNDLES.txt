@@ -1,0 +1,76 @@
+BUNDLE: web._assets_primary_variables (2 entries)
+  web/static/src/scss/primary_variables.scss
+  web/static/src/**/*.variables.scss
+
+BUNDLE: web.assets_frontend (67 entries)
+  web/static/src/scss/pre_variables.scss
+  web/static/lib/bootstrap/scss/_variables.scss
+  web/static/lib/bootstrap/scss/_variables-dark.scss
+  web/static/lib/bootstrap/scss/_maps.scss
+  web/static/lib/luxon/luxon.js
+  web/static/src/libs/fontawesome/css/font-awesome.css
+  web/static/lib/odoo_ui_icons/*
+  web/static/src/webclient/navbar/navbar.scss
+  web/static/src/scss/animation.scss
+  web/static/src/scss/base_frontend.scss
+  web/static/src/scss/fontawesome_overridden.scss
+  web/static/src/scss/mimetypes.scss
+  web/static/src/scss/ui.scss
+  web/static/src/views/fields/translation_dialog.scss
+  web/static/src/views/fields/signature/signature_field.scss
+  web/static/lib/owl/owl.js
+  ... and 47 more
+
+BUNDLE: web.assets_backend (66 entries)
+  web/static/src/scss/pre_variables.scss
+  web/static/lib/bootstrap/scss/_variables.scss
+  web/static/lib/bootstrap/scss/_variables-dark.scss
+  web/static/lib/bootstrap/scss/_maps.scss
+  web/static/src/libs/fontawesome/css/font-awesome.css
+  web/static/lib/odoo_ui_icons/*
+  web/static/src/webclient/navbar/navbar.scss
+  web/static/src/scss/animation.scss
+  web/static/src/scss/fontawesome_overridden.scss
+  web/static/src/scss/mimetypes.scss
+  web/static/src/scss/ui.scss
+  web/static/src/views/fields/translation_dialog.scss
+  web/static/src/polyfills/clipboard.js
+  web/static/lib/popper/popper.js
+  web/static/lib/bootstrap/js/dist/util/index.js
+  web/static/lib/bootstrap/js/dist/dom/data.js
+  ... and 46 more
+
+ALL BUNDLES:
+  web.assets_emoji: 1 entries
+  web.assets_backend: 66 entries
+  web.assets_backend_lazy: 8 entries
+  web.assets_backend_lazy_dark: 1 entries
+  web.assets_web: 3 entries
+  web.assets_frontend_minimal: 9 entries
+  web.assets_frontend: 67 entries
+  web.assets_frontend_lazy: 7 entries
+  web.report_assets_common: 52 entries
+  web.report_assets_pdf: 1 entries
+  web.ace_lib: 8 entries
+  web.assets_web_print: 4 entries
+  web.assets_web_dark: 2 entries
+  web._assets_core: 9 entries
+  web._assets_primary_variables: 2 entries
+  web._assets_secondary_variables: 1 entries
+  web._assets_helpers: 8 entries
+  web._assets_jquery: 2 entries
+  web._assets_bootstrap: 4 entries
+  web._assets_bootstrap_backend: 3 entries
+  web._assets_bootstrap_frontend: 2 entries
+  web._assets_backend_helpers: 2 entries
+  web._assets_frontend_helpers: 1 entries
+  web.assets_tests: 4 entries
+  web.__assets_tests_call__: 3 entries
+  web.assets_unit_tests_setup: 17 entries
+  web.assets_unit_tests_setup_ui: 2 entries
+  web.assets_unit_tests: 3 entries
+  web.tests_assets: 35 entries
+  web.qunit_suite_tests: 14 entries
+  web.assets_clickbot: 1 entries
+  web.chartjs_lib: 2 entries
+  web.fullcalendar_lib: 7 entries

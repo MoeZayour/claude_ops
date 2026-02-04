@@ -1,0 +1,6 @@
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ir_sequence_data.xml:11:    <record id="seq_ops_business_unit" model="ir.sequence">
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ir_sequence_data.xml:13:        <field name="code">ops.business.unit</field>
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ops_governance_templates.xml:81:    if hasattr(record, 'ops_business_unit_id') and record.ops_business_unit_id:
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ops_governance_templates.xml:83:        bu_code = record.ops_business_unit_id.code or ''
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ops_governance_templates.xml:84:        bu_name = record.ops_business_unit_id.name or ''
+/opt/gemini_odoo19/addons/ops_matrix_core/data/ops_user_templates.xml:30:        <record id="bu_template" model="ops.business.unit">
