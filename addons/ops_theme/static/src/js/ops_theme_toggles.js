@@ -1,9 +1,8 @@
 /** @odoo-module **/
 /**
- * OPS Theme - User Preference Toggles (v7.6.2 - DIRECT RELOAD)
- * =============================================================
- * Provides color mode and chatter position toggles.
- * Uses direct window.location.href for guaranteed reload.
+ * OPS Theme - User Preference Toggles (v7.6.3 - MINIMAL TEST)
+ * ============================================================
+ * TESTING: Do callbacks execute AT ALL?
  */
 
 import { registry } from "@web/core/registry";
@@ -12,7 +11,7 @@ import { cookie } from "@web/core/browser/cookie";
 import { session } from "@web/session";
 
 // =============================================================================
-// COLOR MODE TOGGLE
+// COLOR MODE TOGGLE - MINIMAL TEST
 // =============================================================================
 
 function colorModeToggleItem(env) {
@@ -23,34 +22,33 @@ function colorModeToggleItem(env) {
         type: "item",
         id: "ops_color_mode",
         description: isDark ? _t("☀️ Light Mode") : _t("🌙 Dark Mode"),
-        callback: async function() {  // Note: function() not arrow function
+        callback: () => {
+            alert(`CALLBACK WORKS! Current: ${currentScheme}`);
+            console.log(`[OPS v7.6.3] CALLBACK EXECUTED! Current: ${currentScheme}`);
             const newScheme = isDark ? 'light' : 'dark';
-            console.log(`[OPS v7.6.2] CLICKED! Color: ${currentScheme} → ${newScheme}`);
             
-            // Set cookie immediately
+            // Set cookie
             cookie.set("color_scheme", newScheme);
-            console.log(`[OPS v7.6.2] Cookie set to: ${newScheme}`);
             
-            // Save to database
-            try {
-                await env.services.orm.write("res.users", [session.uid], {
-                    ops_color_mode: newScheme
-                });
-                console.log(`[OPS v7.6.2] Saved to database`);
-            } catch (error) {
-                console.error(`[OPS v7.6.2] Save error (will reload anyway):`, error);
-            }
-            
-            // Reload using direct href assignment (more reliable than reload())
-            console.log(`[OPS v7.6.2] Navigating to trigger reload...`);
-            window.location.href = window.location.href;
+            // Save using ORM
+            env.services.orm.write("res.users", [session.uid], {
+                ops_color_mode: newScheme
+            }).then(() => {
+                console.log(`[OPS v7.6.3] SAVED! Now reloading...`);
+                setTimeout(() => {
+                    window.location.href = window.location.pathname + window.location.search;
+                }, 100);
+            }).catch(err => {
+                console.error(`[OPS v7.6.3] Save failed:`, err);
+                alert(`Save failed: ${err.message}`);
+            });
         },
         sequence: 5,
     };
 }
 
 // =============================================================================
-// CHATTER POSITION TOGGLE
+// CHATTER POSITION TOGGLE - MINIMAL TEST
 // =============================================================================
 
 function chatterPositionToggleItem(env) {
@@ -61,23 +59,23 @@ function chatterPositionToggleItem(env) {
         type: "item",
         id: "ops_chatter_position",
         description: isBottom ? _t("📌 Chatter: Side") : _t("📌 Chatter: Bottom"),
-        callback: async function() {  // Note: function() not arrow function
+        callback: () => {
+            alert(`CALLBACK WORKS! Current: ${currentPosition}`);
+            console.log(`[OPS v7.6.3] CALLBACK EXECUTED! Current: ${currentPosition}`);
             const newPosition = isBottom ? 'right' : 'bottom';
-            console.log(`[OPS v7.6.2] CLICKED! Chatter: ${currentPosition} → ${newPosition}`);
             
-            // Save to database
-            try {
-                await env.services.orm.write("res.users", [session.uid], {
-                    ops_chatter_position: newPosition
-                });
-                console.log(`[OPS v7.6.2] Saved to database`);
-            } catch (error) {
-                console.error(`[OPS v7.6.2] Save error (will reload anyway):`, error);
-            }
-            
-            // Reload using direct href assignment
-            console.log(`[OPS v7.6.2] Navigating to trigger reload...`);
-            window.location.href = window.location.href;
+            // Save using ORM
+            env.services.orm.write("res.users", [session.uid], {
+                ops_chatter_position: newPosition
+            }).then(() => {
+                console.log(`[OPS v7.6.3] SAVED! Now reloading...`);
+                setTimeout(() => {
+                    window.location.href = window.location.pathname + window.location.search;
+                }, 100);
+            }).catch(err => {
+                console.error(`[OPS v7.6.3] Save failed:`, err);
+                alert(`Save failed: ${err.message}`);
+            });
         },
         sequence: 10,
     };
@@ -88,4 +86,4 @@ registry.category("user_menuitems")
     .add("ops_color_mode", colorModeToggleItem, { sequence: 5 })
     .add("ops_chatter_position", chatterPositionToggleItem, { sequence: 10 });
 
-console.log('[OPS v7.6.2] Theme toggles loaded (async function + href navigation) ✓');
+console.log('[OPS v7.6.3] Toggles loaded with ALERT test ✓');
