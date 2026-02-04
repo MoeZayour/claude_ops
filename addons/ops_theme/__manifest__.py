@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.7.4.0',
+    'version': '19.0.7.5.0',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -132,8 +132,9 @@ Features:
             'ops_theme/static/src/js/user_menu_items.js',
             'ops_theme/static/src/js/chatter_toggle.js',
 
-            # 11. OWL Component Patches (behavior via JS, not CSS)
-            'ops_theme/static/src/views/form/form_compiler.js',
+            # 11. OWL Component Patches - ALIGNED WITH ODOO 19
+            # Patch FormRenderer.mailLayout() to check user preference
+            'ops_theme/static/src/js/chatter_position_patch.js',
 
             # 12. Feature extensions
             'ops_theme/static/src/search/control_panel_refresh.js',

@@ -1,55 +1,18 @@
 /** @odoo-module **/
 /**
- * OPS Theme - Chatter Position Toggle (FIXED v7.4.0)
- * ===================================================
+ * OPS Theme - Chatter Position Toggle (v7.5.0 - ALIGNED WITH ODOO 19)
+ * ====================================================================
  * Adds chatter position toggle to the user menu dropdown.
- * 
- * BUG FIX: FormCompiler reads session.chatter_position at compile time,
- * which is static. After toggling, we now reload the page to refresh
- * the session with the new preference.
+ * Works WITH Odoo 19's mailLayout system via FormRenderer patch.
  */
 
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { browser } from "@web/core/browser/browser";
-
-// =============================================================================
-// HELPER FUNCTIONS
-// =============================================================================
+import { session } from "@web/session";
 
 function getCurrentChatterPosition() {
-    // First check session (authoritative)
-    if (window.odoo?.session_info?.ops_chatter_position) {
-        return window.odoo.session_info.ops_chatter_position;
-    }
-    
-    // Fallback to localStorage
-    const stored = localStorage.getItem('ops_chatter_position');
-    if (stored === 'side' || stored === 'right') {
-        return 'right';
-    }
-    return 'bottom';
-}
-
-function applyChatterPosition(position) {
-    localStorage.setItem('ops_chatter_position', position);
-
-    // Apply class to all form views
-    const formViews = document.querySelectorAll('.o_form_view');
-    formViews.forEach(form => {
-        if (position === 'right') {
-            form.classList.add('ops-chatter-right');
-        } else {
-            form.classList.remove('ops-chatter-right');
-        }
-    });
-
-    // Set on document for future form views
-    if (position === 'right') {
-        document.documentElement.classList.add('ops-chatter-right-enabled');
-    } else {
-        document.documentElement.classList.remove('ops-chatter-right-enabled');
-    }
+    return session.ops_chatter_position || 'bottom';
 }
 
 async function toggleChatterPosition() {
@@ -58,10 +21,7 @@ async function toggleChatterPosition() {
     
     console.log('[OPS Theme] Toggling chatter position from', current, 'to', newPosition);
     
-    // Apply locally first
-    applyChatterPosition(newPosition);
-
-    // Save to server
+    // Save to database
     if (window.odoo?.session_info?.uid) {
         try {
             const response = await fetch('/web/dataset/call_kw/res.users/write', {
@@ -87,25 +47,20 @@ async function toggleChatterPosition() {
                 return;
             }
             
-            console.log('[OPS Theme] Chatter position saved to server:', newPosition);
+            console.log('[OPS Theme] Chatter position saved:', newPosition);
             
-            // CRITICAL FIX: Reload page to refresh session and re-compile forms
-            // FormCompiler reads session.chatter_position at compile time,
-            // so we need a fresh session for it to pick up the new value
-            console.log('[OPS Theme] Reloading page to apply chatter position change...');
+            // Reload page to recompile forms with new preference
+            // (FormCompiler runs at compile time, reads mailLayout())
+            console.log('[OPS Theme] Reloading to apply chatter position...');
             setTimeout(() => {
                 browser.location.reload();
-            }, 300);
+            }, 200);
             
         } catch (err) {
             console.error('[OPS Theme] Error saving chatter position:', err);
         }
     }
 }
-
-// =============================================================================
-// CHATTER POSITION TOGGLE MENU ITEM
-// =============================================================================
 
 function chatterPositionToggleItem(env) {
     const currentPosition = getCurrentChatterPosition();
@@ -124,31 +79,4 @@ function chatterPositionToggleItem(env) {
 
 registry.category("user_menuitems").add("ops_chatter_position", chatterPositionToggleItem, { sequence: 10 });
 
-// =============================================================================
-// APPLY SAVED POSITION ON PAGE LOAD
-// =============================================================================
-
-function initChatterPosition() {
-    const savedPosition = getCurrentChatterPosition();
-    applyChatterPosition(savedPosition);
-    console.log('[OPS Theme] Chatter position initialized to:', savedPosition);
-}
-
-// Apply on DOM ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initChatterPosition);
-} else {
-    initChatterPosition();
-}
-
-// Also apply when navigating (Odoo SPA)
-const originalPushState = history.pushState;
-history.pushState = function() {
-    originalPushState.apply(this, arguments);
-    setTimeout(() => {
-        const savedPosition = getCurrentChatterPosition();
-        applyChatterPosition(savedPosition);
-    }, 100);
-};
-
-console.log('[OPS Theme] Chatter toggle loaded (v7.4.0 - fixed persistence with page reload)');
+console.log('[OPS Theme] Chatter toggle loaded (v7.5.0 - Odoo 19 compatible)');

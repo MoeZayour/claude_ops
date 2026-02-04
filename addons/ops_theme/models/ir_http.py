@@ -4,9 +4,24 @@ from odoo.http import request
 
 
 class IrHttp(models.AbstractModel):
-    """Extend ir.http to pass user theme preferences to frontend session."""
+    """Extend ir.http to integrate OPS theme with Odoo 19's native systems."""
 
     _inherit = 'ir.http'
+
+    def color_scheme(self):
+        """
+        Override Odoo 19's color_scheme method.
+        
+        Odoo 19 uses a COOKIE named 'color_scheme' for dark mode.
+        This method provides the default value for that cookie.
+        We read from user's ops_color_mode field for persistence.
+        """
+        if request and request.session and request.session.uid:
+            user = self.env['res.users'].sudo().browse(request.session.uid)
+            # Convert our field format to Odoo's cookie format
+            if user.ops_color_mode == 'dark':
+                return 'dark'
+        return 'light'  # Default
 
     @classmethod
     def _get_frontend_session_info(cls):
