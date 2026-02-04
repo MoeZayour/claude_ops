@@ -43,11 +43,12 @@
 
     // -------------------------------------------------------------------------
     // NOTE MESSAGES (yellow background in light mode)
+    // These are intentionally kept as hardcoded colors for semantic meaning
     // -------------------------------------------------------------------------
     .o-mail-Message.o-isNote,
     .o_Message_note,
     .o-mail-Message[data-is-note="true"] {
-        background-color: #fef9c3 !important; // Light yellow
+        background-color: #fef9c3 !important; // Light yellow - semantic note color
         color: #713f12 !important;
 
         .o-mail-Message-content,
@@ -120,7 +121,7 @@
 // =============================================================================
 
 [data-color-mode="dark"] .o_web_client {
-    // Note messages in dark mode
+    // Note messages in dark mode - semantic amber color
     .o-mail-Message.o-isNote,
     .o_Message_note,
     .o-mail-Message[data-is-note="true"] {
@@ -142,31 +143,31 @@
 html:not([data-color-mode="dark"]) .o_web_client {
     .o_ChatterContainer,
     .o-mail-Chatter {
-        background-color: #ffffff;
+        background-color: var(--ops-bg-card);
     }
 
     .o-mail-Message,
     .o_Message {
-        background-color: #ffffff;
+        background-color: var(--ops-bg-card);
 
         .o-mail-Message-content,
         .o-mail-Message-body,
         .o_Message_content {
-            color: #1e293b !important;
+            color: var(--ops-text-primary) !important;
         }
 
         .o-mail-Message-author,
         .o_Message_authorName {
-            color: #1e293b !important;
+            color: var(--ops-text-primary) !important;
         }
 
         .o-mail-Message-date {
-            color: #94a3b8 !important;
+            color: var(--ops-text-muted) !important;
         }
     }
 
     .o-mail-Composer textarea {
-        background-color: #ffffff !important;
-        color: #1e293b !important;
+        background-color: var(--ops-bg-card) !important;
+        color: var(--ops-text-primary) !important;
     }
 }

@@ -3,6 +3,7 @@
 // =============================================================================
 // Clean, modern table styling for list views
 // Following Gilded Admin design principles
+// Uses CSS variables for theme compliance
 // =============================================================================
 
 // =============================================================================
@@ -14,7 +15,7 @@
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
-    background: #ffffff;
+    background: var(--ops-bg-card);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -25,16 +26,16 @@
 
 .table thead,
 .o_list_table thead {
-    background: #f8fafc;
+    background: var(--ops-bg-hover);
 
     th {
-        background: #f8fafc;
-        border-bottom: 2px solid #e2e8f0;
+        background: var(--ops-bg-hover);
+        border-bottom: 2px solid var(--ops-border);
         font-weight: 600;
         font-size: 0.6875rem;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        color: #64748b;
+        color: var(--ops-text-secondary);
         padding: 12px 16px;
         vertical-align: middle;
         white-space: nowrap;
@@ -45,7 +46,7 @@
             transition: color 0.15s ease;
 
             &:hover {
-                color: #3b82f6;
+                color: var(--ops-secondary);
             }
 
             // Sort indicator
@@ -74,9 +75,9 @@
 .o_list_table tbody {
     td {
         padding: 12px 16px;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--ops-divider);
         vertical-align: middle;
-        color: #374151;
+        color: var(--ops-text-primary);
         font-size: 14px;
 
         // Checkbox column
@@ -97,15 +98,15 @@
         transition: background-color 0.15s ease;
 
         &:hover {
-            background-color: #f8fafc;
+            background-color: var(--ops-bg-hover);
         }
 
         // Selected row
         &.o_data_row_selected {
-            background-color: rgba(59, 130, 246, 0.08);
+            background-color: rgba(var(--ops-secondary-rgb), 0.08);
 
             &:hover {
-                background-color: rgba(59, 130, 246, 0.12);
+                background-color: rgba(var(--ops-secondary-rgb), 0.12);
             }
         }
 
@@ -122,13 +123,13 @@
 
 .table tfoot,
 .o_list_table tfoot {
-    background: #f8fafc;
+    background: var(--ops-bg-hover);
 
     td {
         padding: 12px 16px;
-        border-top: 2px solid #e2e8f0;
+        border-top: 2px solid var(--ops-border);
         font-weight: 600;
-        color: #1e293b;
+        color: var(--ops-text-primary);
     }
 }
 
@@ -138,24 +139,24 @@
 
 .o_list_view {
     .o_group_header {
-        background: #f1f5f9;
+        background: var(--ops-bg-body);
         font-weight: 600;
         color: #475569;
 
         td {
             padding: 10px 16px;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid var(--ops-border);
         }
 
         &:hover {
-            background: #e2e8f0;
+            background: var(--ops-border);
         }
 
         // Expand/collapse icon
         .fa-caret-right,
         .fa-caret-down {
             margin-right: 8px;
-            color: #64748b;
+            color: var(--ops-text-secondary);
         }
     }
 
@@ -168,8 +169,8 @@
         .badge {
             font-size: 0.6875rem;
             padding: 2px 8px;
-            background: rgba(59, 130, 246, 0.15);
-            color: #3b82f6;
+            background: rgba(var(--ops-secondary-rgb), 0.15);
+            color: var(--ops-secondary);
         }
     }
 }
@@ -184,7 +185,7 @@
 
     .o_nocontent_help {
         p {
-            color: #64748b;
+            color: var(--ops-text-secondary);
             font-size: 14px;
             margin-bottom: 16px;
         }
@@ -201,7 +202,7 @@
 
 .o_list_view.o_editable {
     .o_data_row.o_selected_row {
-        background-color: rgba(59, 130, 246, 0.08);
+        background-color: rgba(var(--ops-secondary-rgb), 0.08);
 
         td {
             background-color: transparent;
@@ -304,13 +305,13 @@
     .o_progress {
         height: 6px;
         border-radius: 3px;
-        background: #e2e8f0;
+        background: var(--ops-border);
         overflow: hidden;
 
         .o_progress_bar {
             height: 100%;
             border-radius: 3px;
-            background: #3b82f6;
+            background: var(--ops-secondary);
         }
     }
 }

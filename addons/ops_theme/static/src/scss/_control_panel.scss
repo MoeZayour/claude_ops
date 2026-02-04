@@ -1,7 +1,7 @@
 // =============================================================================
 // OPS THEME - CONTROL PANEL
 // =============================================================================
-// LIGHT MODE DEFAULT - hardcoded fallbacks
+// LIGHT MODE DEFAULT - uses CSS variables
 // =============================================================================
 
 // =============================================================================
@@ -12,21 +12,21 @@
 .o_searchview {
     display: flex !important;
     align-items: center !important;
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
+    background: var(--ops-bg-card) !important;
+    border: 1px solid var(--ops-border) !important;
     border-radius: 8px !important;
     padding: 4px 8px !important;
     min-height: 40px !important;
 
     &:focus-within {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        border-color: var(--ops-secondary) !important;
+        box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb), 0.1) !important;
     }
 }
 
 // Search icon
 .o_searchview_icon {
-    color: #94a3b8 !important;
+    color: var(--ops-text-muted) !important;
     padding: 0 8px !important;
 }
 
@@ -36,8 +36,8 @@
     display: inline-flex !important;
     align-items: center !important;
     gap: 6px !important;
-    background: #3b82f6 !important;
-    color: #ffffff !important;
+    background: var(--ops-secondary) !important;
+    color: var(--ops-text-inverse) !important;
     padding: 4px 8px 4px 12px !important;
     border-radius: 6px !important;
     margin: 2px 4px 2px 0 !important;
@@ -54,7 +54,7 @@
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
-        color: #ffffff !important;
+        color: var(--ops-text-inverse) !important;
     }
 
     // Filter icon inside facet
@@ -80,7 +80,7 @@
         background: rgba(255, 255, 255, 0.25) !important;
         border: none !important;
         border-radius: 50% !important;
-        color: #ffffff !important;
+        color: var(--ops-text-inverse) !important;
         font-size: 10px !important;
         cursor: pointer !important;
         transition: all 0.15s ease !important;
@@ -110,7 +110,7 @@
 
     // HOVER STATE - Badge darker, close button more visible
     &:hover {
-        background: #2563eb !important;
+        background: var(--ops-secondary-hover) !important;
 
         // Make close button more prominent on hover
         .o_facet_remove,
@@ -142,20 +142,20 @@
     font-size: 14px !important;
     background: transparent !important;
     min-width: 100px !important;
-    color: #1e293b !important;
+    color: var(--ops-text-primary) !important;
 
     &::placeholder {
-        color: #94a3b8 !important;
+        color: var(--ops-text-muted) !important;
     }
 }
 
 // Dropdown toggle in search
 .o_searchview_dropdown_toggler {
     padding: 4px 8px !important;
-    color: #64748b !important;
+    color: var(--ops-text-secondary) !important;
 
     &:hover {
-        color: #3b82f6 !important;
+        color: var(--ops-secondary) !important;
     }
 }
 
@@ -166,8 +166,8 @@
     left: 0 !important;
     right: 0 !important;
     z-index: 1060 !important;
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
+    background: var(--ops-bg-card) !important;
+    border: 1px solid var(--ops-border) !important;
     border-radius: 8px !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
     margin-top: 4px !important;
@@ -181,7 +181,7 @@
 
         &:hover,
         &.focus {
-            background: #f1f5f9 !important;
+            background: var(--ops-bg-body) !important;
         }
     }
 }
@@ -192,11 +192,11 @@
     .o_menu_item {
         &.selected,
         &.o_item_active {
-            background: #eff6ff !important;
-            color: #3b82f6 !important;
+            background: var(--ops-bg-selected) !important;
+            color: var(--ops-secondary) !important;
 
             .fa, .oi {
-                color: #3b82f6 !important;
+                color: var(--ops-secondary) !important;
             }
         }
     }
@@ -207,8 +207,8 @@
 // =============================================================================
 
 .o_control_panel {
-    background-color: #ffffff !important;
-    border-bottom: 1px solid #e2e8f0 !important;
+    background-color: var(--ops-bg-card) !important;
+    border-bottom: 1px solid var(--ops-border) !important;
 
     // Buttons styling - LIGHT MODE DEFAULT
     .btn {
@@ -219,13 +219,13 @@
 
         // Primary button
         &.btn-primary {
-            background-color: #3b82f6 !important;
-            border-color: #3b82f6 !important;
-            color: #ffffff !important;
+            background-color: var(--ops-secondary) !important;
+            border-color: var(--ops-secondary) !important;
+            color: var(--ops-text-inverse) !important;
 
             &:hover {
-                background-color: #2563eb !important;
-                border-color: #2563eb !important;
+                background-color: var(--ops-secondary-hover) !important;
+                border-color: var(--ops-secondary-hover) !important;
             }
         }
 
@@ -233,13 +233,13 @@
         &.btn-secondary,
         &.btn-outline-secondary {
             background-color: transparent;
-            border-color: #e2e8f0 !important;
-            color: #1e293b !important;
+            border-color: var(--ops-border) !important;
+            color: var(--ops-text-primary) !important;
 
             &:hover {
-                background-color: #f8fafc !important;
-                border-color: #3b82f6 !important;
-                color: #3b82f6 !important;
+                background-color: var(--ops-bg-hover) !important;
+                border-color: var(--ops-secondary) !important;
+                color: var(--ops-secondary) !important;
             }
         }
     }
@@ -255,20 +255,20 @@
     .o_favorite_menu {
         .dropdown-toggle {
             background-color: transparent;
-            border: 1px solid #e2e8f0 !important;
-            color: #1e293b !important;
+            border: 1px solid var(--ops-border) !important;
+            color: var(--ops-text-primary) !important;
             border-radius: var(--ops-radius-md);
             padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
 
             &:hover {
-                background-color: #f8fafc !important;
-                border-color: #3b82f6 !important;
+                background-color: var(--ops-bg-hover) !important;
+                border-color: var(--ops-secondary) !important;
             }
 
             // Icons in buttons
             i, .fa, .oi {
-                color: #64748b !important;
+                color: var(--ops-text-secondary) !important;
             }
         }
     }
@@ -276,26 +276,26 @@
     // Pager - LIGHT MODE DEFAULT
     .o_pager {
         font-size: 0.875rem;
-        color: #64748b !important;
+        color: var(--ops-text-secondary) !important;
 
         .o_pager_value {
-            color: #1e293b !important;
+            color: var(--ops-text-primary) !important;
         }
 
         button {
             background: transparent;
-            border: 1px solid #e2e8f0 !important;
+            border: 1px solid var(--ops-border) !important;
             border-radius: 4px;
-            color: #1e293b !important;
+            color: var(--ops-text-primary) !important;
 
             &:hover:not(:disabled) {
-                background-color: #f8fafc !important;
-                border-color: #3b82f6 !important;
+                background-color: var(--ops-bg-hover) !important;
+                border-color: var(--ops-secondary) !important;
             }
 
             &:disabled {
                 opacity: 0.5;
-                color: #94a3b8 !important;
+                color: var(--ops-text-muted) !important;
             }
 
             // Pager icons
@@ -308,18 +308,18 @@
     // Breadcrumbs - LIGHT MODE DEFAULT
     .o_breadcrumb {
         .breadcrumb-item {
-            color: #64748b !important;
+            color: var(--ops-text-secondary) !important;
 
             a {
-                color: #3b82f6 !important;
+                color: var(--ops-secondary) !important;
 
                 &:hover {
-                    color: #2563eb !important;
+                    color: var(--ops-secondary-hover) !important;
                 }
             }
 
             &.active {
-                color: #1e293b !important;
+                color: var(--ops-text-primary) !important;
                 font-weight: 600;
             }
         }

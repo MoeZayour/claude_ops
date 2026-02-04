@@ -3,6 +3,7 @@
 // =============================================================================
 // Polish & hover effects for all button variants
 // Following Gilded Admin design principles
+// Uses CSS variables for theme compliance
 // =============================================================================
 
 // =============================================================================
@@ -26,7 +27,7 @@
 
     &:focus {
         outline: none;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb), 0.25);
     }
 
     &:disabled {
@@ -48,15 +49,15 @@
 // =============================================================================
 
 .btn-primary {
-    background: #3b82f6;
-    border-color: #3b82f6;
-    color: #ffffff;
+    background: var(--ops-secondary);
+    border-color: var(--ops-secondary);
+    color: var(--ops-text-inverse);
     font-weight: 600;
 
     &:hover:not(:disabled) {
-        background: #2563eb;
-        border-color: #2563eb;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+        background: var(--ops-secondary-hover);
+        border-color: var(--ops-secondary-hover);
+        box-shadow: 0 4px 12px rgba(var(--ops-secondary-rgb), 0.35);
         transform: translateY(-1px);
     }
 
@@ -64,11 +65,11 @@
         background: #1d4ed8;
         border-color: #1d4ed8;
         transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.25);
+        box-shadow: 0 2px 4px rgba(var(--ops-secondary-rgb), 0.25);
     }
 
     &:focus {
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
+        box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb), 0.35);
     }
 }
 
@@ -77,18 +78,18 @@
 // =============================================================================
 
 .btn-secondary {
-    background: #f8fafc;
-    border-color: #e2e8f0;
+    background: var(--ops-bg-hover);
+    border-color: var(--ops-border);
     color: #475569;
 
     &:hover:not(:disabled) {
-        background: #f1f5f9;
-        border-color: #cbd5e1;
+        background: var(--ops-bg-body);
+        border-color: var(--ops-text-disabled);
         color: #334155;
     }
 
     &:active:not(:disabled) {
-        background: #e2e8f0;
+        background: var(--ops-border);
     }
 }
 
@@ -98,75 +99,75 @@
 
 .btn-outline-primary {
     background: transparent;
-    border-color: #3b82f6;
-    color: #3b82f6;
+    border-color: var(--ops-secondary);
+    color: var(--ops-secondary);
 
     &:hover:not(:disabled) {
-        background: #3b82f6;
-        color: #ffffff;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        background: var(--ops-secondary);
+        color: var(--ops-text-inverse);
+        box-shadow: 0 4px 12px rgba(var(--ops-secondary-rgb), 0.25);
         transform: translateY(-1px);
     }
 
     &:active:not(:disabled) {
-        background: #2563eb;
+        background: var(--ops-secondary-hover);
         transform: translateY(0);
     }
 }
 
 .btn-outline-secondary {
     background: transparent;
-    border-color: #cbd5e1;
-    color: #64748b;
+    border-color: var(--ops-text-disabled);
+    color: var(--ops-text-secondary);
 
     &:hover:not(:disabled) {
-        background: #f8fafc;
-        border-color: #94a3b8;
+        background: var(--ops-bg-hover);
+        border-color: var(--ops-text-muted);
         color: #475569;
     }
 }
 
 .btn-outline-success {
     background: transparent;
-    border-color: #10b981;
-    color: #10b981;
+    border-color: var(--ops-success);
+    color: var(--ops-success);
 
     &:hover:not(:disabled) {
-        background: #10b981;
-        color: #ffffff;
+        background: var(--ops-success);
+        color: var(--ops-text-inverse);
     }
 }
 
 .btn-outline-danger {
     background: transparent;
-    border-color: #ef4444;
-    color: #ef4444;
+    border-color: var(--ops-danger);
+    color: var(--ops-danger);
 
     &:hover:not(:disabled) {
-        background: #ef4444;
-        color: #ffffff;
+        background: var(--ops-danger);
+        color: var(--ops-text-inverse);
     }
 }
 
 .btn-outline-warning {
     background: transparent;
-    border-color: #f59e0b;
-    color: #f59e0b;
+    border-color: var(--ops-warning);
+    color: var(--ops-warning);
 
     &:hover:not(:disabled) {
-        background: #f59e0b;
-        color: #ffffff;
+        background: var(--ops-warning);
+        color: var(--ops-text-inverse);
     }
 }
 
 .btn-outline-info {
     background: transparent;
-    border-color: #06b6d4;
-    color: #06b6d4;
+    border-color: var(--ops-info);
+    color: var(--ops-info);
 
     &:hover:not(:disabled) {
-        background: #06b6d4;
-        color: #ffffff;
+        background: var(--ops-info);
+        color: var(--ops-text-inverse);
     }
 }
 
@@ -175,53 +176,53 @@
 // =============================================================================
 
 .btn-success {
-    background: #10b981;
-    border-color: #10b981;
-    color: #ffffff;
+    background: var(--ops-success);
+    border-color: var(--ops-success);
+    color: var(--ops-text-inverse);
 
     &:hover:not(:disabled) {
         background: #059669;
         border-color: #059669;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+        box-shadow: 0 4px 12px rgba(var(--ops-success-rgb), 0.35);
         transform: translateY(-1px);
     }
 }
 
 .btn-danger {
-    background: #ef4444;
-    border-color: #ef4444;
-    color: #ffffff;
+    background: var(--ops-danger);
+    border-color: var(--ops-danger);
+    color: var(--ops-text-inverse);
 
     &:hover:not(:disabled) {
         background: #dc2626;
         border-color: #dc2626;
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+        box-shadow: 0 4px 12px rgba(var(--ops-danger-rgb), 0.35);
         transform: translateY(-1px);
     }
 }
 
 .btn-warning {
-    background: #f59e0b;
-    border-color: #f59e0b;
-    color: #ffffff;
+    background: var(--ops-warning);
+    border-color: var(--ops-warning);
+    color: var(--ops-text-inverse);
 
     &:hover:not(:disabled) {
         background: #d97706;
         border-color: #d97706;
-        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+        box-shadow: 0 4px 12px rgba(var(--ops-warning-rgb), 0.35);
         transform: translateY(-1px);
     }
 }
 
 .btn-info {
-    background: #06b6d4;
-    border-color: #06b6d4;
-    color: #ffffff;
+    background: var(--ops-info);
+    border-color: var(--ops-info);
+    color: var(--ops-text-inverse);
 
     &:hover:not(:disabled) {
         background: #0891b2;
         border-color: #0891b2;
-        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);
+        box-shadow: 0 4px 12px rgba(var(--ops-info-rgb), 0.35);
         transform: translateY(-1px);
     }
 }
@@ -231,25 +232,25 @@
 // =============================================================================
 
 .btn-light {
-    background: #f8fafc;
-    border-color: #f8fafc;
+    background: var(--ops-bg-hover);
+    border-color: var(--ops-bg-hover);
     color: #475569;
 
     &:hover:not(:disabled) {
-        background: #f1f5f9;
-        border-color: #e2e8f0;
+        background: var(--ops-bg-body);
+        border-color: var(--ops-border);
     }
 }
 
 .btn-link {
     background: transparent;
     border-color: transparent;
-    color: #3b82f6;
+    color: var(--ops-secondary);
     text-decoration: none;
     padding: 8px 12px;
 
     &:hover:not(:disabled) {
-        color: #2563eb;
+        color: var(--ops-secondary-hover);
         text-decoration: underline;
     }
 }

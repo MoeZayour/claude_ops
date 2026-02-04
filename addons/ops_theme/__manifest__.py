@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.7.2.0',
+    'version': '19.0.7.3.0',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """

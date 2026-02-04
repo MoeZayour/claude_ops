@@ -1,8 +1,9 @@
 // =============================================================================
 // OPS THEME - NAVBAR
 // =============================================================================
-// Force dark slate background (#1e293b) - NO Odoo purple allowed
+// Force dark slate background (var(--ops-primary)) - NO Odoo purple allowed
 // DevTools shows: nav.o_main_navbar.d-print-none
+// Uses CSS variables for theme compliance
 // =============================================================================
 
 // =============================================================================
@@ -55,13 +56,13 @@ nav.o_main_navbar.d-print-none,
 header.o_navbar,
 .o_navbar,
 .o_main_navbar[class] {
-    background: #1e293b !important;
-    background-color: #1e293b !important;
+    background: var(--ops-primary) !important;
+    background-color: var(--ops-primary) !important;
 }
 
 .o_main_navbar {
-    background: #1e293b !important;
-    background-color: #1e293b !important;
+    background: var(--ops-primary) !important;
+    background-color: var(--ops-primary) !important;
     border-bottom: none;
 
     // Home menu button (grid icon) - SAFE: only colors
@@ -78,7 +79,7 @@ header.o_navbar,
 
     // App name / brand - PRIMARY BLUE COLOR
     .o_menu_brand {
-        color: #3b82f6 !important;
+        color: var(--ops-secondary) !important;
         font-weight: 700 !important;
         font-size: 1rem !important;
         letter-spacing: 0.03em !important;
@@ -86,7 +87,7 @@ header.o_navbar,
         padding: 0 1rem;
 
         &:hover {
-            color: #3b82f6 !important;
+            color: var(--ops-secondary) !important;
             text-decoration: none;
         }
     }
@@ -158,12 +159,12 @@ header.o_navbar,
 .o_navbar_apps_menu {
     .dropdown-menu,
     .o-dropdown--menu {
-        background-color: #ffffff !important;
+        background-color: var(--ops-bg-card) !important;
     }
 
     .dropdown-item,
     a {
-        color: #1e293b !important;
+        color: var(--ops-text-primary) !important;
     }
 }
 
@@ -173,12 +174,12 @@ header.o_navbar,
 [class*="user-menu"] {
     .dropdown-menu,
     .o-dropdown--menu {
-        background-color: #ffffff !important;
+        background-color: var(--ops-bg-card) !important;
     }
 
     .dropdown-item,
     a {
-        color: #1e293b !important;
+        color: var(--ops-text-primary) !important;
     }
 }
 
@@ -208,7 +209,7 @@ div.o_menu_sections,
 .o_menu_sections > button:hover,
 .o_menu_sections > a:hover {
     background: rgba(255, 255, 255, 0.1) !important;
-    color: #ffffff !important;
+    color: var(--ops-text-inverse) !important;
 }
 
 // OPS Framework and other custom menu items
@@ -237,7 +238,7 @@ button[data-menu-xmlid*="ops_matrix"],
 .o_navbar_apps_menu + .o_menu_brand,
 nav.o_main_navbar .o_menu_brand,
 nav.o_main_navbar a.o_menu_brand {
-    color: #3b82f6 !important;
+    color: var(--ops-secondary) !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
     letter-spacing: 0.03em !important;

@@ -1,95 +1,97 @@
 /*
  * OPS Matrix Framework - UI Theme
- * Version: 1.0
+ * Version: 2.0 - Updated to use OPS theme colors
  * Odoo 19 CE Compatible
+ * Uses OPS Theme CSS variables for consistency
  */
 
 /* ============================================
-   STATUS BAR COLORS
+   STATUS BAR COLORS - OPS Theme Palette
    ============================================ */
 
-/* Draft State - Gray */
+/* Draft State - Gray (muted) */
 .o_statusbar_status .o_arrow_button[data-value="draft"],
 .o_statusbar_status .o_arrow_button[data-value="new"] {
-    --StatusBar-arrow-bg: #6c757d !important;
+    --StatusBar-arrow-bg: var(--ops-text-secondary, #64748b) !important;
 }
 
-/* Confirmed/Validated State - Blue */
+/* Confirmed/Validated State - Blue (secondary) */
 .o_statusbar_status .o_arrow_button[data-value="confirmed"],
 .o_statusbar_status .o_arrow_button[data-value="validated"],
 .o_statusbar_status .o_arrow_button[data-value="open"] {
-    --StatusBar-arrow-bg: #007bff !important;
+    --StatusBar-arrow-bg: var(--ops-secondary, #3b82f6) !important;
 }
 
-/* Approved State - Teal */
+/* Approved State - Info (cyan) */
 .o_statusbar_status .o_arrow_button[data-value="approved"],
 .o_statusbar_status .o_arrow_button[data-value="running"] {
-    --StatusBar-arrow-bg: #17a2b8 !important;
+    --StatusBar-arrow-bg: var(--ops-info, #06b6d4) !important;
 }
 
-/* Posted/Done State - Green */
+/* Posted/Done State - Success (green) */
 .o_statusbar_status .o_arrow_button[data-value="posted"],
 .o_statusbar_status .o_arrow_button[data-value="done"],
 .o_statusbar_status .o_arrow_button[data-value="collected"],
 .o_statusbar_status .o_arrow_button[data-value="completed"],
 .o_statusbar_status .o_arrow_button[data-value="closed"] {
-    --StatusBar-arrow-bg: #28a745 !important;
+    --StatusBar-arrow-bg: var(--ops-success, #10b981) !important;
 }
 
-/* Cancelled/Rejected State - Red */
+/* Cancelled/Rejected State - Danger (red) */
 .o_statusbar_status .o_arrow_button[data-value="cancelled"],
 .o_statusbar_status .o_arrow_button[data-value="rejected"],
 .o_statusbar_status .o_arrow_button[data-value="bounced"] {
-    --StatusBar-arrow-bg: #dc3545 !important;
+    --StatusBar-arrow-bg: var(--ops-danger, #ef4444) !important;
 }
 
-/* Pending/Hold State - Yellow */
+/* Pending/Hold State - Warning (amber) */
 .o_statusbar_status .o_arrow_button[data-value="pending"],
 .o_statusbar_status .o_arrow_button[data-value="hold"],
 .o_statusbar_status .o_arrow_button[data-value="deposited"] {
-    --StatusBar-arrow-bg: #ffc107 !important;
+    --StatusBar-arrow-bg: var(--ops-warning, #f59e0b) !important;
 }
 
 /* ============================================
    FORM ALERTS - OPS BRANDED
+   Using OPS theme color variables
    ============================================ */
 
 .o_form_view .alert.ops-alert-info {
-    background-color: #e7f3ff;
-    border-color: #b8daff;
-    color: #004085;
+    background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.1);
+    border-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.3);
+    color: var(--ops-secondary-hover, #2563eb);
 }
 
 .o_form_view .alert.ops-alert-warning {
-    background-color: #fff3cd;
-    border-color: #ffeaa7;
-    color: #856404;
+    background-color: rgba(var(--ops-warning-rgb, 245, 158, 11), 0.1);
+    border-color: rgba(var(--ops-warning-rgb, 245, 158, 11), 0.3);
+    color: #b45309;
 }
 
 .o_form_view .alert.ops-alert-danger {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
+    background-color: rgba(var(--ops-danger-rgb, 239, 68, 68), 0.1);
+    border-color: rgba(var(--ops-danger-rgb, 239, 68, 68), 0.3);
+    color: #b91c1c;
 }
 
 .o_form_view .alert.ops-alert-success {
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
+    background-color: rgba(var(--ops-success-rgb, 16, 185, 129), 0.1);
+    border-color: rgba(var(--ops-success-rgb, 16, 185, 129), 0.3);
+    color: #047857;
 }
 
 /* ============================================
    BUTTON ENHANCEMENTS
    ============================================ */
 
-/* Primary button subtle shadow */
+/* Primary button subtle shadow - using OPS secondary color */
 .o_form_view .o_form_statusbar .btn-primary {
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.25);
+    box-shadow: 0 2px 4px rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.25);
 }
 
 /* Danger button confirmation highlight */
 .o_form_view .o_form_statusbar .btn-danger {
-    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.25);
+    box-shadow: 0 2px 4px rgba(var(--ops-danger-rgb, 239, 68, 68), 0.25);
 }
 
 /* ============================================
@@ -107,20 +109,20 @@
 
 .o_field_monetary.text-danger,
 .o_list_table .text-danger {
-    color: #dc3545 !important;
+    color: var(--ops-danger, #ef4444) !important;
 }
 
 .o_field_monetary.text-success,
 .o_list_table .text-success {
-    color: #28a745 !important;
+    color: var(--ops-success, #10b981) !important;
 }
 
 /* ============================================
-   KANBAN CARD STATES
+   KANBAN CARD STATES - OPS Theme Palette
    ============================================ */
 
-.o_kanban_record.oe_kanban_color_0 { border-left: 3px solid #6c757d; }  /* Draft */
-.o_kanban_record.oe_kanban_color_1 { border-left: 3px solid #007bff; }  /* Confirmed */
-.o_kanban_record.oe_kanban_color_2 { border-left: 3px solid #28a745; }  /* Done */
-.o_kanban_record.oe_kanban_color_3 { border-left: 3px solid #dc3545; }  /* Cancelled */
-.o_kanban_record.oe_kanban_color_4 { border-left: 3px solid #ffc107; }  /* Warning */
+.o_kanban_record.oe_kanban_color_0 { border-left: 3px solid var(--ops-text-secondary, #64748b); }  /* Draft */
+.o_kanban_record.oe_kanban_color_1 { border-left: 3px solid var(--ops-secondary, #3b82f6); }  /* Confirmed */
+.o_kanban_record.oe_kanban_color_2 { border-left: 3px solid var(--ops-success, #10b981); }  /* Done */
+.o_kanban_record.oe_kanban_color_3 { border-left: 3px solid var(--ops-danger, #ef4444); }  /* Cancelled */
+.o_kanban_record.oe_kanban_color_4 { border-left: 3px solid var(--ops-warning, #f59e0b); }  /* Warning */

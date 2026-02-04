@@ -3,6 +3,7 @@
 // =============================================================================
 // Card styling, KPI cards, shadows, and hover effects
 // Inspired by Gilded Admin design principles
+// Uses CSS variables for theme compliance
 // =============================================================================
 
 // =============================================================================
@@ -14,8 +15,8 @@
 .o_kanban_record,
 .modal-content,
 .o_setting_box {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--ops-bg-card);
+    border: 1px solid var(--ops-border);
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -39,14 +40,14 @@
     }
 
     .o_kanban_record_body {
-        color: #64748b;
+        color: var(--ops-text-secondary);
         font-size: 13px;
     }
 
     .o_kanban_record_bottom {
         margin-top: 12px;
         padding-top: 12px;
-        border-top: 1px solid #f1f5f9;
+        border-top: 1px solid var(--ops-divider);
     }
 }
 
@@ -69,7 +70,7 @@
         top: 0;
         bottom: 0;
         width: 4px;
-        background: var(--ops-secondary, #3b82f6);
+        background: var(--ops-secondary);
         border-radius: 4px 0 0 4px;
     }
 
@@ -81,7 +82,7 @@
         font-weight: 700;
         letter-spacing: -0.5px;
         line-height: 1.1;
-        color: #1e293b;
+        color: var(--ops-text-primary);
         margin-bottom: 4px;
     }
 
@@ -91,7 +92,7 @@
     .o_field_widget:not(.o_priority) {
         font-size: 0.8125rem;
         font-weight: 500;
-        color: #64748b;
+        color: var(--ops-text-secondary);
     }
 
     // Hover effect
@@ -121,43 +122,43 @@
     &.bg-primary,
     &[style*="primary"],
     &.text-primary {
-        background: rgba(59, 130, 246, 0.15) !important;
-        color: #3b82f6 !important;
+        background: rgba(var(--ops-secondary-rgb), 0.15) !important;
+        color: var(--ops-secondary) !important;
     }
 
     &.bg-success,
     &[style*="success"],
     &.text-success {
-        background: rgba(16, 185, 129, 0.15) !important;
-        color: #10b981 !important;
+        background: rgba(var(--ops-success-rgb), 0.15) !important;
+        color: var(--ops-success) !important;
     }
 
     &.bg-warning,
     &[style*="warning"],
     &.text-warning {
-        background: rgba(245, 158, 11, 0.15) !important;
-        color: #f59e0b !important;
+        background: rgba(var(--ops-warning-rgb), 0.15) !important;
+        color: var(--ops-warning) !important;
     }
 
     &.bg-danger,
     &[style*="danger"],
     &.text-danger {
-        background: rgba(239, 68, 68, 0.15) !important;
-        color: #ef4444 !important;
+        background: rgba(var(--ops-danger-rgb), 0.15) !important;
+        color: var(--ops-danger) !important;
     }
 
     &.bg-info,
     &[style*="info"],
     &.text-info {
-        background: rgba(6, 182, 212, 0.15) !important;
-        color: #06b6d4 !important;
+        background: rgba(var(--ops-info-rgb), 0.15) !important;
+        color: var(--ops-info) !important;
     }
 
     &.bg-secondary,
     &[style*="secondary"],
     &.text-secondary {
         background: rgba(100, 116, 139, 0.15) !important;
-        color: #64748b !important;
+        color: var(--ops-text-secondary) !important;
     }
 }
 
@@ -167,7 +168,7 @@
 
 .ops-kpi-card.primary,
 .o_kanban_record.primary-kpi {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    background: linear-gradient(135deg, var(--ops-secondary) 0%, var(--ops-secondary-hover) 100%) !important;
     color: white !important;
     border: none !important;
 
@@ -192,7 +193,7 @@
     }
 
     &:hover {
-        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        box-shadow: 0 8px 24px rgba(var(--ops-secondary-rgb), 0.4);
     }
 }
 
@@ -204,14 +205,14 @@
     flex: 0 0 auto !important;
     min-width: 100px !important;
     padding: 12px 16px !important;
-    background: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
+    background: var(--ops-bg-hover) !important;
+    border: 1px solid var(--ops-border) !important;
     border-radius: 8px !important;
     transition: all 0.2s ease !important;
 
     &:hover {
-        background: #f1f5f9 !important;
-        border-color: #cbd5e1 !important;
+        background: var(--ops-bg-body) !important;
+        border-color: var(--ops-text-disabled) !important;
         transform: translateY(-1px);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
@@ -223,23 +224,23 @@
     .o_stat_value {
         font-size: 1.5rem !important;
         font-weight: 700 !important;
-        color: #1e293b !important;
+        color: var(--ops-text-primary) !important;
         line-height: 1.2 !important;
     }
 
     .o_stat_text {
         font-size: 0.75rem !important;
         font-weight: 500 !important;
-        color: #64748b !important;
+        color: var(--ops-text-secondary) !important;
         text-transform: uppercase !important;
         letter-spacing: 0.03em !important;
     }
 
     // Colored stat buttons
-    &.text-primary .o_stat_value { color: #3b82f6 !important; }
-    &.text-success .o_stat_value { color: #10b981 !important; }
-    &.text-warning .o_stat_value { color: #f59e0b !important; }
-    &.text-danger .o_stat_value { color: #ef4444 !important; }
+    &.text-primary .o_stat_value { color: var(--ops-secondary) !important; }
+    &.text-success .o_stat_value { color: var(--ops-success) !important; }
+    &.text-warning .o_stat_value { color: var(--ops-warning) !important; }
+    &.text-danger .o_stat_value { color: var(--ops-danger) !important; }
 }
 
 .oe_button_box {
@@ -260,12 +261,12 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #64748b;
+    color: var(--ops-text-secondary);
     padding: 10px 14px;
-    background: #f8fafc;
+    background: var(--ops-bg-hover);
     border-radius: 6px;
     margin: 16px 0 12px;
-    border-left: 3px solid #3b82f6;
+    border-left: 3px solid var(--ops-secondary);
 }
 
 // =============================================================================
@@ -278,13 +279,13 @@
     .oe_title {
         margin-bottom: 20px;
         padding-bottom: 16px;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--ops-border);
 
         h1,
         h2 {
             font-size: 1.5rem;
             font-weight: 600;
-            color: #1e293b;
+            color: var(--ops-text-primary);
             margin: 0;
         }
     }
@@ -300,13 +301,13 @@
 
     .modal-header {
         padding: 16px 20px;
-        border-bottom: 1px solid #e2e8f0;
-        background: #f8fafc;
+        border-bottom: 1px solid var(--ops-border);
+        background: var(--ops-bg-hover);
 
         .modal-title {
             font-weight: 600;
             font-size: 1.125rem;
-            color: #1e293b;
+            color: var(--ops-text-primary);
         }
     }
 
@@ -316,8 +317,8 @@
 
     .modal-footer {
         padding: 16px 20px;
-        border-top: 1px solid #e2e8f0;
-        background: #f8fafc;
+        border-top: 1px solid var(--ops-border);
+        background: var(--ops-bg-hover);
     }
 }
 
@@ -336,7 +337,7 @@
     .o_setting_right_pane {
         .o_form_label {
             font-weight: 600;
-            color: #1e293b;
+            color: var(--ops-text-primary);
             margin-bottom: 4px;
         }
 
