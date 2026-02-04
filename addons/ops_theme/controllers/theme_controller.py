@@ -61,7 +61,7 @@ class OPSThemeController(http.Controller):
     # THEME TOGGLE ROUTES (with sudo() to bypass permission issues)
     # =========================================================================
 
-    @http.route('/ops_theme/toggle_color_mode', type='json', auth='user')
+    @http.route('/ops_theme/toggle_color_mode', type='jsonrpc', auth='user')
     def toggle_color_mode(self, mode=None):
         """
         Toggle color mode between light and dark.
@@ -95,7 +95,7 @@ class OPSThemeController(http.Controller):
             'mode': mode,
         }
 
-    @http.route('/ops_theme/toggle_chatter', type='json', auth='user')
+    @http.route('/ops_theme/toggle_chatter', type='jsonrpc', auth='user')
     def toggle_chatter(self, position=None):
         """
         Toggle chatter position between bottom and side.
@@ -130,7 +130,7 @@ class OPSThemeController(http.Controller):
             'position': position,
         }
 
-    @http.route('/ops_theme/get_preferences', type='json', auth='user')
+    @http.route('/ops_theme/get_preferences', type='jsonrpc', auth='user')
     def get_preferences(self):
         """
         Get current user's theme preferences.
