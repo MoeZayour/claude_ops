@@ -1,0 +1,651 @@
+// =============================================================================
+// OPS FRAMEWORK - CORPORATE REPORT STYLES
+// Version: 1.0.0
+// Reference: OPS_REPORT_BRANDING_GUIDE_v1.0.0
+//
+// OFFICIAL CORPORATE REPORTS (16 Total):
+// - Financial (9): BS, P&L, CF, TB, GL, Aged AR, Aged AP, Partner Ledger, SOA
+// - Treasury (3): PDC Registry, PDC Maturity, PDCs in Hand
+// - Asset (2): Fixed Asset Register, Depreciation Schedule
+// - Inventory (2): Stock Valuation, Inventory Aging
+//
+// WKHTMLTOPDF COMPATIBILITY:
+// - CSS2.1 compatible properties only
+// - Table-based layouts (no flexbox/grid)
+// - Hardcoded colors (no CSS variables)
+// - System fonts only (no @font-face)
+// =============================================================================
+
+// =============================================================================
+// DESIGN TOKENS (Hardcoded for PDF compatibility)
+// =============================================================================
+
+// Brand Colors
+$ops-primary: #5B6BBB;
+$ops-primary-light: #E8EAF6;
+$ops-primary-dark: #3D4A8A;
+
+// Semantic Colors
+$ops-navy: #1e293b;
+$ops-success: #16a34a;
+$ops-danger: #dc2626;
+$ops-warning: #f59e0b;
+
+// Text Colors
+$ops-text: #1a1a1a;
+$ops-text-secondary: #475569;
+$ops-text-muted: #64748b;
+$ops-text-light: #94a3b8;
+$ops-zero: #94a3b8;
+
+// Background Colors
+$ops-row-alt: #f8fafc;
+$ops-row-hover: #f1f5f9;
+
+// Border Colors
+$ops-border: #e2e8f0;
+$ops-border-dark: #1e293b;
+
+// Section Accent Colors
+$accent-asset: #16a34a;
+$accent-liability: #f59e0b;
+$accent-equity: #9333ea;
+$accent-revenue: #16a34a;
+$accent-expense: #dc2626;
+$accent-treasury: #0891b2;
+
+// =============================================================================
+// PAGE SETUP & GLOBAL STYLES
+// =============================================================================
+
+@page {
+    size: A4 portrait;
+    margin: 15mm 15mm 20mm 15mm;
+}
+
+* {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+// =============================================================================
+// TYPOGRAPHY
+// =============================================================================
+
+.ops-corporate-report {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.4;
+    color: $ops-text;
+    background-color: #ffffff;
+
+    h1, h2, h3 {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-weight: 300;
+        margin: 0;
+    }
+
+    h1 {
+        font-size: 24pt;
+        color: $ops-navy;
+    }
+
+    h2 {
+        font-size: 16pt;
+        color: $ops-navy;
+    }
+
+    h3 {
+        font-size: 12pt;
+        color: $ops-navy;
+    }
+}
+
+// Monospace for numbers
+.ops-number {
+    font-family: Consolas, Monaco, 'Courier New', monospace;
+}
+
+// =============================================================================
+// REPORT HEADER
+// =============================================================================
+
+.ops-corp-header {
+    margin-bottom: 15px;
+
+    &__accent-bar {
+        height: 4px;
+        background-color: $ops-primary;
+        margin-bottom: 0;
+    }
+
+    &__content {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    &__company {
+        vertical-align: top;
+        width: 60%;
+    }
+
+    &__meta {
+        vertical-align: top;
+        width: 40%;
+        text-align: right;
+    }
+
+    &__logo {
+        max-height: 50px;
+        max-width: 120px;
+    }
+
+    &__logo-placeholder {
+        width: 50px;
+        height: 50px;
+        background-color: $ops-primary;
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+        line-height: 50px;
+        border-radius: 4px;
+    }
+
+    &__company-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: $ops-navy;
+    }
+
+    &__company-location {
+        font-size: 10px;
+        color: $ops-text-muted;
+        margin-top: 3px;
+    }
+
+    &__print-date,
+    &__generated-by {
+        font-size: 9px;
+        color: $ops-text-light;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    &__separator {
+        height: 1px;
+        background-color: $ops-border;
+        margin: 10px 0;
+    }
+}
+
+// =============================================================================
+// REPORT TITLE SECTION
+// =============================================================================
+
+.ops-corp-title {
+    text-align: center;
+    margin: 20px 0 25px 0;
+
+    &__main {
+        font-size: 24px;
+        font-weight: 300;
+        font-family: Georgia, 'Times New Roman', serif;
+        color: $ops-navy;
+        line-height: 1.2;
+    }
+
+    &__pillar {
+        font-size: 10px;
+        color: $ops-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 5px;
+    }
+
+    &__period {
+        font-size: 11px;
+        color: $ops-text-secondary;
+        margin-top: 8px;
+
+        strong {
+            font-weight: 600;
+        }
+    }
+}
+
+// =============================================================================
+// FILTER INFO BAR
+// =============================================================================
+
+.ops-corp-filter-bar {
+    background-color: $ops-row-alt;
+    border: 1px solid $ops-border;
+    border-radius: 4px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 9px;
+    }
+
+    &__label {
+        color: $ops-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    &__value {
+        color: $ops-navy;
+        font-weight: 600;
+        margin-left: 5px;
+    }
+}
+
+// =============================================================================
+// SECTION HEADERS (with colored left border)
+// =============================================================================
+
+.ops-section-header {
+    background-color: $ops-row-alt;
+    border-left: 4px solid $ops-primary;
+    padding: 8px 12px;
+    margin: 15px 0 10px 0;
+
+    &__title {
+        font-size: 12px;
+        font-weight: 600;
+        color: $ops-navy;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    // Section variants
+    &--asset {
+        background-color: #f0fdf4;
+        border-left-color: $accent-asset;
+    }
+
+    &--liability {
+        background-color: #fff7ed;
+        border-left-color: $accent-liability;
+    }
+
+    &--equity {
+        background-color: #faf5ff;
+        border-left-color: $accent-equity;
+    }
+
+    &--revenue {
+        background-color: #f0fdf4;
+        border-left-color: $accent-revenue;
+    }
+
+    &--expense {
+        background-color: #fef2f2;
+        border-left-color: $accent-expense;
+    }
+
+    &--treasury {
+        background-color: #ecfeff;
+        border-left-color: $accent-treasury;
+    }
+}
+
+// =============================================================================
+// DATA TABLES
+// =============================================================================
+
+.ops-corp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+
+    th {
+        padding: 8px 10px;
+        font-size: 9px;
+        font-weight: 600;
+        color: $ops-navy;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-align: left;
+        border-bottom: 2px solid $ops-border-dark;
+    }
+
+    td {
+        padding: 6px 10px;
+        border-bottom: 1px solid $ops-border;
+        vertical-align: top;
+    }
+
+    // Alternating rows
+    tbody tr:nth-child(even) {
+        background-color: $ops-row-alt;
+    }
+
+    // Hover state (for screen)
+    tbody tr:hover {
+        background-color: $ops-row-hover;
+    }
+
+    // Numeric columns
+    .col-amount,
+    .col-debit,
+    .col-credit,
+    .col-balance,
+    .col-number {
+        text-align: right;
+        font-family: Consolas, Monaco, monospace;
+    }
+}
+
+// =============================================================================
+// VALUE STYLING
+// =============================================================================
+
+.ops-value {
+    &--positive {
+        color: $ops-text;
+    }
+
+    &--negative {
+        color: $ops-danger;
+    }
+
+    &--zero {
+        color: $ops-zero;
+    }
+
+    &--success {
+        color: $ops-success;
+    }
+
+    &--warning {
+        color: $ops-warning;
+    }
+}
+
+// =============================================================================
+// SUBTOTAL & TOTAL ROWS
+// =============================================================================
+
+.ops-subtotal-row {
+    border-top: 1px solid $ops-border;
+    background-color: $ops-row-alt;
+
+    td {
+        padding: 6px 10px;
+        font-size: 10px;
+        font-weight: 600;
+        color: $ops-text-secondary;
+    }
+}
+
+.ops-total-row {
+    border-top: 2px solid $ops-border-dark;
+    border-bottom: 3px double $ops-border-dark;
+    background-color: $ops-row-hover;
+
+    td {
+        padding: 10px;
+        font-size: 11px;
+        font-weight: 700;
+        color: $ops-navy;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+// =============================================================================
+// VERIFICATION BADGES
+// =============================================================================
+
+.ops-balance-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+
+    &--balanced {
+        background-color: #dcfce7;
+        color: $ops-success;
+        border: 1px solid #86efac;
+    }
+
+    &--unbalanced {
+        background-color: #fef2f2;
+        color: $ops-danger;
+        border: 1px solid #fecaca;
+    }
+}
+
+// =============================================================================
+// KPI CARDS
+// =============================================================================
+
+.ops-kpi-card {
+    display: inline-block;
+    width: 23%;
+    margin-right: 1%;
+    vertical-align: top;
+    background-color: #ffffff;
+    border: 1px solid $ops-border;
+    border-top: 3px solid $ops-primary;
+    border-radius: 4px;
+    padding: 12px;
+    text-align: center;
+
+    &__label {
+        font-size: 9px;
+        color: $ops-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+
+    &__value {
+        font-size: 18px;
+        font-weight: 700;
+        color: $ops-navy;
+        font-family: Consolas, Monaco, monospace;
+    }
+
+    &__subtitle {
+        font-size: 8px;
+        color: $ops-text-light;
+        margin-top: 3px;
+    }
+
+    // Color variants
+    &--success {
+        border-top-color: $ops-success;
+    }
+
+    &--danger {
+        border-top-color: $ops-danger;
+    }
+
+    &--warning {
+        border-top-color: $ops-warning;
+    }
+}
+
+// =============================================================================
+// NOTES SECTION
+// =============================================================================
+
+.ops-notes-section {
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid $ops-border;
+
+    &__title {
+        font-size: 10px;
+        font-weight: 600;
+        color: $ops-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    &__list {
+        font-size: 9px;
+        color: $ops-text-muted;
+        margin: 0;
+        padding-left: 15px;
+        list-style-type: disc;
+
+        li {
+            margin-bottom: 3px;
+        }
+    }
+}
+
+// =============================================================================
+// FOOTER
+// =============================================================================
+
+.ops-corp-footer {
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid $ops-border;
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    &__branding {
+        vertical-align: middle;
+        width: 50%;
+    }
+
+    &__powered-by {
+        font-size: 8px;
+        color: $ops-text-light;
+    }
+
+    &__ops-badge {
+        display: inline-block;
+        background-color: $ops-primary;
+        color: #ffffff;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 8px;
+        font-weight: 600;
+        margin-left: 5px;
+        letter-spacing: 0.5px;
+    }
+
+    &__page-info {
+        text-align: right;
+        vertical-align: middle;
+        width: 50%;
+        font-size: 9px;
+        color: $ops-text-muted;
+    }
+}
+
+// =============================================================================
+// ACCOUNTING-SPECIFIC STYLES
+// =============================================================================
+
+// Account hierarchy indentation
+.ops-indent {
+    &-1 { padding-left: 15px; }
+    &-2 { padding-left: 30px; }
+    &-3 { padding-left: 45px; }
+    &-4 { padding-left: 60px; }
+}
+
+// Account type badges
+.ops-account-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &--asset { background-color: #dcfce7; color: $accent-asset; }
+    &--liability { background-color: #fff7ed; color: $accent-liability; }
+    &--equity { background-color: #faf5ff; color: $accent-equity; }
+    &--revenue { background-color: #dcfce7; color: $accent-revenue; }
+    &--expense { background-color: #fef2f2; color: $accent-expense; }
+}
+
+// =============================================================================
+// AGING BUCKET STYLES (for AR/AP/Inventory Aging)
+// =============================================================================
+
+.ops-aging {
+    &-current { color: $ops-success; }
+    &-30 { color: $ops-text; }
+    &-60 { color: $ops-warning; }
+    &-90 { color: #ea580c; }
+    &-over { color: $ops-danger; font-weight: 600; }
+}
+
+// =============================================================================
+// STATUS BADGES (for PDC reports)
+// =============================================================================
+
+.ops-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &--draft { background-color: #f1f5f9; color: $ops-text-muted; }
+    &--deposited { background-color: #dbeafe; color: #2563eb; }
+    &--cleared { background-color: #dcfce7; color: $ops-success; }
+    &--bounced { background-color: #fef2f2; color: $ops-danger; }
+    &--issued { background-color: #fff7ed; color: $ops-warning; }
+    &--presented { background-color: #dbeafe; color: #2563eb; }
+}
+
+// =============================================================================
+// ASSET STATUS STYLES
+// =============================================================================
+
+.ops-asset-status {
+    &--active { color: $ops-success; }
+    &--disposed { color: $ops-text-muted; }
+    &--fully-depreciated { color: $ops-warning; }
+}
+
+// =============================================================================
+// PRINT UTILITIES
+// =============================================================================
+
+.page-break-before {
+    page-break-before: always;
+}
+
+.page-break-after {
+    page-break-after: always;
+}
+
+.no-break {
+    page-break-inside: avoid;
+}
+
+.print-only {
+    display: none;
+    @media print {
+        display: block;
+    }
+}
+
+.screen-only {
+    @media print {
+        display: none;
+    }
+}

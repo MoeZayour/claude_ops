@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         MATRIX FINANCIAL INTELLIGENCE - THE BIG 8 UNIFIED WIZARD
+
+         Phase 3: Corporate UI with Card-Based Layout
+         Reports: GL, TB, P&L, BS, CF, Aged, Partner Ledger, SoA
+         ================================================================ -->
+
+    <record id="view_ops_general_ledger_wizard_enhanced_form" model="ir.ui.view">
+        <field name="name">ops.general.ledger.wizard.enhanced.form</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="arch" type="xml">
+            <form string="Matrix Financial Intelligence">
+
+                <!-- ==================== TEMPLATE QUICK START ==================== -->
+                <group name="template_section" string="📁 Quick Start" class="ops_wizard_section">
+                    <field name="report_template_id"
+                           placeholder="Load a saved template or configure manually..."
+                           options="{'no_create': True, 'no_open': True}"
+                           help="Load previously saved filter configuration for quick access"/>
+                    <button name="action_save_template"
+                            string="Save as Template"
+                            type="object"
+                            class="btn-link"
+                            icon="fa-save"
+                            help="Save current configuration as reusable template"/>
+                </group>
+
+                <!-- ==================== REPORT TYPE SELECTION ==================== -->
+                <group name="report_type_section" string="📊 Report Selection" class="ops_wizard_section">
+                    <field name="report_type"
+                           widget="radio"
+                           options="{'horizontal': false}"
+                           help="Select the financial report type to generate"/>
+                    <field name="report_title" invisible="1"/>
+                </group>
+
+                <!-- ==================== REPORTING PERIOD ==================== -->
+                <group name="period_section" string="📅 Reporting Period" class="ops_wizard_section">
+                    <group>
+                        <!-- Date Range (hidden for BS) -->
+                        <field name="date_from"
+                               invisible="report_type == 'bs'"
+                               required="report_type != 'bs'"
+                               help="Start date of reporting period"/>
+                        <field name="date_to"
+                               invisible="report_type == 'bs'"
+                               required="report_type != 'bs'"
+                               help="End date of reporting period"/>
+
+                        <!-- As of Date for Balance Sheet -->
+                        <field name="as_of_date"
+                               invisible="report_type != 'bs'"
+                               required="report_type == 'bs'"
+                               help="Balance sheet cutoff date"/>
+                    </group>
+                    <group>
+                        <field name="include_initial_balance"
+                               invisible="report_type in ['aged', 'soa', 'cf', 'bs']"
+                               help="Include opening balance at start of period"/>
+                        <field name="target_move"
+                               widget="radio"
+                               help="Include all entries or posted entries only"/>
+                    </group>
+                </group>
+
+                <!-- ==================== SCOPE & FILTERS ==================== -->
+                <group name="scope_section" string="🎯 Scope &amp; Filters" class="ops_wizard_section">
+                    <group>
+                        <field name="company_id"
+                               options="{'no_create': True}"
+                               help="Company to report on"/>
+                        <field name="branch_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True, 'color_field': 'color'}"
+                               help="Filter by specific branches (leave empty for all authorized branches)"/>
+                        <field name="business_unit_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True, 'color_field': 'color'}"
+                               help="Filter by business units"/>
+                        <field name="matrix_filter_mode"
+                               widget="radio"
+                               help="How to combine branch and business unit filters"/>
+                    </group>
+                    <group>
+                        <field name="journal_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True}"
+                               invisible="report_type in ['aged', 'soa']"
+                               help="Limit to specific journals (leave empty for all)"/>
+                        <field name="account_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True}"
+                               invisible="report_type in ['aged', 'partner', 'soa', 'bs', 'pl', 'cf', 'tb']"
+                               help="Limit to specific accounts (leave empty for all)"/>
+                        <field name="partner_ids"
+                               widget="many2many_tags"
+                               options="{'no_create': True}"
+                               invisible="report_type not in ['partner', 'soa', 'aged']"
+                               required="report_type == 'soa'"
+                               help="Filter by specific partners (required for Statement of Account)"/>
+                        <field name="reconciled"
+                               widget="radio"
+                               invisible="report_type in ['pl', 'bs', 'cf', 'tb', 'aged', 'soa']"
+                               help="Filter by reconciliation status"/>
+                    </group>
+                </group>
+
+                <!-- ==================== ADVANCED OPTIONS ==================== -->
+                <notebook class="ops_wizard_notebook">
+
+                    <!-- Account Filters -->
+                    <page string="⚙️ Account Options"
+                          name="account_options"
+                          invisible="report_type in ['aged', 'partner', 'soa']">
+                        <group>
+                            <group>
+                                <field name="account_type_ids"
+                                       help="Filter by account types"/>
+                                <field name="display_account"
+                                       widget="radio"
+                                       help="Filter accounts by activity"/>
+                            </group>
+                            <group>
+                                <field name="report_format"
+                                       widget="radio"
+                                       invisible="report_type in ['pl', 'bs', 'cf', 'tb']"
+                                       help="Level of detail in output"/>
+                                <field name="sort_by"
+                                       invisible="report_type in ['pl', 'bs', 'cf', 'tb', 'aged']"
+                                       help="Sort order for transactions"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <!-- Partner Options -->
+                    <page string="👥 Partner Options"
+                          name="partner_options"
+                          invisible="report_type not in ['aged', 'partner']">
+                        <group>
+                            <group>
+                                <field name="partner_type"
+                                       help="Filter by partner type (customer/supplier)"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <!-- Aging Settings -->
+                    <page string="📈 Aging Settings"
+                          name="aging_settings"
+                          invisible="report_type != 'aged'">
+                        <group>
+                            <group>
+                                <field name="aging_type"
+                                       widget="radio"
+                                       help="Receivables or Payables aging"/>
+                                <field name="period_length"
+                                       help="Days per aging bucket (e.g., 30 for monthly)"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <!-- Display Options -->
+                    <page string="📋 Display Options"
+                          name="display_options"
+                          invisible="report_type in ['pl', 'bs', 'cf', 'tb', 'aged', 'soa']">
+                        <group>
+                            <group>
+                                <field name="group_by_date"
+                                       help="Group transactions by date period"/>
+                                <separator string="Consolidation Options:"/>
+                                <field name="consolidate_by_branch"
+                                       help="Group results by branch"/>
+                                <field name="consolidate_by_bu"
+                                       help="Group results by business unit"/>
+                                <field name="consolidate_by_partner"
+                                       help="Group results by partner"/>
+                            </group>
+                        </group>
+
+                        <div class="alert alert-info mt-3" role="alert">
+                            <h5>Format Guide:</h5>
+                            <ul class="mb-0">
+                                <li><strong>Detailed:</strong> Line-by-line transaction listing with full audit trail</li>
+                                <li><strong>Summary:</strong> Aggregated totals by account and dimensions</li>
+                                <li><strong>Both:</strong> Combined detailed transactions with summary totals</li>
+                            </ul>
+                        </div>
+                    </page>
+
+                </notebook>
+
+                <!-- ==================== PREVIEW SECTION ==================== -->
+                <group name="preview_section" string="👁️ Report Preview" class="ops_wizard_section">
+                    <field name="record_count"
+                           readonly="1"
+                           string="Estimated Records"
+                           help="Approximate number of transactions that will be included"/>
+                    <field name="filter_summary"
+                           readonly="1"
+                           widget="text"
+                           string="Active Filters"
+                           help="Summary of filters and criteria applied to this report"/>
+
+                    <div class="alert alert-success mt-2"
+                         role="alert"
+                         invisible="record_count &gt; 10000">
+                        <i class="fa fa-check-circle"/> Good dataset size for quick processing
+                    </div>
+                    <div class="alert alert-warning mt-2"
+                         role="alert"
+                         invisible="record_count &lt;= 10000 or record_count &gt; 50000">
+                        <i class="fa fa-exclamation-triangle"/> Large dataset - may take longer to process
+                    </div>
+                    <div class="alert alert-danger mt-2"
+                         role="alert"
+                         invisible="record_count &lt;= 50000">
+                        <i class="fa fa-warning"/> Very large dataset - consider adding filters to narrow scope
+                    </div>
+                </group>
+
+                <!-- ==================== ACTION BUTTONS ==================== -->
+                <footer>
+                    <button name="action_view_report"
+                            string="View Report"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-eye"
+                            help="Open report in browser for preview"
+                            invisible="not date_from or not date_to"/>
+                    <button name="action_generate_report"
+                            string="Print PDF"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-print"
+                            help="Generate PDF for printing or download"
+                            invisible="not date_from or not date_to"/>
+                    <button name="action_export_to_excel"
+                            string="Export Excel"
+                            type="object"
+                            class="btn-success"
+                            icon="fa-file-excel-o"
+                            help="Export data to Excel spreadsheet"
+                            invisible="not date_from or not date_to"/>
+                    <button name="action_view_transactions"
+                            string="View Transactions"
+                            type="object"
+                            class="btn-info"
+                            icon="fa-list"
+                            help="View detailed transaction list"
+                            invisible="not date_from or not date_to or report_type in ['pl', 'bs', 'cf', 'tb']"/>
+                    <button string="Cancel"
+                            class="btn-default"
+                            icon="fa-times"
+                            special="cancel"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== ACTION ==================== -->
+    <record id="action_ops_general_ledger_wizard_enhanced" model="ir.actions.act_window">
+        <field name="name">Matrix Financial Intelligence</field>
+        <field name="res_model">ops.general.ledger.wizard.enhanced</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- ==================== MENU ITEM ==================== -->
+    <menuitem id="menu_reporting_financial_intelligence"
+              name="Matrix Financial Intelligence"
+              parent="account.menu_finance_reports"
+              action="action_ops_general_ledger_wizard_enhanced"
+              sequence="10"/>
+
+</odoo>

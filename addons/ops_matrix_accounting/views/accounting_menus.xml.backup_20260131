@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+    ====================================================
+    OPS Matrix Accounting Menu Structure
+    - This file consolidates all accounting-related menus.
+    - It establishes a clear hierarchy under the main Odoo Accounting app.
+    - OVERRIDE: Renames "Invoicing" to "Accounting" in app launcher.
+    ====================================================
+    -->
+
+    <!-- =================== APP NAME OVERRIDE =================== -->
+    <!-- Override the root Invoicing menu to display as "Accounting" -->
+    <record id="account.menu_finance" model="ir.ui.menu">
+        <field name="name">Accounting</field>
+    </record>
+
+    <!-- =================== OPS MATRIX SUB-MENUS =================== -->
+
+    <!-- Main OPS Accounting Root Menu Deactivated -->
+    <menuitem
+        id="menu_ops_accounting_root"
+        name="OPS Matrix"
+        active="False"/>
+
+    <!-- =================== ASSET MANAGEMENT =================== -->
+
+    <!-- Asset Management Main Menu -->
+    <menuitem
+        id="menu_ops_asset_management"
+        name="Asset Management"
+        parent="account.menu_finance"
+        sequence="20"/>
+
+    <!-- Menu for Assets -->
+    <menuitem
+        id="menu_ops_asset"
+        name="Assets"
+        parent="menu_ops_asset_management"
+        action="action_ops_asset"
+        sequence="10"/>
+
+    <!-- Menu for Depreciation Lines -->
+    <menuitem
+        id="menu_ops_asset_depreciation"
+        name="Depreciation Lines"
+        parent="menu_ops_asset_management"
+        action="action_ops_asset_depreciation"
+        sequence="20"/>
+
+    <!-- Asset Configuration Menu -->
+    <menuitem
+        id="menu_ops_asset_configuration"
+        name="Configuration"
+        parent="menu_ops_asset_management"
+        sequence="100"/>
+
+    <!-- Menu for Asset Categories -->
+    <menuitem
+        id="menu_ops_asset_category"
+        name="Asset Categories"
+        parent="menu_ops_asset_configuration"
+        action="action_ops_asset_category"
+        sequence="10"/>
+
+    <!-- =================== FINANCIAL REPORTS =================== -->
+
+    <!-- DISABLED: Financial Analysis now accessed via Accounting > Reporting -->
+    <!-- Use: Matrix Financial Intelligence, Treasury Intelligence, Asset Intelligence -->
+    <menuitem
+        id="menu_ops_accounting_reports"
+        name="Financial Analysis"
+        parent="ops_matrix_core.menu_ops_reporting"
+        sequence="20"
+        active="False"/>
+
+    <!-- =================== HIDE NATIVE ODOO REPORTING SUBMENUS =================== -->
+    <!-- Hide all native Odoo subheaders to get a flat menu structure -->
+    <record id="account.account_reports_partners_reports_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.account_reports_taxes_and_fiscal_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.account_reports_management_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.account_reports_legal_statements_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- =================== CONSOLIDATED REPORTING MENUS =================== -->
+    <!--
+    All reporting menus under Accounting > Reporting
+    Flat structure with sequential ordering:
+    - Matrix Financial Intelligence (seq 10)
+    - Treasury Intelligence (seq 20)
+    - Asset Intelligence (seq 30)
+    - Invoice Analysis (seq 40)
+    - Analytic Report (seq 50)
+    - PDC Reports (seq 60)
+    -->
+
+    <!-- NOTE: These menus moved to respective wizard view files to avoid circular dependency -->
+    <!-- See: ops_general_ledger_wizard_enhanced_views.xml, ops_treasury_report_wizard_views.xml, ops_asset_report_wizard_views.xml -->
+
+    <!-- 1. Matrix Financial Intelligence - MOVED to ops_general_ledger_wizard_enhanced_views.xml -->
+    <!-- 2. Treasury Intelligence - MOVED to ops_treasury_report_wizard_views.xml -->
+    <!-- 3. Asset Intelligence - MOVED to ops_asset_report_wizard_views.xml -->
+
+    <!-- 4. Invoice Analysis (Native Odoo Action) -->
+    <menuitem id="menu_reporting_invoice_analysis"
+              name="Invoice Analysis"
+              parent="account.menu_finance_reports"
+              action="account.action_account_invoice_report_all"
+              sequence="40"/>
+
+    <!-- 5. Analytic Report (Native Odoo Action) -->
+    <menuitem id="menu_reporting_analytic_report"
+              name="Analytic Report"
+              parent="account.menu_finance_reports"
+              action="account.action_analytic_reporting"
+              sequence="50"/>
+
+    <!-- 6. PDC Reports -->
+    <menuitem id="menu_reporting_pdc_reports"
+              name="PDC Reports"
+              parent="account.menu_finance_reports"
+              action="action_ops_pdc_reports"
+              sequence="60"/>
+
+    <!-- =================== PERIOD END MANAGEMENT =================== -->
+
+    <!-- Period End Main Menu -->
+    <menuitem
+        id="menu_ops_period_end"
+        name="Period End"
+        parent="account.menu_finance"
+        sequence="25"/>
+
+    <!-- Fiscal Periods -->
+    <menuitem
+        id="menu_ops_fiscal_periods"
+        name="Fiscal Periods"
+        parent="menu_ops_period_end"
+        action="action_ops_fiscal_period"
+        sequence="10"/>
+
+    <!-- Close Period Checklist -->
+    <menuitem
+        id="menu_ops_period_checklist"
+        name="Close Checklist"
+        parent="menu_ops_period_end"
+        action="action_ops_period_checklist"
+        sequence="20"/>
+
+    <!-- Branch Period Locks -->
+    <menuitem
+        id="menu_ops_branch_period_locks"
+        name="Branch Period Locks"
+        parent="menu_ops_period_end"
+        action="action_ops_period_branch_lock"
+        sequence="30"/>
+
+    <!-- =================== CONFIGURATION - FISCAL PERIODS =================== -->
+
+    <!-- Fiscal Periods under Configuration -->
+    <menuitem
+        id="menu_ops_config_fiscal_periods"
+        name="Fiscal Periods"
+        parent="account.menu_finance_configuration"
+        action="action_ops_fiscal_period"
+        sequence="50"/>
+
+    <!-- =================== DAILY REPORTS =================== -->
+
+    <!-- Daily Reports submenu under Reporting -->
+    <menuitem
+        id="menu_ops_daily_reports"
+        name="Daily Reports"
+        parent="account.menu_finance_reports"
+        sequence="70"/>
+
+    <!-- Cash Book -->
+    <menuitem
+        id="menu_ops_cash_book"
+        name="Cash Book"
+        parent="menu_ops_daily_reports"
+        action="action_ops_cash_book_wizard"
+        sequence="10"/>
+
+    <!-- Day Book -->
+    <menuitem
+        id="menu_ops_day_book"
+        name="Day Book"
+        parent="menu_ops_daily_reports"
+        action="action_ops_day_book_wizard"
+        sequence="20"/>
+
+    <!-- Bank Book -->
+    <menuitem
+        id="menu_ops_bank_book"
+        name="Bank Book"
+        parent="menu_ops_daily_reports"
+        action="action_ops_bank_book_wizard"
+        sequence="30"/>
+
+    <!-- =================== CUSTOMER FOLLOW-UP =================== -->
+
+    <!-- Follow-up Main Menu under Customers -->
+    <menuitem
+        id="menu_ops_followup_main"
+        name="Follow-ups"
+        parent="account.menu_finance_receivables"
+        sequence="50"/>
+
+    <!-- Customer Follow-ups List -->
+    <menuitem
+        id="menu_ops_partner_followup"
+        name="Customer Follow-ups"
+        parent="menu_ops_followup_main"
+        action="action_ops_partner_followup"
+        sequence="10"/>
+
+    <!-- Credit Blocked Customers -->
+    <menuitem
+        id="menu_ops_blocked_customers"
+        name="Credit Blocked"
+        parent="menu_ops_followup_main"
+        action="action_ops_partner_followup_blocked"
+        sequence="20"/>
+
+    <!-- Follow-ups Due Today -->
+    <menuitem
+        id="menu_ops_followup_due"
+        name="Due Today"
+        parent="menu_ops_followup_main"
+        action="action_ops_partner_followup_due"
+        sequence="30"/>
+
+    <!-- =================== CONFIGURATION - FOLLOW-UP =================== -->
+
+    <!-- Follow-up Configuration -->
+    <menuitem
+        id="menu_ops_config_followup"
+        name="Follow-up Configuration"
+        parent="account.menu_finance_configuration"
+        action="action_ops_followup_config"
+        sequence="60"/>
+
+    <!-- =================== CONFIGURATION - FINANCIAL REPORTS =================== -->
+
+    <!-- Financial Report Structure Configuration -->
+    <menuitem
+        id="menu_ops_config_financial_report_structure"
+        name="Financial Report Structure"
+        parent="account.menu_finance_configuration"
+        sequence="70"/>
+
+    <!-- Balance Sheet Structure -->
+    <menuitem
+        id="menu_ops_config_bs_structure"
+        name="Balance Sheet Structure"
+        parent="menu_ops_config_financial_report_structure"
+        action="action_ops_financial_report_config_bs"
+        sequence="10"/>
+
+    <!-- P&L Structure -->
+    <menuitem
+        id="menu_ops_config_pl_structure"
+        name="Profit &amp; Loss Structure"
+        parent="menu_ops_config_financial_report_structure"
+        action="action_ops_financial_report_config_pl"
+        sequence="20"/>
+
+    <!-- All Report Configurations -->
+    <menuitem
+        id="menu_ops_config_all_report_config"
+        name="All Report Lines"
+        parent="menu_ops_config_financial_report_structure"
+        action="action_ops_financial_report_config"
+        sequence="30"/>
+
+</odoo>

@@ -1,0 +1,350 @@
+// =============================================================================
+// OPS DESIGN SYSTEM - WIZARD SECTIONS
+// =============================================================================
+// Corporate-styled sections for financial report wizards
+// These classes are used in 30+ XML wizard views
+// =============================================================================
+
+// =============================================================================
+// WIZARD SECTION CONTAINER
+// =============================================================================
+.ops_wizard_section {
+    position: relative;
+    margin-bottom: var(--ops-space-5, 20px);
+    padding: var(--ops-wizard-section-padding, 20px);
+    background: var(--ops-wizard-section-bg, #f8fafc);
+    border-radius: var(--ops-wizard-section-radius, 12px);
+    border-left: 4px solid var(--ops-wizard-section-border, #3b82f6);
+
+    // Section header styling (from group string="" attribute)
+    > .o_horizontal_separator:first-child,
+    > .o_group_header:first-child,
+    > legend:first-child,
+    > h2:first-child,
+    > h3:first-child,
+    > h4:first-child {
+        margin: calc(-1 * var(--ops-wizard-section-padding, 20px)) !important;
+        margin-bottom: var(--ops-space-4, 16px) !important;
+        padding: var(--ops-space-3, 12px) var(--ops-wizard-section-padding, 20px) !important;
+        background: var(--ops-wizard-header-bg, linear-gradient(135deg, #1e293b 0%, #0f172a 100%)) !important;
+        border-radius: var(--ops-radius-lg, 12px) var(--ops-radius-lg, 12px) 0 0 !important;
+        font-size: var(--ops-text-sm, 0.875rem) !important;
+        font-weight: var(--ops-font-semibold, 600) !important;
+        color: var(--ops-text-inverse, #ffffff) !important;
+        letter-spacing: 0.025em !important;
+        border-bottom: none !important;
+        text-transform: none !important;
+    }
+
+    // Two-column grid layout inside section
+    > .o_group,
+    > .o_inner_group {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--ops-space-4, 16px) var(--ops-space-6, 24px) !important;
+        align-items: start !important;
+
+        > .o_inner_group,
+        > .o_wrap_field {
+            grid-column: span 1 !important;
+        }
+
+        // Full-width elements
+        > table,
+        > .o_field_x2many,
+        > .o_horizontal_separator,
+        > .alert,
+        > p,
+        > div.text-muted,
+        > .o_td_label + .o_td_field {
+            grid-column: span 2 !important;
+        }
+    }
+
+    // Inner group grid (label + field)
+    .o_inner_group {
+        display: grid !important;
+        grid-template-columns: minmax(120px, 160px) 1fr !important;
+        gap: var(--ops-space-2, 8px) var(--ops-space-3, 12px) !important;
+        align-items: center !important;
+
+        .o_cell {
+            padding: var(--ops-space-1, 4px) 0 !important;
+        }
+    }
+
+    // Form labels inside wizard
+    .o_form_label,
+    .o_td_label label {
+        font-size: var(--ops-text-sm, 0.875rem) !important;
+        font-weight: var(--ops-font-medium, 500) !important;
+        color: var(--ops-text-secondary, #64748b) !important;
+        text-align: right !important;
+        padding-right: var(--ops-space-2, 8px) !important;
+    }
+
+    // Help text styling
+    .text-muted,
+    .o_field_widget .text-muted {
+        font-size: var(--ops-text-sm, 0.875rem) !important;
+        color: var(--ops-text-muted, #94a3b8) !important;
+        line-height: var(--ops-leading-relaxed, 1.75) !important;
+        margin-top: var(--ops-space-2, 8px) !important;
+    }
+
+    // Section description paragraph
+    > p:not(.text-muted) {
+        grid-column: span 2 !important;
+        font-size: var(--ops-text-sm, 0.875rem) !important;
+        color: var(--ops-text-secondary, #64748b) !important;
+        margin-bottom: var(--ops-space-4, 16px) !important;
+        padding: var(--ops-space-3, 12px) !important;
+        background: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.05) !important;
+        border-radius: var(--ops-radius-md, 8px) !important;
+        border-left: 3px solid var(--ops-secondary, #3b82f6) !important;
+    }
+}
+
+// =============================================================================
+// WIZARD NOTEBOOK (Tabs)
+// =============================================================================
+.ops_wizard_notebook {
+    margin-top: var(--ops-space-5, 20px) !important;
+
+    // Tab navigation
+    .nav-tabs,
+    .o_notebook_headers {
+        border-bottom: 2px solid var(--ops-border-default, #e2e8f0) !important;
+        gap: var(--ops-space-1, 4px) !important;
+        margin-bottom: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+
+        .nav-item {
+            margin-bottom: -2px !important;
+        }
+
+        .nav-link {
+            padding: var(--ops-space-3, 12px) var(--ops-space-4, 16px) !important;
+            border: none !important;
+            border-bottom: 2px solid transparent !important;
+            border-radius: 0 !important;
+            font-size: var(--ops-text-sm, 0.875rem) !important;
+            font-weight: var(--ops-font-medium, 500) !important;
+            color: var(--ops-text-secondary, #64748b) !important;
+            background: transparent !important;
+            transition: all var(--ops-transition-fast, 150ms ease) !important;
+
+            &:hover {
+                color: var(--ops-secondary, #3b82f6) !important;
+                border-bottom-color: var(--ops-border-strong, #cbd5e1) !important;
+                background: transparent !important;
+            }
+
+            &.active {
+                color: var(--ops-secondary, #3b82f6) !important;
+                border-bottom-color: var(--ops-secondary, #3b82f6) !important;
+                background: transparent !important;
+                font-weight: var(--ops-font-semibold, 600) !important;
+            }
+        }
+    }
+
+    // Tab content
+    .tab-content,
+    .o_notebook_content {
+        padding: var(--ops-space-5, 20px) 0 !important;
+        background: transparent !important;
+    }
+
+    // Tab pane
+    .tab-pane {
+        > .o_group {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: var(--ops-space-4, 16px) var(--ops-space-6, 24px) !important;
+        }
+    }
+}
+
+// =============================================================================
+// ALERT BOXES INSIDE WIZARD SECTIONS
+// =============================================================================
+.ops_wizard_section,
+.modal-body {
+    .alert {
+        margin-top: var(--ops-space-4, 16px) !important;
+        margin-bottom: var(--ops-space-4, 16px) !important;
+        padding: var(--ops-space-4, 16px) !important;
+        border-radius: var(--ops-radius-md, 8px) !important;
+        border: none !important;
+        font-size: var(--ops-text-sm, 0.875rem) !important;
+        line-height: var(--ops-leading-relaxed, 1.75) !important;
+
+        &.alert-info {
+            background: rgba(var(--ops-info-rgb, 6, 182, 212), 0.1) !important;
+            color: #0e7490 !important;
+            border-left: 4px solid var(--ops-info, #06b6d4) !important;
+        }
+
+        &.alert-warning {
+            background: rgba(var(--ops-warning-rgb, 245, 158, 11), 0.1) !important;
+            color: #b45309 !important;
+            border-left: 4px solid var(--ops-warning, #f59e0b) !important;
+        }
+
+        &.alert-success {
+            background: rgba(var(--ops-success-rgb, 16, 185, 129), 0.1) !important;
+            color: #047857 !important;
+            border-left: 4px solid var(--ops-success, #10b981) !important;
+        }
+
+        &.alert-danger {
+            background: rgba(var(--ops-danger-rgb, 239, 68, 68), 0.1) !important;
+            color: #b91c1c !important;
+            border-left: 4px solid var(--ops-danger, #ef4444) !important;
+        }
+
+        // Alert headings
+        h4, h5, strong {
+            font-size: var(--ops-text-base, 1rem) !important;
+            font-weight: var(--ops-font-semibold, 600) !important;
+            margin-bottom: var(--ops-space-2, 8px) !important;
+            color: inherit !important;
+        }
+
+        // Alert lists
+        ul, ol {
+            margin: var(--ops-space-2, 8px) 0 0 var(--ops-space-4, 16px) !important;
+            padding: 0 !important;
+
+            li {
+                margin-bottom: var(--ops-space-1, 4px) !important;
+            }
+        }
+
+        // Alert icons
+        i.fa {
+            margin-right: var(--ops-space-2, 8px) !important;
+        }
+    }
+}
+
+// =============================================================================
+// DARK MODE OVERRIDES
+// =============================================================================
+[data-color-mode="dark"] {
+    .ops_wizard_section {
+        background: var(--ops-wizard-section-bg, #0f172a) !important;
+        border-left-color: var(--ops-secondary, #3b82f6) !important;
+
+        > .o_horizontal_separator:first-child,
+        > .o_group_header:first-child,
+        > legend:first-child,
+        > h2:first-child,
+        > h3:first-child,
+        > h4:first-child {
+            background: var(--ops-wizard-header-bg, linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)) !important;
+            color: var(--ops-text-inverse, #ffffff) !important;
+        }
+
+        .o_form_label,
+        .o_td_label label {
+            color: var(--ops-text-secondary, #94a3b8) !important;
+        }
+
+        > p:not(.text-muted) {
+            background: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.1) !important;
+            color: var(--ops-text-secondary, #94a3b8) !important;
+        }
+    }
+
+    .ops_wizard_notebook {
+        .nav-tabs,
+        .o_notebook_headers {
+            border-bottom-color: var(--ops-border-default, #334155) !important;
+
+            .nav-link {
+                color: var(--ops-text-secondary, #94a3b8) !important;
+
+                &:hover {
+                    color: var(--ops-secondary, #3b82f6) !important;
+                    border-bottom-color: var(--ops-border-strong, #475569) !important;
+                }
+
+                &.active {
+                    color: var(--ops-secondary, #3b82f6) !important;
+                    border-bottom-color: var(--ops-secondary, #3b82f6) !important;
+                }
+            }
+        }
+    }
+
+    .ops_wizard_section .alert,
+    .modal-body .alert {
+        &.alert-info {
+            background: rgba(var(--ops-info-rgb, 6, 182, 212), 0.15) !important;
+            color: #67e8f9 !important;
+        }
+
+        &.alert-warning {
+            background: rgba(var(--ops-warning-rgb, 245, 158, 11), 0.15) !important;
+            color: #fcd34d !important;
+        }
+
+        &.alert-success {
+            background: rgba(var(--ops-success-rgb, 16, 185, 129), 0.15) !important;
+            color: #6ee7b7 !important;
+        }
+
+        &.alert-danger {
+            background: rgba(var(--ops-danger-rgb, 239, 68, 68), 0.15) !important;
+            color: #fca5a5 !important;
+        }
+    }
+}
+
+// =============================================================================
+// RESPONSIVE DESIGN
+// =============================================================================
+@media (max-width: 768px) {
+    .ops_wizard_section {
+        padding: var(--ops-space-4, 16px) !important;
+
+        > .o_group,
+        > .o_inner_group {
+            grid-template-columns: 1fr !important;
+
+            > .o_inner_group,
+            > .o_wrap_field,
+            > table,
+            > .o_field_x2many,
+            > .alert,
+            > p {
+                grid-column: span 1 !important;
+            }
+        }
+
+        .o_inner_group {
+            grid-template-columns: 1fr !important;
+
+            .o_form_label,
+            .o_td_label label {
+                text-align: left !important;
+                margin-bottom: var(--ops-space-1, 4px) !important;
+            }
+        }
+    }
+
+    .ops_wizard_notebook {
+        .nav-tabs,
+        .o_notebook_headers {
+            flex-wrap: wrap !important;
+
+            .nav-link {
+                padding: var(--ops-space-2, 8px) var(--ops-space-3, 12px) !important;
+                font-size: var(--ops-text-xs, 0.75rem) !important;
+            }
+        }
+    }
+}

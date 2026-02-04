@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ops_general_ledger_wizard_form" model="ir.ui.view">
+        <field name="name">ops.general.ledger.wizard.form</field>
+        <field name="model">ops.general.ledger.wizard</field>
+        <field name="arch" type="xml">
+            <form string="General Ledger Report">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>General Ledger Report</h1>
+                    </div>
+                    <group col="4">
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="target_move"/>
+                        </group>
+                        <group>
+                            <field name="company_id" invisible="1"/>
+                            <field name="account_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Print PDF" name="action_print_pdf" type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button string="Export Excel" name="action_export_xlsx" type="object" class="btn-secondary" icon="fa-file-excel-o"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" icon="fa-times"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ops_general_ledger_wizard" model="ir.actions.act_window">
+        <field name="name">General Ledger</field>
+        <field name="res_model">ops.general.ledger.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_view_types">form</field>
+    </record>
+
+    <!-- DISABLED: Basic GL - users should use Enhanced version (Matrix Financial Intelligence) -->
+    <!--
+    <menuitem id="menu_ops_general_ledger_report"
+              name="General Ledger (Basic)"
+              parent="menu_ops_accounting_reports"
+              action="action_ops_general_ledger_wizard"
+              sequence="99"
+              active="False"/>
+    -->
+</odoo>

@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================================================================== -->
+    <!-- SECURITY COMPLIANCE CHECK VIEWS -->
+    <!-- ================================================================== -->
+
+    <!-- Tree View -->
+    <record id="view_ops_security_compliance_check_tree" model="ir.ui.view">
+        <field name="name">ops.security.compliance.check.tree</field>
+        <field name="model">ops.security.compliance.check</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="failed_count > 0"
+                  decoration-warning="warning_count > 0 and failed_count == 0"
+                  decoration-success="failed_count == 0 and warning_count == 0 and state == 'completed'">
+                <field name="name"/>
+                <field name="check_date"/>
+                <field name="check_type"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'completed'"
+                       decoration-info="state == 'running'"
+                       decoration-warning="state == 'draft'"
+                       decoration-danger="state == 'failed'"/>
+                <field name="total_checks"/>
+                <field name="passed_count"/>
+                <field name="failed_count"/>
+                <field name="warning_count"/>
+                <field name="compliance_percentage" widget="progressbar"/>
+                <field name="executed_by_id"/>
+                <field name="duration_seconds" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_ops_security_compliance_check_form" model="ir.ui.view">
+        <field name="name">ops.security.compliance.check.form</field>
+        <field name="model">ops.security.compliance.check</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_run_full_audit"
+                            string="Run Full Audit"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_run_it_admin_blindness_check"
+                            string="IT Admin Blindness"
+                            type="object"
+                            invisible="state != 'draft'"/>
+                    <button name="action_run_branch_isolation_check"
+                            string="Branch Isolation"
+                            type="object"
+                            invisible="state != 'draft'"/>
+                    <button name="action_run_sod_conflicts_check"
+                            string="SoD Conflicts"
+                            type="object"
+                            invisible="state != 'draft'"/>
+                    <button name="action_run_persona_drift_check"
+                            string="Persona Drift"
+                            type="object"
+                            invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,running,completed"/>
+                </header>
+                <sheet>
+                    <!-- Critical Failures Alert -->
+                    <div class="alert alert-danger" role="alert" invisible="failed_count == 0">
+                        <strong>Critical:</strong>
+                        <field name="failed_count" class="oe_inline"/> compliance failures detected!
+                        Review failed checks immediately.
+                    </div>
+
+                    <!-- Warnings Alert -->
+                    <div class="alert alert-warning" role="alert" invisible="warning_count == 0 or failed_count > 0">
+                        <strong>Warning:</strong>
+                        <field name="warning_count" class="oe_inline"/> warnings require attention.
+                    </div>
+
+                    <!-- Success Alert -->
+                    <div class="alert alert-success" role="alert"
+                         invisible="state != 'completed' or failed_count > 0 or warning_count > 0">
+                        <strong>All checks passed!</strong>
+                        Security compliance verified successfully.
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Check Information">
+                            <field name="check_type"/>
+                            <field name="check_date"/>
+                            <field name="executed_by_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Results Summary">
+                            <field name="total_checks"/>
+                            <field name="passed_count"/>
+                            <field name="failed_count"/>
+                            <field name="warning_count"/>
+                            <field name="compliance_percentage" widget="progressbar"/>
+                            <field name="duration_seconds" widget="float_time"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="All Results" name="all_results">
+                            <field name="result_ids" nolabel="1">
+                                <list decoration-danger="status == 'failed'"
+                                      decoration-warning="status == 'warning'"
+                                      decoration-success="status == 'passed'"
+                                      decoration-muted="status == 'info'">
+                                    <field name="check_category"/>
+                                    <field name="status" widget="badge"
+                                           decoration-success="status == 'passed'"
+                                           decoration-danger="status == 'failed'"
+                                           decoration-warning="status == 'warning'"
+                                           decoration-info="status == 'info'"/>
+                                    <field name="severity" widget="badge"
+                                           decoration-danger="severity == 'critical'"
+                                           decoration-warning="severity == 'high'"
+                                           decoration-info="severity == 'medium'"/>
+                                    <field name="rule_name"/>
+                                    <field name="model_name" optional="show"/>
+                                    <field name="user_id" optional="show"/>
+                                    <field name="description"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Failed Checks" name="failed_checks"
+                              invisible="failed_count == 0">
+                            <field name="result_ids"
+                                   domain="[('status', '=', 'failed')]"
+                                   nolabel="1"
+                                   context="{'default_status': 'failed'}">
+                                <list decoration-danger="1">
+                                    <field name="severity" widget="badge"
+                                           decoration-danger="severity == 'critical'"
+                                           decoration-warning="severity == 'high'"/>
+                                    <field name="check_category"/>
+                                    <field name="rule_name"/>
+                                    <field name="user_id"/>
+                                    <field name="description"/>
+                                    <field name="recommendation"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Add notes about this compliance check..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_ops_security_compliance_check_search" model="ir.ui.view">
+        <field name="name">ops.security.compliance.check.search</field>
+        <field name="model">ops.security.compliance.check</field>
+        <field name="arch" type="xml">
+            <search string="Security Compliance Checks">
+                <field name="name"/>
+                <field name="check_type"/>
+                <field name="executed_by_id"/>
+                <separator/>
+                <filter name="this_month" string="This Month"
+                        domain="[('check_date', '>=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-%d'))]"/>
+                <filter name="failed" string="Failed"
+                        domain="[('failed_count', '>', 0)]"/>
+                <filter name="warnings" string="Has Warnings"
+                        domain="[('warning_count', '>', 0)]"/>
+                <filter name="passed" string="All Passed"
+                        domain="[('failed_count', '=', 0), ('warning_count', '=', 0), ('state', '=', 'completed')]"/>
+                <separator/>
+                <filter name="full_audit" string="Full Audits"
+                        domain="[('check_type', '=', 'full')]"/>
+                <filter name="it_admin" string="IT Admin Blindness"
+                        domain="[('check_type', '=', 'it_admin_blindness')]"/>
+                <separator/>
+                <filter name="group_type" string="Check Type" context="{'group_by': 'check_type'}"/>
+                <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                <filter name="group_date" string="Date" context="{'group_by': 'check_date:month'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Graph View -->
+    <record id="view_ops_security_compliance_check_graph" model="ir.ui.view">
+        <field name="name">ops.security.compliance.check.graph</field>
+        <field name="model">ops.security.compliance.check</field>
+        <field name="arch" type="xml">
+            <graph string="Compliance Trends" type="line">
+                <field name="check_date" type="col" interval="week"/>
+                <field name="compliance_percentage" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="view_ops_security_compliance_check_pivot" model="ir.ui.view">
+        <field name="name">ops.security.compliance.check.pivot</field>
+        <field name="model">ops.security.compliance.check</field>
+        <field name="arch" type="xml">
+            <pivot string="Compliance Analysis">
+                <field name="check_type" type="row"/>
+                <field name="passed_count" type="measure"/>
+                <field name="failed_count" type="measure"/>
+                <field name="warning_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- COMPLIANCE RESULT VIEWS -->
+    <!-- ================================================================== -->
+
+    <record id="view_ops_security_compliance_result_tree" model="ir.ui.view">
+        <field name="name">ops.security.compliance.result.tree</field>
+        <field name="model">ops.security.compliance.result</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="status == 'failed'"
+                  decoration-warning="status == 'warning'"
+                  decoration-success="status == 'passed'">
+                <field name="check_id"/>
+                <field name="check_category"/>
+                <field name="status" widget="badge"/>
+                <field name="severity" widget="badge"/>
+                <field name="rule_name"/>
+                <field name="model_name"/>
+                <field name="user_id"/>
+                <field name="description"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ops_security_compliance_result_form" model="ir.ui.view">
+        <field name="name">ops.security.compliance.result.form</field>
+        <field name="model">ops.security.compliance.result</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="check_id"/>
+                            <field name="check_category"/>
+                            <field name="status"/>
+                            <field name="severity"/>
+                        </group>
+                        <group>
+                            <field name="rule_name"/>
+                            <field name="model_name"/>
+                            <field name="user_id"/>
+                            <field name="record_ref"/>
+                        </group>
+                    </group>
+                    <group string="Details">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <group string="Recommendation" invisible="not recommendation">
+                        <field name="recommendation" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- PERSONA DRIFT WIZARD VIEWS -->
+    <!-- ================================================================== -->
+
+    <record id="view_ops_persona_drift_wizard_form" model="ir.ui.view">
+        <field name="name">ops.persona.drift.wizard.form</field>
+        <field name="model">ops.persona.drift.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Persona Drift Detection">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Persona Drift Detection</h1>
+                        <h3 class="text-muted">Compare user permissions against their assigned personas</h3>
+                    </div>
+
+                    <!-- Configuration (Draft State) -->
+                    <group invisible="state != 'draft'">
+                        <group string="Filter Options">
+                            <field name="user_ids" widget="many2many_tags"
+                                   placeholder="Leave empty to check all users"/>
+                            <field name="include_admins"/>
+                            <field name="only_show_drift"/>
+                        </group>
+                    </group>
+
+                    <!-- Results Summary (Done State) -->
+                    <div class="alert alert-info" role="alert" invisible="state != 'done'">
+                        <div class="row">
+                            <div class="col-4 text-center">
+                                <h4><field name="total_users_checked" class="oe_inline"/></h4>
+                                <span>Users Checked</span>
+                            </div>
+                            <div class="col-4 text-center">
+                                <h4 class="text-danger"><field name="users_with_drift" class="oe_inline"/></h4>
+                                <span>With Drift</span>
+                            </div>
+                            <div class="col-4 text-center">
+                                <h4 class="text-warning"><field name="users_without_persona" class="oe_inline"/></h4>
+                                <span>No Persona</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Table (Done State) -->
+                    <group invisible="state != 'done'">
+                        <field name="result_ids" nolabel="1">
+                            <list decoration-danger="drift_status in ('drift', 'extra_permissions') and severity in ('critical', 'high')"
+                                  decoration-warning="drift_status in ('no_persona', 'missing_permissions')"
+                                  decoration-success="drift_status == 'ok'">
+                                <field name="user_id"/>
+                                <field name="user_login"/>
+                                <field name="drift_status" widget="badge"
+                                       decoration-success="drift_status == 'ok'"
+                                       decoration-danger="drift_status in ('drift', 'extra_permissions')"
+                                       decoration-warning="drift_status in ('no_persona', 'missing_permissions')"/>
+                                <field name="severity" widget="badge"
+                                       decoration-danger="severity == 'critical'"
+                                       decoration-warning="severity == 'high'"/>
+                                <field name="persona_names"/>
+                                <field name="extra_groups" optional="show"/>
+                                <button name="action_view_user" type="object"
+                                        string="View" icon="fa-external-link"/>
+                            </list>
+                        </field>
+                    </group>
+
+                    <field name="state" invisible="1"/>
+                </sheet>
+                <footer>
+                    <button name="action_detect_drift" string="Detect Drift" type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_reset" string="Reset" type="object"
+                            class="btn-secondary"
+                            invisible="state != 'done'"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- AUDIT EVIDENCE WIZARD VIEWS -->
+    <!-- ================================================================== -->
+
+    <record id="view_ops_audit_evidence_wizard_form" model="ir.ui.view">
+        <field name="name">ops.audit.evidence.wizard.form</field>
+        <field name="model">ops.audit.evidence.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Audit Evidence">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Audit Evidence Export</h1>
+                        <h3 class="text-muted">Generate comprehensive compliance evidence package</h3>
+                    </div>
+
+                    <!-- Configuration (Draft State) -->
+                    <group invisible="state != 'draft'">
+                        <group string="Content to Include">
+                            <field name="include_it_admin_rules"/>
+                            <field name="include_security_groups"/>
+                            <field name="include_user_matrix"/>
+                            <field name="include_record_rules"/>
+                            <field name="include_acl_coverage"/>
+                            <field name="include_sod_rules"/>
+                            <field name="include_persona_assignments"/>
+                        </group>
+                        <group string="Date Range (for logs)">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+
+                    <!-- Download (Done State) -->
+                    <div class="alert alert-success" role="alert" invisible="state != 'done'">
+                        <strong>Export Complete!</strong>
+                        Click the download button below to save your audit evidence package.
+                    </div>
+
+                    <group invisible="state != 'done'">
+                        <field name="export_file" filename="export_filename" widget="binary"/>
+                        <field name="export_filename" invisible="1"/>
+                    </group>
+
+                    <field name="state" invisible="1"/>
+                </sheet>
+                <footer>
+                    <button name="action_generate_evidence_pack" string="Generate Package" type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_reset" string="New Export" type="object"
+                            class="btn-secondary"
+                            invisible="state != 'done'"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- ACTIONS -->
+    <!-- ================================================================== -->
+
+    <!-- Main Compliance Dashboard Action -->
+    <record id="action_security_compliance_dashboard" model="ir.actions.act_window">
+        <field name="name">Security Compliance Dashboard</field>
+        <field name="res_model">ops.security.compliance.check</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+        <field name="context">{'search_default_this_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first security compliance check
+            </p>
+            <p>
+                Run automated checks to verify IT Admin Blindness rules,
+                branch isolation, SoD conflicts, and persona drift.
+            </p>
+        </field>
+    </record>
+
+    <!-- Quick New Audit Action -->
+    <record id="action_new_compliance_check" model="ir.actions.act_window">
+        <field name="name">New Compliance Check</field>
+        <field name="res_model">ops.security.compliance.check</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'default_check_type': 'full'}</field>
+    </record>
+
+    <!-- Persona Drift Wizard Action -->
+    <record id="action_persona_drift_wizard" model="ir.actions.act_window">
+        <field name="name">Persona Drift Detection</field>
+        <field name="res_model">ops.persona.drift.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Audit Evidence Export Action -->
+    <record id="action_audit_evidence_wizard" model="ir.actions.act_window">
+        <field name="name">Export Audit Evidence</field>
+        <field name="res_model">ops.audit.evidence.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ================================================================== -->
+    <!-- MENUS -->
+    <!-- ================================================================== -->
+
+    <!-- Security Compliance Root Menu (under Settings) -->
+    <menuitem id="menu_security_compliance_root"
+              name="Security Compliance"
+              parent="menu_ops_settings_root"
+              sequence="45"
+              groups="base.group_system,group_ops_admin_power"/>
+
+    <!-- Compliance Dashboard -->
+    <menuitem id="menu_security_compliance_dashboard"
+              name="Compliance Dashboard"
+              parent="menu_security_compliance_root"
+              action="action_security_compliance_dashboard"
+              sequence="10"/>
+
+    <!-- New Compliance Check -->
+    <menuitem id="menu_new_compliance_check"
+              name="New Compliance Check"
+              parent="menu_security_compliance_root"
+              action="action_new_compliance_check"
+              sequence="15"/>
+
+    <!-- Persona Drift Detection -->
+    <menuitem id="menu_persona_drift_wizard"
+              name="Persona Drift Detection"
+              parent="menu_security_compliance_root"
+              action="action_persona_drift_wizard"
+              sequence="20"/>
+
+    <!-- Audit Evidence Export -->
+    <menuitem id="menu_audit_evidence_wizard"
+              name="Export Audit Evidence"
+              parent="menu_security_compliance_root"
+              action="action_audit_evidence_wizard"
+              sequence="30"/>
+
+    <!-- ================================================================== -->
+    <!-- SEQUENCE FOR COMPLIANCE CHECK REFERENCE -->
+    <!-- ================================================================== -->
+
+    <record id="seq_security_compliance_check" model="ir.sequence">
+        <field name="name">Security Compliance Check</field>
+        <field name="code">ops.security.compliance.check</field>
+        <field name="prefix">SEC/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</odoo>

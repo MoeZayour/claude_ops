@@ -1,0 +1,710 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- =========================================== -->
+        <!-- 1. COMPANY-LEVEL ACCESS RULES               -->
+        <!-- =========================================== -->
+        
+        <!-- Company Access: Users can only see their assigned companies -->
+        <record id="rule_ops_company_access" model="ir.rule">
+            <field name="name">OPS: User can only access assigned companies</field>
+            <field name="model_id" ref="base.model_res_company"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[('id', 'in', user.company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 2. BRANCH-LEVEL ACCESS RULES                -->
+        <!-- =========================================== -->
+        
+        <!-- Branch Access: Users can see branches they're allowed to access -->
+        <record id="rule_ops_branch_access" model="ir.rule">
+            <field name="name">OPS: User can only access allowed branches</field>
+            <field name="model_id" ref="model_ops_branch"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                [('id', 'in', user.ops_allowed_branch_ids.ids)]
+            </field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- System Admin Bypass Rule for Branch -->
+        <record id="ops_branch_admin_full_access" model="ir.rule">
+            <field name="name">Branch: System Admin Full Access</field>
+            <field name="model_id" ref="model_ops_branch"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 3. BUSINESS UNIT ACCESS RULES               -->
+        <!-- =========================================== -->
+        
+        <!-- Business Unit Access: Users can see BUs they're allowed to access -->
+        <record id="rule_ops_bu_access" model="ir.rule">
+            <field name="name">OPS: User can only access allowed business units</field>
+            <field name="model_id" ref="model_ops_business_unit"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[('id', 'in', user.ops_allowed_business_unit_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- System Admin Bypass Rule for Business Unit -->
+        <record id="ops_business_unit_admin_full_access" model="ir.rule">
+            <field name="name">Business Unit: Admin Full Access</field>
+            <field name="model_id" ref="model_ops_business_unit"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 4. SALE ORDER ACCESS RULES                  -->
+        <!-- =========================================== -->
+        
+        <!-- Sale Order: Branch-Level User Access (Regular Users) -->
+        <record id="rule_ops_sale_order_branch_user" model="ir.rule">
+            <field name="name">Sale Order: Branch-Level User Access</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|',
+                    ('ops_branch_id', '=', False),
+                    ('ops_branch_id', 'in', user.ops_allowed_branch_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        </record>
+        
+        <!-- Sale Order: BU Manager Access (Can see all orders in their BU across branches) -->
+        <record id="rule_ops_sale_order_bu_manager" model="ir.rule">
+            <field name="name">Sale Order: BU Manager Access</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                [('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)]
+            </field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        </record>
+        
+        <!-- Sale Order Line: Matrix Intersection (AND logic) for Standard Users -->
+        <record id="rule_ops_sale_order_line_user" model="ir.rule">
+            <field name="name">Sale Order Line: Matrix Intersection (AND logic)</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['&amp;',
+                    ('order_id.ops_branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                    ('order_id.ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        </record>
+
+        <!-- Sale Order Line: System Admin Full Access -->
+        <record id="ops_sale_order_line_admin_override" model="ir.rule">
+            <field name="name">Sale Order Line: System Admin Full Access Override</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 5. PURCHASE ORDER ACCESS RULES              -->
+        <!-- =========================================== -->
+        
+        <!-- Purchase Order: Branch-Level User Access (Regular Users) -->
+        <record id="rule_ops_purchase_order_branch_user" model="ir.rule">
+            <field name="name">Purchase Order: Branch-Level User Access</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|',
+                    ('ops_branch_id', '=', False),
+                    ('ops_branch_id', 'in', user.ops_allowed_branch_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+        </record>
+        
+        <!-- Purchase Order: BU Manager Access (Can see all orders in their BU across branches) -->
+        <record id="rule_ops_purchase_order_bu_manager" model="ir.rule">
+            <field name="name">Purchase Order: BU Manager Access</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                [('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)]
+            </field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 6. ACCOUNTING ACCESS RULES                  -->
+        <!-- =========================================== -->
+        
+        <!-- Account Move: Branch-Level User Access (Regular Users) -->
+        <record id="rule_ops_account_move_branch_user" model="ir.rule">
+            <field name="name">Account Move: Branch-Level User Access</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|',
+                    ('move_type', 'not in', ['out_invoice', 'in_invoice', 'out_refund', 'in_refund']),
+                    '&amp;'
+                        , ('ops_branch_id', 'in', user.ops_allowed_branch_ids.ids)
+                        , ('company_id', 'in', user.company_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('account.group_account_user')), (4, ref('account.group_account_manager'))]"/>
+        </record>
+        
+        <!-- Account Move: BU Manager Access (Can see all moves in their BU across branches) -->
+        <record id="rule_ops_account_move_bu_manager" model="ir.rule">
+            <field name="name">Account Move: BU Manager Access</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                [('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)]
+            </field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        </record>
+        
+        <!-- Account Move Line: Matrix Intersection (AND logic) for Standard Users -->
+        <record id="rule_ops_account_move_line_user" model="ir.rule">
+            <field name="name">Account Move Line: Matrix Intersection (AND logic)</field>
+            <field name="model_id" ref="account.model_account_move_line"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['&amp;',
+                    ('move_id.ops_branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                    ('move_id.ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('account.group_account_invoice'))]"/>
+        </record>
+
+        <!-- Account Move Line: System Admin Full Access Override -->
+        <record id="ops_account_move_line_admin_override" model="ir.rule">
+            <field name="name">Account Move Line: System Admin Full Access Override</field>
+            <field name="model_id" ref="account.model_account_move_line"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 7. INVENTORY ACCESS RULES                   -->
+        <!-- =========================================== -->
+        
+        <!-- Stock Picking: Matrix Intersection (AND logic) for Standard Users -->
+        <record id="rule_ops_stock_picking_user" model="ir.rule">
+            <field name="name">Stock Picking: Matrix Intersection (AND logic)</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|',
+                    ('ops_branch_id', '=', False),
+                    '&amp;',
+                        ('ops_branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                        ('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('stock.group_stock_user'))]"/>
+        </record>
+        
+        <!-- Stock Picking Write Access -->
+        <record id="rule_ops_stock_picking_write" model="ir.rule">
+            <field name="name">OPS: Users can only modify stock operations in their branches</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[('ops_branch_id', 'in', user.ops_allowed_branch_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('stock.group_stock_user'))]"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        
+        <!-- Stock Move: Matrix Intersection (AND logic) for Standard Users -->
+        <record id="rule_ops_stock_move_user" model="ir.rule">
+            <field name="name">Stock Move: Matrix Intersection (AND logic)</field>
+            <field name="model_id" ref="stock.model_stock_move"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|',
+                    ('picking_id.ops_branch_id', '=', False),
+                    '&amp;',
+                        ('picking_id.ops_branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                        ('picking_id.ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('stock.group_stock_user'))]"/>
+        </record>
+        
+        <!-- Stock Quant Access: Restrict inventory visibility -->
+        <record id="rule_ops_stock_quant_access" model="ir.rule">
+            <field name="name">OPS: User can only see inventory in allowed branches</field>
+            <field name="model_id" ref="stock.model_stock_quant"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[('company_id', 'in', user.company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('stock.group_stock_user'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 8. PERSONA & DELEGATION RULES               -->
+        <!-- =========================================== -->
+        
+        <!-- Persona Access: Users can only see their own personas or company personas -->
+        <record id="rule_ops_persona_access" model="ir.rule">
+            <field name="name">OPS: User can only access their own personas</field>
+            <field name="model_id" ref="model_ops_persona"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|',
+                    ('user_id', '=', user.id),
+                    ('company_id', 'in', user.company_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Delegation Access: Users can only see delegations involving them -->
+        <record id="rule_ops_persona_delegation_access" model="ir.rule">
+            <field name="name">OPS: User can only see delegations they're involved in</field>
+            <field name="model_id" ref="model_ops_persona_delegation"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|', '|',
+                    ('delegator_id', '=', user.id),
+                    ('delegate_id', '=', user.id),
+                    ('company_id', 'in', user.company_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 9. GOVERNANCE RULES ACCESS                  -->
+        <!-- =========================================== -->
+        
+        <!-- Governance Rule Access: Managers and company users -->
+        <record id="rule_ops_governance_rule_access" model="ir.rule">
+            <field name="name">OPS: Governance rules visible to managers</field>
+            <field name="model_id" ref="model_ops_governance_rule"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[('company_id', 'in', user.company_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 10. INTER-BRANCH TRANSFER RULES             -->
+        <!-- =========================================== -->
+        
+        <!-- Inter-Branch Transfer Access -->
+        <record id="rule_ops_inter_branch_transfer_access" model="ir.rule">
+            <field name="name">OPS: User can only access inter-branch transfers they're involved in</field>
+            <field name="model_id" ref="model_ops_inter_branch_transfer"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|', '|',
+                    ('source_branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                    ('dest_branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                    ('company_id', 'in', user.company_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('stock.group_stock_user'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 11. APPROVAL REQUEST RULES                  -->
+        <!-- =========================================== -->
+        
+        <!-- Approval Request: Matrix Intersection Rule -->
+        <record id="rule_matrix_intersection" model="ir.rule">
+            <field name="name">Matrix: Branch AND Business Unit Intersection</field>
+            <field name="model_id" ref="model_ops_approval_request"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['&amp;',
+                    ('branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                    ('business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 12. PRODUCT & CATALOG RULES                 -->
+        <!-- =========================================== -->
+        
+        <!-- Product Template Access: Users can see products based on BU or if no BU restrictions -->
+        <record id="rule_product_business_unit_silo" model="ir.rule">
+            <field name="name">Product: Business Unit Silo</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|', '|',
+                    ('business_unit_id', '=', False),
+                    ('business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids),
+                    ('company_id', 'in', user.company_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Product Product (Variant) Access -->
+        <record id="rule_product_product_bu_silo" model="ir.rule">
+            <field name="name">Product Variant: Business Unit Silo</field>
+            <field name="model_id" ref="product.model_product_product"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|', '|',
+                    ('product_tmpl_id.business_unit_id', '=', False),
+                    ('product_tmpl_id.business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids),
+                    ('product_tmpl_id.company_id', 'in', user.company_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 13. PRODUCT REQUEST RULES                   -->
+        <!-- =========================================== -->
+        
+        <!-- Product Request: Users see their branch requests -->
+        <record id="rule_product_request_branch" model="ir.rule">
+            <field name="name">Product Request: Branch Access</field>
+            <field name="model_id" ref="model_ops_product_request"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[('branch_id', 'in', user.ops_allowed_branch_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Product Request: Managers see all requests -->
+        <record id="rule_product_request_manager" model="ir.rule">
+            <field name="name">Product Request: Manager Full Access</field>
+            <field name="model_id" ref="model_ops_product_request"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 14. WAREHOUSE ACCESS RULES                  -->
+        <!-- =========================================== -->
+        
+        <!-- Warehouse: Branch-level Access -->
+        <record id="rule_warehouse_manager_branch_only" model="ir.rule">
+            <field name="name">Warehouse: Branch Access</field>
+            <field name="model_id" ref="stock.model_stock_warehouse"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|',
+                    ('branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                    ('company_id', 'in', user.company_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('stock.group_stock_user'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 15. PRICELIST RULES                         -->
+        <!-- =========================================== -->
+        
+        <!-- Pricelist: Show matrix pricelists for assigned dimensions (AND logic) -->
+        <record id="rule_pricelist_matrix_visibility" model="ir.rule">
+            <field name="name">Pricelist: Matrix Visibility</field>
+            <field name="model_id" ref="product.model_product_pricelist"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|',
+                    ('ops_is_matrix_pricelist', '=', False),
+                    '&amp;',
+                        ('ops_branch_id', 'in', user.ops_allowed_branch_ids.ids),
+                        ('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 16. CROSS-BRANCH BU LEADER OVERRIDES        -->
+        <!-- =========================================== -->
+        
+        <!-- Cross-Branch BU Leader: Can see their BU across all branches -->
+        <record id="rule_ops_cross_branch_bu_leader_sales" model="ir.rule">
+            <field name="name">OPS: Cross-branch BU leaders see their BU everywhere</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_cross_branch_bu_leader'))]"/>
+        </record>
+        
+        <!-- Cross-Branch BU Leader for Purchases -->
+        <record id="rule_ops_cross_branch_bu_leader_purchases" model="ir.rule">
+            <field name="name">OPS: Cross-branch BU leaders see purchases for their BU</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_cross_branch_bu_leader'))]"/>
+        </record>
+        
+        <!-- Cross-Branch BU Leader for Invoices -->
+        <record id="rule_ops_cross_branch_bu_leader_invoices" model="ir.rule">
+            <field name="name">OPS: Cross-branch BU leaders see invoices for their BU</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_cross_branch_bu_leader'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 17. MATRIX ADMINISTRATOR OVERRIDES          -->
+        <!-- =========================================== -->
+        
+        <!-- Matrix Administrators: Can see all business units -->
+        <record id="rule_ops_matrix_admin_bu" model="ir.rule">
+            <field name="name">OPS: Matrix admins can see all business units</field>
+            <field name="model_id" ref="model_ops_business_unit"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_matrix_administrator'))]"/>
+        </record>
+        
+        <!-- Matrix Administrator: Can see all governance rules -->
+        <record id="rule_ops_matrix_admin_governance" model="ir.rule">
+            <field name="name">OPS: Matrix admins can see all governance rules</field>
+            <field name="model_id" ref="model_ops_governance_rule"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_matrix_administrator'))]"/>
+        </record>
+        
+        <!-- =========================================== -->
+        <!-- 18. SYSTEM ADMINISTRATOR BYPASS RULES       -->
+        <!-- CRITICAL: Prevent system lockout            -->
+        <!-- =========================================== -->
+        
+        <!-- System Admin: Full Access to Sale Orders -->
+        <record id="ops_sale_order_admin_full_access" model="ir.rule">
+            <field name="name">Sale Order: System Admin Full Access</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Sale Order Lines -->
+        <record id="ops_sale_order_line_admin_full_access" model="ir.rule">
+            <field name="name">Sale Order Line: System Admin Full Access</field>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Purchase Orders -->
+        <record id="ops_purchase_order_admin_full_access" model="ir.rule">
+            <field name="name">Purchase Order: System Admin Full Access</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Account Moves (Invoices) -->
+        <record id="ops_account_move_admin_full_access" model="ir.rule">
+            <field name="name">Account Move: System Admin Full Access</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Account Move Lines -->
+        <record id="ops_account_move_line_admin_full_access" model="ir.rule">
+            <field name="name">Account Move Line: System Admin Full Access</field>
+            <field name="model_id" ref="account.model_account_move_line"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Stock Picking -->
+        <record id="ops_stock_picking_admin_full_access" model="ir.rule">
+            <field name="name">Stock Picking: System Admin Full Access</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Stock Moves -->
+        <record id="ops_stock_move_admin_full_access" model="ir.rule">
+            <field name="name">Stock Move: System Admin Full Access</field>
+            <field name="model_id" ref="stock.model_stock_move"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Stock Quants -->
+        <record id="ops_stock_quant_admin_full_access" model="ir.rule">
+            <field name="name">Stock Quant: System Admin Full Access</field>
+            <field name="model_id" ref="stock.model_stock_quant"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Personas -->
+        <record id="ops_persona_admin_full_access" model="ir.rule">
+            <field name="name">Persona: System Admin Full Access</field>
+            <field name="model_id" ref="model_ops_persona"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Persona Delegations -->
+        <record id="ops_persona_delegation_admin_full_access" model="ir.rule">
+            <field name="name">Persona Delegation: System Admin Full Access</field>
+            <field name="model_id" ref="model_ops_persona_delegation"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Governance Rules -->
+        <record id="ops_governance_rule_admin_full_access" model="ir.rule">
+            <field name="name">Governance Rule: System Admin Full Access</field>
+            <field name="model_id" ref="model_ops_governance_rule"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Inter-Branch Transfers -->
+        <record id="ops_inter_branch_transfer_admin_full_access" model="ir.rule">
+            <field name="name">Inter-Branch Transfer: System Admin Full Access</field>
+            <field name="model_id" ref="model_ops_inter_branch_transfer"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Approval Requests -->
+        <record id="ops_approval_request_admin_full_access" model="ir.rule">
+            <field name="name">Approval Request: System Admin Full Access</field>
+            <field name="model_id" ref="model_ops_approval_request"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Product Templates -->
+        <record id="ops_product_template_admin_full_access" model="ir.rule">
+            <field name="name">Product Template: System Admin Full Access</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Product Variants -->
+        <record id="ops_product_product_admin_full_access" model="ir.rule">
+            <field name="name">Product Variant: System Admin Full Access</field>
+            <field name="model_id" ref="product.model_product_product"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Product Requests -->
+        <record id="ops_product_request_admin_full_access" model="ir.rule">
+            <field name="name">Product Request: System Admin Full Access</field>
+            <field name="model_id" ref="model_ops_product_request"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Warehouses -->
+        <record id="ops_warehouse_admin_full_access" model="ir.rule">
+            <field name="name">Warehouse: System Admin Full Access</field>
+            <field name="model_id" ref="stock.model_stock_warehouse"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- System Admin: Full Access to Pricelists -->
+        <record id="ops_pricelist_admin_full_access" model="ir.rule">
+            <field name="name">Pricelist: System Admin Full Access</field>
+            <field name="model_id" ref="product.model_product_pricelist"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+        
+        <!-- ============================================================ -->
+        <!-- 20. BRANCH MANAGER & BU LEADER ISOLATION RULES               -->
+        <!-- ============================================================ -->
+        
+        <!-- Branch Manager: Own Branch Only - Sales Orders -->
+        <record id="rule_sale_order_branch_manager_isolation" model="ir.rule">
+            <field name="name">Branch Manager: Own Branch Sales Only</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_branch_manager'))]"/>
+            <field name="domain_force">[('ops_branch_id', '=', user.default_branch_id.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- BU Leader: All Branches in BU - Sales Orders -->
+        <!-- ENABLED: Uses ops_allowed_business_unit_ids for cross-branch BU access -->
+        <record id="rule_sale_order_bu_leader_isolation" model="ir.rule">
+            <field name="name">Sale Order: BU Leader Cross-Branch Access</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_bu_leader'))]"/>
+            <field name="domain_force">[('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- Branch Manager: Own Branch Only - Purchase Orders -->
+        <record id="rule_purchase_order_branch_manager_isolation" model="ir.rule">
+            <field name="name">Branch Manager: Own Branch Purchase Only</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_branch_manager'))]"/>
+            <field name="domain_force">[('ops_branch_id', '=', user.default_branch_id.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        
+        <!-- BU Leader: All Branches in BU - Purchase Orders -->
+        <!-- ENABLED: Uses ops_allowed_business_unit_ids for cross-branch BU access -->
+        <record id="rule_purchase_order_bu_leader_isolation" model="ir.rule">
+            <field name="name">Purchase Order: BU Leader Cross-Branch Access</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_bu_leader'))]"/>
+            <field name="domain_force">[('ops_business_unit_id', 'in', user.ops_allowed_business_unit_ids.ids)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+        
+    </data>
+</odoo>

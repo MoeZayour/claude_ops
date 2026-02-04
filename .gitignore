@@ -36,6 +36,7 @@ logs/
 # Temporary files
 tmp/
 temp/
+Clone/
 *.tmp
 
 # Docker volumes (data persists in volumes)

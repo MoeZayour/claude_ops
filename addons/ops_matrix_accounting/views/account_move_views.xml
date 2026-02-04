@@ -83,7 +83,7 @@
                                        decoration-danger="three_way_match_status in ('pending_receipt', 'over_billed', 'exception')"/>
                                 <field name="three_way_match_required" invisible="1"/>
                             </div>
-                            <div class="text-muted small" style="white-space: pre-line;">
+                            <div class="text-muted small ops-text-pre-line">
                                 <field name="three_way_match_details" readonly="1" nolabel="1"/>
                             </div>
                             <div class="mt-2" invisible="three_way_match_override or state == 'posted'">

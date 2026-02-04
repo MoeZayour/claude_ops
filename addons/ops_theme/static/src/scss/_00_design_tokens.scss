@@ -1,0 +1,136 @@
+// =============================================================================
+// OPS DESIGN SYSTEM - DESIGN TOKENS v1.0
+// =============================================================================
+// EXTENDED TOKENS - Works alongside _variables.scss
+// Adds spacing scale, component tokens, and wizard-specific values
+// =============================================================================
+
+:root {
+    // =========================================================================
+    // SPACING SCALE (4px base)
+    // =========================================================================
+    --ops-space-0: 0;
+    --ops-space-1: 4px;
+    --ops-space-2: 8px;
+    --ops-space-3: 12px;
+    --ops-space-4: 16px;
+    --ops-space-5: 20px;
+    --ops-space-6: 24px;
+    --ops-space-8: 32px;
+    --ops-space-10: 40px;
+    --ops-space-12: 48px;
+
+    // =========================================================================
+    // TYPOGRAPHY TOKENS
+    // =========================================================================
+    --ops-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+    --ops-text-xs: 0.75rem;
+    --ops-text-sm: 0.875rem;
+    --ops-text-base: 1rem;
+    --ops-text-lg: 1.125rem;
+    --ops-text-xl: 1.25rem;
+    --ops-text-2xl: 1.5rem;
+    --ops-text-3xl: 1.875rem;
+
+    --ops-font-normal: 400;
+    --ops-font-medium: 500;
+    --ops-font-semibold: 600;
+    --ops-font-bold: 700;
+
+    --ops-leading-tight: 1.25;
+    --ops-leading-normal: 1.5;
+    --ops-leading-relaxed: 1.75;
+
+    // =========================================================================
+    // SURFACE COLORS (Light Mode - extends _variables.scss)
+    // =========================================================================
+    --ops-surface-page: var(--ops-bg-body, #f1f5f9);
+    --ops-surface-card: var(--ops-bg-card, #ffffff);
+    --ops-surface-elevated: #ffffff;
+    --ops-surface-sunken: #f8fafc;
+    --ops-surface-overlay: rgba(15, 23, 42, 0.5);
+
+    // =========================================================================
+    // EXTENDED TEXT COLORS
+    // =========================================================================
+    --ops-text-link: var(--ops-secondary, #3b82f6);
+    --ops-text-link-hover: #2563eb;
+
+    // =========================================================================
+    // EXTENDED BORDER COLORS
+    // =========================================================================
+    --ops-border-default: var(--ops-border, #e2e8f0);
+    --ops-border-strong: #cbd5e1;
+    --ops-border-focus: var(--ops-secondary, #3b82f6);
+    --ops-border-error: var(--ops-danger, #ef4444);
+
+    // =========================================================================
+    // COMPONENT TOKENS - MODAL/WIZARD
+    // =========================================================================
+    --ops-modal-width-sm: 400px;
+    --ops-modal-width-md: 600px;
+    --ops-modal-width-lg: 800px;
+    --ops-modal-width-xl: 1000px;
+    --ops-modal-width-wizard: 900px;
+    --ops-modal-max-height: 85vh;
+
+    // =========================================================================
+    // COMPONENT TOKENS - WIZARD SECTIONS
+    // =========================================================================
+    --ops-wizard-section-bg: var(--ops-surface-sunken);
+    --ops-wizard-section-border: var(--ops-secondary, #3b82f6);
+    --ops-wizard-section-radius: var(--ops-radius-lg, 12px);
+    --ops-wizard-section-padding: var(--ops-space-5);
+    --ops-wizard-header-bg: linear-gradient(135deg, var(--ops-primary, #1e293b) 0%, #0f172a 100%);
+
+    // =========================================================================
+    // COMPONENT TOKENS - FORM INPUTS
+    // =========================================================================
+    --ops-input-height: 38px;
+    --ops-input-height-sm: 32px;
+    --ops-input-height-lg: 44px;
+    --ops-input-padding-x: var(--ops-space-3);
+    --ops-input-padding-y: var(--ops-space-2);
+    --ops-input-border-width: 1px;
+    --ops-input-focus-ring: 0 0 0 3px rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.15);
+
+    // =========================================================================
+    // TRANSITION ALIASES
+    // =========================================================================
+    --ops-transition-bounce: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    // =========================================================================
+    // EXTENDED SHADOWS
+    // =========================================================================
+    --ops-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --ops-shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+// =============================================================================
+// DARK MODE TOKEN OVERRIDES
+// =============================================================================
+[data-color-mode="dark"] {
+    // Surface colors
+    --ops-surface-page: #0f172a;
+    --ops-surface-card: #1e293b;
+    --ops-surface-elevated: #334155;
+    --ops-surface-sunken: #0f172a;
+    --ops-surface-overlay: rgba(0, 0, 0, 0.7);
+
+    // Extended text
+    --ops-text-link: #60a5fa;
+    --ops-text-link-hover: #93c5fd;
+
+    // Extended borders
+    --ops-border-default: #334155;
+    --ops-border-strong: #475569;
+
+    // Extended shadows (more pronounced in dark)
+    --ops-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.15);
+    --ops-shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+    // Wizard sections
+    --ops-wizard-section-bg: #0f172a;
+    --ops-wizard-header-bg: linear-gradient(135deg, var(--ops-secondary, #3b82f6) 0%, #1d4ed8 100%);
+}

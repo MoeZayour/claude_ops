@@ -1,0 +1,254 @@
+// =============================================================================
+// OPS DESIGN SYSTEM - UTILITY CLASSES
+// =============================================================================
+// Replace inline styles with these classes in XML files
+// Uses design tokens for consistency
+// =============================================================================
+
+// =============================================================================
+// MARGIN UTILITIES
+// =============================================================================
+.ops-m-0 { margin: 0 !important; }
+.ops-m-1 { margin: var(--ops-space-1, 4px) !important; }
+.ops-m-2 { margin: var(--ops-space-2, 8px) !important; }
+.ops-m-3 { margin: var(--ops-space-3, 12px) !important; }
+.ops-m-4 { margin: var(--ops-space-4, 16px) !important; }
+.ops-m-5 { margin: var(--ops-space-5, 20px) !important; }
+
+.ops-mt-0 { margin-top: 0 !important; }
+.ops-mt-1 { margin-top: var(--ops-space-1, 4px) !important; }
+.ops-mt-2 { margin-top: var(--ops-space-2, 8px) !important; }
+.ops-mt-3 { margin-top: var(--ops-space-3, 12px) !important; }
+.ops-mt-4 { margin-top: var(--ops-space-4, 16px) !important; }
+.ops-mt-5 { margin-top: var(--ops-space-5, 20px) !important; }
+
+.ops-mb-0 { margin-bottom: 0 !important; }
+.ops-mb-1 { margin-bottom: var(--ops-space-1, 4px) !important; }
+.ops-mb-2 { margin-bottom: var(--ops-space-2, 8px) !important; }
+.ops-mb-3 { margin-bottom: var(--ops-space-3, 12px) !important; }
+.ops-mb-4 { margin-bottom: var(--ops-space-4, 16px) !important; }
+.ops-mb-5 { margin-bottom: var(--ops-space-5, 20px) !important; }
+
+.ops-ml-0 { margin-left: 0 !important; }
+.ops-ml-1 { margin-left: var(--ops-space-1, 4px) !important; }
+.ops-ml-2 { margin-left: var(--ops-space-2, 8px) !important; }
+.ops-ml-3 { margin-left: var(--ops-space-3, 12px) !important; }
+.ops-ml-4 { margin-left: var(--ops-space-4, 16px) !important; }
+.ops-ml-5 { margin-left: var(--ops-space-5, 20px) !important; }
+
+.ops-mr-0 { margin-right: 0 !important; }
+.ops-mr-1 { margin-right: var(--ops-space-1, 4px) !important; }
+.ops-mr-2 { margin-right: var(--ops-space-2, 8px) !important; }
+.ops-mr-3 { margin-right: var(--ops-space-3, 12px) !important; }
+.ops-mr-4 { margin-right: var(--ops-space-4, 16px) !important; }
+.ops-mr-5 { margin-right: var(--ops-space-5, 20px) !important; }
+
+.ops-mx-auto { margin-left: auto !important; margin-right: auto !important; }
+
+// =============================================================================
+// PADDING UTILITIES
+// =============================================================================
+.ops-p-0 { padding: 0 !important; }
+.ops-p-1 { padding: var(--ops-space-1, 4px) !important; }
+.ops-p-2 { padding: var(--ops-space-2, 8px) !important; }
+.ops-p-3 { padding: var(--ops-space-3, 12px) !important; }
+.ops-p-4 { padding: var(--ops-space-4, 16px) !important; }
+.ops-p-5 { padding: var(--ops-space-5, 20px) !important; }
+
+.ops-pt-0 { padding-top: 0 !important; }
+.ops-pt-3 { padding-top: var(--ops-space-3, 12px) !important; }
+.ops-pt-4 { padding-top: var(--ops-space-4, 16px) !important; }
+
+.ops-pb-0 { padding-bottom: 0 !important; }
+.ops-pb-3 { padding-bottom: var(--ops-space-3, 12px) !important; }
+.ops-pb-4 { padding-bottom: var(--ops-space-4, 16px) !important; }
+
+.ops-px-2 { padding-left: var(--ops-space-2, 8px) !important; padding-right: var(--ops-space-2, 8px) !important; }
+.ops-px-3 { padding-left: var(--ops-space-3, 12px) !important; padding-right: var(--ops-space-3, 12px) !important; }
+.ops-px-4 { padding-left: var(--ops-space-4, 16px) !important; padding-right: var(--ops-space-4, 16px) !important; }
+
+.ops-py-2 { padding-top: var(--ops-space-2, 8px) !important; padding-bottom: var(--ops-space-2, 8px) !important; }
+.ops-py-3 { padding-top: var(--ops-space-3, 12px) !important; padding-bottom: var(--ops-space-3, 12px) !important; }
+.ops-py-4 { padding-top: var(--ops-space-4, 16px) !important; padding-bottom: var(--ops-space-4, 16px) !important; }
+
+// =============================================================================
+// TEXT UTILITIES
+// =============================================================================
+.ops-text-xs { font-size: var(--ops-text-xs, 0.75rem) !important; }
+.ops-text-sm { font-size: var(--ops-text-sm, 0.875rem) !important; }
+.ops-text-base { font-size: var(--ops-text-base, 1rem) !important; }
+.ops-text-lg { font-size: var(--ops-text-lg, 1.125rem) !important; }
+.ops-text-xl { font-size: var(--ops-text-xl, 1.25rem) !important; }
+.ops-text-2xl { font-size: var(--ops-text-2xl, 1.5rem) !important; }
+
+.ops-font-normal { font-weight: var(--ops-font-normal, 400) !important; }
+.ops-font-medium { font-weight: var(--ops-font-medium, 500) !important; }
+.ops-font-semibold { font-weight: var(--ops-font-semibold, 600) !important; }
+.ops-font-bold { font-weight: var(--ops-font-bold, 700) !important; }
+
+.ops-text-mono { font-family: var(--ops-font-mono, 'JetBrains Mono', monospace) !important; }
+.ops-text-pre { white-space: pre-wrap !important; }
+.ops-text-pre-line { white-space: pre-line !important; }
+
+.ops-text-primary { color: var(--ops-text-primary, #1e293b) !important; }
+.ops-text-secondary { color: var(--ops-text-secondary, #64748b) !important; }
+.ops-text-muted { color: var(--ops-text-muted, #94a3b8) !important; }
+.ops-text-success { color: var(--ops-success, #10b981) !important; }
+.ops-text-warning { color: var(--ops-warning, #f59e0b) !important; }
+.ops-text-danger { color: var(--ops-danger, #ef4444) !important; }
+.ops-text-info { color: var(--ops-info, #06b6d4) !important; }
+
+.ops-text-left { text-align: left !important; }
+.ops-text-center { text-align: center !important; }
+.ops-text-right { text-align: right !important; }
+
+// =============================================================================
+// SIZING UTILITIES
+// =============================================================================
+.ops-w-full { width: 100% !important; }
+.ops-w-auto { width: auto !important; }
+
+.ops-min-h-0 { min-height: 0 !important; }
+.ops-min-h-100 { min-height: 100px !important; }
+.ops-min-h-200 { min-height: 200px !important; }
+
+.ops-max-w-sm { max-width: 400px !important; }
+.ops-max-w-md { max-width: 600px !important; }
+.ops-max-w-lg { max-width: 800px !important; }
+
+// =============================================================================
+// DISPLAY UTILITIES
+// =============================================================================
+.ops-hidden { display: none !important; }
+.ops-block { display: block !important; }
+.ops-inline { display: inline !important; }
+.ops-inline-block { display: inline-block !important; }
+.ops-flex { display: flex !important; }
+.ops-inline-flex { display: inline-flex !important; }
+.ops-grid { display: grid !important; }
+
+.ops-flex-row { flex-direction: row !important; }
+.ops-flex-col { flex-direction: column !important; }
+.ops-flex-wrap { flex-wrap: wrap !important; }
+
+.ops-items-start { align-items: flex-start !important; }
+.ops-items-center { align-items: center !important; }
+.ops-items-end { align-items: flex-end !important; }
+
+.ops-justify-start { justify-content: flex-start !important; }
+.ops-justify-center { justify-content: center !important; }
+.ops-justify-end { justify-content: flex-end !important; }
+.ops-justify-between { justify-content: space-between !important; }
+
+.ops-gap-1 { gap: var(--ops-space-1, 4px) !important; }
+.ops-gap-2 { gap: var(--ops-space-2, 8px) !important; }
+.ops-gap-3 { gap: var(--ops-space-3, 12px) !important; }
+.ops-gap-4 { gap: var(--ops-space-4, 16px) !important; }
+
+// =============================================================================
+// BORDER UTILITIES
+// =============================================================================
+.ops-border { border: 1px solid var(--ops-border-default, #e2e8f0) !important; }
+.ops-border-0 { border: none !important; }
+.ops-border-t { border-top: 1px solid var(--ops-border-default, #e2e8f0) !important; }
+.ops-border-b { border-bottom: 1px solid var(--ops-border-default, #e2e8f0) !important; }
+.ops-border-l { border-left: 1px solid var(--ops-border-default, #e2e8f0) !important; }
+.ops-border-r { border-right: 1px solid var(--ops-border-default, #e2e8f0) !important; }
+
+.ops-rounded-none { border-radius: 0 !important; }
+.ops-rounded-sm { border-radius: var(--ops-radius-sm, 4px) !important; }
+.ops-rounded-md { border-radius: var(--ops-radius-md, 8px) !important; }
+.ops-rounded-lg { border-radius: var(--ops-radius-lg, 12px) !important; }
+.ops-rounded-full { border-radius: var(--ops-radius-full, 9999px) !important; }
+
+// =============================================================================
+// BACKGROUND UTILITIES
+// =============================================================================
+.ops-bg-transparent { background-color: transparent !important; }
+.ops-bg-white { background-color: #ffffff !important; }
+.ops-bg-card { background-color: var(--ops-bg-card, #ffffff) !important; }
+.ops-bg-sunken { background-color: var(--ops-surface-sunken, #f8fafc) !important; }
+.ops-bg-primary { background-color: var(--ops-primary, #1e293b) !important; }
+.ops-bg-secondary { background-color: var(--ops-secondary, #3b82f6) !important; }
+.ops-bg-success { background-color: var(--ops-success, #10b981) !important; }
+.ops-bg-warning { background-color: var(--ops-warning, #f59e0b) !important; }
+.ops-bg-danger { background-color: var(--ops-danger, #ef4444) !important; }
+.ops-bg-info { background-color: var(--ops-info, #06b6d4) !important; }
+
+// Light background variants
+.ops-bg-success-light { background-color: rgba(var(--ops-success-rgb, 16, 185, 129), 0.1) !important; }
+.ops-bg-warning-light { background-color: rgba(var(--ops-warning-rgb, 245, 158, 11), 0.1) !important; }
+.ops-bg-danger-light { background-color: rgba(var(--ops-danger-rgb, 239, 68, 68), 0.1) !important; }
+.ops-bg-info-light { background-color: rgba(var(--ops-info-rgb, 6, 182, 212), 0.1) !important; }
+
+// =============================================================================
+// SHADOW UTILITIES
+// =============================================================================
+.ops-shadow-none { box-shadow: none !important; }
+.ops-shadow-sm { box-shadow: var(--ops-shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05)) !important; }
+.ops-shadow-md { box-shadow: var(--ops-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1)) !important; }
+.ops-shadow-lg { box-shadow: var(--ops-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1)) !important; }
+
+// =============================================================================
+// SPECIAL UTILITIES
+// =============================================================================
+.ops-cursor-pointer { cursor: pointer !important; }
+.ops-cursor-default { cursor: default !important; }
+.ops-cursor-not-allowed { cursor: not-allowed !important; }
+
+.ops-overflow-hidden { overflow: hidden !important; }
+.ops-overflow-auto { overflow: auto !important; }
+.ops-overflow-y-auto { overflow-y: auto !important; }
+
+.ops-truncate {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.ops-sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+// =============================================================================
+// WIZARD LAYOUT HELPERS
+// =============================================================================
+.ops-wizard-grid-2 {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: var(--ops-space-4, 16px) !important;
+}
+
+.ops-wizard-grid-3 {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: var(--ops-space-4, 16px) !important;
+}
+
+.ops-wizard-full-width {
+    grid-column: 1 / -1 !important;
+}
+
+// =============================================================================
+// DARK MODE CONSIDERATIONS
+// =============================================================================
+[data-color-mode="dark"] {
+    .ops-bg-white { background-color: var(--ops-bg-card, #1e293b) !important; }
+    .ops-bg-sunken { background-color: var(--ops-surface-sunken, #0f172a) !important; }
+
+    .ops-border,
+    .ops-border-t,
+    .ops-border-b,
+    .ops-border-l,
+    .ops-border-r {
+        border-color: var(--ops-border-default, #334155) !important;
+    }
+}
