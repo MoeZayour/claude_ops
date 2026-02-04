@@ -61,7 +61,6 @@
                             invisible="state != 'draft'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,running,completed"/>
                 </header>
-                <sheet>
                     <!-- Critical Failures Alert -->
                     <div class="alert alert-danger" role="alert" invisible="failed_count == 0">
                         <strong>Critical:</strong>
@@ -151,7 +150,6 @@
                             <field name="notes" placeholder="Add notes about this compliance check..."/>
                         </page>
                     </notebook>
-                </sheet>
                 <chatter/>
             </form>
         </field>
@@ -242,7 +240,6 @@
         <field name="model">ops.security.compliance.result</field>
         <field name="arch" type="xml">
             <form>
-                <sheet>
                     <group>
                         <group>
                             <field name="check_id"/>
@@ -263,7 +260,6 @@
                     <group string="Recommendation" invisible="not recommendation">
                         <field name="recommendation" nolabel="1"/>
                     </group>
-                </sheet>
             </form>
         </field>
     </record>
@@ -277,7 +273,6 @@
         <field name="model">ops.persona.drift.wizard</field>
         <field name="arch" type="xml">
             <form string="Persona Drift Detection">
-                <sheet>
                     <div class="oe_title">
                         <h1>Persona Drift Detection</h1>
                         <h3 class="text-muted">Compare user permissions against their assigned personas</h3>
@@ -335,7 +330,6 @@
                     </group>
 
                     <field name="state" invisible="1"/>
-                </sheet>
                 <footer>
                     <button name="action_detect_drift" string="Detect Drift" type="object"
                             class="btn-primary"
@@ -358,7 +352,6 @@
         <field name="model">ops.audit.evidence.wizard</field>
         <field name="arch" type="xml">
             <form string="Export Audit Evidence">
-                <sheet>
                     <div class="oe_title">
                         <h1>Audit Evidence Export</h1>
                         <h3 class="text-muted">Generate comprehensive compliance evidence package</h3>
@@ -394,7 +387,6 @@
                     </group>
 
                     <field name="state" invisible="1"/>
-                </sheet>
                 <footer>
                     <button name="action_generate_evidence_pack" string="Generate Package" type="object"
                             class="btn-primary"

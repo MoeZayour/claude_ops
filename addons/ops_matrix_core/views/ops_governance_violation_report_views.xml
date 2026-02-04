@@ -5,7 +5,6 @@
         <field name="model">ops.governance.violation.report</field>
         <field name="arch" type="xml">
             <form string="Governance Violations Report">
-                <sheet>
                     <group>
                         <group>
                             <field name="date_from"/>
@@ -41,7 +40,6 @@
                             <field name="rejected_count" readonly="1"/>
                         </group>
                     </group>
-                </sheet>
                 
                 <footer>
                     <button name="action_generate_report" type="object" 
