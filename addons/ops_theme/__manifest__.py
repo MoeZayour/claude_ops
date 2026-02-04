@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.7.0.0',
+    'version': '19.0.7.2.0',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -108,8 +108,7 @@ Features:
             'ops_theme/static/src/scss/_settings_layout.scss',
             'ops_theme/static/src/scss/_error_fields.scss',
 
-            # 5.7. Comprehensive dark mode fixes
-            'ops_theme/static/src/scss/_dark_mode_comprehensive.scss',
+            # 5.7. (Removed - merged into _dark_mode.scss)
 
             # 5.8. Dashboard and kanban dark mode fixes
             'ops_theme/static/src/scss/_dashboard_kanban_fix.scss',
