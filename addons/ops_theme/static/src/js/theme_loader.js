@@ -9,6 +9,13 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize color mode attribute on HTML element
+    // This supports Odoo 19's native dark mode system
+    const htmlElement = document.documentElement;
+    if (!htmlElement.hasAttribute('data-color-mode')) {
+        htmlElement.setAttribute('data-color-mode', 'light');
+    }
+
     // Replace favicon with OPS favicon
     const favicon = document.querySelector('link[rel="icon"]') ||
                     document.querySelector('link[rel="shortcut icon"]');

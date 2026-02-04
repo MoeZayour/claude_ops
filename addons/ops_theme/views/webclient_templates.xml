@@ -3,12 +3,9 @@
     <!-- ===================================================================== -->
     <!-- OPS THEME v7.0 - Webclient Templates (Minimal)                       -->
     <!-- ===================================================================== -->
-
-    <!-- Add color mode support to main webclient HTML element -->
-    <template id="webclient_bootstrap" inherit_id="web.webclient_bootstrap" name="OPS Webclient Bootstrap" priority="99">
-        <xpath expr="//html" position="attributes">
-            <attribute name="data-color-mode">light</attribute>
-        </xpath>
-    </template>
-
+    <!-- 
+        NOTE: Color mode initialization is handled via JavaScript in 
+        theme_loader.js to avoid XPath issues with Odoo 19's template structure.
+        This follows the "minimal override" philosophy.
+    -->
 </odoo>
