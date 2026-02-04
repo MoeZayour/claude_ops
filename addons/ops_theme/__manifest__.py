@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.7.5.0',
+    'version': '19.0.7.5.1',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -125,10 +125,7 @@ Features:
             # 9. JavaScript - Debranding (registry cleanup)
             'ops_theme/static/src/js/debranding.js',
 
-            # 10. Color mode toggle component
-            'ops_theme/static/src/js/color_mode_toggle.js',
-
-            # 10.5. User menu items (color mode toggle, chatter toggle)
+            # 10. User menu items (color mode toggle, chatter toggle)
             'ops_theme/static/src/js/user_menu_items.js',
             'ops_theme/static/src/js/chatter_toggle.js',
 

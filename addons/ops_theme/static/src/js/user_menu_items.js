@@ -1,63 +1,59 @@
 /** @odoo-module **/
 /**
- * OPS Theme - User Menu Items
- * ===========================
+ * OPS Theme - User Menu Items (v7.5.1 - FIXED)
+ * ===============================================
  * Adds color mode toggle to the user menu dropdown.
+ * Uses Odoo 19's cookie-based system.
  */
 
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
-
-// =============================================================================
-// HELPER FUNCTIONS
-// =============================================================================
+import { cookie } from "@web/core/browser/cookie";
 
 function getCurrentColorMode() {
-    // Try global function first
-    if (typeof window.getOpsColorMode === 'function') {
-        return window.getOpsColorMode();
-    }
-    // Fallback to DOM attribute
-    const attr = document.documentElement.getAttribute('data-color-mode');
-    if (attr === 'light' || attr === 'dark') {
-        return attr;
-    }
-    // Fallback to localStorage
-    const stored = localStorage.getItem('ops_color_mode');
-    if (stored === 'light' || stored === 'dark') {
-        return stored;
-    }
-    // Default
-    return 'light';
+    // Read from Odoo's cookie (this is what Odoo uses)
+    return cookie.get("color_scheme") || "light";
 }
 
-function toggleColorMode() {
+async function toggleColorMode() {
     const current = getCurrentColorMode();
     const newMode = current === 'light' ? 'dark' : 'light';
-
-    // Use global function if available
-    if (typeof window.setOpsColorMode === 'function') {
-        window.setOpsColorMode(newMode);
-    } else {
-        // Fallback: apply directly
-        document.documentElement.setAttribute('data-color-mode', newMode);
-        localStorage.setItem('ops_color_mode', newMode);
-
-        if (newMode === 'dark') {
-            document.documentElement.classList.add('ops-dark-mode');
-            document.body?.classList.add('ops-dark-mode');
-        } else {
-            document.documentElement.classList.remove('ops-dark-mode');
-            document.body?.classList.remove('ops-dark-mode');
+    
+    console.log('[OPS Theme] Toggling color mode from', current, 'to', newMode);
+    
+    // 1. Set Odoo's cookie
+    cookie.set("color_scheme", newMode);
+    
+    // 2. Save to database for persistence
+    if (window.odoo?.session_info?.uid) {
+        try {
+            await fetch('/web/dataset/call_kw/res.users/write', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'call',
+                    params: {
+                        model: 'res.users',
+                        method: 'write',
+                        args: [[window.odoo.session_info.uid], { ops_color_mode: newMode }],
+                        kwargs: {},
+                    },
+                    id: Math.floor(Math.random() * 1000000),
+                }),
+            });
+            console.log('[OPS Theme] Color mode saved to database');
+        } catch (err) {
+            console.error('[OPS Theme] Error saving color mode:', err);
         }
     }
-
-    console.log('[OPS Theme] Color mode toggled to:', newMode);
+    
+    // 3. Reload page to apply new CSS
+    // (Odoo loads different CSS files based on color_scheme)
+    setTimeout(() => {
+        window.location.reload();
+    }, 200);
 }
-
-// =============================================================================
-// COLOR MODE TOGGLE MENU ITEM
-// =============================================================================
 
 function colorModeToggleItem(env) {
     const currentMode = getCurrentColorMode();
@@ -68,9 +64,7 @@ function colorModeToggleItem(env) {
         id: "ops_color_mode",
         description: isDark ? _t("Switch to Light Mode") : _t("Switch to Dark Mode"),
         callback: async () => {
-            toggleColorMode();
-            // Reload the menu to update the description
-            // The menu will close after click, so user sees new mode on next open
+            await toggleColorMode();
         },
         sequence: 5,
     };
@@ -78,4 +72,4 @@ function colorModeToggleItem(env) {
 
 registry.category("user_menuitems").add("ops_color_mode", colorModeToggleItem, { sequence: 5 });
 
-console.log('[OPS Theme] User menu items loaded');
+console.log('[OPS Theme] User menu items loaded (v7.5.1 - cookie-based)');
