@@ -30,14 +30,14 @@
         <record id="bu_template" model="ops.business.unit">
             <field name="name">[TEMPLATE] Business Unit</field>
             <field name="code">TMPL_BU</field>
-            <field name="active" eval="True"/>
+            <field name="active" eval="False"/>
         </record>
 
         <!-- Template Branch (placeholder for template users) -->
         <record id="branch_template" model="ops.branch">
             <field name="name">[TEMPLATE] Branch</field>
             <field name="code">TMPL_BR</field>
-            <field name="active" eval="True"/>
+            <field name="active" eval="False"/>
         </record>
 
         <!-- =================================================== -->
