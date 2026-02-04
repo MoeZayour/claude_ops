@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""
+OPS Theme - ir.http Extension
+=============================
+Integrates theme preferences with Odoo 19's native systems.
+"""
+
 from odoo import models
 from odoo.http import request
 
@@ -12,36 +18,38 @@ class IrHttp(models.AbstractModel):
         """
         Override Odoo 19's color_scheme method.
         
-        Odoo 19 uses a COOKIE named 'color_scheme' for dark mode.
-        This method provides the default value for that cookie.
-        We read from user's ops_color_mode field for persistence.
+        Odoo 19 uses this to provide the default value for the color_scheme cookie.
+        The webclient_bootstrap template uses webclient_rendering_context() which
+        calls this method. We read from user's ops_color_mode field for persistence.
         """
         if request and request.session and request.session.uid:
-            user = self.env['res.users'].sudo().browse(request.session.uid)
-            # Convert our field format to Odoo's cookie format
-            if user.ops_color_mode == 'dark':
-                return 'dark'
+            try:
+                user = self.env['res.users'].sudo().browse(request.session.uid)
+                if user.ops_color_mode == 'dark':
+                    return 'dark'
+            except Exception:
+                pass
         return 'light'  # Default
 
-    @classmethod
-    def _get_frontend_session_info(cls):
-        """Add OPS theme preferences to frontend session info."""
-        result = super()._get_frontend_session_info()
-        result.update(cls._get_ops_theme_session_info())
+    def session_info(self):
+        """
+        Override session_info to include OPS theme preferences.
+        
+        This makes ops_chatter_position available in session.ops_chatter_position
+        on the frontend JavaScript.
+        """
+        result = super().session_info()
+        
+        # Only add for authenticated internal users
+        if request and request.session and request.session.uid:
+            try:
+                user = self.env['res.users'].sudo().browse(request.session.uid)
+                if user._is_internal():
+                    result['ops_color_mode'] = user.ops_color_mode or 'light'
+                    result['ops_chatter_position'] = user.ops_chatter_position or 'bottom'
+            except Exception:
+                # Fallback defaults
+                result['ops_color_mode'] = 'light'
+                result['ops_chatter_position'] = 'bottom'
+        
         return result
-
-    @classmethod
-    def _get_backend_session_info(cls):
-        """Add OPS theme preferences to backend session info."""
-        result = super()._get_backend_session_info()
-        result.update(cls._get_ops_theme_session_info())
-        return result
-
-    @classmethod
-    def _get_ops_theme_session_info(cls):
-        """Get OPS theme specific session info."""
-        user = request.env.user
-        return {
-            'ops_color_mode': user.ops_color_mode or 'light',
-            'ops_chatter_position': user.ops_chatter_position or 'bottom',
-        }

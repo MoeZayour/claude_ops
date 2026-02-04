@@ -1,14 +1,15 @@
 /** @odoo-module **/
 /**
- * OPS Theme - User Preference Toggles (v7.6.5 - EXTREME DEBUG)
- * =============================================================
- * Added extreme logging to trace exact execution flow.
+ * OPS Theme - User Preference Toggles (v8.0.0 - Controller-Based)
+ * ================================================================
+ * Uses server-side controller endpoints with sudo() for reliable persistence.
+ * Previous approach using ORM.write was silently blocked by SELF_WRITEABLE_FIELDS.
  */
 
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
+import { rpc } from "@web/core/network/rpc";
 import { cookie } from "@web/core/browser/cookie";
-import { user } from "@web/core/user";
 import { session } from "@web/session";
 
 // =============================================================================
@@ -16,51 +17,33 @@ import { session } from "@web/session";
 // =============================================================================
 
 function colorModeToggleItem(env) {
+    // Read current mode from cookie (most reliable source on initial load)
     const currentScheme = cookie.get("color_scheme") || "light";
     const isDark = currentScheme === 'dark';
 
     return {
         type: "item",
         id: "ops_color_mode",
-        description: isDark ? _t("☀️ Light Mode") : _t("🌙 Dark Mode"),
+        description: isDark ? _t("☀️ Switch to Light Mode") : _t("🌙 Switch to Dark Mode"),
         callback: async function() {
-            console.log(`[OPS v7.6.5] === COLOR MODE TOGGLE CLICKED ===`);
-            console.log(`[OPS v7.6.5] Current scheme from cookie: ${currentScheme}`);
-            console.log(`[OPS v7.6.5] isDark: ${isDark}`);
-            console.log(`[OPS v7.6.5] user.userId: ${user.userId}`);
-            console.log(`[OPS v7.6.5] session.uid: ${session.uid}`);
-            
-            const newScheme = isDark ? 'light' : 'dark';
-            console.log(`[OPS v7.6.5] New scheme will be: ${newScheme}`);
+            const newMode = isDark ? 'light' : 'dark';
             
             try {
-                // Set cookie
-                console.log(`[OPS v7.6.5] Setting cookie...`);
-                cookie.set("color_scheme", newScheme);
-                const verifyC = cookie.get("color_scheme");
-                console.log(`[OPS v7.6.5] Cookie now reads: ${verifyC}`);
+                // Call controller endpoint (uses sudo() on server side)
+                const result = await rpc("/ops_theme/toggle_color_mode", { mode: newMode });
                 
-                // Save to database
-                console.log(`[OPS v7.6.5] Calling ORM.write...`);
-                const result = await env.services.orm.write("res.users", [user.userId], {
-                    ops_color_mode: newScheme
-                });
-                console.log(`[OPS v7.6.5] ORM.write result:`, result);
-                console.log(`[OPS v7.6.5] Database saved successfully!`);
-                
-                // Reload
-                console.log(`[OPS v7.6.5] About to reload...`);
-                console.log(`[OPS v7.6.5] window.location.href =`, window.location.href);
-                console.log(`[OPS v7.6.5] RELOADING NOW IN 3...2...1...`);
-                
-                window.location.href = window.location.href;
-                
+                if (result && result.success) {
+                    // Set cookie so Odoo loads correct CSS bundle on reload
+                    cookie.set("color_scheme", result.mode);
+                }
             } catch (error) {
-                console.error(`[OPS v7.6.5] EXCEPTION CAUGHT:`, error);
-                console.error(`[OPS v7.6.5] Error name:`, error.name);
-                console.error(`[OPS v7.6.5] Error message:`, error.message);
-                console.error(`[OPS v7.6.5] Error stack:`, error.stack);
+                // Even if RPC fails, set cookie and reload
+                cookie.set("color_scheme", newMode);
+                console.warn("[OPS Theme] Color mode RPC failed, cookie set anyway:", error);
             }
+            
+            // ALWAYS reload to apply the change
+            window.location.reload();
         },
         sequence: 5,
     };
@@ -71,44 +54,35 @@ function colorModeToggleItem(env) {
 // =============================================================================
 
 function chatterPositionToggleItem(env) {
+    // Read from session (set by ir_http.session_info)
     const currentPosition = session.ops_chatter_position || 'bottom';
     const isBottom = currentPosition === 'bottom';
 
     return {
         type: "item",
         id: "ops_chatter_position",
-        description: isBottom ? _t("📌 Chatter: Side") : _t("📌 Chatter: Bottom"),
+        description: isBottom ? _t("📌 Chatter: Move to Side") : _t("📌 Chatter: Move to Bottom"),
         callback: async function() {
-            console.log(`[OPS v7.6.5] === CHATTER TOGGLE CLICKED ===`);
-            console.log(`[OPS v7.6.5] Current position: ${currentPosition}`);
-            console.log(`[OPS v7.6.5] user.userId: ${user.userId}`);
-            
-            const newPosition = isBottom ? 'right' : 'bottom';
-            console.log(`[OPS v7.6.5] New position will be: ${newPosition}`);
-            
             try {
-                console.log(`[OPS v7.6.5] Calling ORM.write...`);
-                const result = await env.services.orm.write("res.users", [user.userId], {
-                    ops_chatter_position: newPosition
-                });
-                console.log(`[OPS v7.6.5] ORM.write result:`, result);
-                console.log(`[OPS v7.6.5] Database saved successfully!`);
-                
-                console.log(`[OPS v7.6.5] RELOADING NOW IN 3...2...1...`);
-                window.location.href = window.location.href;
-                
+                // Call controller endpoint (uses sudo() on server side)
+                await rpc("/ops_theme/toggle_chatter", {});
             } catch (error) {
-                console.error(`[OPS v7.6.5] EXCEPTION CAUGHT:`, error);
-                console.error(`[OPS v7.6.5] Error details:`, error.message, error.stack);
+                console.warn("[OPS Theme] Chatter toggle RPC failed:", error);
             }
+            
+            // ALWAYS reload to apply the change
+            window.location.reload();
         },
         sequence: 10,
     };
 }
 
-// Register both items
+// =============================================================================
+// REGISTER MENU ITEMS
+// =============================================================================
+
 registry.category("user_menuitems")
     .add("ops_color_mode", colorModeToggleItem, { sequence: 5 })
     .add("ops_chatter_position", chatterPositionToggleItem, { sequence: 10 });
 
-console.log('[OPS v7.6.5] Toggles loaded (EXTREME DEBUG MODE) ✓');
+console.log('[OPS Theme v8.0.0] Controller-based toggles loaded ✓');
