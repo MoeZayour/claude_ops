@@ -1,18 +1,29 @@
 /** @odoo-module **/
 /**
- * OPS Theme - Chatter Position Toggle
- * ====================================
+ * OPS Theme - Chatter Position Toggle (FIXED v7.4.0)
+ * ===================================================
  * Adds chatter position toggle to the user menu dropdown.
+ * 
+ * BUG FIX: FormCompiler reads session.chatter_position at compile time,
+ * which is static. After toggling, we now reload the page to refresh
+ * the session with the new preference.
  */
 
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
+import { browser } from "@web/core/browser/browser";
 
 // =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
 
 function getCurrentChatterPosition() {
+    // First check session (authoritative)
+    if (window.odoo?.session_info?.ops_chatter_position) {
+        return window.odoo.session_info.ops_chatter_position;
+    }
+    
+    // Fallback to localStorage
     const stored = localStorage.getItem('ops_chatter_position');
     if (stored === 'side' || stored === 'right') {
         return 'right';
@@ -41,29 +52,54 @@ function applyChatterPosition(position) {
     }
 }
 
-function toggleChatterPosition() {
+async function toggleChatterPosition() {
     const current = getCurrentChatterPosition();
     const newPosition = current === 'bottom' ? 'right' : 'bottom';
+    
+    console.log('[OPS Theme] Toggling chatter position from', current, 'to', newPosition);
+    
+    // Apply locally first
     applyChatterPosition(newPosition);
-    console.log('[OPS Theme] Chatter position toggled to:', newPosition);
 
     // Save to server
     if (window.odoo?.session_info?.uid) {
-        fetch('/web/dataset/call_kw/res.users/write', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'call',
-                params: {
-                    model: 'res.users',
-                    method: 'write',
-                    args: [[window.odoo.session_info.uid], { ops_chatter_position: newPosition }],
-                    kwargs: {},
-                },
-                id: Math.floor(Math.random() * 1000000),
-            }),
-        }).catch(err => console.warn('[OPS Theme] Could not save chatter position:', err));
+        try {
+            const response = await fetch('/web/dataset/call_kw/res.users/write', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'call',
+                    params: {
+                        model: 'res.users',
+                        method: 'write',
+                        args: [[window.odoo.session_info.uid], { ops_chatter_position: newPosition }],
+                        kwargs: {},
+                    },
+                    id: Math.floor(Math.random() * 1000000),
+                }),
+            });
+
+            const result = await response.json();
+            
+            if (result.error) {
+                console.error('[OPS Theme] Failed to save chatter position:', result.error);
+                return;
+            }
+            
+            console.log('[OPS Theme] Chatter position saved to server:', newPosition);
+            
+            // CRITICAL FIX: Reload page to refresh session and re-compile forms
+            // FormCompiler reads session.chatter_position at compile time,
+            // so we need a fresh session for it to pick up the new value
+            console.log('[OPS Theme] Reloading page to apply chatter position change...');
+            setTimeout(() => {
+                browser.location.reload();
+            }, 300);
+            
+        } catch (err) {
+            console.error('[OPS Theme] Error saving chatter position:', err);
+        }
     }
 }
 
@@ -80,7 +116,7 @@ function chatterPositionToggleItem(env) {
         id: "ops_chatter_position",
         description: isRight ? _t("Chatter: Move to Bottom") : _t("Chatter: Move to Side"),
         callback: async () => {
-            toggleChatterPosition();
+            await toggleChatterPosition();
         },
         sequence: 10,
     };
@@ -115,4 +151,4 @@ history.pushState = function() {
     }, 100);
 };
 
-console.log('[OPS Theme] Chatter toggle loaded');
+console.log('[OPS Theme] Chatter toggle loaded (v7.4.0 - fixed persistence with page reload)');

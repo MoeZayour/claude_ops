@@ -1,13 +1,16 @@
 /** @odoo-module **/
 /**
- * OPS Theme - Color Mode Toggle
- * =============================
- * Handles light/dark mode switching with server-side preference sync.
+ * OPS Theme - Color Mode Toggle (FIXED v7.4.0)
+ * ==============================================
+ * Handles light/dark mode switching with proper persistence.
  *
- * Priority:
- * 1. HTML attribute (set by server via template)
- * 2. localStorage (for persistence)
+ * PRIORITY ORDER (FIXED):
+ * 1. HTML attribute (set by server via template from user.ops_color_mode)
+ * 2. localStorage (for client-side persistence)
  * 3. Default: 'light'
+ *
+ * BUG FIX: Previously localStorage was checked before HTML attribute,
+ * causing server preference to be ignored on page load.
  */
 
 // =============================================================================
@@ -17,26 +20,27 @@
 (function() {
     'use strict';
 
-    // First, check if server already set the attribute via template
+    // PRIORITY 1: Check if server set the attribute via template
+    // This is the authoritative source - the user's saved preference
     let serverMode = document.documentElement.getAttribute('data-color-mode');
 
-    // If server set a valid mode, use it
-    if (serverMode === 'light' || serverMode === 'dark') {
-        localStorage.setItem('ops_color_mode', serverMode);
-        applyColorMode(serverMode);
-        return;
+    // PRIORITY 2: If no server attribute yet (template not fully rendered),
+    // check localStorage as fallback
+    if (!serverMode || (serverMode !== 'light' && serverMode !== 'dark')) {
+        serverMode = localStorage.getItem('ops_color_mode');
     }
 
-    // Otherwise, try localStorage
-    let effectiveMode = localStorage.getItem('ops_color_mode');
-
-    // Default to light if nothing stored
+    // PRIORITY 3: Default to light if nothing is set
+    let effectiveMode = serverMode;
     if (!effectiveMode || (effectiveMode !== 'light' && effectiveMode !== 'dark')) {
         effectiveMode = 'light';
     }
 
     // Apply immediately to prevent flash
     applyColorMode(effectiveMode);
+    
+    // Sync localStorage with the applied mode
+    localStorage.setItem('ops_color_mode', effectiveMode);
 })();
 
 /**
@@ -64,15 +68,21 @@ function applyColorMode(mode) {
 // =============================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait a tick for Odoo session to be available
+    // Wait for Odoo session to be available
     setTimeout(() => {
         if (window.odoo && window.odoo.session_info) {
             const serverMode = window.odoo.session_info.ops_color_mode;
+            
+            // If server has a preference and it differs from current, apply it
             if (serverMode && (serverMode === 'light' || serverMode === 'dark')) {
-                // Server preference takes precedence
-                localStorage.setItem('ops_color_mode', serverMode);
-                applyColorMode(serverMode);
-                console.log('OPS Theme: Applied server color mode:', serverMode);
+                const currentMode = document.documentElement.getAttribute('data-color-mode');
+                
+                if (currentMode !== serverMode) {
+                    // Server preference is authoritative
+                    localStorage.setItem('ops_color_mode', serverMode);
+                    applyColorMode(serverMode);
+                    console.log('[OPS Theme] Synced color mode from server:', serverMode);
+                }
             }
         }
     }, 100);
@@ -85,14 +95,15 @@ document.addEventListener('DOMContentLoaded', function() {
 /**
  * Set the color mode and persist preference.
  * @param {string} mode - 'light' or 'dark'
+ * @returns {Promise<boolean>} Success status
  */
-window.setOpsColorMode = function(mode) {
+window.setOpsColorMode = async function(mode) {
     if (mode !== 'light' && mode !== 'dark') {
-        console.warn('OPS Theme: Invalid color mode:', mode, '- using light');
+        console.warn('[OPS Theme] Invalid color mode:', mode, '- using light');
         mode = 'light';
     }
 
-    // Apply to DOM
+    // Apply to DOM immediately
     applyColorMode(mode);
 
     // Persist to localStorage
@@ -100,26 +111,42 @@ window.setOpsColorMode = function(mode) {
 
     // Save to server if session available
     if (window.odoo && window.odoo.session_info && window.odoo.session_info.uid) {
-        fetch('/web/dataset/call_kw/res.users/write', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'call',
-                params: {
-                    model: 'res.users',
-                    method: 'write',
-                    args: [[window.odoo.session_info.uid], { ops_color_mode: mode }],
-                    kwargs: {},
+        try {
+            const response = await fetch('/web/dataset/call_kw/res.users/write', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-                id: Math.floor(Math.random() * 1000000),
-            }),
-        }).catch(err => console.warn('OPS Theme: Could not save preference:', err));
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'call',
+                    params: {
+                        model: 'res.users',
+                        method: 'write',
+                        args: [[window.odoo.session_info.uid], { ops_color_mode: mode }],
+                        kwargs: {},
+                    },
+                    id: Math.floor(Math.random() * 1000000),
+                }),
+            });
+
+            const result = await response.json();
+            
+            if (result.error) {
+                console.error('[OPS Theme] Failed to save color mode:', result.error);
+                return false;
+            }
+            
+            console.log('[OPS Theme] Color mode saved to server:', mode);
+            return true;
+        } catch (err) {
+            console.error('[OPS Theme] Error saving color mode:', err);
+            return false;
+        }
     }
 
-    console.log('OPS Theme: Color mode set to', mode);
+    console.log('[OPS Theme] Color mode set to', mode);
+    return true;
 };
 
 /**
@@ -133,10 +160,13 @@ window.getOpsColorMode = function() {
 /**
  * Toggle between light and dark mode.
  */
-window.toggleOpsColorMode = function() {
+window.toggleOpsColorMode = async function() {
     const current = window.getOpsColorMode();
-    window.setOpsColorMode(current === 'light' ? 'dark' : 'light');
+    const newMode = current === 'light' ? 'dark' : 'light';
+    await window.setOpsColorMode(newMode);
 };
 
 // Export for module usage
 export { applyColorMode };
+
+console.log('[OPS Theme] Color mode toggle loaded (v7.4.0 - fixed persistence)');
