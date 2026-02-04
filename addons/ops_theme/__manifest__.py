@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.7.5.3',
+    'version': '19.0.7.6.0',
     'category': 'Themes/Backend',
     'summary': 'Premium enterprise theme with modern styling',
     'description': """
@@ -125,12 +125,10 @@ Features:
             # 9. JavaScript - Debranding (registry cleanup)
             'ops_theme/static/src/js/debranding.js',
 
-            # 10. User menu items (color mode toggle, chatter toggle)
-            'ops_theme/static/src/js/user_menu_items.js',
-            'ops_theme/static/src/js/chatter_toggle.js',
+            # 10. OPS Theme Toggles (color mode + chatter position)
+            'ops_theme/static/src/js/ops_theme_toggles.js',
 
-            # 11. OWL Component Patches - ALIGNED WITH ODOO 19
-            # Patch FormRenderer.mailLayout() to check user preference
+            # 11. Chatter Position Patch (FormRenderer.mailLayout)
             'ops_theme/static/src/js/chatter_position_patch.js',
 
             # 12. Feature extensions
