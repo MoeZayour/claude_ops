@@ -141,11 +141,13 @@
                         title="Approve three-way match override for this bill"/>
             </xpath>
 
-            <!-- Hidden fields for computation -->
+            <!-- Hidden fields for computation (wrapped in group to preserve layout) -->
             <xpath expr="//sheet" position="inside">
-                <field name="three_way_match_override" invisible="1"/>
-                <field name="matched_po_ids" invisible="1"/>
-                <field name="matched_picking_ids" invisible="1"/>
+                <group invisible="1" name="three_way_match_hidden_fields">
+                    <field name="three_way_match_override"/>
+                    <field name="matched_po_ids"/>
+                    <field name="matched_picking_ids"/>
+                </group>
             </xpath>
 
         </field>
