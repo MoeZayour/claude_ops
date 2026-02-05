@@ -3,175 +3,99 @@
     <!--
     ====================================================
     OPS Matrix Accounting Menu Structure
-    Consolidated menu hierarchy - reduces top-level menus from 10 to 6:
-    - Customers
-    - Vendors
-    - Accounting (with Management, Bank & Treasury, Period End sections)
-    - Reporting
-    - Asset Management
-    - Configuration
+    ====================================================
+    6-section Accounting menu hierarchy:
+      1. Operations
+      2. Assets
+      3. Analytics & Planning
+      4. Period Close
+      5. Reports
+      6. Configuration
+
+    PRESERVED AS-IS:
+      - Customers (account.menu_finance_receivables)
+      - Vendors (account.menu_finance_payables)
 
     OVERRIDE: Renames "Invoicing" to "Accounting" in app launcher.
     ====================================================
     -->
 
     <!-- =================== APP NAME OVERRIDE =================== -->
-    <!-- Override the root Invoicing menu to display as "Accounting" -->
     <record id="account.menu_finance" model="ir.ui.menu">
         <field name="name">Accounting</field>
     </record>
 
-    <!-- =================== OPS MATRIX SUB-MENUS =================== -->
+    <!-- Legacy OPS root - deactivated -->
+    <menuitem id="menu_ops_accounting_root" name="OPS Matrix" active="False"/>
 
-    <!-- Main OPS Accounting Root Menu Deactivated -->
-    <menuitem
-        id="menu_ops_accounting_root"
-        name="OPS Matrix"
-        active="False"/>
+    <!-- ============================================ -->
+    <!-- HIDE OLD SECTION MENUS (replaced by new IDs) -->
+    <!-- ============================================ -->
 
-    <!-- =================== MANAGEMENT SECTION =================== -->
-    <!-- Section under Accounting for analytical tools, budgets, and leases -->
+    <!-- Old "Management" section replaced by "Analytics & Planning" -->
+    <record id="menu_ops_accounting_management" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
-    <menuitem id="menu_ops_accounting_management"
-        name="Management"
-        parent="account.menu_finance"
-        sequence="25"
-                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
+    <!-- Old "Bank & Treasury" section - items moved to Operations -->
+    <record id="menu_ops_bank_treasury" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
-    <!-- Analytic Items - Native Odoo action -->
-    <menuitem id="menu_ops_analytic_items"
-        name="Analytic Items"
-        parent="menu_ops_accounting_management"
-        action="analytic.account_analytic_line_action_entries"
-        groups="analytic.group_analytic_accounting"
-        sequence="10"/>
+    <!-- Old "Asset Management" section replaced by "Assets" -->
+    <record id="menu_ops_asset_management" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
-    <!-- Budgets - moved from top-level Budget Control -->
-    <menuitem id="menu_ops_budgets_sub"
-        name="Budgets"
-        parent="menu_ops_accounting_management"
-        action="action_ops_budget"
-        sequence="20"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader"/>
+    <!-- Old "Asset Configuration" sub-section -->
+    <record id="menu_ops_asset_configuration" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
-    <!-- Leases - moved from top-level Leases (IFRS 16) -->
-    <menuitem id="menu_ops_leases_sub"
-        name="Leases (IFRS 16)"
-        parent="menu_ops_accounting_management"
-        action="action_ops_lease"
-        sequence="30"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
+    <!-- Old "Period End" section replaced by "Period Close" -->
+    <record id="menu_ops_period_end" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
-    <!-- =================== BANK & TREASURY SECTION =================== -->
-    <!-- Section under Accounting for bank reconciliation and treasury management -->
+    <!-- Old FX Revaluation menu under native entries (moved to Operations) -->
+    <record id="menu_ops_fx_revaluation" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
-    <menuitem id="menu_ops_bank_treasury"
-        name="Bank &amp; Treasury"
-        parent="account.menu_finance"
-        sequence="30"
-                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
+    <!-- Old Balance Sheet wizard menu (wizard deleted) -->
+    <record id="menu_ops_balance_sheet_wizard" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
-    <!-- Bank Reconciliation - moved from top-level -->
-    <menuitem id="menu_ops_bank_reconciliation_sub"
-        name="Bank Reconciliation"
-        parent="menu_ops_bank_treasury"
-        action="action_ops_bank_reconciliation"
-        sequence="10"
-                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
+    <!-- Old Automation under Entries (moved to Configuration > Automation) -->
+    <record id="menu_ops_automation" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
-    <!-- Bank Statements - Native Odoo action -->
-    <menuitem id="menu_ops_bank_statements"
-        name="Bank Statements"
-        parent="menu_ops_bank_treasury"
-        action="account.action_bank_statement_tree"
-        sequence="20"
-                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
+    <!-- ============================================ -->
+    <!-- HIDE OLD TOP-LEVEL / NATIVE SUB-MENUS        -->
+    <!-- ============================================ -->
 
-    <!-- =================== DEACTIVATE OLD TOP-LEVEL MENUS =================== -->
-    <!-- These menus have been moved to sections under Accounting -->
-
-    <!-- Deactivate Budget Control top-level menu (moved to Accounting > Management > Budgets) -->
+    <!-- Deactivate Budget Control top-level (moved to Analytics & Planning) -->
     <record id="menu_ops_budget" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
 
-    <!-- Deactivate Bank Reconciliation top-level menu (moved to Accounting > Bank & Treasury) -->
+    <!-- Deactivate Bank Reconciliation top-level (moved to Operations) -->
     <record id="menu_ops_bank_reconciliation" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
 
-    <!-- Deactivate Leases top-level menu (moved to Accounting > Management > Leases) -->
+    <!-- Deactivate Leases top-level (moved to Analytics & Planning) -->
     <record id="menu_ops_lease" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
 
-    <!-- =================== ASSET MANAGEMENT =================== -->
+    <!-- Disable Financial Analysis (legacy) -->
+    <menuitem id="menu_ops_accounting_reports" name="Financial Analysis"
+              parent="ops_matrix_core.menu_ops_reporting" sequence="20" active="False"/>
 
-    <!-- Asset Management Main Menu -->
-    <menuitem
-        id="menu_ops_asset_management"
-        name="Asset Management"
-        parent="account.menu_finance"
-        sequence="20"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
-
-    <!-- Menu for Assets -->
-    <menuitem
-        id="menu_ops_asset"
-        name="Assets"
-        parent="menu_ops_asset_management"
-        action="action_ops_asset"
-        sequence="10"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
-
-    <!-- Menu for Depreciation Lines -->
-    <menuitem
-        id="menu_ops_asset_depreciation"
-        name="Depreciation Lines"
-        parent="menu_ops_asset_management"
-        action="action_ops_asset_depreciation"
-        sequence="20"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
-
-    <!-- Generate Assets Entries - Calculate depreciation for assets -->
-    <menuitem
-        id="menu_ops_generate_asset_entries"
-        name="Generate Assets Entries"
-        parent="menu_ops_asset_management"
-        action="action_ops_asset_depreciation_wizard"
-        sequence="25"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
-
-    <!-- Asset Configuration Menu -->
-    <menuitem
-        id="menu_ops_asset_configuration"
-        name="Configuration"
-        parent="menu_ops_asset_management"
-        sequence="100"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
-
-    <!-- Menu for Asset Categories -->
-    <menuitem
-        id="menu_ops_asset_category"
-        name="Asset Categories"
-        parent="menu_ops_asset_configuration"
-        action="action_ops_asset_category"
-        sequence="10"
-                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
-
-    <!-- =================== FINANCIAL REPORTS =================== -->
-
-    <!-- DISABLED: Financial Analysis now accessed via Accounting > Reporting -->
-    <!-- Use: Matrix Financial Intelligence, Treasury Intelligence, Asset Intelligence -->
-    <menuitem
-        id="menu_ops_accounting_reports"
-        name="Financial Analysis"
-        parent="ops_matrix_core.menu_ops_reporting"
-        sequence="20"
-        active="False"/>
-
-    <!-- =================== HIDE NATIVE ODOO REPORTING SUBMENUS =================== -->
-    <!-- Hide all native Odoo subheaders to get a flat menu structure -->
+    <!-- Hide native Odoo reporting subheaders for flat OPS menu structure -->
     <record id="account.account_reports_partners_reports_menu" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
@@ -185,217 +109,383 @@
         <field name="active" eval="False"/>
     </record>
 
-    <!-- =================== CONSOLIDATED REPORTING MENUS =================== -->
-    <!--
-    All reporting menus under Accounting > Reporting
-    Flat structure with sequential ordering:
-    - Matrix Financial Intelligence (seq 10)
-    - Treasury Intelligence (seq 20)
-    - Asset Intelligence (seq 30)
-    - Invoice Analysis (seq 40)
-    - Analytic Report (seq 50)
-    - PDC Reports (seq 60)
-    -->
+    <!-- ============================================ -->
+    <!-- 1. OPERATIONS                                -->
+    <!-- ============================================ -->
 
-    <!-- NOTE: These menus moved to respective wizard view files to avoid circular dependency -->
-    <!-- See: ops_general_ledger_wizard_enhanced_views.xml, ops_treasury_report_wizard_views.xml, ops_asset_report_wizard_views.xml -->
+    <menuitem id="menu_ops_acct_operations"
+              name="Operations"
+              parent="account.menu_finance"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_executive"/>
 
-    <!-- 1. Matrix Financial Intelligence - MOVED to ops_general_ledger_wizard_enhanced_views.xml -->
-    <!-- 2. Treasury Intelligence - MOVED to ops_treasury_report_wizard_views.xml -->
-    <!-- 3. Asset Intelligence - MOVED to ops_asset_report_wizard_views.xml -->
+    <!-- Journal Entries (native Odoo action) -->
+    <menuitem id="menu_ops_journal_entries"
+              name="Journal Entries"
+              parent="menu_ops_acct_operations"
+              action="account.action_move_journal_line"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
 
-    <!-- 4. Invoice Analysis (Native Odoo Action) -->
+    <!-- Journal Items (native Odoo action) -->
+    <menuitem id="menu_ops_journal_items"
+              name="Journal Items"
+              parent="menu_ops_acct_operations"
+              action="account.action_account_moves_all"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
+
+    <!-- Bank Reconciliation -->
+    <menuitem id="menu_ops_bank_reconciliation_sub"
+              name="Bank Reconciliation"
+              parent="menu_ops_acct_operations"
+              action="action_ops_bank_reconciliation"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
+
+    <!-- Bank Statements (native Odoo action) -->
+    <menuitem id="menu_ops_bank_statements"
+              name="Bank Statements"
+              parent="menu_ops_acct_operations"
+              action="account.action_bank_statement_tree"
+              sequence="40"
+              groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
+
+    <!-- FX Revaluation -->
+    <menuitem id="menu_ops_fx_revaluation_ops"
+              name="FX Revaluation"
+              parent="menu_ops_acct_operations"
+              action="action_ops_fx_revaluation_wizard"
+              sequence="50"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+
+    <!-- Generate Asset Entries -->
+    <menuitem id="menu_ops_generate_asset_entries"
+              name="Generate Asset Entries"
+              parent="menu_ops_acct_operations"
+              action="action_ops_asset_depreciation_wizard"
+              sequence="60"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+
+    <!-- ============================================ -->
+    <!-- 2. ASSETS                                    -->
+    <!-- ============================================ -->
+
+    <menuitem id="menu_ops_acct_assets"
+              name="Assets"
+              parent="account.menu_finance"
+              sequence="25"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
+
+    <!-- Assets list -->
+    <menuitem id="menu_ops_asset"
+              name="Assets"
+              parent="menu_ops_acct_assets"
+              action="action_ops_asset"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
+
+    <!-- Depreciation Lines -->
+    <menuitem id="menu_ops_asset_depreciation"
+              name="Depreciation Lines"
+              parent="menu_ops_acct_assets"
+              action="action_ops_asset_depreciation"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
+
+    <!-- Asset Categories -->
+    <menuitem id="menu_ops_asset_category"
+              name="Asset Categories"
+              parent="menu_ops_acct_assets"
+              action="action_ops_asset_category"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
+
+    <!-- ============================================ -->
+    <!-- 3. ANALYTICS & PLANNING                      -->
+    <!-- ============================================ -->
+
+    <menuitem id="menu_ops_acct_analytics"
+              name="Analytics &amp; Planning"
+              parent="account.menu_finance"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader"/>
+
+    <!-- Analytic Items (native Odoo action) -->
+    <menuitem id="menu_ops_analytic_items"
+              name="Analytic Items"
+              parent="menu_ops_acct_analytics"
+              action="analytic.account_analytic_line_action_entries"
+              groups="analytic.group_analytic_accounting"
+              sequence="10"/>
+
+    <!-- Budgets -->
+    <menuitem id="menu_ops_budgets_sub"
+              name="Budgets"
+              parent="menu_ops_acct_analytics"
+              action="action_ops_budget"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader"/>
+
+    <!-- Leases (IFRS 16) -->
+    <menuitem id="menu_ops_leases_sub"
+              name="Leases (IFRS 16)"
+              parent="menu_ops_acct_analytics"
+              action="action_ops_lease"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
+
+    <!-- ============================================ -->
+    <!-- 4. PERIOD CLOSE                              -->
+    <!-- ============================================ -->
+
+    <menuitem id="menu_ops_acct_period_close"
+              name="Period Close"
+              parent="account.menu_finance"
+              sequence="35"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+
+    <!-- Fiscal Periods -->
+    <menuitem id="menu_ops_fiscal_periods"
+              name="Fiscal Periods"
+              parent="menu_ops_acct_period_close"
+              action="action_ops_fiscal_period"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+
+    <!-- Close Checklist -->
+    <menuitem id="menu_ops_period_checklist"
+              name="Close Checklist"
+              parent="menu_ops_acct_period_close"
+              action="action_ops_period_checklist"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+
+    <!-- Branch Period Locks -->
+    <menuitem id="menu_ops_branch_period_locks"
+              name="Branch Period Locks"
+              parent="menu_ops_acct_period_close"
+              action="action_ops_period_branch_lock"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+
+    <!-- ============================================ -->
+    <!-- 5. REPORTS                                   -->
+    <!-- ============================================ -->
+
+    <!-- 5.1 Financial Intelligence -->
+    <menuitem id="menu_ops_acct_reports_financial"
+              name="Financial Intelligence"
+              parent="account.menu_finance_reports"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+
+    <!-- Matrix Financial Intelligence -->
+    <menuitem id="menu_reporting_financial_intelligence"
+              name="Matrix Financial Intelligence"
+              parent="menu_ops_acct_reports_financial"
+              action="action_ops_general_ledger_wizard_enhanced"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+
+    <!-- Consolidation Intelligence (NEW) -->
+    <menuitem id="menu_reporting_consolidation_intelligence"
+              name="Consolidation Intelligence"
+              parent="menu_ops_acct_reports_financial"
+              action="action_ops_consolidation_intelligence_wizard"
+              sequence="15"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
+
+    <!-- Treasury Intelligence -->
+    <menuitem id="menu_reporting_treasury_intelligence"
+              name="Treasury Intelligence"
+              parent="menu_ops_acct_reports_financial"
+              action="action_ops_treasury_report_wizard"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
+
+    <!-- Asset Intelligence -->
+    <menuitem id="menu_reporting_asset_intelligence"
+              name="Asset Intelligence"
+              parent="menu_ops_acct_reports_financial"
+              action="action_ops_asset_report_wizard"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
+
+    <!-- 5.2 Analysis -->
+    <menuitem id="menu_ops_acct_reports_analysis"
+              name="Analysis"
+              parent="account.menu_finance_reports"
+              sequence="40"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+
+    <!-- Invoice Analysis (native Odoo) -->
     <menuitem id="menu_reporting_invoice_analysis"
               name="Invoice Analysis"
-              parent="account.menu_finance_reports"
+              parent="menu_ops_acct_reports_analysis"
               action="account.action_account_invoice_report_all"
-              sequence="40"
-                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+              sequence="10"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
-    <!-- 5. Analytic Report (Native Odoo Action) -->
+    <!-- Analytic Report (native Odoo) -->
     <menuitem id="menu_reporting_analytic_report"
               name="Analytic Report"
-              parent="account.menu_finance_reports"
+              parent="menu_ops_acct_reports_analysis"
               action="account.action_analytic_reporting"
-              sequence="50"
-                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+              sequence="20"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
-    <!-- 6. PDC Reports -->
+    <!-- 5.3 PDC Reports -->
     <menuitem id="menu_reporting_pdc_reports"
               name="PDC Reports"
               parent="account.menu_finance_reports"
               action="action_ops_pdc_reports"
               sequence="60"
-                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+              groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
 
-    <!-- =================== PERIOD END MANAGEMENT =================== -->
-
-    <!-- Period End Main Menu -->
-    <menuitem
-        id="menu_ops_period_end"
-        name="Period End"
-        parent="account.menu_finance"
-        sequence="35"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
-
-    <!-- Fiscal Periods -->
-    <menuitem
-        id="menu_ops_fiscal_periods"
-        name="Fiscal Periods"
-        parent="menu_ops_period_end"
-        action="action_ops_fiscal_period"
-        sequence="10"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
-
-    <!-- Close Period Checklist -->
-    <menuitem
-        id="menu_ops_period_checklist"
-        name="Close Checklist"
-        parent="menu_ops_period_end"
-        action="action_ops_period_checklist"
-        sequence="20"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
-
-    <!-- Branch Period Locks -->
-    <menuitem
-        id="menu_ops_branch_period_locks"
-        name="Branch Period Locks"
-        parent="menu_ops_period_end"
-        action="action_ops_period_branch_lock"
-        sequence="30"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
-
-    <!-- =================== CONFIGURATION - FISCAL PERIODS =================== -->
-
-    <!-- Fiscal Periods under Configuration -->
-    <menuitem
-        id="menu_ops_config_fiscal_periods"
-        name="Fiscal Periods"
-        parent="account.menu_finance_configuration"
-        action="action_ops_fiscal_period"
-        sequence="50"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
-
-    <!-- =================== DAILY REPORTS =================== -->
-
-    <!-- Daily Reports submenu under Reporting -->
-    <menuitem
-        id="menu_ops_daily_reports"
-        name="Daily Reports"
-        parent="account.menu_finance_reports"
-        sequence="70"
-                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+    <!-- 5.4 Daily Reports -->
+    <menuitem id="menu_ops_daily_reports"
+              name="Daily Reports"
+              parent="account.menu_finance_reports"
+              sequence="70"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <!-- Cash Book -->
-    <menuitem
-        id="menu_ops_cash_book"
-        name="Cash Book"
-        parent="menu_ops_daily_reports"
-        action="action_ops_cash_book_wizard"
-        sequence="10"
-                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+    <menuitem id="menu_ops_cash_book"
+              name="Cash Book"
+              parent="menu_ops_daily_reports"
+              action="action_ops_cash_book_wizard"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <!-- Day Book -->
-    <menuitem
-        id="menu_ops_day_book"
-        name="Day Book"
-        parent="menu_ops_daily_reports"
-        action="action_ops_day_book_wizard"
-        sequence="20"
-                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+    <menuitem id="menu_ops_day_book"
+              name="Day Book"
+              parent="menu_ops_daily_reports"
+              action="action_ops_day_book_wizard"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <!-- Bank Book -->
-    <menuitem
-        id="menu_ops_bank_book"
-        name="Bank Book"
-        parent="menu_ops_daily_reports"
-        action="action_ops_bank_book_wizard"
-        sequence="30"
-                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
+    <menuitem id="menu_ops_bank_book"
+              name="Bank Book"
+              parent="menu_ops_daily_reports"
+              action="action_ops_bank_book_wizard"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
 
-    <!-- =================== CUSTOMER FOLLOW-UP =================== -->
+    <!-- ============================================ -->
+    <!-- 6. CONFIGURATION                             -->
+    <!-- ============================================ -->
 
-    <!-- Follow-up Main Menu under Customers -->
-    <menuitem
-        id="menu_ops_followup_main"
-        name="Follow-ups"
-        parent="account.menu_finance_receivables"
-        sequence="50"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
+    <!-- Matrix Analytic Setup -->
+    <menuitem id="menu_ops_analytic_setup"
+              name="Matrix Analytic Setup"
+              parent="account.menu_finance_configuration"
+              sequence="100"
+              groups="account.group_account_manager"/>
 
-    <!-- Customer Follow-ups List -->
-    <menuitem
-        id="menu_ops_partner_followup"
-        name="Customer Follow-ups"
-        parent="menu_ops_followup_main"
-        action="action_ops_partner_followup"
-        sequence="10"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
-
-    <!-- Credit Blocked Customers -->
-    <menuitem
-        id="menu_ops_blocked_customers"
-        name="Credit Blocked"
-        parent="menu_ops_followup_main"
-        action="action_ops_partner_followup_blocked"
-        sequence="20"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
-
-    <!-- Follow-ups Due Today -->
-    <menuitem
-        id="menu_ops_followup_due"
-        name="Due Today"
-        parent="menu_ops_followup_main"
-        action="action_ops_partner_followup_due"
-        sequence="30"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
-
-    <!-- =================== CONFIGURATION - FOLLOW-UP =================== -->
+    <!-- Fiscal Periods Setup -->
+    <menuitem id="menu_ops_config_fiscal_periods"
+              name="Fiscal Periods Setup"
+              parent="account.menu_finance_configuration"
+              action="action_ops_fiscal_period"
+              sequence="50"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
 
     <!-- Follow-up Configuration -->
-    <menuitem
-        id="menu_ops_config_followup"
-        name="Follow-up Configuration"
-        parent="account.menu_finance_configuration"
-        action="action_ops_followup_config"
-        sequence="60"
-                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
+    <menuitem id="menu_ops_config_followup"
+              name="Follow-up Configuration"
+              parent="account.menu_finance_configuration"
+              action="action_ops_followup_config"
+              sequence="60"
+              groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
-    <!-- =================== CONFIGURATION - FINANCIAL REPORTS =================== -->
+    <!-- Report Structures (BS/PL) -->
+    <menuitem id="menu_ops_config_financial_report_structure"
+              name="Report Structures (BS/PL)"
+              parent="account.menu_finance_configuration"
+              sequence="70"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant"/>
 
-    <!-- Financial Report Structure Configuration -->
-    <menuitem
-        id="menu_ops_config_financial_report_structure"
-        name="Financial Report Structure"
-        parent="account.menu_finance_configuration"
-        sequence="70"
-                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+    <menuitem id="menu_ops_config_bs_structure"
+              name="Balance Sheet Structure"
+              parent="menu_ops_config_financial_report_structure"
+              action="action_ops_financial_report_config_bs"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
-    <!-- Balance Sheet Structure -->
-    <menuitem
-        id="menu_ops_config_bs_structure"
-        name="Balance Sheet Structure"
-        parent="menu_ops_config_financial_report_structure"
-        action="action_ops_financial_report_config_bs"
-        sequence="10"
-                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
+    <menuitem id="menu_ops_config_pl_structure"
+              name="Profit &amp; Loss Structure"
+              parent="menu_ops_config_financial_report_structure"
+              action="action_ops_financial_report_config_pl"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
-    <!-- P&L Structure -->
-    <menuitem
-        id="menu_ops_config_pl_structure"
-        name="Profit &amp; Loss Structure"
-        parent="menu_ops_config_financial_report_structure"
-        action="action_ops_financial_report_config_pl"
-        sequence="20"
-                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
+    <menuitem id="menu_ops_config_all_report_config"
+              name="All Report Lines"
+              parent="menu_ops_config_financial_report_structure"
+              action="action_ops_financial_report_config"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
-    <!-- All Report Configurations -->
-    <menuitem
-        id="menu_ops_config_all_report_config"
-        name="All Report Lines"
-        parent="menu_ops_config_financial_report_structure"
-        action="action_ops_financial_report_config"
-        sequence="30"
-                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
+    <!-- Automation sub-section -->
+    <menuitem id="menu_ops_acct_config_automation"
+              name="Automation"
+              parent="account.menu_finance_configuration"
+              sequence="80"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+
+    <menuitem id="menu_ops_config_recurring_templates"
+              name="Recurring Templates"
+              parent="menu_ops_acct_config_automation"
+              action="action_ops_recurring_template"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+
+    <menuitem id="menu_ops_config_recurring_entries"
+              name="Recurring Entries"
+              parent="menu_ops_acct_config_automation"
+              action="action_ops_recurring_entry"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+
+    <menuitem id="menu_ops_config_journal_templates"
+              name="Journal Templates"
+              parent="menu_ops_acct_config_automation"
+              action="action_ops_journal_template"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+
+    <!-- ============================================ -->
+    <!-- CUSTOMER FOLLOW-UP (under Customers)         -->
+    <!-- ============================================ -->
+
+    <menuitem id="menu_ops_followup_main"
+              name="Follow-ups"
+              parent="account.menu_finance_receivables"
+              sequence="50"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
+
+    <menuitem id="menu_ops_partner_followup"
+              name="Customer Follow-ups"
+              parent="menu_ops_followup_main"
+              action="action_ops_partner_followup"
+              sequence="10"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
+
+    <menuitem id="menu_ops_blocked_customers"
+              name="Credit Blocked"
+              parent="menu_ops_followup_main"
+              action="action_ops_partner_followup_blocked"
+              sequence="20"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
+
+    <menuitem id="menu_ops_followup_due"
+              name="Due Today"
+              parent="menu_ops_followup_main"
+              action="action_ops_partner_followup_due"
+              sequence="30"
+              groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
 
 </odoo>

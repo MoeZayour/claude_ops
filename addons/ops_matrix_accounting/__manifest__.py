@@ -86,7 +86,7 @@
         "wizard/ops_period_close_wizard_views.xml",
         "wizard/ops_asset_report_wizard_views.xml",
         "wizard/ops_three_way_match_override_wizard_views.xml",
-        "wizard/ops_balance_sheet_wizard_views.xml",
+        "wizard/ops_consolidation_intelligence_wizard_views.xml",
         # "wizard/ops_asset_report_wizard.xml",  # Disabled - references AbstractModel
 
         # Menus - must load AFTER all views/wizards that define actions
@@ -105,7 +105,8 @@
         "report/ops_inventory_report_templates.xml",  # Inventory Intelligence Reports
         "report/ops_treasury_report_templates.xml",   # Treasury Intelligence Reports
         "report/ops_daily_report_templates.xml",        # Daily Cash/Bank/Day Book Reports
-        "report/ops_balance_sheet_template.xml",        # Corporate Balance Sheet (IAS 1)
+        "report/ops_report_invoice.xml",                 # OPS Branded Invoice / Credit Note
+        # report/ops_balance_sheet_template.xml removed - wizard deprecated in favor of Matrix Financial Intelligence
 
         # Menus
         # "views/ops_report_menu.xml",  # Disabled - references missing model

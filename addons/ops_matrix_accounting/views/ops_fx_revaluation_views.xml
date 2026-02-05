@@ -107,11 +107,5 @@
         </field>
     </record>
 
-    <!-- Menu Items for FX Revaluation -->
-    <menuitem id="menu_ops_fx_revaluation"
-              name="FX Revaluation"
-              parent="account.menu_finance_entries"
-              action="action_ops_fx_revaluation_wizard"
-              sequence="99"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
+    <!-- Menu: moved to views/accounting_menus.xml -->
 </odoo>

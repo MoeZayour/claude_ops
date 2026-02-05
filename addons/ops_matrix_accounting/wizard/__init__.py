@@ -14,4 +14,4 @@ from . import ops_daily_reports_wizard
 # Phase 5: Advanced Features
 from . import ops_asset_impairment_wizard
 from . import ops_fx_revaluation_wizard
-from . import ops_balance_sheet_wizard
+from . import ops_consolidation_intelligence_wizard

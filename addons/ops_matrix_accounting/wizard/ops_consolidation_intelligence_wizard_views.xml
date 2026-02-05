@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        OPS Matrix Accounting - Consolidation Intelligence Wizard Views
+        ================================================================
+        Unified entry point for all 4 consolidation reports.
+    -->
+
+    <!-- Consolidation Intelligence Wizard Form View -->
+    <record id="view_ops_consolidation_intelligence_wizard_form" model="ir.ui.view">
+        <field name="name">ops.consolidation.intelligence.wizard.form</field>
+        <field name="model">ops.consolidation.intelligence.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Consolidation Intelligence">
+
+                <!-- Report Type Selection -->
+                <group name="report_selection" string="Report Selection">
+                    <group name="group_type">
+                        <field name="report_type" widget="radio"/>
+                    </group>
+                    <group name="group_info">
+                        <div class="text-muted">
+                            <p invisible="report_type != 'company_consolidation'">
+                                Company-wide P&amp;L consolidation across all branches and business units.
+                            </p>
+                            <p invisible="report_type != 'branch_pl'">
+                                Profit &amp; Loss report for a specific branch with BU breakdown.
+                            </p>
+                            <p invisible="report_type != 'bu_report'">
+                                Business Unit profitability across all branches it operates in.
+                            </p>
+                            <p invisible="report_type != 'consolidated_bs'">
+                                Consolidated Balance Sheet across multiple companies with intercompany eliminations.
+                            </p>
+                        </div>
+                    </group>
+                </group>
+
+                <!-- Period Selection (hidden for BS which uses as_of_date) -->
+                <group name="period_section" string="Period"
+                       invisible="report_type == 'consolidated_bs'">
+                    <group name="group_dates">
+                        <field name="date_from" required="report_type != 'consolidated_bs'"/>
+                        <field name="date_to" required="report_type != 'consolidated_bs'"/>
+                    </group>
+                    <group name="group_company">
+                        <field name="company_id"
+                               options="{'no_create': True, 'no_open': True}"
+                               invisible="report_type == 'consolidated_bs'"/>
+                        <field name="compare_with_previous"
+                               invisible="report_type != 'company_consolidation'"/>
+                    </group>
+                </group>
+
+                <!-- Balance Sheet Date -->
+                <group name="bs_date_section" string="Reporting Date"
+                       invisible="report_type != 'consolidated_bs'">
+                    <group name="group_bs_date">
+                        <field name="as_of_date"
+                               required="report_type == 'consolidated_bs'"/>
+                    </group>
+                    <group name="group_bs_companies">
+                        <field name="company_ids" widget="many2many_tags"
+                               options="{'no_create': True}"
+                               required="report_type == 'consolidated_bs'"/>
+                        <field name="include_intercompany"/>
+                    </group>
+                </group>
+
+                <!-- Scope & Filters -->
+                <group name="scope_section" string="Scope &amp; Filters">
+                    <group name="group_branch_filter">
+                        <!-- Branch PL: single branch selection -->
+                        <field name="branch_id"
+                               invisible="report_type != 'branch_pl'"
+                               required="report_type == 'branch_pl'"
+                               domain="[('company_id', '=', company_id)]"
+                               options="{'no_create': True}"/>
+                        <!-- Multi-branch filter for Company Consolidation -->
+                        <field name="ops_branch_ids"
+                               widget="many2many_tags"
+                               invisible="report_type in ('branch_pl', 'consolidated_bs')"
+                               domain="[('company_id', '=', company_id)]"
+                               options="{'no_create': True}"/>
+                        <!-- Detail level for Company Consolidation -->
+                        <field name="report_detail_level"
+                               invisible="report_type != 'company_consolidation'"/>
+                    </group>
+                    <group name="group_bu_filter">
+                        <!-- BU Report: single BU selection -->
+                        <field name="business_unit_id"
+                               invisible="report_type != 'bu_report'"
+                               required="report_type == 'bu_report'"
+                               options="{'no_create': True}"/>
+                        <!-- Multi-BU filter for Branch PL -->
+                        <field name="ops_business_unit_ids"
+                               widget="many2many_tags"
+                               invisible="report_type in ('bu_report', 'consolidated_bs', 'company_consolidation')"
+                               options="{'no_create': True}"/>
+                    </group>
+                </group>
+
+                <!-- Action Buttons -->
+                <footer>
+                    <button name="action_generate"
+                            string="Generate Report"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-print"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Consolidation Intelligence Action -->
+    <record id="action_ops_consolidation_intelligence_wizard" model="ir.actions.act_window">
+        <field name="name">Consolidation Intelligence</field>
+        <field name="res_model">ops.consolidation.intelligence.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
