@@ -43,14 +43,14 @@
                             <field name="name" placeholder="Dashboard Name"/>
                         </h1>
                     </div>
-                    <group>
-                        <group>
+                    <group name="main_info">
+                        <group name="identification">
                             <field name="code"/>
                             <field name="dashboard_type"/>
                             <field name="sequence"/>
                             <field name="active"/>
                         </group>
-                        <group>
+                        <group name="settings">
                             <field name="auto_refresh"/>
                             <field name="refresh_interval" invisible="not auto_refresh"/>
                             <field name="columns"/>
@@ -74,11 +74,11 @@
                             </field>
                         </page>
                         <page string="Access Control" name="access">
-                            <group>
-                                <group string="Target Personas">
+                            <group name="access_control">
+                                <group name="target_personas" string="Target Personas">
                                     <field name="persona_ids" widget="many2many_tags" nolabel="1"/>
                                 </group>
-                                <group string="Access Groups">
+                                <group name="access_groups" string="Access Groups">
                                     <field name="group_ids" widget="many2many_tags" nolabel="1"/>
                                 </group>
                             </group>

@@ -26,35 +26,35 @@
             <form string="Widget">
                 <sheet>
                     <widget name="web_ribbon" title="Inactive" bg_color="text-bg-danger" invisible="active"/>
-                    <group>
-                        <group string="Basic Info">
+                    <group name="main_info">
+                        <group name="basic_info" string="Basic Info">
                             <field name="name"/>
                             <field name="dashboard_id"/>
                             <field name="widget_type"/>
                             <field name="sequence"/>
                             <field name="active"/>
                         </group>
-                        <group string="KPI">
+                        <group name="kpi_settings" string="KPI">
                             <field name="kpi_id" invisible="widget_type not in ['kpi', 'metric']"/>
                             <field name="kpi_ids" widget="many2many_tags" invisible="widget_type != 'kpi_group'"/>
                             <field name="period_override"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Display">
+                    <group name="display_settings">
+                        <group name="display" string="Display">
                             <field name="title"/>
                             <field name="subtitle"/>
                             <field name="icon"/>
                             <field name="color" widget="color"/>
                         </group>
-                        <group string="Position">
+                        <group name="position" string="Position">
                             <field name="position_x"/>
                             <field name="position_y"/>
                             <field name="width"/>
                             <field name="height"/>
                         </group>
                     </group>
-                    <group string="List Configuration" invisible="widget_type != 'list'">
+                    <group name="list_config" string="List Configuration" invisible="widget_type != 'list'">
                         <field name="list_model"/>
                         <field name="list_fields"/>
                         <field name="list_domain"/>

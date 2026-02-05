@@ -33,46 +33,46 @@
                             <field name="name" placeholder="KPI Name"/>
                         </h1>
                     </div>
-                    <group>
-                        <group string="Identification">
+                    <group name="main_info">
+                        <group name="identification" string="Identification">
                             <field name="code"/>
                             <field name="category"/>
                             <field name="sequence"/>
                             <field name="active"/>
                         </group>
-                        <group string="Data Source">
+                        <group name="data_source" string="Data Source">
                             <field name="source_model"/>
                             <field name="calculation_type"/>
                             <field name="measure_field" invisible="calculation_type == 'count'"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Filtering">
+                    <group name="filtering_display">
+                        <group name="filtering" string="Filtering">
                             <field name="domain_filter"/>
                             <field name="date_field"/>
                             <field name="default_period"/>
                         </group>
-                        <group string="Display">
+                        <group name="display" string="Display">
                             <field name="format_type"/>
                             <field name="icon"/>
                             <field name="color" widget="color"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Trend">
+                    <group name="trend_security">
+                        <group name="trend" string="Trend">
                             <field name="show_trend"/>
                             <field name="trend_direction" invisible="not show_trend"/>
                         </group>
-                        <group string="Security">
+                        <group name="security" string="Security">
                             <field name="requires_cost_access"/>
                             <field name="requires_margin_access"/>
                             <field name="visible_to_it_admin"/>
                         </group>
                     </group>
-                    <group string="Target Personas">
+                    <group name="target_personas" string="Target Personas">
                         <field name="persona_ids" widget="many2many_tags" nolabel="1"/>
                     </group>
-                    <group string="Description">
+                    <group name="description" string="Description">
                         <field name="description" nolabel="1" placeholder="Describe what this KPI measures..."/>
                     </group>
                 </sheet>
