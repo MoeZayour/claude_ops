@@ -58,7 +58,7 @@
                             <field name="dest_move_id" readonly="1"/>
                         </group>
                     </group>
-                    <group string="References" invisible="not inventory_transfer_id and not asset_id">
+                    <group string="References" name="references" invisible="not inventory_transfer_id and not asset_id">
                         <field name="inventory_transfer_id" invisible="transfer_type != 'inventory'"/>
                         <field name="asset_id" invisible="transfer_type != 'asset'"/>
                     </group>
@@ -145,5 +145,6 @@
               name="Inter-Branch Transfers"
               parent="account.menu_finance_entries"
               action="action_ops_interbranch_transfer"
-              sequence="25"/>
+              sequence="25"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_branch_manager,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_inventory_manager"/>
 </odoo>

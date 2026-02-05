@@ -65,7 +65,7 @@
                                 <field name="data_source" readonly="1"/>
                             </group>
 
-                            <group invisible="not trend_data">
+                            <group name="trend_summary" invisible="not trend_data">
                                 <div class="oe_form_box_info oe_text_center">
                                     <p>
                                         <strong>Revenue Growth:</strong>

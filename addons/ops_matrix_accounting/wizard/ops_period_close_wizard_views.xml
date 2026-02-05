@@ -41,7 +41,7 @@
                         </group>
                     </group>
 
-                    <group string="Checklist Progress" invisible="checklist_count == 0">
+                    <group string="Checklist Progress" name="checklist_progress_summary" invisible="checklist_count == 0">
                         <field name="checklist_done_count" string="Completed Items"/>
                         <field name="checklist_count" string="Total Items"/>
                     </group>

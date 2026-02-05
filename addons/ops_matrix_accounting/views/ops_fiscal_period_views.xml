@@ -76,7 +76,7 @@
                             <field name="date_to"/>
                         </group>
                     </group>
-                    <group string="Lock Information" invisible="lock_state == 'open'">
+                    <group string="Lock Information" name="lock_information" invisible="lock_state == 'open'">
                         <group name="group_4">
                             <field name="locked_by"/>
                             <field name="locked_date"/>

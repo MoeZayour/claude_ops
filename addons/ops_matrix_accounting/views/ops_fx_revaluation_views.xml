@@ -28,7 +28,7 @@
                             <field name="currency_ids" widget="many2many_tags"/>
                         </group>
                     </group>
-                    <group string="Results" invisible="state == 'draft'">
+                    <group string="Results" name="results" invisible="state == 'draft'">
                         <group name="group_4">
                             <field name="currency_id" invisible="1"/>
                             <field name="total_gain" class="text-success"/>
@@ -112,5 +112,6 @@
               name="FX Revaluation"
               parent="account.menu_finance_entries"
               action="action_ops_fx_revaluation_wizard"
-              sequence="99"/>
+              sequence="99"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
 </odoo>

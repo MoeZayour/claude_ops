@@ -162,7 +162,7 @@
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="ops_branch_id"/>
                         </group>
-                        <group string="Credit Block" invisible="not credit_blocked">
+                        <group string="Credit Block" name="credit_block" invisible="not credit_blocked">
                             <field name="credit_blocked"/>
                             <field name="credit_block_reason"/>
                             <field name="credit_override"/>

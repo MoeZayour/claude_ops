@@ -59,7 +59,7 @@
                             <field name="non_current_liability"/>
                         </group>
                     </group>
-                    <group string="Statistics" invisible="state == 'draft'">
+                    <group string="Statistics" name="statistics" invisible="state == 'draft'">
                         <field name="total_payments_made"/>
                         <field name="payments_remaining"/>
                         <field name="next_payment_date"/>
@@ -204,5 +204,6 @@
               name="Leases (IFRS 16)"
               parent="account.menu_finance"
               action="action_ops_lease"
-              sequence="45"/>
+              sequence="45"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
 </odoo>

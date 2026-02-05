@@ -149,7 +149,7 @@
                     <field name="file_name" invisible="1"/>
                     <field name="file_format"/>
                 </group>
-                <group string="CSV Options" invisible="file_format != 'csv'">
+                <group string="CSV Options" name="csv_options" invisible="file_format != 'csv'">
                     <group name="group_10">
                         <field name="date_format" placeholder="%Y-%m-%d"/>
                         <field name="delimiter"/>
@@ -162,7 +162,7 @@
                         <field name="col_amount"/>
                     </group>
                 </group>
-                <group string="Separate Debit/Credit Columns" invisible="file_format != 'csv'">
+                <group string="Separate Debit/Credit Columns" name="csv_debit_credit" invisible="file_format != 'csv'">
                     <field name="col_debit"/>
                     <field name="col_credit"/>
                 </group>
@@ -196,5 +196,6 @@
               name="Bank Reconciliation"
               parent="account.menu_finance"
               action="action_ops_bank_reconciliation"
-              sequence="30"/>
+              sequence="30"
+                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
 </odoo>
