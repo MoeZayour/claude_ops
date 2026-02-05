@@ -5,7 +5,7 @@
         <field name="model">ops.approval.reject.wizard</field>
         <field name="arch" type="xml">
             <form string="Reject Approval Request">
-                <group>
+                <group name="outer_group_1">
                     <field name="approval_request_id" invisible="1"/>
                     <field name="rejection_reason" placeholder="Explain why you are rejecting this request and what needs to change..."/>
                 </group>

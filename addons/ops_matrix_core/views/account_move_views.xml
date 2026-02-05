@@ -64,13 +64,13 @@
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="Override" name="override" invisible="three_way_match_override_approved == False">
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="three_way_match_override_approved"/>
                             <field name="three_way_match_override_by"/>
                             <field name="three_way_match_override_date"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="three_way_match_override_reason"/>
                         </group>
                     </group>

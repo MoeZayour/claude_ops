@@ -21,18 +21,18 @@
         <field name="arch" type="xml">
             <form string="Persona Delegation">
                 <sheet>
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="delegator_id"/>
                             <field name="delegate_id"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="start_date"/>
                             <field name="end_date"/>
                             <field name="active"/>
                         </group>
                     </group>
-                    <group>
+                    <group name="outer_group_4">
                         <field name="reason"/>
                     </group>
                 </sheet>

@@ -90,14 +90,14 @@
                         </div>
                     </div>
                     
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="user_id"/>
                             <field name="employee_id"/>
                             <field name="company_id" options="{'no_create': True}"/>
                             <field name="sequence"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="start_date"/>
                             <field name="end_date"/>
                             <field name="is_active_today" readonly="1"/>
@@ -105,7 +105,7 @@
                         </group>
                     </group>
                     
-                    <group>
+                    <group name="outer_group_4">
                         <field name="description" placeholder="Describe this persona's responsibilities..."/>
                     </group>
                     
@@ -116,8 +116,8 @@
                                 Defines which branches and business units this persona can access.
                             </div>
                             
-                            <group>
-                                <group>
+                            <group name="outer_group_5">
+                                <group name="outer_group_6">
                                     <field name="branch_ids" 
                                            widget="many2many_tags" 
                                            options="{'color_field': 'color'}"
@@ -127,7 +127,7 @@
                                            options="{'no_create': True}"/>
                                 </group>
                                 
-                                <group>
+                                <group name="outer_group_7">
                                     <field name="business_unit_ids" 
                                            widget="many2many_tags"
                                            options="{'color_field': 'color'}"/>
@@ -139,8 +139,8 @@
                         </page>
                         
                         <page string="Roles &amp; Authorities" name="roles">
-                            <group>
-                                <group>
+                            <group name="outer_group_8">
+                                <group name="outer_group_9">
                                     <field name="is_branch_manager"/>
                                     <field name="is_bu_leader"/>
                                     <field name="is_cross_branch"/>
@@ -148,7 +148,7 @@
                                     <field name="is_approver"/>
                                 </group>
                                 
-                                <group>
+                                <group name="outer_group_10">
                                     <field name="can_approve_orders"/>
                                     <field name="can_approve_expenses"/>
                                     <field name="can_approve_leave"/>
@@ -156,13 +156,13 @@
                                 </group>
                             </group>
                             
-                            <group>
-                                <group>
+                            <group name="outer_group_11">
+                                <group name="outer_group_12">
                                     <field name="approval_limit"/>
                                     <field name="currency_id" invisible="1"/>
                                 </group>
                                 
-                                <group>
+                                <group name="outer_group_13">
                                     <field name="parent_id" options="{'no_create': True}"/>
                                     <field name="job_level"/>
                                 </group>
@@ -175,13 +175,13 @@
                                 These permissions implement professional financial controls by restricting critical operations to authorized roles only.
                             </div>
                             
-                            <group>
-                                <group>
+                            <group name="outer_group_14">
+                                <group name="outer_group_15">
                                     <field name="can_modify_product_master"/>
                                     <field name="can_access_cost_prices"/>
                                 </group>
                                 
-                                <group>
+                                <group name="outer_group_16">
                                     <field name="can_validate_invoices"/>
                                     <field name="can_post_journal_entries"/>
                                     <field name="can_execute_payments"/>
@@ -189,11 +189,11 @@
                                 </group>
                             </group>
                             
-                            <group>
-                                <group>
+                            <group name="outer_group_17">
+                                <group name="outer_group_18">
                                     <field name="can_adjust_inventory"/>
                                 </group>
-                                <group/>
+                                <group name="outer_group_19"/>
                             </group>
                             
                             <separator string="SoD Policy Guidelines"/>
@@ -209,8 +209,8 @@
                         </page>
                         
                         <page string="Delegation" name="delegation">
-                            <group>
-                                <group>
+                            <group name="outer_group_20">
+                                <group name="outer_group_21">
                                     <field name="is_delegated" readonly="1"/>
                                     <field name="delegate_id" readonly="1" invisible="not is_delegated"/>
                                     <field name="delegation_start" readonly="1" invisible="not is_delegated"/>
@@ -218,7 +218,7 @@
                                     <field name="effective_user_id" readonly="1"/>
                                 </group>
                                 
-                                <group>
+                                <group name="outer_group_22">
                                     <field name="can_be_delegated"/>
                                 </group>
                             </group>
@@ -238,11 +238,11 @@
                         </page>
                         
                         <page string="Security Groups" name="security_groups">
-                            <group>
-                                <group>
+                            <group name="outer_group_23">
+                                <group name="outer_group_24">
                                     <field name="group_id" readonly="1"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_25">
                                     <div invisible="group_id" class="alert alert-info">
                                         <strong>Not Activated:</strong> Click "Activate &amp; Create Group"
                                         to generate an Odoo security group from this persona.
@@ -269,8 +269,8 @@
                         </page>
                         
                         <page string="Advanced" name="advanced">
-                            <group>
-                                <group>
+                            <group name="outer_group_26">
+                                <group name="outer_group_27">
                                     <field name="user_count" readonly="1"/>
                                     <field name="last_sync_date" readonly="1"/>
                                     <field name="create_date" readonly="1"/>
@@ -279,7 +279,7 @@
                                     <field name="write_uid" readonly="1"/>
                                 </group>
                                 
-                                <group>
+                                <group name="outer_group_28">
                                     <field name="secondary_user_ids" widget="many2many_tags"/>
                                 </group>
                             </group>
@@ -335,7 +335,7 @@
                 <separator/>
                 <filter string="My Personas" name="my_personas" domain="[('user_id', '=', uid)]"/>
                 <separator/>
-                <group>
+                <group name="outer_group_29">
                     <filter string="Owner" name="group_owner" context="{'group_by': 'user_id'}"/>
                     <filter string="Company" name="group_company" context="{'group_by': 'company_id'}"/>
                     <filter string="Job Level" name="group_job_level" context="{'group_by': 'job_level'}"/>
@@ -390,7 +390,7 @@
                                 <div>
                                     <i class="fa fa-building"/> <field name="company_id"/>
                                 </div>
-                                <div class="text-muted" style="font-size: 0.9em;">
+                                <div class="text-muted small">
                                     <field name="matrix_access_summary"/>
                                 </div>
                             </div>
@@ -468,7 +468,7 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="Matrix Assignment" name="matrix_assignment">
-                    <group>
+                    <group name="outer_group_30">
                         <group name="active_persona">
                             <field name="branch_id" readonly="1"/>
                             <field name="business_unit_ids" widget="many2many_tags" readonly="1"/>

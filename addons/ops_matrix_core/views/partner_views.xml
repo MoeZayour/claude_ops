@@ -32,13 +32,13 @@
             <xpath expr="//notebook" position="inside">
                 <page string="OPS Governance" name="ops_stewardship">
                     <!-- Master Data Verification Section -->
-                    <group string="Master Data Verification">
-                        <group>
+                    <group name="master_data_verification" string="Master Data Verification">
+                        <group name="outer_group_2">
                             <field name="ops_cr_number" readonly="1"/>
                             <field name="ops_master_verified" widget="boolean_toggle"
                                    groups="ops_matrix_core.group_ops_manager,base.group_system"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="ops_verification_date" readonly="1" />
                             <field name="ops_verified_by_id" readonly="1" />
                         </group>
@@ -47,19 +47,19 @@
                     <!-- Master Verification Actions -->
                     <div class="alert alert-info" role="alert"
                          invisible="ops_master_verified">
-                        <strong>⚠️ Not Master Verified</strong><br/>
+                        <strong><i class="fa fa-exclamation-triangle"/> Not Master Verified</strong><br/>
                         Credit transactions (orders with payment terms) will be BLOCKED until this customer is verified.
                         Cash/Immediate transactions are allowed.
                     </div>
                     <div class="alert alert-success" role="alert"
                          invisible="not ops_master_verified">
-                        <strong>✅ Master Verified</strong><br/>
+                        <strong><i class="fa fa-check-circle"/> Master Verified</strong><br/>
                         All transaction types (Cash and Credit) are allowed for this customer.
                     </div>
 
                     <div class="oe_button_box mb-3">
                         <button name="action_verify_master" type="object"
-                                string="✓ Verify Customer"
+                                string="Verify Customer"
                                 class="btn-success"
                                 invisible="ops_master_verified"
                                 groups="ops_matrix_core.group_ops_manager,base.group_system"/>
@@ -71,29 +71,29 @@
                     </div>
 
                     <separator string="Stewardship State"/>
-                    <group>
-                        <group>
+                    <group name="outer_group_4">
+                        <group name="outer_group_5">
                             <field name="ops_state" widget="radio" />
                             <field name="active" />
                         </group>
                     </group>
 
                     <separator string="Credit Management"/>
-                    <group>
-                        <group>
+                    <group name="outer_group_6">
+                        <group name="outer_group_7">
                             <field name="ops_credit_limit" />
                             <field name="ops_total_outstanding" readonly="1" />
                             <field name="company_currency_id" readonly="1" invisible="1"/>
                         </group>
                     </group>
 
-                    <group invisible="not ops_confirmation_restrictions">
+                    <group name="outer_group_8" invisible="not ops_confirmation_restrictions">
                         <field name="ops_confirmation_restrictions" readonly="1" nolabel="1"
                                widget="text" class="text-danger"/>
                     </group>
 
                     <separator string="Approval Notes"/>
-                    <group>
+                    <group name="outer_group_9">
                         <field name="ops_approval_notes" nolabel="1" placeholder="Add notes about partner approval..." />
                     </group>
 

@@ -5,37 +5,37 @@
         <field name="model">ops.governance.violation.report</field>
         <field name="arch" type="xml">
             <form string="Governance Violations Report">
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="date_from"/>
                             <field name="date_to"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="company_id" options="{'no_create': True}"/>
                             <field name="branch_id" options="{'no_create': True}"/>
                             <field name="business_unit_id" options="{'no_create': True}"/>
                         </group>
                     </group>
                     
-                    <group>
-                        <group>
+                    <group name="outer_group_4">
+                        <group name="outer_group_5">
                             <field name="rule_id" options="{'no_create': True}"/>
                             <field name="violation_type"/>
                             <field name="approval_status"/>
                         </group>
-                        <group>
+                        <group name="outer_group_6">
                             <field name="group_by"/>
                             <field name="include_details"/>
                             <field name="include_resolved"/>
                         </group>
                     </group>
                     
-                    <group>
-                        <group class="oe_read_only">
+                    <group name="outer_group_7">
+                        <group name="outer_group_8" class="oe_read_only">
                             <field name="violation_count" readonly="1"/>
                             <field name="pending_count" readonly="1"/>
                         </group>
-                        <group class="oe_read_only">
+                        <group name="outer_group_9" class="oe_read_only">
                             <field name="approved_count" readonly="1"/>
                             <field name="rejected_count" readonly="1"/>
                         </group>

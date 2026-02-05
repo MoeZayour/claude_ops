@@ -48,38 +48,38 @@
                         </div>
                     </div>
                     
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="company_id" options="{'no_create': True, 'no_open': True}"/>
                             <field name="model_id" options="{'no_create': True, 'no_open': True}"/>
                             <field name="model_name" invisible="1"/>
                             <field name="sequence"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="rule_type"/>
                             <field name="trigger_event"/>
                             <field name="action_type" widget="badge" decoration-warning="action_type == 'warning'" decoration-danger="action_type == 'block'" decoration-info="action_type == 'require_approval'"/>
                         </group>
                     </group>
                     
-                    <group>
+                    <group name="outer_group_4">
                         <field name="error_message" string="User Message on Trigger" placeholder="Message shown to users when this rule is triggered"/>
                     </group>
                     
-                    <group>
+                    <group name="outer_group_5">
                         <field name="description" readonly="1"/>
                     </group>
                     
                     <notebook>
                         <!-- TAB 1: LOGIC & CONDITIONS -->
                         <page string="Logic &amp; Conditions" name="logic">
-                            <group>
-                                <group>
+                            <group name="outer_group_6">
+                                <group name="outer_group_7">
                                     <field name="trigger_event"/>
                                     <field name="state_condition"
                                            placeholder="state in ['draft', 'sent']"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_8">
                                     <field name="condition_logic"
                                            widget="domain"
                                            options="{'model': 'model_name', 'in_dialog': true}"/>
@@ -101,13 +101,13 @@
                         
                         <!-- TAB 2: MATRIX VALIDATION -->
                         <page string="Matrix Validation" name="matrix_validation">
-                            <group>
-                                <group>
+                            <group name="outer_group_9">
+                                <group name="outer_group_10">
                                     <field name="enforce_branch_bu"/>
                                     <field name="branch_required"/>
                                     <field name="bu_required"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_11">
                                     <field name="allowed_branch_ids" widget="many2many_tags" options="{'no_create': True}"/>
                                     <field name="allowed_business_unit_ids" widget="many2many_tags" options="{'no_create': True}"/>
                                 </group>
@@ -120,13 +120,13 @@
                         
                         <!-- TAB 3: DISCOUNT CONTROL -->
                         <page string="Discount Control" name="discount_limit" invisible="rule_type != 'discount_limit'">
-                            <group>
-                                <group>
+                            <group name="outer_group_12">
+                                <group name="outer_group_13">
                                     <field name="enforce_discount_limit"/>
                                     <field name="global_discount_limit"/>
                                     <field name="discount_validation_level"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_14">
                                     <field name="require_approval"/>
                                     <field name="approval_workflow_id"
                                            invisible="not require_approval"
@@ -151,13 +151,13 @@
                         
                         <!-- TAB 4: MARGIN PROTECTION -->
                         <page string="Margin Protection" name="margin_protection" invisible="rule_type != 'margin_protection'">
-                            <group>
-                                <group>
+                            <group name="outer_group_15">
+                                <group name="outer_group_16">
                                     <field name="enforce_margin_protection"/>
                                     <field name="global_minimum_margin"/>
                                     <field name="warning_margin_threshold"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_17">
                                     <field name="require_approval"/>
                                     <field name="approval_workflow_id"
                                            invisible="not require_approval"
@@ -181,12 +181,12 @@
                         
                         <!-- TAB 5: PRICE OVERRIDE -->
                         <page string="Price Override Control" name="price_override">
-                            <group>
-                                <group>
+                            <group name="outer_group_18">
+                                <group name="outer_group_19">
                                     <field name="enforce_price_override"/>
                                     <field name="global_max_price_variance"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_20">
                                     <field name="require_approval"/>
                                     <field name="approval_workflow_id"
                                            invisible="not require_approval"
@@ -210,12 +210,12 @@
                         
                         <!-- TAB 6: NOTIFICATIONS -->
                         <page string="Notifications" name="notification">
-                            <group>
-                                <group>
+                            <group name="outer_group_21">
+                                <group name="outer_group_22">
                                     <field name="notify_users"/>
                                     <field name="notify_template_id" options="{'no_create': True, 'no_open': True}"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_23">
                                     <field name="notify_groups" widget="many2many_tags" options="{'no_create': True}"/>
                                 </group>
                             </group>
@@ -223,12 +223,12 @@
                         
                         <!-- TAB 7: ESCALATION -->
                         <page string="Escalation" name="escalation">
-                            <group>
-                                <group>
+                            <group name="outer_group_24">
+                                <group name="outer_group_25">
                                     <field name="enable_escalation"/>
                                     <field name="escalation_timeout_hours"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_26">
                                     <field name="escalation_level_1_persona_id" options="{'no_create': True}"/>
                                     <field name="escalation_level_2_persona_id" options="{'no_create': True}"/>
                                     <field name="escalation_level_3_persona_id" options="{'no_create': True}"/>
@@ -290,7 +290,7 @@
                 <filter string="Discount Rules" name="discount_rules" domain="[('rule_type', '=', 'discount_limit')]"/>
                 <filter string="Margin Rules" name="margin_rules" domain="[('rule_type', '=', 'margin_protection')]"/>
                 <filter string="Price Rules" name="price_rules" domain="[('rule_type', '=', 'price_override')]"/>
-                <group>
+                <group name="outer_group_27">
                     <filter name="group_by_company" string="Company" context="{'group_by': 'company_id'}"/>
                     <filter name="group_by_model" string="Model" context="{'group_by': 'model_id'}"/>
                     <filter name="group_by_type" string="Rule Type" context="{'group_by': 'rule_type'}"/>

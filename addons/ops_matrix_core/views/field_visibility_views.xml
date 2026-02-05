@@ -52,23 +52,23 @@
                             </h1>
                         </div>
                         
-                        <group>
-                            <group>
+                        <group name="outer_group_1">
+                            <group name="outer_group_2">
                                 <field name="model_name" required="True"/>
                                 <field name="field_name" required="True"/>
                                 <field name="field_label"/>
                             </group>
-                            <group>
+                            <group name="outer_group_3">
                                 <field name="security_group_id" required="True"/>
                                 <field name="visibility_mode" required="True"/>
                             </group>
                         </group>
                         
-                        <group>
+                        <group name="outer_group_4">
                             <field name="description" nolabel="True"/>
                         </group>
                         
-                        <group>
+                        <group name="outer_group_5">
                             <field name="created_date" readonly="True"/>
                             <field name="modified_date" readonly="True"/>
                         </group>
@@ -108,7 +108,7 @@
                             string="Read-Only"
                             domain="[('visibility_mode', '=', 'readonly')]"/>
                     
-                    <group>
+                    <group name="outer_group_6">
                         <filter name="group_by_model"
                                 string="Model"
                                 context="{'group_by': 'model_name'}"/>

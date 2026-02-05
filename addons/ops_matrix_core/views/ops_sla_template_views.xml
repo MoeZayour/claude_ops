@@ -32,12 +32,12 @@
                             <field name="name" id="name" placeholder="e.g. Standard Approval SLA"/>
                         </h1>
                     </div>
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="model_id" options="{'no_create': True}"/>
                             <field name="target_duration" widget="float_time"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="calendar_id" options="{'no_create': True}"/>
                         </group>
                     </group>

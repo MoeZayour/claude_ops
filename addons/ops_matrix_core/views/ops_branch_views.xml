@@ -15,7 +15,7 @@
                 <field name="company_id" groups="base.group_multi_company"/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
                 <filter string="Top Level Branches" name="top_level" domain="[('parent_id', '=', False)]"/>
-                <group>
+                <group name="outer_group_1">
                     <filter string="Manager" name="group_manager" context="{'group_by': 'manager_id'}"/>
                     <filter string="Parent Branch" name="group_parent" context="{'group_by': 'parent_id'}"/>
                     <filter string="Company" name="group_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
@@ -124,22 +124,22 @@
                         <label for="name" string="Branch Name"/>
                         <h1><field name="name" id="name" placeholder="e.g., Main Office"/></h1>
                     </div>
-                    <group col="4">
-                        <group colspan="2">
+                    <group name="outer_group_2" col="4">
+                        <group name="outer_group_3" colspan="2">
                             <field name="code" readonly="1"/>
                             <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                             <field name="parent_id" options="{'no_create': True}"/>
                             <field name="sequence" groups="base.group_no_one"/>
                             <field name="color" widget="color_picker" groups="base.group_no_one"/>
                         </group>
-                        <group colspan="2">
+                        <group name="outer_group_4" colspan="2">
                             <field name="manager_id" options="{'no_create': True}"/>
                             <field name="phone"/>
                             <field name="email"/>
                             <field name="warehouse_id" options="{'no_create': True}"/>
                         </group>
                     </group>
-                    <group>
+                    <group name="outer_group_5">
                         <field name="address" nolabel="1" placeholder="Physical location address"/>
                     </group>
                     <notebook>
@@ -154,7 +154,7 @@
                             </field>
                         </page>
                         <page string="Analytic Integration" name="analytic" groups="analytic.group_analytic_accounting">
-                            <group>
+                            <group name="outer_group_6">
                                 <field name="analytic_account_id" readonly="1" options="{'no_open': True}"/>
                             </group>
                         </page>

@@ -12,20 +12,20 @@
             <field name="arch" type="xml">
                 <form string="Dashboard Configuration">
                     <sheet>
-                        <group>
-                            <group>
+                        <group name="outer_group_1">
+                            <group name="outer_group_2">
                                 <field name="user_id" readonly="1"/>
                                 <field name="dashboard_layout"/>
                                 <field name="default_date_range"/>
                             </group>
-                            <group>
+                            <group name="outer_group_3">
                                 <field name="show_branch_first"/>
                                 <field name="include_inactive_dimensions"/>
                             </group>
                         </group>
                         
-                        <group>
-                            <group>
+                        <group name="outer_group_4">
+                            <group name="outer_group_5">
                                 <field name="color_scheme"/>
                             </group>
                             <group name="custom_colors">
@@ -36,17 +36,17 @@
                             </group>
                         </group>
                         
-                        <group>
-                            <group>
+                        <group name="outer_group_6">
+                            <group name="outer_group_7">
                                 <field name="cache_duration"/>
                                 <field name="auto_refresh"/>
                             </group>
-                            <group>
+                            <group name="outer_group_8">
                                 <field name="refresh_interval"/>
                             </group>
                         </group>
                         
-                        <group>
+                        <group name="outer_group_9">
                             <field name="enabled_widgets" widget="many2many_tags"/>
                         </group>
                     </sheet>
@@ -91,14 +91,14 @@
                         <div class="oe_button_box" name="button_box">
                             <field name="active" widget="boolean_toggle"/>
                         </div>
-                        <group>
-                            <group>
+                        <group name="outer_group_10">
+                            <group name="outer_group_11">
                                 <field name="name"/>
                                 <field name="code"/>
                                 <field name="widget_type"/>
                                 <field name="is_system" readonly="1"/>
                             </group>
-                            <group>
+                            <group name="outer_group_12">
                                 <field name="sequence"/>
                                 <field name="icon"/>
                                 <field name="color" widget="color"/>
@@ -107,33 +107,33 @@
                             </group>
                         </group>
                         
-                        <group>
-                            <group>
+                        <group name="outer_group_13">
+                            <group name="outer_group_14">
                                 <field name="model_name"/>
                                 <field name="measure_field"/>
                                 <field name="dimension_field"/>
                             </group>
-                            <group>
+                            <group name="outer_group_15">
                                 <field name="group_by_fields"/>
                                 <field name="sort_by"/>
                                 <field name="limit"/>
                             </group>
                         </group>
                         
-                        <group>
+                        <group name="outer_group_16">
                             <field name="domain" widget="domain" options="{'model': 'model_name'}"/>
                         </group>
                         
-                        <group>
-                            <group>
+                        <group name="outer_group_17">
+                            <group name="outer_group_18">
                                 <field name="group_ids" widget="many2many_tags"/>
                             </group>
-                            <group>
+                            <group name="outer_group_19">
                                 <field name="company_ids" widget="many2many_tags"/>
                             </group>
                         </group>
                         
-                        <group>
+                        <group name="outer_group_20">
                             <field name="description" nolabel="1"/>
                         </group>
                     </sheet>
@@ -200,7 +200,7 @@
                     <separator/>
                     <filter string="System Widgets" name="system" domain="[('is_system', '=', True)]"/>
                     <filter string="Custom Widgets" name="custom" domain="[('is_system', '=', False)]"/>
-                    <group>
+                    <group name="outer_group_21">
                         <filter string="Type" name="group_by_type" context="{'group_by': 'widget_type'}"/>
                         <filter string="Model" name="group_by_model" context="{'group_by': 'model_name'}"/>
                         <filter string="Width" name="group_by_width" context="{'group_by': 'width'}"/>

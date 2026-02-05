@@ -62,37 +62,37 @@
                                 bg_color="bg-success" 
                                 invisible="not success"/>
                         
-                        <group>
-                            <group>
+                        <group name="outer_group_1">
+                            <group name="outer_group_2">
                                 <field name="timestamp" readonly="1"/>
                                 <field name="endpoint" readonly="1"/>
                                 <field name="http_method" readonly="1"/>
                                 <field name="date" readonly="1"/>
                             </group>
-                            <group>
+                            <group name="outer_group_3">
                                 <field name="api_key_id" readonly="1"/>
                                 <field name="persona_id" readonly="1"/>
                                 <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             </group>
                         </group>
                         
-                        <group>
-                            <group>
+                        <group name="outer_group_4">
+                            <group name="outer_group_5">
                                 <field name="ip_address" readonly="1"/>
                                 <field name="user_agent" readonly="1" widget="text"/>
                             </group>
-                            <group>
+                            <group name="outer_group_6">
                                 <field name="status_code" readonly="1"/>
                                 <field name="success" readonly="1"/>
                                 <field name="response_time" readonly="1" widget="float_time"/>
                             </group>
                         </group>
                         
-                        <group invisible="not error_message">
+                        <group name="outer_group_7" invisible="not error_message">
                             <field name="error_message" readonly="1" nolabel="1" widget="text"/>
                         </group>
                         
-                        <group invisible="not request_params">
+                        <group name="outer_group_8" invisible="not request_params">
                             <field name="request_params" readonly="1" nolabel="1" widget="text"/>
                         </group>
                         
@@ -159,7 +159,7 @@
                             name="filter_slow" 
                             domain="[('response_time', '&gt;', 5.0)]"/>
                     
-                    <group>
+                    <group name="outer_group_9">
                         <filter string="API Key" name="group_api_key" context="{'group_by': 'api_key_id'}"/>
                         <filter string="Persona" name="group_persona" context="{'group_by': 'persona_id'}"/>
                         <filter string="Endpoint" name="group_endpoint" context="{'group_by': 'endpoint'}"/>

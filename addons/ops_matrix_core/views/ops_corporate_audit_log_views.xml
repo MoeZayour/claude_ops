@@ -65,15 +65,15 @@
                             </h2>
                         </div>
 
-                        <group>
-                            <group string="Event Information">
+                        <group name="outer_group_1">
+                            <group name="event_information" string="Event Information">
                                 <field name="create_date" string="Timestamp" readonly="1"/>
                                 <field name="event_category" readonly="1" widget="badge"/>
                                 <field name="severity" readonly="1" widget="badge"/>
                                 <field name="compliance_category" readonly="1" widget="badge"/>
                                 <field name="description" readonly="1"/>
                             </group>
-                            <group string="User and Session">
+                            <group name="user_and_session" string="User and Session">
                                 <field name="user_id" readonly="1"/>
                                 <field name="user_login" readonly="1"/>
                                 <field name="persona_id" readonly="1"/>
@@ -83,14 +83,14 @@
                             </group>
                         </group>
 
-                        <group>
-                            <group string="Record Context">
+                        <group name="outer_group_4">
+                            <group name="record_context" string="Record Context">
                                 <field name="res_model" string="Model" readonly="1"/>
                                 <field name="res_id" string="Record ID" readonly="1"/>
                                 <field name="res_name" string="Record Name" readonly="1"/>
                                 <field name="changed_fields" readonly="1"/>
                             </group>
-                            <group string="Matrix Context">
+                            <group name="matrix_context" string="Matrix Context">
                                 <field name="company_id" readonly="1"/>
                                 <field name="branch_id" readonly="1"/>
                                 <field name="persona_id" readonly="1"/>
@@ -98,54 +98,54 @@
                         </group>
 
                         <notebook>
-                            <page string="Change Details" invisible="not old_values and not new_values">
-                                <group>
-                                    <group string="Old Values">
+                            <page name="change_details" string="Change Details" invisible="not old_values and not new_values">
+                                <group name="outer_group_7">
+                                    <group name="old_values_1" string="Old Values">
                                         <field name="old_values" readonly="1" widget="text" nolabel="1"/>
                                     </group>
-                                    <group string="New Values">
+                                    <group name="new_values_1" string="New Values">
                                         <field name="new_values" readonly="1" widget="text" nolabel="1"/>
                                     </group>
                                 </group>
-                                <group string="Change Summary">
+                                <group name="change_summary_1" string="Change Summary">
                                     <field name="change_summary" readonly="1" widget="text" nolabel="1"/>
                                 </group>
                             </page>
 
-                            <page string="Additional Context">
-                                <group>
+                            <page name="additional_context" string="Additional Context">
+                                <group name="outer_group_11">
                                     <field name="action" readonly="1"/>
                                     <field name="res_model_name" string="Model Description" readonly="1"/>
                                     <field name="res_reference" readonly="1"/>
                                 </group>
                             </page>
 
-                            <page string="Review Information" invisible="not requires_review">
-                                <group>
-                                    <group>
+                            <page name="review_information" string="Review Information" invisible="not requires_review">
+                                <group name="outer_group_12">
+                                    <group name="outer_group_13">
                                         <field name="requires_review" readonly="1" widget="boolean"/>
                                         <field name="reviewed" readonly="1" widget="boolean"/>
                                     </group>
-                                    <group>
+                                    <group name="outer_group_14">
                                         <field name="reviewed_by" readonly="1"/>
                                         <field name="reviewed_date" readonly="1"/>
                                     </group>
-                                    <group colspan="2">
+                                    <group name="outer_group_15" colspan="2">
                                         <field name="review_notes" readonly="1" widget="text"/>
                                     </group>
                                 </group>
                             </page>
 
-                            <page string="Related Logs">
-                                <group>
+                            <page name="related_logs" string="Related Logs">
+                                <group name="outer_group_16">
                                     <field name="api_audit_id" readonly="1"/>
                                     <field name="security_audit_id" readonly="1"/>
                                 </group>
                             </page>
 
-                            <page string="Technical Details">
-                                <group>
-                                    <group>
+                            <page name="technical_details" string="Technical Details">
+                                <group name="outer_group_17">
+                                    <group name="outer_group_18">
                                         <field name="id" readonly="1"/>
                                         <field name="create_date" readonly="1"/>
                                         <field name="create_uid" readonly="1"/>
@@ -182,7 +182,7 @@
                     <filter string="GDPR" name="filter_gdpr" domain="[('compliance_category', '=', 'gdpr')]"/>
                     <filter string="Requires Review" name="filter_requires_review" domain="[('requires_review', '=', True), ('reviewed', '=', False)]"/>
                     <filter string="Reviewed" name="filter_reviewed" domain="[('reviewed', '=', True)]"/>
-                    <group>
+                    <group name="outer_group_19">
                         <filter string="Event Type" name="group_event_type" context="{'group_by': 'event_type'}"/>
                         <filter string="Category" name="group_event_category" context="{'group_by': 'event_category'}"/>
                         <filter string="User" name="group_user" context="{'group_by': 'user_id'}"/>

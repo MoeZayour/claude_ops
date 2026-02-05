@@ -94,8 +94,8 @@
                         </h1>
                     </div>
                     
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="source_branch_id" 
                                    options="{'no_create': True}"
                                    readonly="state != 'draft'"/>
@@ -106,7 +106,7 @@
                                    options="{'no_create': True}"/>
                         </group>
                         
-                        <group>
+                        <group name="outer_group_3">
                             <field name="transfer_date" 
                                    readonly="state != 'draft'"/>
                             <field name="expected_arrival_date" 
@@ -124,7 +124,7 @@
                         </page>
                         
                         <page string="Technical Info" name="technical" groups="base.group_no_one" icon="fa-cog">
-                            <group>
+                            <group name="outer_group_4">
                                 <field name="active"/>
                                 <field name="can_confirm"/>
                                 <field name="can_receive"/>
@@ -176,7 +176,7 @@
                         domain="[('transfer_date', '&gt;=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-01')),
                                  ('transfer_date', '&lt;', (context_today() + relativedelta(months=1)).strftime('%Y-%m-01'))]"/>
                 
-                <group>
+                <group name="outer_group_5">
                     <filter string="Source Branch" name="group_source" 
                             context="{'group_by': 'source_branch_id'}"/>
                     <filter string="Destination Branch" name="group_dest" 

@@ -34,7 +34,7 @@
                 </header>
                 <sheet>
                     <!-- Button box removed - action_view_related_events not implemented -->
-                    <group>
+                    <group name="outer_group_1">
                         <group name="session_info">
                             <field name="session_id"/>
                             <field name="user_id"/>
@@ -46,7 +46,7 @@
                             <field name="session_duration"/>
                         </group>
                     </group>
-                    <group>
+                    <group name="outer_group_2">
                         <group name="connection">
                             <field name="ip_address"/>
                             <field name="user_agent"/>
@@ -58,10 +58,10 @@
                             <field name="logout_reason"/>
                         </group>
                     </group>
-                    <group invisible="not is_suspicious">
+                    <group name="outer_group_3" invisible="not is_suspicious">
                         <field name="suspicious_reason" nolabel="1"/>
                     </group>
-                    <group invisible="not forced_by_user_id">
+                    <group name="outer_group_4" invisible="not forced_by_user_id">
                         <field name="forced_by_user_id"/>
                     </group>
                 </sheet>
@@ -83,7 +83,7 @@
                 <filter name="suspicious" string="Suspicious" domain="[('is_suspicious', '=', True)]"/>
                 <filter name="today" string="Today" domain="[('login_time', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
                 <separator/>
-                <group>
+                <group name="outer_group_5">
                     <filter name="group_user" string="User" context="{'group_by': 'user_id'}"/>
                     <filter name="group_status" string="Status" context="{'group_by': 'is_active'}"/>
                     <filter name="group_logout_reason" string="Logout Reason" context="{'group_by': 'logout_reason'}"/>

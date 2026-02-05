@@ -39,26 +39,26 @@
                             <field name="name" readonly="1"/>
                         </h1>
                     </div>
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="template_id"/>
                             <field name="model_name"/>
                             <field name="res_id"/>
                             <field name="current_approver_id"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="start_date"/>
                             <field name="deadline"/>
                             <field name="completion_date" invisible="state != 'completed'"/>
                             <field name="progress" widget="progressbar"/>
                         </group>
                     </group>
-                    <group>
-                        <group>
+                    <group name="outer_group_4">
+                        <group name="outer_group_5">
                             <field name="escalation_level"/>
                             <field name="is_overdue"/>
                         </group>
-                        <group>
+                        <group name="outer_group_6">
                             <field name="elapsed_hours" widget="float_time"/>
                             <field name="remaining_hours" widget="float_time"/>
                         </group>

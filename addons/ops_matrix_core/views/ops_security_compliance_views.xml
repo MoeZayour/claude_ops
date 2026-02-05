@@ -87,14 +87,14 @@
                         </h1>
                     </div>
 
-                    <group>
-                        <group string="Check Information">
+                    <group name="outer_group_1">
+                        <group name="check_information" string="Check Information">
                             <field name="check_type"/>
                             <field name="check_date"/>
                             <field name="executed_by_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
-                        <group string="Results Summary">
+                        <group name="results_summary" string="Results Summary">
                             <field name="total_checks"/>
                             <field name="passed_count"/>
                             <field name="failed_count"/>
@@ -240,24 +240,24 @@
         <field name="model">ops.security.compliance.result</field>
         <field name="arch" type="xml">
             <form>
-                    <group>
-                        <group>
+                    <group name="outer_group_4">
+                        <group name="outer_group_5">
                             <field name="check_id"/>
                             <field name="check_category"/>
                             <field name="status"/>
                             <field name="severity"/>
                         </group>
-                        <group>
+                        <group name="outer_group_6">
                             <field name="rule_name"/>
                             <field name="model_name"/>
                             <field name="user_id"/>
                             <field name="record_ref"/>
                         </group>
                     </group>
-                    <group string="Details">
+                    <group name="details" string="Details">
                         <field name="description" nolabel="1"/>
                     </group>
-                    <group string="Recommendation" invisible="not recommendation">
+                    <group name="recommendation_1" string="Recommendation" invisible="not recommendation">
                         <field name="recommendation" nolabel="1"/>
                     </group>
             </form>
@@ -279,8 +279,8 @@
                     </div>
 
                     <!-- Configuration (Draft State) -->
-                    <group invisible="state != 'draft'">
-                        <group string="Filter Options">
+                    <group name="outer_group_9" invisible="state != 'draft'">
+                        <group name="filter_options" string="Filter Options">
                             <field name="user_ids" widget="many2many_tags"
                                    placeholder="Leave empty to check all users"/>
                             <field name="include_admins"/>
@@ -307,7 +307,7 @@
                     </div>
 
                     <!-- Results Table (Done State) -->
-                    <group invisible="state != 'done'">
+                    <group name="outer_group_11" invisible="state != 'done'">
                         <field name="result_ids" nolabel="1">
                             <list decoration-danger="drift_status in ('drift', 'extra_permissions') and severity in ('critical', 'high')"
                                   decoration-warning="drift_status in ('no_persona', 'missing_permissions')"
@@ -329,7 +329,9 @@
                         </field>
                     </group>
 
-                    <field name="state" invisible="1"/>
+                    <group invisible="1" name="hidden_fields">
+                        <field name="state"/>
+                    </group>
                 <footer>
                     <button name="action_detect_drift" string="Detect Drift" type="object"
                             class="btn-primary"
@@ -358,8 +360,8 @@
                     </div>
 
                     <!-- Configuration (Draft State) -->
-                    <group invisible="state != 'draft'">
-                        <group string="Content to Include">
+                    <group name="outer_group_12" invisible="state != 'draft'">
+                        <group name="content_to_include" string="Content to Include">
                             <field name="include_it_admin_rules"/>
                             <field name="include_security_groups"/>
                             <field name="include_user_matrix"/>
@@ -368,7 +370,7 @@
                             <field name="include_sod_rules"/>
                             <field name="include_persona_assignments"/>
                         </group>
-                        <group string="Date Range (for logs)">
+                        <group name="date_range_for_logs" string="Date Range (for logs)">
                             <field name="date_from"/>
                             <field name="date_to"/>
                             <field name="company_id" groups="base.group_multi_company"/>
@@ -381,12 +383,14 @@
                         Click the download button below to save your audit evidence package.
                     </div>
 
-                    <group invisible="state != 'done'">
+                    <group invisible="state != 'done'" name="download_state">
                         <field name="export_file" filename="export_filename" widget="binary"/>
                         <field name="export_filename" invisible="1"/>
                     </group>
 
-                    <field name="state" invisible="1"/>
+                    <group invisible="1" name="hidden_fields">
+                        <field name="state"/>
+                    </group>
                 <footer>
                     <button name="action_generate_evidence_pack" string="Generate Package" type="object"
                             class="btn-primary"

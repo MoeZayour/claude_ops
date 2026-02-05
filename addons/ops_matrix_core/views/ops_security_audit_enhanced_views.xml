@@ -46,18 +46,18 @@
             </xpath>
             <xpath expr="//sheet" position="inside">
                 <notebook>
-                    <page string="Investigation">
-                        <group>
+                    <page name="investigation" string="Investigation">
+                        <group name="outer_group_1">
                             <field name="assigned_to_user_id"/>
                             <field name="failed_login_count" invisible="event_type != 'brute_force_detected'"/>
                         </group>
-                        <group invisible="status not in ['resolved', 'false_positive'">
+                        <group name="outer_group_2" invisible="status not in ['resolved', 'false_positive'">
                             <field name="resolved_date" readonly="1"/>
                             <field name="resolved_by_user_id" readonly="1"/>
                             <field name="resolution_notes" nolabel="1" readonly="1"/>
                         </group>
                     </page>
-                    <page string="Related Events">
+                    <page name="related_events" string="Related Events">
                         <field name="related_audit_ids" nolabel="1">
                             <list>
                                 <field name="timestamp"/>
@@ -104,7 +104,7 @@
         <field name="model">ops.security.resolve.wizard</field>
         <field name="arch" type="xml">
             <form string="Resolve Security Event">
-                <group>
+                <group name="outer_group_3">
                     <field name="audit_id" invisible="1"/>
                     <field name="resolution_notes" widget="text" placeholder="Describe the investigation and resolution..."/>
                 </group>

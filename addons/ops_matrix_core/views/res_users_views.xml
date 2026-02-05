@@ -20,8 +20,8 @@
                     <field name="matrix_access_summary" widget="text" readonly="1"/>
 
                     <!-- STEP 1: Define Allowed Scope (TOP) -->
-                    <group string="Step 1: Define Access Scope">
-                        <group>
+                    <group name="step_1_define_access_scope" string="Step 1: Define Access Scope">
+                        <group name="outer_group_2">
                             <field name="ops_allowed_branch_ids"
                                    string="Allowed Branches"
                                    widget="many2many_tags"
@@ -31,7 +31,7 @@
                             <field name="allowed_branch_count" readonly="1"/>
                         </group>
 
-                        <group>
+                        <group name="outer_group_3">
                             <field name="ops_allowed_business_unit_ids"
                                    string="Allowed Business Units"
                                    widget="many2many_tags"
@@ -43,22 +43,22 @@
                     </group>
 
                     <!-- STEP 2: Assign Persona (MIDDLE) -->
-                    <group string="Step 2: Assign Persona">
-                        <group>
+                    <group name="step_2_assign_persona" string="Step 2: Assign Persona">
+                        <group name="outer_group_5">
                             <field name="persona_id" string="OPS Persona"
                                    groups="base.group_system"
                                    options="{'no_create': True}"
                                    help="User's organizational role (REQUIRED - auto-adds to persona list)"/>
                         </group>
-                        <group>
+                        <group name="outer_group_6">
                             <field name="is_cross_branch_bu_leader" readonly="1"/>
                             <field name="is_matrix_administrator" readonly="1"/>
                         </group>
                     </group>
 
                     <!-- STEP 3: Set Defaults (BOTTOM) -->
-                    <group string="Step 3: Set Default Selections">
-                        <group>
+                    <group name="step_3_set_default_selections" string="Step 3: Set Default Selections">
+                        <group name="outer_group_8">
                             <field name="primary_branch_id" string="Primary Branch"
                                    groups="base.group_system"
                                    options="{'no_create': True}"
@@ -68,7 +68,7 @@
                                    options="{'no_create': True}"
                                    help="Default branch for new transactions (optional)"/>
                         </group>
-                        <group>
+                        <group name="outer_group_9">
                             <field name="ops_default_business_unit_id" string="Default Business Unit for Transactions"
                                    groups="base.group_system"
                                    options="{'no_create': True}"
@@ -77,11 +77,11 @@
                     </group>
 
                     <!-- Advanced: Multiple Personas & Delegations -->
-                    <group groups="base.group_system" string="Advanced: Multiple Personas">
-                        <group>
+                    <group name="advanced_multiple_personas" groups="base.group_system" string="Advanced: Multiple Personas">
+                        <group name="outer_group_11">
                             <field name="persona_ids" widget="many2many_tags" options="{'no_create': True}" string="All Assigned Personas"/>
                         </group>
-                        <group>
+                        <group name="outer_group_12">
                             <field name="delegated_persona_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
                     </group>
@@ -96,7 +96,7 @@
                         <field name="default_business_unit_id" invisible="1" string="Default BU (Alias)"/>
                     </group>
                     
-                    <group groups="base.group_system">
+                    <group name="outer_group_13" groups="base.group_system">
                         <button name="action_reset_matrix_access"
                                 string="Reset to Company Defaults"
                                 type="object"
@@ -136,7 +136,7 @@
                 <filter string="Matrix Administrators" name="matrix_administrators" 
                         domain="[('is_matrix_administrator', '=', True)]"/>
                 <separator/>
-                <group>
+                <group name="outer_group_14">
                     <filter string="Default Branch" name="group_by_default_branch" 
                             context="{'group_by': 'ops_default_branch_id'}"/>
                     <filter string="Default Business Unit" name="group_by_default_bu" 

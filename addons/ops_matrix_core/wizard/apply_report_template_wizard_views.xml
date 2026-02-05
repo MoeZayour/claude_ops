@@ -5,7 +5,7 @@
         <field name="model">apply.report.template.wizard</field>
         <field name="arch" type="xml">
             <form string="Apply Report Template">
-                <group>
+                <group name="outer_group_1">
                     <field name="template_id"/>
                     <field name="date_from"/>
                     <field name="date_to"/>

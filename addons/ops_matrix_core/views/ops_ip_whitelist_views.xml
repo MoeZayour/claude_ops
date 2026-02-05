@@ -38,7 +38,7 @@
                             <field name="allowed_count" widget="statinfo" string="Allowed"/>
                         </button>
                     </div>
-                    <group>
+                    <group name="outer_group_1">
                         <group name="basic">
                             <field name="name"/>
                             <field name="sequence"/>
@@ -49,19 +49,19 @@
                             <field name="last_triggered" readonly="1"/>
                         </group>
                     </group>
-                    <group>
+                    <group name="outer_group_2">
                         <field name="apply_to" widget="radio"/>
                         <field name="user_ids" widget="many2many_tags" invisible="apply_to != 'users'" required="apply_to == 'users'"/>
                         <field name="group_ids" widget="many2many_tags" invisible="apply_to != 'groups'" required="apply_to == 'groups'"/>
                     </group>
-                    <group>
+                    <group name="outer_group_3">
                         <field name="description" nolabel="1" placeholder="Purpose and details of this rule..."/>
                     </group>
-                    <group>
-                        <group>
+                    <group name="outer_group_4">
+                        <group name="outer_group_5">
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
-                        <group>
+                        <group name="outer_group_6">
                             <field name="created_by_user_id" readonly="1"/>
                         </group>
                     </group>
@@ -83,7 +83,7 @@
                 <filter name="allow" string="Allow Rules" domain="[('rule_type', '=', 'allow')]"/>
                 <filter name="deny" string="Deny Rules" domain="[('rule_type', '=', 'deny')]"/>
                 <separator/>
-                <group>
+                <group name="outer_group_7">
                     <filter name="group_type" string="Rule Type" context="{'group_by': 'rule_type'}"/>
                     <filter name="group_apply_to" string="Apply To" context="{'group_by': 'apply_to'}"/>
                 </group>
@@ -114,12 +114,12 @@
         <field name="model">ops.ip.test.wizard</field>
         <field name="arch" type="xml">
             <form string="Test IP Rule">
-                <group>
+                <group name="outer_group_8">
                     <field name="rule_id" invisible="1"/>
                     <field name="test_ip" placeholder="e.g., 192.168.1.100"/>
                     <field name="user_id"/>
                 </group>
-                <group invisible="not result">
+                <group name="outer_group_9" invisible="not result">
                     <field name="result" nolabel="1" readonly="1" widget="text"/>
                 </group>
                 <footer>

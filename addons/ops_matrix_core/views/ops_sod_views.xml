@@ -83,40 +83,40 @@
                         <strong>Segregation of Duties:</strong> This rule prevents a single user from performing multiple critical actions on the same document.
                     </div>
 
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="name"/>
                             <field name="is_system_rule" widget="boolean"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="company_id" readonly="is_system_rule == True"/>
                             <field name="violation_count" widget="integer"/>
                         </group>
                     </group>
                     
-                    <group colspan="4">
-                        <group>
+                    <group name="outer_group_4" colspan="4">
+                        <group name="outer_group_5">
                             <field name="model_name"/>
                             <field name="threshold_amount" widget="float"/>
                         </group>
-                        <group>
+                        <group name="outer_group_6">
                             <field name="action_1"/>
                             <field name="action_2"/>
                         </group>
                     </group>
                     
-                    <group colspan="4">
+                    <group name="outer_group_7" colspan="4">
                         <field name="block_violation" widget="boolean"/>
                         <div class="alert alert-warning" invisible="block_violation == True">
                             <strong>Note:</strong> This rule will only be logged, not enforced. User can perform the action.
                         </div>
                     </group>
                     
-                    <group colspan="4">
+                    <group name="outer_group_8" colspan="4">
                         <field name="description" nolabel="1" colspan="4"/>
                     </group>
                     
-                    <group colspan="4">
+                    <group name="outer_group_9" colspan="4">
                         <field name="created_date" readonly="1"/>
                     </group>
                 </sheet>
@@ -136,43 +136,43 @@
             <form>
                 <sheet>
                     <div class="alert alert-danger" role="alert" invisible="blocked == False">
-                        <strong>⚠️ VIOLATION BLOCKED:</strong> This segregation of duties violation was blocked and prevented from execution.
+                        <strong><i class="fa fa-exclamation-triangle"/> VIOLATION BLOCKED:</strong> This segregation of duties violation was blocked and prevented from execution.
                     </div>
-                    
+
                     <div class="alert alert-warning" role="alert" invisible="blocked == True">
-                        <strong>ℹ️ VIOLATION LOGGED:</strong> This segregation of duties violation was detected and logged but not blocked.
+                        <strong><i class="fa fa-info-circle"/> VIOLATION LOGGED:</strong> This segregation of duties violation was detected and logged but not blocked.
                     </div>
                     
-                    <group>
-                        <group>
+                    <group name="outer_group_10">
+                        <group name="outer_group_11">
                             <field name="timestamp" readonly="1"/>
                             <field name="rule_id" readonly="1"/>
                             <field name="company_id" readonly="1"/>
                         </group>
-                        <group>
+                        <group name="outer_group_12">
                             <field name="blocked" widget="boolean" readonly="1"/>
                             <field name="document_reference" readonly="1"/>
                         </group>
                     </group>
                     
-                    <group colspan="4">
-                        <group>
+                    <group name="outer_group_13" colspan="4">
+                        <group name="outer_group_14">
                             <field name="user_id" readonly="1"/>
                             <field name="action_attempted" readonly="1"/>
                         </group>
-                        <group>
+                        <group name="outer_group_15">
                             <field name="action_1_user_id" readonly="1"/>
                         </group>
                     </group>
                     
-                    <group colspan="4">
-                        <group>
+                    <group name="outer_group_16" colspan="4">
+                        <group name="outer_group_17">
                             <field name="model_name" readonly="1"/>
                             <field name="res_id" readonly="1"/>
                         </group>
                     </group>
                     
-                    <group colspan="4">
+                    <group name="outer_group_18" colspan="4">
                         <field name="notes" nolabel="1" colspan="4" readonly="1"/>
                     </group>
                 </sheet>
@@ -214,7 +214,7 @@
                 <filter name="filter_blocking" string="Blocking Rules" domain="[('block_violation', '=', True)]"/>
                 <filter name="filter_logging" string="Logging Only" domain="[('block_violation', '=', False)]"/>
                 
-                <group>
+                <group name="outer_group_19">
                     <filter name="groupby_model" string="Document Type" context="{'group_by': 'model_name'}"/>
                     <filter name="groupby_active" string="Active Status" context="{'group_by': 'active'}"/>
                     <filter name="groupby_company" string="Company" context="{'group_by': 'company_id'}"/>
@@ -240,7 +240,7 @@
                 <filter name="filter_blocked" string="Blocked Violations" domain="[('blocked', '=', True)]"/>
                 <filter name="filter_logged" string="Logged Only" domain="[('blocked', '=', False)]"/>
                 
-                <group>
+                <group name="outer_group_20">
                     <filter name="groupby_user" string="Violating User" context="{'group_by': 'user_id'}"/>
                     <filter name="groupby_rule" string="Rule" context="{'group_by': 'rule_id'}"/>
                     <filter name="groupby_blocked" string="Blocked Status" context="{'group_by': 'blocked'}"/>

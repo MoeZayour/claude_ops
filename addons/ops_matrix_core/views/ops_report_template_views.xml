@@ -22,13 +22,13 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="name"/>
                             <field name="report_type"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="active"/>
                             <field name="sequence"/>
                             <field name="is_system_template" readonly="1"/>

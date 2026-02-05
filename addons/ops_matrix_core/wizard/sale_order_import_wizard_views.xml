@@ -6,7 +6,7 @@
             <field name="model">sale.order.import.wizard</field>
             <field name="arch" type="xml">
                 <form string="Import Sale Order Lines">
-                    <group>
+                    <group name="outer_group_1">
                         <div class="alert alert-info" role="alert">
                             <strong>How to use:</strong>
                             <ul>
@@ -42,7 +42,7 @@
                     <div class="alert alert-danger" role="alert">
                         <h4>⚠️ Import Failed - Please Fix Errors</h4>
                     </div>
-                    <group>
+                    <group name="outer_group_2">
                         <field name="error_message" nolabel="1" readonly="1" 
                                widget="text" options="{'style': 'white-space: pre-wrap;'}"/>
                     </group>
@@ -61,7 +61,7 @@
                     <div class="alert alert-success" role="alert">
                         <h4>Import Successful!</h4>
                     </div>
-                    <group>
+                    <group name="outer_group_3">
                         <field name="lines_imported" readonly="1"/>
                         <field name="success_message" nolabel="1" readonly="1"
                                widget="text" options="{'style': 'white-space: pre-wrap;'}"/>

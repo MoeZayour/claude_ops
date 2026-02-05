@@ -77,8 +77,8 @@
                             </h1>
                         </div>
                         
-                        <group col="4">
-                            <group colspan="2">
+                        <group name="outer_group_1" col="4">
+                            <group name="outer_group_2" colspan="2">
                                 <field name="persona_id"
                                        options="{'no_create': True, 'no_open': True}"
                                        required="1"/>
@@ -86,14 +86,14 @@
                                        groups="base.group_multi_company"
                                        options="{'no_create': True}"/>
                             </group>
-                            <group colspan="2">
+                            <group name="outer_group_3" colspan="2">
                                 <field name="created_date" readonly="1"/>
                                 <field name="last_used" readonly="1"/>
                                 <field name="user_id" readonly="1"/>
                             </group>
                         </group>
                         
-                        <group>
+                        <group name="outer_group_4">
                             <field name="key" 
                                    password="True" 
                                    readonly="1" 
@@ -105,17 +105,17 @@
                             </div>
                         </group>
                         
-                        <group>
+                        <group name="outer_group_5">
                             <field name="description" 
                                    placeholder="Document the purpose of this API key and which system/application uses it..."
                                    nolabel="1"/>
                         </group>
                         
-                        <group>
-                            <group>
+                        <group name="outer_group_6">
+                            <group name="outer_group_7">
                                 <field name="usage_count" readonly="1"/>
                             </group>
-                            <group>
+                            <group name="outer_group_8">
                                 <field name="last_used" readonly="1"/>
                             </group>
                         </group>
@@ -154,7 +154,7 @@
                     <filter string="High Usage (&gt;1000)"
                             name="filter_high_usage"
                             domain="[('usage_count', '&gt;', 1000)]"/>
-                    <group>
+                    <group name="outer_group_9">
                         <filter string="Persona" name="group_persona" context="{'group_by': 'persona_id'}"/>
                         <filter string="Active Status" name="group_active" context="{'group_by': 'active'}"/>
                         <filter string="Created Date" name="group_created" context="{'group_by': 'created_date'}"/>

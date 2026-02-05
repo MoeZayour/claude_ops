@@ -5,7 +5,7 @@
         <field name="model">ops.approval.recall.wizard</field>
         <field name="arch" type="xml">
             <form string="Recall Approval Request">
-                <group>
+                <group name="outer_group_1">
                     <field name="approval_request_id" invisible="1"/>
                     <field name="document_id" invisible="1"/>
                     <field name="document_model" invisible="1"/>

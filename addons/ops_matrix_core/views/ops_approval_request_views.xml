@@ -61,14 +61,14 @@
                         </div>
                     </div>
                     
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="rule_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                             <field name="requested_by" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                             <field name="requested_date" readonly="1"/>
                             <field name="priority"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="approved_by" readonly="1" invisible="not approved_by" options="{'no_create': True, 'no_open': True}"/>
                             <field name="approved_date" readonly="1" invisible="not approved_date"/>
                             <field name="violation_type" invisible="not is_governance_violation"/>
@@ -76,14 +76,14 @@
                         </group>
                     </group>
                     
-                    <group>
-                        <group invisible="not is_governance_violation">
+                    <group name="outer_group_4">
+                        <group name="outer_group_5" invisible="not is_governance_violation">
                             <field name="ops_company_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                             <field name="ops_branch_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                             <field name="ops_business_unit_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                             <field name="matrix_summary" readonly="1"/>
                         </group>
-                        <group invisible="not is_governance_violation">
+                        <group name="outer_group_6" invisible="not is_governance_violation">
                             <field name="discount_percent" readonly="1" invisible="violation_type != 'discount'"/>
                             <field name="margin_percent" readonly="1" invisible="violation_type != 'margin'"/>
                             <field name="price_variance_percent" readonly="1" invisible="violation_type != 'price'"/>
@@ -93,53 +93,53 @@
                         </group>
                     </group>
                     
-                    <group>
+                    <group name="outer_group_7">
                         <field name="approver_ids" widget="many2many_tags" options="{'no_create': True}"/>
                     </group>
                     
                     <notebook>
                         <page string="Request Details" name="request_details">
-                            <group>
+                            <group name="outer_group_8">
                                 <field name="notes" readonly="1" nolabel="1" placeholder="Request notes..."/>
                             </group>
                         </page>
                         
                         <page string="Response" name="response">
-                            <group>
+                            <group name="outer_group_9">
                                 <field name="response_notes" placeholder="Provide approval/rejection reason..." nolabel="1"/>
                             </group>
                         </page>
                         
                         <page string="Technical Details" name="technical_details">
-                            <group>
-                                <group>
+                            <group name="outer_group_10">
+                                <group name="outer_group_11">
                                     <field name="model_name" readonly="1"/>
                                     <field name="res_id" readonly="1"/>
                                     <field name="record_ref" readonly="1"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_12">
                                     <field name="workflow_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="is_governance_violation" readonly="1"/>
                                 </group>
                             </group>
                             
-                            <group>
-                                <group>
+                            <group name="outer_group_13">
+                                <group name="outer_group_14">
                                     <field name="branch_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_15">
                                     <field name="business_unit_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                                 </group>
                             </group>
                         </page>
                         <page string="Escalation" name="escalation">
-                            <group>
-                                <group>
+                            <group name="outer_group_16">
+                                <group name="outer_group_17">
                                     <field name="is_overdue"/>
                                     <field name="hours_pending"/>
                                     <field name="next_escalation_date"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_18">
                                     <field name="escalation_history" nolabel="1" readonly="1"/>
                                 </group>
                             </group>
@@ -200,7 +200,7 @@
                 <filter string="Governance Violations" name="governance" domain="[('is_governance_violation', '=', True)]"/>
                 <separator/>
                 <filter string="High Priority" name="high_priority" domain="[('priority', 'in', ['high', 'urgent'])]"/>
-                <group>
+                <group name="outer_group_19">
                     <filter name="group_by_rule" string="Rule" context="{'group_by': 'rule_id'}"/>
                     <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
                     <filter name="group_by_requester" string="Requested By" context="{'group_by': 'requested_by'}"/>

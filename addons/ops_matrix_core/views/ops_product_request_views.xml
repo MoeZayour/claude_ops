@@ -55,8 +55,8 @@
                     </div>
                     
                     <!-- Matrix Fields - BU & Branch (Editable in Draft) -->
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="ops_business_unit_id"
                                    readonly="state != 'draft'"
                                    options="{'no_create': True}"/>
@@ -64,18 +64,18 @@
                                    readonly="state != 'draft'"
                                    options="{'no_create': True}"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="name"/>
                             <field name="request_date" readonly="1"/>
                         </group>
                     </group>
 
                     <!-- Request Info -->
-                    <group>
-                        <group>
+                    <group name="outer_group_4">
+                        <group name="outer_group_5">
                             <field name="requester_id" readonly="1"/>
                         </group>
-                        <group>
+                        <group name="outer_group_6">
                             <field name="approver_id" readonly="1"
                                    invisible="state in ['draft', 'submitted']"/>
                             <field name="approval_date" readonly="1"
@@ -86,48 +86,48 @@
                     </group>
                     
                     <notebook>
-                        <page string="Product Information">
-                            <group>
-                                <group>
+                        <page name="product_information" string="Product Information">
+                            <group name="outer_group_7">
+                                <group name="outer_group_8">
                                     <field name="product_sku"/>
                                     <field name="product_name"/>
                                     <field name="categ_id"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_9">
                                     <field name="expected_price"/>
                                     <field name="expected_cost"/>
                                 </group>
                             </group>
-                            <group>
+                            <group name="outer_group_10">
                                 <field name="product_description" 
                                        placeholder="Detailed product description..."/>
                             </group>
                         </page>
                         
-                        <page string="Business Justification">
-                            <group>
+                        <page name="business_justification" string="Business Justification">
+                            <group name="outer_group_11">
                                 <field name="justification" 
                                        placeholder="Explain why this product is needed, target market, expected sales volume, etc."
                                        nolabel="1"/>
                             </group>
-                            <group>
+                            <group name="outer_group_12">
                                 <field name="supplier_info"
                                        placeholder="List potential suppliers, contact information, pricing quotes..."
                                        nolabel="1"/>
                             </group>
                         </page>
                         
-                        <page string="Attachments">
+                        <page name="attachments" string="Attachments">
                             <field name="attachment_ids" widget="many2many_binary"/>
                         </page>
                         
-                        <page string="Approval" 
+                        <page name="approval" string="Approval" 
                               invisible="state == 'draft'">
-                            <group invisible="state != 'rejected'">
+                            <group name="outer_group_13" invisible="state != 'rejected'">
                                 <field name="rejection_reason" nolabel="1"
                                        placeholder="Reason for rejection..."/>
                             </group>
-                            <group>
+                            <group name="outer_group_14">
                                 <field name="notes" nolabel="1"
                                        placeholder="Additional notes..."/>
                             </group>

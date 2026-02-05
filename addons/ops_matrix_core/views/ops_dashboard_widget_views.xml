@@ -39,14 +39,14 @@
                             <field name="code" placeholder="WIDGET_CODE"/>
                         </h3>
                     </div>
-                    <group>
-                        <group>
+                    <group name="outer_group_1">
+                        <group name="outer_group_2">
                             <field name="widget_type"/>
                             <field name="model_name"/>
                             <field name="domain"/>
                             <field name="sequence"/>
                         </group>
-                        <group>
+                        <group name="outer_group_3">
                             <field name="icon"/>
                             <field name="color"/>
                             <field name="height"/>
@@ -54,8 +54,8 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Data Configuration">
-                            <group>
+                        <page name="data_configuration" string="Data Configuration">
+                            <group name="outer_group_4">
                                 <field name="measure_field"/>
                                 <field name="dimension_field"/>
                                 <field name="group_by_fields"/>
@@ -63,13 +63,13 @@
                                 <field name="limit"/>
                             </group>
                         </page>
-                        <page string="Security">
-                            <group>
+                        <page name="security" string="Security">
+                            <group name="outer_group_5">
                                 <field name="group_ids" widget="many2many_tags"/>
                                 <field name="company_ids" widget="many2many_tags"/>
                             </group>
                         </page>
-                        <page string="Description">
+                        <page name="description_1" string="Description">
                             <field name="description" placeholder="Describe this widget..."/>
                         </page>
                     </notebook>

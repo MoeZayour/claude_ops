@@ -6,16 +6,18 @@
         <field name="model">ops.sale.order.import.wizard</field>
         <field name="arch" type="xml">
             <form string="Import Sale Order Lines from Excel">
-                <field name="state" invisible="1"/>
-                <field name="template_file" invisible="1"/>
-                <field name="template_filename" invisible="1"/>
-                
+                <group invisible="1" name="hidden_fields">
+                    <field name="state"/>
+                    <field name="template_file"/>
+                    <field name="template_filename"/>
+                </group>
+
                 <!-- Upload State -->
-                <group invisible="state != 'upload'">
-                    <group>
+                <group name="outer_group_1" invisible="state != 'upload'">
+                    <group name="outer_group_2">
                         <field name="sale_order_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                     </group>
-                    <group>
+                    <group name="outer_group_3">
                         <label for="template_file" string="Need a template?"/>
                         <div>
                             <button name="action_download_template" 
@@ -28,14 +30,14 @@
                     </group>
                     
                     <separator string="Upload Your Excel File"/>
-                    <group colspan="2">
+                    <group name="outer_group_4" colspan="2">
                         <field name="import_file" filename="import_filename" widget="binary" required="1"/>
                         <field name="import_filename" invisible="1"/>
                     </group>
                     
                     <div class="alert alert-info" role="alert" colspan="2">
                         <h4><i class="fa fa-info-circle"/> Instructions:</h4>
-                        <ol style="margin-left: 20px; margin-top: 10px;">
+                        <ol class="ms-3 mt-2">
                             <li>Click "Download Excel Template" above to get the template</li>
                             <li>Open the template and fill in the "Import Data" sheet with your product codes and quantities</li>
                             <li>Product codes must match existing products in the system exactly</li>
@@ -43,21 +45,21 @@
                             <li>Upload the completed file using the field above</li>
                             <li>Click "Validate File" to check for any errors</li>
                         </ol>
-                        <p style="margin-top: 10px;"><strong>Note:</strong> Leave "Unit Price" blank to use the product's default price.</p>
+                        <p class="mt-2"><strong>Note:</strong> Leave "Unit Price" blank to use the product's default price.</p>
                     </div>
                 </group>
                 
                 <!-- Validation State -->
-                <group invisible="state != 'validate'" colspan="2">
+                <group name="outer_group_5" invisible="state != 'validate'" colspan="2">
                     <field name="validation_message" nolabel="1" widget="html" colspan="2"/>
                 </group>
                 
                 <!-- Done State -->
-                <group invisible="state != 'done'" colspan="2">
-                    <div class="alert alert-success" role="alert" style="margin: 20px;">
-                        <h3 style="margin-top: 0;"><i class="fa fa-check-circle"/> Import Successful!</h3>
-                        <p style="font-size: 16px;">Successfully imported <field name="lines_imported" readonly="1" class="fw-bold"/> line(s) to sale order <strong><field name="sale_order_id" readonly="1" options="{'no_create': True, 'no_open': True}"/></strong>.</p>
-                        <p style="margin-top: 15px;">You can now review the imported lines in your sale order.</p>
+                <group invisible="state != 'done'" colspan="2" name="done_state">
+                    <div class="alert alert-success m-3" role="alert">
+                        <h3 class="mt-0"><i class="fa fa-check-circle"/> Import Successful!</h3>
+                        <p class="fs-5">Successfully imported <field name="lines_imported" readonly="1" class="fw-bold"/> line(s) to sale order <strong><field name="sale_order_id" readonly="1" options="{'no_create': True, 'no_open': True}"/></strong>.</p>
+                        <p class="mt-3">You can now review the imported lines in your sale order.</p>
                     </div>
                 </group>
                 

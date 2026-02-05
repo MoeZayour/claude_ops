@@ -36,21 +36,21 @@
                             <field name="code" readonly="1"/>
                         </h4>
                     </div>
-                    <group>
-                        <group string="Configuration">
+                    <group name="outer_group_1">
+                        <group name="configuration" string="Configuration">
                             <field name="model_id" options="{'no_create': True}"/>
                             <field name="model_name" invisible="1"/>
                             <field name="sequence"/>
                             <field name="active"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
-                        <group string="Linked Rule">
+                        <group name="linked_rule" string="Linked Rule">
                             <field name="governance_rule_id" options="{'no_create': True}"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Conditions" name="conditions">
-                            <group>
+                            <group name="outer_group_4">
                                 <field name="condition_domain" placeholder="[('amount_total', '>', 10000)]"/>
                                 <field name="condition_code" placeholder="record.amount_total > 10000"/>
                             </group>
@@ -63,7 +63,7 @@
                             </div>
                         </page>
                         <page string="Approvers" name="approvers">
-                            <group>
+                            <group name="outer_group_5">
                                 <field name="approver_user_ids" widget="many2many_tags"/>
                                 <field name="approver_persona_ids" widget="many2many_tags"/>
                                 <field name="approver_group_ids" widget="many2many_tags"/>

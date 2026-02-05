@@ -42,11 +42,11 @@
             <!-- OPS MATRIX: Additional controls in General Info tab -->
             <xpath expr="//page[@name='general_information']" position="inside">
                 <group string="OPS Matrix - Product Governance" name="ops_product_governance">
-                    <group>
+                    <group name="outer_group_1">
                         <field name="ops_is_global_master"
                                help="Mark as Global Master to enforce branch activation workflow"/>
                     </group>
-                    <group>
+                    <group name="outer_group_2">
                         <field name="ops_business_unit_id" invisible="1"/>
                     </group>
                 </group>

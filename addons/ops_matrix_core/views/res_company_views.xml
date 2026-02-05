@@ -90,24 +90,24 @@
                                         <field name="business_unit_count" widget="statinfo" string="Business Units"/>
                                     </button>
                                 </div>
-                                <group>
-                                    <group>
+                                <group name="outer_group_1">
+                                    <group name="outer_group_2">
                                         <field name="name" placeholder="e.g., Main Office"/>
                                         <field name="code" readonly="1"/>
                                         <field name="manager_id" placeholder="Select branch manager" options="{'no_create': True}"/>
                                         <field name="company_id" invisible="1"/>
                                     </group>
-                                    <group>
+                                    <group name="outer_group_3">
                                         <field name="phone"/>
                                         <field name="email"/>
                                         <field name="warehouse_id" options="{'no_create': True}"/>
                                         <field name="active"/>
                                     </group>
                                 </group>
-                                <group>
+                                <group name="outer_group_4">
                                     <field name="address" placeholder="Physical location address" nolabel="1"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_5">
                                     <field name="analytic_account_id" readonly="1" options="{'no_open': True}"/>
                                 </group>
                             </sheet>
@@ -115,12 +115,12 @@
                     </field>
                 </page>
                 <page string="Three-Way Match" name="three_way_match">
-                    <group>
-                        <group>
+                    <group name="outer_group_6">
+                        <group name="outer_group_7">
                             <field name="enable_three_way_match"/>
                             <field name="three_way_match_block_validation"/>
                         </group>
-                        <group>
+                        <group name="outer_group_8">
                             <label for="three_way_match_tolerance"/>
                             <div class="o_row">
                                 <field name="three_way_match_tolerance"/>

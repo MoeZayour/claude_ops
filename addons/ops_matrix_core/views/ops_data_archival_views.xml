@@ -39,7 +39,7 @@
                             <field name="records_archived" widget="statinfo" string="Archived"/>
                         </button>
                     </div>
-                    <group>
+                    <group name="outer_group_1">
                         <group name="config">
                             <field name="model_name" readonly="state != 'draft'"/>
                             <field name="record_age_days" readonly="state != 'draft'"/>
@@ -52,30 +52,30 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Execution Details" invisible="state == 'draft'">
-                            <group>
-                                <group>
+                        <page name="execution_details" string="Execution Details" invisible="state == 'draft'">
+                            <group name="outer_group_2">
+                                <group name="outer_group_3">
                                     <field name="start_date" readonly="1"/>
                                     <field name="end_date" readonly="1"/>
                                     <field name="records_found" readonly="1"/>
                                 </group>
-                                <group>
+                                <group name="outer_group_4">
                                     <field name="records_archived" readonly="1"/>
                                     <field name="records_failed" readonly="1"/>
                                     <field name="archive_size_bytes" readonly="1" widget="integer"/>
                                 </group>
                             </group>
-                            <group invisible="not error_log">
+                            <group name="outer_group_5" invisible="not error_log">
                                 <field name="error_log" nolabel="1" readonly="1" widget="text"/>
                             </group>
                         </page>
-                        <page string="Advanced Filters" invisible="state != 'draft'">
-                            <group>
+                        <page name="advanced_filters" string="Advanced Filters" invisible="state != 'draft'">
+                            <group name="outer_group_6">
                                 <field name="additional_filters" widget="text" placeholder="[('field', 'operator', 'value')']"/>
                             </group>
                         </page>
-                        <page string="Metadata">
-                            <group>
+                        <page name="metadata" string="Metadata">
+                            <group name="outer_group_7">
                                 <field name="created_by_user_id" readonly="1"/>
                                 <field name="created_date" readonly="1"/>
                             </group>
@@ -100,7 +100,7 @@
                 <filter name="failed" string="Failed" domain="[('state', '=', 'failed')]"/>
                 <filter name="automatic" string="Automatic" domain="[('is_automatic', '=', True)]"/>
                 <separator/>
-                <group>
+                <group name="outer_group_8">
                     <filter name="group_model" string="Model" context="{'group_by': 'model_name'}"/>
                     <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
                 </group>
@@ -152,19 +152,19 @@
                     <field name="restored" widget="badge" decoration-success="restored"/>
                 </header>
                 <sheet>
-                    <group>
-                        <group>
+                    <group name="outer_group_9">
+                        <group name="outer_group_10">
                             <field name="original_model" readonly="1"/>
                             <field name="original_id" readonly="1"/>
                             <field name="archive_job_id" readonly="1"/>
                         </group>
-                        <group>
+                        <group name="outer_group_11">
                             <field name="archive_date" readonly="1"/>
                             <field name="restored_date" readonly="1"/>
                             <field name="company_id" readonly="1"/>
                         </group>
                     </group>
-                    <group>
+                    <group name="outer_group_12">
                         <field name="record_data" nolabel="1" readonly="1" widget="text"/>
                     </group>
                 </sheet>
