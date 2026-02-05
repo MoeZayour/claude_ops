@@ -33,15 +33,15 @@
                         <h1><field name="name" placeholder="Template Name"/></h1>
                     </div>
 
-                    <group>
-                        <group string="Schedule">
+                    <group name="group_1">
+                        <group name="schedule" string="Schedule">
                             <field name="recurring_interval"/>
                             <field name="recurring_period"/>
                             <field name="date_start"/>
                             <field name="date_end"/>
                             <field name="next_execution_date" readonly="1"/>
                         </group>
-                        <group string="Configuration">
+                        <group name="configuration" string="Configuration">
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="journal_id"/>
                             <field name="journal_state"/>
@@ -49,19 +49,19 @@
                         </group>
                     </group>
 
-                    <group>
-                        <group string="OPS Matrix">
+                    <group name="group_4">
+                        <group name="ops_matrix" string="OPS Matrix">
                             <field name="ops_branch_id"/>
                             <field name="ops_business_unit_id"/>
                         </group>
-                        <group string="Auto-Reversal">
+                        <group name="autoreversal" string="Auto-Reversal">
                             <field name="auto_reverse"/>
                             <field name="reversal_date_offset" invisible="not auto_reverse"/>
                         </group>
                     </group>
 
                     <notebook>
-                        <page string="Entry Lines">
+                        <page name="entry_lines" string="Entry Lines">
                             <field name="line_ids">
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
@@ -74,7 +74,7 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Notes">
+                        <page name="notes" string="Notes">
                             <field name="description" placeholder="Description or notes..."/>
                         </page>
                     </notebook>
@@ -155,15 +155,15 @@
                     <div class="oe_title">
                         <h1><field name="name"/></h1>
                     </div>
-                    <group>
-                        <group>
+                    <group name="group_7">
+                        <group name="group_8">
                             <field name="template_id"/>
                             <field name="entry_date"/>
                             <field name="journal_id"/>
                             <field name="move_id" readonly="1"/>
                             <field name="require_approval" invisible="1"/>
                         </group>
-                        <group>
+                        <group name="group_9">
                             <field name="ops_branch_id"/>
                             <field name="ops_business_unit_id"/>
                             <field name="auto_reverse"/>
@@ -172,7 +172,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Lines">
+                        <page name="lines" string="Lines">
                             <field name="line_ids">
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
@@ -184,8 +184,8 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Approval" invisible="not require_approval">
-                            <group>
+                        <page name="approval" string="Approval" invisible="not require_approval">
+                            <group name="group_10">
                                 <field name="approved_by" readonly="1"/>
                                 <field name="approved_date" readonly="1"/>
                             </group>
@@ -258,13 +258,13 @@
                     <div class="oe_title">
                         <h1><field name="name" placeholder="Template Name"/></h1>
                     </div>
-                    <group>
-                        <group>
+                    <group name="group_11">
+                        <group name="group_12">
                             <field name="category"/>
                             <field name="journal_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
-                        <group>
+                        <group name="group_13">
                             <field name="ops_branch_id"/>
                             <field name="ops_business_unit_id"/>
                             <field name="use_count" readonly="1"/>
@@ -272,7 +272,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Lines">
+                        <page name="lines_1" string="Lines">
                             <field name="line_ids">
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
@@ -287,7 +287,7 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Description">
+                        <page name="description_1" string="Description">
                             <field name="description" placeholder="Template description..."/>
                         </page>
                     </notebook>
@@ -339,14 +339,14 @@
         <field name="model">ops.journal.template.wizard</field>
         <field name="arch" type="xml">
             <form string="Create Entry from Template">
-                <group>
-                    <group>
+                <group name="group_14">
+                    <group name="group_15">
                         <field name="template_id" readonly="1"/>
                         <field name="date"/>
                         <field name="journal_id"/>
                         <field name="ref"/>
                     </group>
-                    <group>
+                    <group name="group_16">
                         <field name="ops_branch_id"/>
                         <field name="ops_business_unit_id"/>
                         <field name="has_percentage_lines" invisible="1"/>

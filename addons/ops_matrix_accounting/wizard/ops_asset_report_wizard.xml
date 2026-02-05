@@ -6,7 +6,7 @@
             <field name="model">ops.asset.register.report</field>
             <field name="arch" type="xml">
                 <form string="Asset Register Report">
-                    <group>
+                    <group name="group_1">
                         <field name="date_from"/>
                         <field name="date_to"/>
                         <field name="asset_category_ids" widget="many2many_tags" options="{'no_create': True}"/>

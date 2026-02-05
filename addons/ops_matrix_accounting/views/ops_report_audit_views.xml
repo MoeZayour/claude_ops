@@ -46,25 +46,25 @@
                             <field name="display_name"/>
                         </h1>
                     </div>
-                    <group>
-                        <group string="Report Information">
+                    <group name="group_1">
+                        <group name="report_information" string="Report Information">
                             <field name="report_engine"/>
                             <field name="report_name"/>
                             <field name="report_type"/>
                             <field name="export_format"/>
                             <field name="record_count"/>
                         </group>
-                        <group string="Audit Trail">
+                        <group name="audit_trail" string="Audit Trail">
                             <field name="user_id"/>
                             <field name="action_date"/>
                             <field name="ip_address"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
-                    <group string="Technical Details">
+                    <group name="technical_details" string="Technical Details">
                         <field name="wizard_model"/>
                     </group>
-                    <group string="Parameters">
+                    <group name="parameters_1" string="Parameters">
                         <field name="parameters" widget="text" readonly="1" nolabel="1"/>
                     </group>
                 </sheet>

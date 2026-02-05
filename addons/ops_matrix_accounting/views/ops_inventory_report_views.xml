@@ -1,328 +1,326 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!--
-    ====================================================
-    OPS Matrix Inventory Intelligence Views & Menus
-    Phase 3: Corporate UI with Card-Based Layout
-    ====================================================
-    -->
+ <!--
+ ====================================================
+ OPS Matrix Inventory Intelligence Views & Menus
+ Phase 3: Corporate UI with Card-Based Layout
+ ====================================================
+ -->
 
-    <!-- =================== WIZARD FORM VIEW =================== -->
-    <record id="view_ops_inventory_report_wizard_form" model="ir.ui.view">
-        <field name="name">ops.inventory.report.wizard.form</field>
-        <field name="model">ops.inventory.report.wizard</field>
-        <field name="arch" type="xml">
-            <form string="Inventory Intelligence">
+ <!-- =================== WIZARD FORM VIEW =================== -->
+ <record id="view_ops_inventory_report_wizard_form" model="ir.ui.view">
+ <field name="name">ops.inventory.report.wizard.form</field>
+ <field name="model">ops.inventory.report.wizard</field>
+ <field name="arch" type="xml">
+ <form string="Inventory Intelligence">
 
-                <!-- ==================== TEMPLATE QUICK START ==================== -->
-                <group name="template_section" string="📁 Quick Start" class="ops_wizard_section">
-                    <field name="report_template_id"
-                           placeholder="Load a saved template or configure manually..."
-                           options="{'no_create': True, 'no_open': True}"
-                           help="Load previously saved filter configuration for quick access"/>
-                    <button name="action_save_template"
-                            string="Save as Template"
-                            type="object"
-                            class="btn-link"
-                            icon="fa-save"
-                            help="Save current configuration as reusable template"/>
-                </group>
+ <!-- ==================== TEMPLATE QUICK START ==================== -->
+ <group name="template_section" string="Quick Start">
+ <field name="report_template_id"
+ placeholder="Load a saved template or configure manually..."
+ options="{'no_create': True, 'no_open': True}"
+ help="Load previously saved filter configuration for quick access"/>
+ <button name="action_save_template"
+ string="Save as Template"
+ type="object"
+ class="btn-link"
+ icon="fa-save"
+ help="Save current configuration as reusable template"/>
+ </group>
 
-                <!-- ==================== REPORT TYPE SELECTION ==================== -->
-                <group name="report_type_section" string="📊 Report Selection" class="ops_wizard_section">
-                    <field name="report_type"
-                           widget="radio"
-                           options="{'horizontal': false}"
-                           help="Select the inventory report type to generate"/>
-                </group>
+ <!-- ==================== REPORT TYPE SELECTION ==================== -->
+ <group name="report_type_section" string="Report Selection">
+ <field name="report_type"
+ widget="radio"
+ options="{'horizontal': false}"
+ help="Select the inventory report type to generate"/>
+ </group>
 
-                <!-- ==================== DATE & PERIOD ==================== -->
-                <group name="period_section" string="📅 Reporting Period" class="ops_wizard_section">
-                    <group>
-                        <field name="date_to"
-                               help="Valuation/snapshot date for inventory analysis"/>
-                        <field name="date_from"
-                               invisible="report_type != 'movement'"
-                               required="report_type == 'movement'"
-                               help="Start date for movement analysis period"/>
-                    </group>
-                    <group>
-                        <field name="company_id"
-                               options="{'no_create': True}"
-                               groups="base.group_multi_company"
-                               help="Company to report on"/>
-                    </group>
-                </group>
+ <!-- ==================== DATE & PERIOD ==================== -->
+ <group name="period_section" string="Reporting Period">
+ <group name="group_1">
+ <field name="date_to"
+ help="Valuation/snapshot date for inventory analysis"/>
+ <field name="date_from"
+ invisible="report_type != 'movement'"
+ required="report_type == 'movement'"
+ help="Start date for movement analysis period"/>
+ </group>
+ <group name="group_2">
+ <field name="company_id"
+ options="{'no_create': True}"
+ groups="base.group_multi_company"
+ help="Company to report on"/>
+ </group>
+ </group>
 
-                <!-- ==================== SCOPE & FILTERS ==================== -->
-                <group name="scope_section" string="🎯 Scope &amp; Filters" class="ops_wizard_section">
-                    <group>
-                        <field name="ops_branch_ids"
-                               widget="many2many_tags"
-                               options="{'no_create': True, 'color_field': 'color'}"
-                               help="Filter by specific branches (leave empty for all authorized branches)"/>
-                        <field name="location_ids"
-                               widget="many2many_tags"
-                               options="{'no_create': True}"
-                               help="Filter by warehouse locations (leave empty for all)"/>
-                    </group>
-                    <group>
-                        <field name="product_category_ids"
-                               widget="many2many_tags"
-                               options="{'no_create': True}"
-                               help="Filter by product categories (leave empty for all)"/>
-                        <field name="product_ids"
-                               widget="many2many_tags"
-                               options="{'no_create': True}"
-                               invisible="report_type not in ['valuation', 'negative']"
-                               help="Filter by specific products"/>
-                    </group>
-                </group>
+ <!-- ==================== SCOPE & FILTERS ==================== -->
+ <group name="scope_section" string="Scope &amp; Filters">
+ <group name="group_3">
+ <field name="ops_branch_ids"
+ widget="many2many_tags"
+ options="{'no_create': True, 'color_field': 'color'}"
+ help="Filter by specific branches (leave empty for all authorized branches)"/>
+ <field name="location_ids"
+ widget="many2many_tags"
+ options="{'no_create': True}"
+ help="Filter by warehouse locations (leave empty for all)"/>
+ </group>
+ <group name="group_4">
+ <field name="product_category_ids"
+ widget="many2many_tags"
+ options="{'no_create': True}"
+ help="Filter by product categories (leave empty for all)"/>
+ <field name="product_ids"
+ widget="many2many_tags"
+ options="{'no_create': True}"
+ invisible="report_type not in ['valuation', 'negative']"
+ help="Filter by specific products"/>
+ </group>
+ </group>
 
-                <!-- ==================== ADVANCED OPTIONS ==================== -->
-                <notebook class="ops_wizard_notebook">
+ <!-- ==================== ADVANCED OPTIONS ==================== -->
+ <notebook>
 
-                    <!-- Aging Options -->
-                    <page string="📈 Aging Settings"
-                          name="aging_settings"
-                          invisible="report_type != 'aging'">
-                        <group>
-                            <group>
-                                <field name="aging_period_1"
-                                       string="Period 1 (Days)"
-                                       help="Days for first aging bucket"/>
-                                <field name="aging_period_2"
-                                       string="Period 2 (Days)"
-                                       help="Days for second aging bucket"/>
-                                <field name="aging_period_3"
-                                       string="Period 3 (Days)"
-                                       help="Days for third aging bucket"/>
-                            </group>
-                            <group>
-                                <field name="aging_period_4"
-                                       string="Period 4 (Days)"
-                                       help="Days for fourth aging bucket"/>
-                                <field name="min_age_days"
-                                       string="Min Age Filter (Days)"
-                                       help="Only show inventory older than this many days"/>
-                            </group>
-                        </group>
-                    </page>
+ <!-- Aging Options -->
+ <page name="aging_settings" string="Aging Settings"
+       invisible="report_type != 'aging'">
+ <group name="group_5">
+ <group name="group_6">
+ <field name="aging_period_1"
+ string="Period 1 (Days)"
+ help="Days for first aging bucket"/>
+ <field name="aging_period_2"
+ string="Period 2 (Days)"
+ help="Days for second aging bucket"/>
+ <field name="aging_period_3"
+ string="Period 3 (Days)"
+ help="Days for third aging bucket"/>
+ </group>
+ <group name="group_7">
+ <field name="aging_period_4"
+ string="Period 4 (Days)"
+ help="Days for fourth aging bucket"/>
+ <field name="min_age_days"
+ string="Min Age Filter (Days)"
+ help="Only show inventory older than this many days"/>
+ </group>
+ </group>
+ </page>
 
-                    <!-- Movement Options -->
-                    <page string="📦 Movement Settings"
-                          name="movement_settings"
-                          invisible="report_type != 'movement'">
-                        <group>
-                            <group>
-                                <field name="movement_period"
-                                       help="Period for calculating turnover rates"/>
-                                <field name="slow_threshold"
-                                       help="Days without movement to flag as slow-moving"/>
-                            </group>
-                        </group>
-                    </page>
+ <!-- Movement Options -->
+ <page name="movement_settings" string="Movement Settings"
+       invisible="report_type != 'movement'">
+ <group name="group_8">
+ <group name="group_9">
+ <field name="movement_period"
+ help="Period for calculating turnover rates"/>
+ <field name="slow_threshold"
+ help="Days without movement to flag as slow-moving"/>
+ </group>
+ </group>
+ </page>
 
-                    <!-- Display Options -->
-                    <page string="⚙️ Display Options" name="display_options">
-                        <group>
-                            <group>
-                                <field name="group_by"
-                                       help="Group results by location, category, or product"/>
-                                <field name="include_zero_qty"
-                                       invisible="report_type in ['negative']"
-                                       help="Include products with zero quantity"/>
-                            </group>
-                        </group>
+ <!-- Display Options -->
+ <page string="Display Options" name="display_options">
+ <group name="group_10">
+ <group name="group_11">
+ <field name="group_by"
+ help="Group results by location, category, or product"/>
+ <field name="include_zero_qty"
+ invisible="report_type in ['negative']"
+ help="Include products with zero quantity"/>
+ </group>
+ </group>
 
-                        <div class="alert alert-info mt-3" role="alert">
-                            <h5>Report Descriptions:</h5>
-                            <ul class="mb-0">
-                                <li invisible="report_type != 'valuation'">
-                                    <strong>Stock Valuation:</strong> Current inventory levels with unit costs and total values by location and product
-                                </li>
-                                <li invisible="report_type != 'aging'">
-                                    <strong>Aging Analysis:</strong> Inventory grouped by age buckets to identify slow-moving and obsolete stock
-                                </li>
-                                <li invisible="report_type != 'negative'">
-                                    <strong>Negative Stock Alerts:</strong> Products with negative on-hand quantities requiring immediate attention
-                                </li>
-                                <li invisible="report_type != 'movement'">
-                                    <strong>Movement Analysis:</strong> Inventory turnover rates identifying fast-moving and slow-moving items
-                                </li>
-                            </ul>
-                        </div>
-                    </page>
+ <div class="alert alert-info mt-3" role="alert">
+ <h5>Report Descriptions:</h5>
+ <ul class="mb-0">
+ <li invisible="report_type != 'valuation'">
+ <strong>Stock Valuation:</strong> Current inventory levels with unit costs and total values by location and product
+ </li>
+ <li invisible="report_type != 'aging'">
+ <strong>Aging Analysis:</strong> Inventory grouped by age buckets to identify slow-moving and obsolete stock
+ </li>
+ <li invisible="report_type != 'negative'">
+ <strong>Negative Stock Alerts:</strong> Products with negative on-hand quantities requiring immediate attention
+ </li>
+ <li invisible="report_type != 'movement'">
+ <strong>Movement Analysis:</strong> Inventory turnover rates identifying fast-moving and slow-moving items
+ </li>
+ </ul>
+ </div>
+ </page>
 
-                </notebook>
+ </notebook>
 
-                <!-- ==================== PREVIEW SECTION ==================== -->
-                <group name="preview_section" string="👁️ Report Preview" class="ops_wizard_section">
-                    <group>
-                        <field name="record_count"
-                               readonly="1"
-                               string="Product Lines"
-                               help="Number of product lines matching the current filters"/>
-                        <field name="total_quantity"
-                               readonly="1"
-                               string="Total Quantity"
-                               invisible="report_type == 'movement'"
-                               help="Sum of all quantities on hand"/>
-                    </group>
-                    <group>
-                        <field name="total_value"
-                               readonly="1"
-                               widget="monetary"
-                               string="Total Value"
-                               options="{'currency_field': 'currency_id'}"
-                               help="Total inventory value at current cost"/>
-                        <field name="currency_id" invisible="1"/>
-                    </group>
-                    <field name="filter_summary"
-                           readonly="1"
-                           widget="text"
-                           string="Active Filters"
-                           colspan="2"
-                           class="text-muted"
-                           help="Summary of filters and criteria applied to this report"/>
+ <!-- ==================== PREVIEW SECTION ==================== -->
+ <group name="preview_section" string="Report Preview">
+ <group name="group_12">
+ <field name="record_count"
+ readonly="1"
+ string="Product Lines"
+ help="Number of product lines matching the current filters"/>
+ <field name="total_quantity"
+ readonly="1"
+ string="Total Quantity"
+ invisible="report_type == 'movement'"
+ help="Sum of all quantities on hand"/>
+ </group>
+ <group name="group_13">
+ <field name="total_value"
+ readonly="1"
+ widget="monetary"
+ string="Total Value"
+ options="{'currency_field': 'currency_id'}"
+ help="Total inventory value at current cost"/>
+ <field name="currency_id" invisible="1"/>
+ </group>
+ <field name="filter_summary"
+ readonly="1"
+ widget="text"
+ string="Active Filters"
+ colspan="2"
+ class="text-muted"
+ help="Summary of filters and criteria applied to this report"/>
 
-                    <div class="alert alert-success mt-2"
-                         role="alert"
-                         invisible="record_count &gt; 5000">
-                        <i class="fa fa-check-circle"/> Good dataset size for quick processing
-                    </div>
-                    <div class="alert alert-warning mt-2"
-                         role="alert"
-                         invisible="record_count &lt;= 5000 or record_count &gt; 10000">
-                        <i class="fa fa-exclamation-triangle"/> Large dataset - may take longer to process
-                    </div>
-                    <div class="alert alert-danger mt-2"
-                         role="alert"
-                         invisible="record_count &lt;= 10000">
-                        <i class="fa fa-warning"/> Very large dataset - consider adding filters to narrow scope
-                    </div>
-                </group>
+ <div class="alert alert-success mt-2"
+ role="alert"
+ invisible="record_count &gt; 5000">
+ <i class="fa fa-check-circle"/> Good dataset size for quick processing
+ </div>
+ <div class="alert alert-warning mt-2"
+ role="alert"
+ invisible="record_count &lt;= 5000 or record_count &gt; 10000">
+ <i class="fa fa-exclamation-triangle"/> Large dataset - may take longer to process
+ </div>
+ <div class="alert alert-danger mt-2"
+ role="alert"
+ invisible="record_count &lt;= 10000">
+ <i class="fa fa-warning"/> Very large dataset - consider adding filters to narrow scope
+ </div>
+ </group>
 
-                <!-- ==================== ACTION BUTTONS ==================== -->
-                <footer>
-                    <button name="action_view_report"
-                            string="View Report"
-                            type="object"
-                            class="btn-primary"
-                            icon="fa-eye"
-                            help="Open report in browser for preview"/>
-                    <button name="action_generate_report"
-                            string="Print PDF"
-                            type="object"
-                            class="btn-secondary"
-                            icon="fa-print"
-                            help="Generate PDF for printing or download"/>
-                    <button name="action_view_quants"
-                            string="View Stock"
-                            type="object"
-                            class="btn-info"
-                            icon="fa-list"
-                            help="View stock quants in tree view"/>
-                    <button string="Cancel"
-                            class="btn-default"
-                            icon="fa-times"
-                            special="cancel"/>
-                </footer>
+ <!-- ==================== ACTION BUTTONS ==================== -->
+ <footer>
+ <button name="action_view_report"
+ string="View Report"
+ type="object"
+ class="btn-primary"
+ icon="fa-eye"
+ help="Open report in browser for preview"/>
+ <button name="action_generate_report"
+ string="Print PDF"
+ type="object"
+ class="btn-secondary"
+ icon="fa-print"
+ help="Generate PDF for printing or download"/>
+ <button name="action_view_quants"
+ string="View Stock"
+ type="object"
+ class="btn-info"
+ icon="fa-list"
+ help="View stock quants in tree view"/>
+ <button string="Cancel"
+ class="btn-default"
+ icon="fa-times"
+ special="cancel"/>
+ </footer>
 
-            </form>
-        </field>
-    </record>
+ </form>
+ </field>
+ </record>
 
-    <!-- =================== WIZARD ACTION =================== -->
-    <record id="action_ops_inventory_report_wizard" model="ir.actions.act_window">
-        <field name="name">Inventory Intelligence</field>
-        <field name="res_model">ops.inventory.report.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="context">{}</field>
-    </record>
+ <!-- =================== WIZARD ACTION =================== -->
+ <record id="action_ops_inventory_report_wizard" model="ir.actions.act_window">
+ <field name="name">Inventory Intelligence</field>
+ <field name="res_model">ops.inventory.report.wizard</field>
+ <field name="view_mode">form</field>
+ <field name="target">new</field>
+ <field name="context">{}</field>
+ </record>
 
-    <!-- =================== QUICK ACTION - VALUATION =================== -->
-    <record id="action_ops_inventory_valuation_quick" model="ir.actions.act_window">
-        <field name="name">Stock Valuation</field>
-        <field name="res_model">ops.inventory.report.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="context">{'default_report_type': 'valuation'}</field>
-    </record>
+ <!-- =================== QUICK ACTION - VALUATION =================== -->
+ <record id="action_ops_inventory_valuation_quick" model="ir.actions.act_window">
+ <field name="name">Stock Valuation</field>
+ <field name="res_model">ops.inventory.report.wizard</field>
+ <field name="view_mode">form</field>
+ <field name="target">new</field>
+ <field name="context">{'default_report_type': 'valuation'}</field>
+ </record>
 
-    <!-- =================== QUICK ACTION - AGING =================== -->
-    <record id="action_ops_inventory_aging_quick" model="ir.actions.act_window">
-        <field name="name">Inventory Aging</field>
-        <field name="res_model">ops.inventory.report.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="context">{'default_report_type': 'aging'}</field>
-    </record>
+ <!-- =================== QUICK ACTION - AGING =================== -->
+ <record id="action_ops_inventory_aging_quick" model="ir.actions.act_window">
+ <field name="name">Inventory Aging</field>
+ <field name="res_model">ops.inventory.report.wizard</field>
+ <field name="view_mode">form</field>
+ <field name="target">new</field>
+ <field name="context">{'default_report_type': 'aging'}</field>
+ </record>
 
-    <!-- =================== QUICK ACTION - NEGATIVE =================== -->
-    <record id="action_ops_inventory_negative_quick" model="ir.actions.act_window">
-        <field name="name">Negative Stock Alerts</field>
-        <field name="res_model">ops.inventory.report.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="context">{'default_report_type': 'negative'}</field>
-    </record>
+ <!-- =================== QUICK ACTION - NEGATIVE =================== -->
+ <record id="action_ops_inventory_negative_quick" model="ir.actions.act_window">
+ <field name="name">Negative Stock Alerts</field>
+ <field name="res_model">ops.inventory.report.wizard</field>
+ <field name="view_mode">form</field>
+ <field name="target">new</field>
+ <field name="context">{'default_report_type': 'negative'}</field>
+ </record>
 
-    <!-- =================== QUICK ACTION - MOVEMENT =================== -->
-    <record id="action_ops_inventory_movement_quick" model="ir.actions.act_window">
-        <field name="name">Movement Analysis</field>
-        <field name="res_model">ops.inventory.report.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="context">{'default_report_type': 'movement'}</field>
-    </record>
+ <!-- =================== QUICK ACTION - MOVEMENT =================== -->
+ <record id="action_ops_inventory_movement_quick" model="ir.actions.act_window">
+ <field name="name">Movement Analysis</field>
+ <field name="res_model">ops.inventory.report.wizard</field>
+ <field name="view_mode">form</field>
+ <field name="target">new</field>
+ <field name="context">{'default_report_type': 'movement'}</field>
+ </record>
 
-    <!-- =================== MENU STRUCTURE =================== -->
+ <!-- =================== MENU STRUCTURE =================== -->
 
-    <!-- Main Inventory Intelligence Menu under Inventory > Reporting -->
-    <menuitem
-        id="menu_ops_inventory_intelligence"
-        name="Inventory Intelligence"
-        parent="stock.menu_stock_root"
-        sequence="50"
-        groups="stock.group_stock_manager"/>
+ <!-- Main Inventory Intelligence Menu under Inventory > Reporting -->
+ <menuitem
+ id="menu_ops_inventory_intelligence"
+ name="Inventory Intelligence"
+ parent="stock.menu_stock_root"
+ sequence="50"
+ groups="stock.group_stock_manager"/>
 
-    <!-- Main Wizard Entry -->
-    <menuitem
-        id="menu_ops_inventory_wizard"
-        name="Inventory Analysis"
-        parent="menu_ops_inventory_intelligence"
-        action="action_ops_inventory_report_wizard"
-        sequence="10"/>
+ <!-- Main Wizard Entry -->
+ <menuitem
+ id="menu_ops_inventory_wizard"
+ name="Inventory Analysis"
+ parent="menu_ops_inventory_intelligence"
+ action="action_ops_inventory_report_wizard"
+ sequence="10"/>
 
-    <!-- Quick Access Sub-menus -->
-    <menuitem
-        id="menu_ops_inventory_valuation"
-        name="Stock Valuation"
-        parent="menu_ops_inventory_intelligence"
-        action="action_ops_inventory_valuation_quick"
-        sequence="20"/>
+ <!-- Quick Access Sub-menus -->
+ <menuitem
+ id="menu_ops_inventory_valuation"
+ name="Stock Valuation"
+ parent="menu_ops_inventory_intelligence"
+ action="action_ops_inventory_valuation_quick"
+ sequence="20"/>
 
-    <menuitem
-        id="menu_ops_inventory_aging"
-        name="Aging Analysis"
-        parent="menu_ops_inventory_intelligence"
-        action="action_ops_inventory_aging_quick"
-        sequence="30"/>
+ <menuitem
+ id="menu_ops_inventory_aging"
+ name="Aging Analysis"
+ parent="menu_ops_inventory_intelligence"
+ action="action_ops_inventory_aging_quick"
+ sequence="30"/>
 
-    <menuitem
-        id="menu_ops_inventory_negative"
-        name="Negative Stock Alerts"
-        parent="menu_ops_inventory_intelligence"
-        action="action_ops_inventory_negative_quick"
-        sequence="40"/>
+ <menuitem
+ id="menu_ops_inventory_negative"
+ name="Negative Stock Alerts"
+ parent="menu_ops_inventory_intelligence"
+ action="action_ops_inventory_negative_quick"
+ sequence="40"/>
 
-    <menuitem
-        id="menu_ops_inventory_movement"
-        name="Movement Analysis"
-        parent="menu_ops_inventory_intelligence"
-        action="action_ops_inventory_movement_quick"
-        sequence="50"/>
+ <menuitem
+ id="menu_ops_inventory_movement"
+ name="Movement Analysis"
+ parent="menu_ops_inventory_intelligence"
+ action="action_ops_inventory_movement_quick"
+ sequence="50"/>
 
 </odoo>

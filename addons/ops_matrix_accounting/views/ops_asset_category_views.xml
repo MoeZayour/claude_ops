@@ -15,13 +15,13 @@
                         <h1><field name="name" placeholder="e.g. Computer Hardware"/></h1>
                     </div>
 
-                    <group>
-                        <group string="General">
+                    <group name="group_1">
+                        <group name="general" string="General">
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="parent_id"/>
                             <field name="active" invisible="1"/>
                         </group>
-                        <group string="OPS Matrix Defaults">
+                        <group name="ops_matrix_defaults" string="OPS Matrix Defaults">
                             <field name="branch_id"/>
                             <field name="business_unit_id"/>
                         </group>
@@ -29,8 +29,8 @@
 
                     <notebook>
                         <page string="Depreciation Method" name="method">
-                            <group>
-                                <group string="Method">
+                            <group name="group_4">
+                                <group name="method_1" string="Method">
                                     <field name="depreciation_method"/>
                                     <field name="method_progress_factor"
                                            widget="percentage"
@@ -38,7 +38,7 @@
                                     <field name="prorata"/>
                                     <field name="date_first_depreciation"/>
                                 </group>
-                                <group string="Duration">
+                                <group name="duration" string="Duration">
                                     <field name="method_number"/>
                                     <field name="method_period"/>
                                     <field name="depreciation_duration_display"
@@ -73,11 +73,11 @@
                         </page>
 
                         <page string="Accounting" name="accounting">
-                            <group>
-                                <group string="Journal">
+                            <group name="group_7">
+                                <group name="journal" string="Journal">
                                     <field name="journal_id"/>
                                 </group>
-                                <group string="Accounts">
+                                <group name="accounts" string="Accounts">
                                     <field name="asset_account_id"/>
                                     <field name="depreciation_account_id"/>
                                     <field name="expense_account_id"/>
@@ -86,8 +86,8 @@
                         </page>
 
                         <page string="Automation" name="automation">
-                            <group>
-                                <group string="Auto-Post Settings">
+                            <group name="group_10">
+                                <group name="autopost_settings" string="Auto-Post Settings">
                                     <field name="auto_post_depreciation"/>
                                     <field name="auto_post_day"
                                            invisible="not auto_post_depreciation"
@@ -114,7 +114,7 @@
                                     <field name="state"/>
                                 </list>
                             </field>
-                            <group class="oe_subtotal_footer oe_right">
+                            <group name="group_12" class="oe_subtotal_footer oe_right">
                                 <field name="asset_count" string="Total Assets"/>
                             </group>
                         </page>
@@ -174,7 +174,7 @@
                         domain="[('depreciation_method', '=', 'degressive_then_linear')]"/>
                 <filter name="auto_post" string="Auto-Post Enabled"
                         domain="[('auto_post_depreciation', '=', True)]"/>
-                <group>
+                <group name="group_13">
                     <filter name="group_method" string="Method"
                             context="{'group_by': 'depreciation_method'}"/>
                     <filter name="group_journal" string="Journal"

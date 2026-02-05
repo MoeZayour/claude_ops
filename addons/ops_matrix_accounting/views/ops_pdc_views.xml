@@ -55,15 +55,15 @@
                             <field name="name" readonly="1"/>
                         </h1>
                     </div>
-                    <group>
-                        <group string="Check Information">
+                    <group name="group_1">
+                        <group name="check_information" string="Check Information">
                             <field name="partner_id"/>
                             <field name="check_number"/>
                             <field name="amount"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="bank_id"/>
                         </group>
-                        <group string="Dates">
+                        <group name="dates" string="Dates">
                             <field name="check_date"/>
                             <field name="maturity_date"/>
                             <field name="deposit_date" readonly="1"/>
@@ -71,13 +71,13 @@
                             <field name="bounce_date" readonly="1" invisible="state != 'bounced'"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Organization">
+                    <group name="group_4">
+                        <group name="organization" string="Organization">
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="ops_branch_id"/>
                             <field name="ops_business_unit_id"/>
                         </group>
-                        <group string="Accounting Configuration">
+                        <group name="accounting_configuration" string="Accounting Configuration">
                             <field name="journal_id"
                                    placeholder="Uses company default if empty"/>
                             <field name="pdc_account_id"
@@ -90,8 +90,8 @@
                     <notebook>
                         <page string="Journal Entries" name="journal_entries"
                               invisible="not deposit_move_id and not clearance_move_id and not bounce_move_id">
-                            <group>
-                                <group>
+                            <group name="group_7">
+                                <group name="group_8">
                                     <field name="deposit_move_id" readonly="1"/>
                                     <field name="clearance_move_id" readonly="1"/>
                                     <field name="bounce_move_id" readonly="1"
@@ -189,15 +189,15 @@
                             <field name="name" readonly="1"/>
                         </h1>
                     </div>
-                    <group>
-                        <group string="Check Information">
+                    <group name="group_9">
+                        <group name="check_information_1" string="Check Information">
                             <field name="partner_id"/>
                             <field name="check_number"/>
                             <field name="amount"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="bank_id"/>
                         </group>
-                        <group string="Dates">
+                        <group name="dates_1" string="Dates">
                             <field name="check_date"/>
                             <field name="maturity_date"/>
                             <field name="issue_date" readonly="1"/>
@@ -205,13 +205,13 @@
                             <field name="clearance_date" readonly="1"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Organization">
+                    <group name="group_12">
+                        <group name="organization_1" string="Organization">
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="ops_branch_id"/>
                             <field name="ops_business_unit_id"/>
                         </group>
-                        <group string="Accounting Configuration">
+                        <group name="accounting_configuration_1" string="Accounting Configuration">
                             <field name="journal_id"
                                    placeholder="Uses company default if empty"/>
                             <field name="pdc_account_id"
@@ -224,8 +224,8 @@
                     <notebook>
                         <page string="Journal Entries" name="journal_entries"
                               invisible="not issue_move_id and not clearance_move_id and not cancel_move_id">
-                            <group>
-                                <group>
+                            <group name="group_15">
+                                <group name="group_16">
                                     <field name="issue_move_id" readonly="1"/>
                                     <field name="clearance_move_id" readonly="1"/>
                                     <field name="cancel_move_id" readonly="1"

@@ -69,13 +69,13 @@
                     </div>
                     <notebook>
                         <page string="General Information" name="general" icon="fa-info-circle">
-                            <group>
-                                <group>
+                            <group name="group_1">
+                                <group name="group_2">
                                     <field name="category_id"/>
                                     <field name="purchase_date" readonly="[ ('state', '!=', 'draft')]"/>
                                     <field name="purchase_value" readonly="[ ('state', '!=', 'draft')]"/>
                                 </group>
-                                <group>
+                                <group name="group_3">
                                     <field name="salvage_value" readonly="[ ('state', '!=', 'draft')]"/>
                                     <field name="depreciable_value" readonly="1"/>
                                     <field name="book_value" readonly="1"/>
@@ -95,21 +95,21 @@
                             </field>
                         </page>
                         <page string="Analytic Distribution" name="analytic" icon="fa-sitemap">
-                            <group>
+                            <group name="group_4">
                                 <field name="ops_branch_id"/>
                                 <field name="ops_business_unit_id"/>
                             </group>
                         </page>
                         <page string="Impairment" name="impairment" icon="fa-exclamation-triangle"
                               invisible="not impaired">
-                            <group>
-                                <group string="Impairment Details">
+                            <group name="group_5">
+                                <group name="impairment_details" string="Impairment Details">
                                     <field name="impaired" readonly="1"/>
                                     <field name="impairment_date" readonly="1"/>
                                     <field name="original_value" readonly="1"/>
                                     <field name="recoverable_amount" readonly="1"/>
                                 </group>
-                                <group string="Configuration">
+                                <group name="configuration" string="Configuration">
                                     <field name="impairment_loss_account_id"/>
                                     <field name="impairment_move_id" readonly="1"/>
                                 </group>

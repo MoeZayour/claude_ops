@@ -29,29 +29,29 @@
                             <field name="name" readonly="1"/>
                         </h1>
                     </div>
-                    <group>
-                        <group>
+                    <group name="group_1">
+                        <group name="group_2">
                             <field name="company_id" invisible="1"/>
                             <field name="transfer_type"/>
                             <field name="date"/>
                             <field name="source_branch_id"/>
                             <field name="dest_branch_id"/>
                         </group>
-                        <group>
+                        <group name="group_3">
                             <field name="currency_id" invisible="1"/>
                             <field name="amount"/>
                             <field name="journal_id"/>
                             <field name="transit_account_id"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Source">
+                    <group name="group_4">
+                        <group name="source" string="Source">
                             <field name="source_account_id"/>
                             <field name="sent_by" readonly="1"/>
                             <field name="sent_date" readonly="1"/>
                             <field name="source_move_id" readonly="1"/>
                         </group>
-                        <group string="Destination">
+                        <group name="destination" string="Destination">
                             <field name="dest_account_id"/>
                             <field name="received_by" readonly="1"/>
                             <field name="received_date" readonly="1"/>
@@ -62,7 +62,7 @@
                         <field name="inventory_transfer_id" invisible="transfer_type != 'inventory'"/>
                         <field name="asset_id" invisible="transfer_type != 'asset'"/>
                     </group>
-                    <group>
+                    <group name="group_7">
                         <field name="description" placeholder="Additional notes about this transfer..."/>
                     </group>
                 </sheet>

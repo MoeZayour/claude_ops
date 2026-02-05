@@ -15,22 +15,22 @@
             <form string="Balance Sheet">
 
                 <!-- ==================== REPORT SELECTION ==================== -->
-                <group name="report_type_section" string="Statement of Financial Position" class="ops_wizard_section">
+                <group name="report_type_section" string="Statement of Financial Position">
                     <div class="text-muted">
                         <p>Generate an IAS 1 compliant Balance Sheet with current and comparative periods, account-level detail, and variance analysis.</p>
                     </div>
                 </group>
 
                 <!-- ==================== REPORTING PERIOD ==================== -->
-                <group name="period_section" string="Reporting Date" class="ops_wizard_section">
-                    <group>
+                <group name="period_section" string="Reporting Date">
+                    <group name="group_1">
                         <field name="date_end"
                                help="Balance sheet cutoff date (As of Date)"/>
                         <field name="target_move"
                                widget="radio"
                                help="Include all entries or posted entries only"/>
                     </group>
-                    <group>
+                    <group name="group_2">
                         <field name="company_id"
                                options="{'no_create': True, 'no_open': True}"
                                help="Company to report on"/>
@@ -41,15 +41,15 @@
                 </group>
 
                 <!-- ==================== COMPARATIVE PERIOD ==================== -->
-                <group name="comparison_section" string="Comparative Period" class="ops_wizard_section">
-                    <group>
+                <group name="comparison_section" string="Comparative Period">
+                    <group name="group_3">
                         <field name="show_comparison"
                                help="Include prior period column for comparison"/>
                         <field name="comparison_type"
                                invisible="not show_comparison"
                                help="Select prior period comparison method"/>
                     </group>
-                    <group>
+                    <group name="group_4">
                         <field name="date_comparison"
                                invisible="not show_comparison or comparison_type != 'custom'"
                                readonly="comparison_type != 'custom'"
@@ -59,15 +59,15 @@
                 </group>
 
                 <!-- ==================== SCOPE & FILTERS ==================== -->
-                <group name="scope_section" string="Scope &amp; Filters" class="ops_wizard_section">
-                    <group>
+                <group name="scope_section" string="Scope &amp; Filters">
+                    <group name="group_5">
                         <field name="ops_branch_ids"
                                widget="many2many_tags"
                                options="{'no_create': True, 'color_field': 'color'}"
                                domain="[('company_id', '=', company_id)]"
                                help="Filter by specific branches (leave empty for all authorized branches)"/>
                     </group>
-                    <group>
+                    <group name="group_6">
                         <field name="ops_business_unit_ids"
                                widget="many2many_tags"
                                options="{'no_create': True, 'color_field': 'color'}"
@@ -76,18 +76,18 @@
                 </group>
 
                 <!-- ==================== ADVANCED OPTIONS ==================== -->
-                <notebook class="ops_wizard_notebook">
+                <notebook>
 
                     <!-- Display Options -->
                     <page string="Display Options" name="display_options">
-                        <group>
-                            <group>
+                        <group name="group_7">
+                            <group name="group_8">
                                 <field name="hierarchy_level"
                                        help="Level of account hierarchy detail to display"/>
                                 <field name="show_account_codes"
                                        help="Include account codes in output"/>
                             </group>
-                            <group>
+                            <group name="group_9">
                                 <field name="show_zero_balances"
                                        help="Include accounts with zero balances"/>
                             </group>

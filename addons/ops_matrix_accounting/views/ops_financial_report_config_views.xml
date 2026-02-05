@@ -12,15 +12,15 @@
                             <field name="name" placeholder="Report Line Name"/>
                         </h1>
                     </div>
-                    <group>
-                        <group string="General">
+                    <group name="group_1">
+                        <group name="general" string="General">
                             <field name="parent_id"/>
                             <field name="sequence"/>
                             <field name="report_type"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="active"/>
                         </group>
-                        <group string="Line Configuration">
+                        <group name="line_configuration" string="Line Configuration">
                             <field name="type"/>
                             <field name="sign"/>
                             <field name="style"/>
@@ -30,17 +30,17 @@
                     </group>
 
                     <notebook>
-                        <page string="Accounts" invisible="type != 'accounts'">
-                            <group>
+                        <page name="accounts" string="Accounts" invisible="type != 'accounts'">
+                            <group name="group_4">
                                 <field name="account_ids" widget="many2many_tags"
                                        options="{'no_create': True}"/>
                             </group>
                         </page>
-                        <page string="Account Type" invisible="type != 'account_type'">
-                            <group>
+                        <page name="account_type" string="Account Type" invisible="type != 'account_type'">
+                            <group name="group_5">
                                 <field name="account_type_selection"/>
                             </group>
-                            <group string="Info">
+                            <group name="info" string="Info">
                                 <p class="text-muted">
                                     Select an account type to include all accounts of that type in this report line.
                                     The balance will be calculated from all account.move.line records for accounts
@@ -48,18 +48,18 @@
                                 </p>
                             </group>
                         </page>
-                        <page string="Source Line" invisible="type != 'report_value'">
-                            <group>
+                        <page name="source_line" string="Source Line" invisible="type != 'report_value'">
+                            <group name="group_7">
                                 <field name="report_line_id"/>
                             </group>
-                            <group string="Info">
+                            <group name="info_1" string="Info">
                                 <p class="text-muted">
                                     This line will display the same value as the selected source line.
                                     Useful for totals and subtotals that reference other calculated lines.
                                 </p>
                             </group>
                         </page>
-                        <page string="Children" invisible="type != 'sum'">
+                        <page name="children" string="Children" invisible="type != 'sum'">
                             <field name="children_ids">
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle"/>

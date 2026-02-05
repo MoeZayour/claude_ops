@@ -47,31 +47,31 @@
                         </h1>
                     </div>
 
-                    <group>
-                        <group>
+                    <group name="group_1">
+                        <group name="group_2">
                             <field name="engine" widget="radio"/>
                             <field name="is_global"/>
                             <field name="user_id" readonly="1"/>
                         </group>
-                        <group>
+                        <group name="group_3">
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="ops_branch_id"/>
                             <field name="ops_business_unit_id"/>
                         </group>
                     </group>
 
-                    <group string="Description">
+                    <group name="description_1" string="Description">
                         <field name="description" nolabel="1" placeholder="Describe what this template reports on..."/>
                     </group>
 
-                    <group string="Statistics">
-                        <group>
+                    <group name="statistics" string="Statistics">
+                        <group name="group_6">
                             <field name="usage_count" readonly="1"/>
                             <field name="last_used" readonly="1"/>
                         </group>
                     </group>
 
-                    <group string="Configuration Data (Advanced)" groups="base.group_no_one">
+                    <group name="configuration_data_advanced" string="Configuration Data (Advanced)" groups="base.group_no_one">
                         <field name="config_data" widget="ace" options="{'mode': 'json'}" nolabel="1"/>
                     </group>
                 </sheet>
@@ -105,7 +105,7 @@
         <field name="model">ops.report.template.save.wizard</field>
         <field name="arch" type="xml">
             <form string="Save Report Template">
-                <group>
+                <group name="group_8">
                     <field name="name" placeholder="e.g., Monthly P&amp;L - All Branches"/>
                     <field name="description" placeholder="Optional: Describe what this template is for..."/>
                     <field name="is_global"/>

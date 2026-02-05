@@ -29,22 +29,22 @@
                             <field name="name" readonly="1"/>
                         </h1>
                     </div>
-                    <group>
-                        <group string="Lease Details">
+                    <group name="group_1">
+                        <group name="lease_details" string="Lease Details">
                             <field name="company_id" invisible="1"/>
                             <field name="lessor_id"/>
                             <field name="lease_type"/>
                             <field name="ops_branch_id"/>
                             <field name="ops_business_unit_id"/>
                         </group>
-                        <group string="Term">
+                        <group name="term" string="Term">
                             <field name="commencement_date"/>
                             <field name="end_date"/>
                             <field name="lease_term_months"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Payment Terms">
+                    <group name="group_4">
+                        <group name="payment_terms" string="Payment Terms">
                             <field name="currency_id" invisible="1"/>
                             <field name="payment_amount"/>
                             <field name="payment_frequency"/>
@@ -52,7 +52,7 @@
                             <field name="discount_rate"/>
                             <field name="initial_direct_costs"/>
                         </group>
-                        <group string="IFRS 16 Values">
+                        <group name="ifrs_16_values" string="IFRS 16 Values">
                             <field name="rou_asset_value"/>
                             <field name="lease_liability"/>
                             <field name="current_liability"/>
@@ -102,18 +102,18 @@
                             </field>
                         </page>
                         <page string="Accounting Configuration" name="accounts">
-                            <group>
-                                <group string="Asset Accounts">
+                            <group name="group_7">
+                                <group name="asset_accounts" string="Asset Accounts">
                                     <field name="rou_asset_account_id"/>
                                     <field name="accumulated_depreciation_account_id"/>
                                 </group>
-                                <group string="Liability &amp; Expense">
+                                <group name="liability_amp_expense" string="Liability &amp; Expense">
                                     <field name="lease_liability_account_id"/>
                                     <field name="depreciation_expense_account_id"/>
                                     <field name="interest_expense_account_id"/>
                                 </group>
                             </group>
-                            <group>
+                            <group name="group_10">
                                 <field name="journal_id"/>
                                 <field name="initial_recognition_move_id" readonly="1"/>
                             </group>

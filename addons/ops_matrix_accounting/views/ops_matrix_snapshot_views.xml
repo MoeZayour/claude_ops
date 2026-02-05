@@ -44,14 +44,14 @@
                             <field name="branch_id"/> - <field name="business_unit_id"/>
                         </h2>
                     </div>
-                    <group>
-                        <group>
+                    <group name="group_1">
+                        <group name="group_2">
                             <field name="period_type"/>
                             <field name="period_start"/>
                             <field name="period_end"/>
                             <field name="company_id"/>
                         </group>
-                        <group>
+                        <group name="group_3">
                             <field name="transaction_count"/>
                             <field name="invoice_count"/>
                             <field name="payment_count"/>
@@ -60,18 +60,18 @@
 
                     <notebook>
                         <page string="Pipeline &amp; Revenue" name="pipeline">
-                            <group string="Sales Pipeline">
-                                <group>
+                            <group name="sales_pipeline" string="Sales Pipeline">
+                                <group name="group_5">
                                     <field name="projected_revenue" widget="monetary"/>
                                     <label for="projected_revenue" string="Booked sales orders not yet invoiced"/>
                                 </group>
-                                <group>
+                                <group name="group_6">
                                     <field name="revenue" widget="monetary"/>
                                     <label for="revenue" string="Actual invoiced revenue"/>
                                 </group>
                             </group>
-                            <group>
-                                <group>
+                            <group name="group_7">
+                                <group name="group_8">
                                     <field name="total_pipeline" widget="monetary" class="font-weight-bold text-primary"/>
                                     <label for="total_pipeline" string="Projected + Actual Revenue"/>
                                 </group>
@@ -79,14 +79,14 @@
                         </page>
 
                         <page string="Income Statement" name="income_statement">
-                            <group>
-                                <group>
+                            <group name="group_9">
+                                <group name="group_10">
                                     <field name="revenue" widget="monetary"/>
                                     <field name="cogs" widget="monetary"/>
                                     <field name="gross_profit" widget="monetary" class="font-weight-bold"/>
                                     <field name="gross_margin_pct" widget="percentage"/>
                                 </group>
-                                <group>
+                                <group name="group_11">
                                     <field name="operating_expense" widget="monetary"/>
                                     <field name="ebitda" widget="monetary"/>
                                     <field name="depreciation" widget="monetary"/>
@@ -94,8 +94,8 @@
                                     <field name="operating_margin_pct" widget="percentage"/>
                                 </group>
                             </group>
-                            <group>
-                                <group>
+                            <group name="group_12">
+                                <group name="group_13">
                                     <field name="interest_expense" widget="monetary"/>
                                     <field name="tax_expense" widget="monetary"/>
                                     <field name="net_income" widget="monetary" class="font-weight-bold text-success"/>
@@ -105,11 +105,11 @@
                         </page>
 
                         <page string="Balance Sheet" name="balance_sheet">
-                            <group>
-                                <group>
+                            <group name="group_14">
+                                <group name="group_15">
                                     <field name="total_assets" widget="monetary"/>
                                 </group>
-                                <group>
+                                <group name="group_16">
                                     <field name="total_liabilities" widget="monetary"/>
                                     <field name="total_equity" widget="monetary" class="font-weight-bold"/>
                                 </group>
@@ -117,7 +117,7 @@
                         </page>
 
                         <page string="Metadata" name="metadata">
-                            <group>
+                            <group name="group_17">
                                 <field name="create_date"/>
                                 <field name="write_date"/>
                                 <field name="currency_id"/>
@@ -170,7 +170,7 @@
                 <filter name="has_pipeline" string="Has Pipeline"
                         domain="[('projected_revenue', '&gt;', 0)]"/>
 
-                <group>
+                <group name="group_18">
                     <filter name="group_branch" string="Branch"
                             context="{'group_by': 'branch_id'}"/>
                     <filter name="group_bu" string="Business Unit"

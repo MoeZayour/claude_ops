@@ -65,23 +65,23 @@
                             <field name="name" placeholder="e.g., January 2026"/>
                         </h1>
                     </div>
-                    <group>
-                        <group string="Period Details">
+                    <group name="group_1">
+                        <group name="period_details" string="Period Details">
                             <field name="code" placeholder="e.g., 2026-01"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="fiscal_year"/>
                         </group>
-                        <group string="Date Range">
+                        <group name="date_range" string="Date Range">
                             <field name="date_from"/>
                             <field name="date_to"/>
                         </group>
                     </group>
                     <group string="Lock Information" invisible="lock_state == 'open'">
-                        <group>
+                        <group name="group_4">
                             <field name="locked_by"/>
                             <field name="locked_date"/>
                         </group>
-                        <group>
+                        <group name="group_5">
                             <field name="checklist_progress" widget="progressbar"/>
                         </group>
                     </group>
@@ -208,7 +208,7 @@
                 <separator/>
                 <filter string="Incomplete Checklist" name="filter_incomplete_checklist"
                         domain="[('checklist_progress', '&lt;', 100)]"/>
-                <group>
+                <group name="group_6">
                     <filter string="Lock Status" name="group_lock_state"
                             context="{'group_by': 'lock_state'}"/>
                     <filter string="Fiscal Year" name="group_fiscal_year"
@@ -298,7 +298,7 @@
                         domain="[('category', '=', 'reporting')]"/>
                 <filter string="Approvals" name="filter_approval"
                         domain="[('category', '=', 'approval')]"/>
-                <group>
+                <group name="group_7">
                     <filter string="Period" name="group_period"
                             context="{'group_by': 'period_id'}"/>
                     <filter string="Category" name="group_category"
@@ -363,7 +363,7 @@
                         domain="[('lock_state', '=', 'soft_lock')]"/>
                 <filter string="Hard Locked" name="filter_hard_lock"
                         domain="[('lock_state', '=', 'hard_lock')]"/>
-                <group>
+                <group name="group_8">
                     <filter string="Period" name="group_period"
                             context="{'group_by': 'period_id'}"/>
                     <filter string="Branch" name="group_branch"

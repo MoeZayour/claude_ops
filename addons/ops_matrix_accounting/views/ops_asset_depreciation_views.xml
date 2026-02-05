@@ -53,34 +53,34 @@
                         <field name="auto_post_error" nolabel="1"/>
                     </div>
 
-                    <group>
-                        <group string="Depreciation Details">
+                    <group name="group_1">
+                        <group name="depreciation_details" string="Depreciation Details">
                             <field name="asset_id" readonly="1"/>
                             <field name="category_id" readonly="1"/>
                             <field name="sequence" readonly="1"/>
                             <field name="depreciation_date" readonly="1"/>
                         </group>
-                        <group string="Amounts">
+                        <group name="amounts" string="Amounts">
                             <field name="amount" readonly="1"/>
                             <field name="remaining_value" readonly="1"/>
                             <field name="cumulative_depreciation" readonly="1"/>
                         </group>
                     </group>
 
-                    <group>
-                        <group string="Journal Entry">
+                    <group name="group_4">
+                        <group name="journal_entry" string="Journal Entry">
                             <field name="move_id" readonly="1"/>
                         </group>
-                        <group string="OPS Matrix">
+                        <group name="ops_matrix" string="OPS Matrix">
                             <field name="branch_id" readonly="1"/>
                             <field name="business_unit_id" readonly="1"/>
                         </group>
                     </group>
 
                     <!-- Auto-Post Information (shown when auto-posted or has error) -->
-                    <group string="Auto-Post Information"
+                    <group name="autopost_information" string="Auto-Post Information"
                            invisible="not auto_posted and not auto_post_error">
-                        <group>
+                        <group name="group_8">
                             <field name="auto_posted" readonly="1"/>
                             <field name="auto_post_date" readonly="1" invisible="not auto_posted"/>
                         </group>
@@ -115,7 +115,7 @@
                         domain="[('depreciation_date', '&gt;=', (context_today() - relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
                                  ('depreciation_date', '&lt;', (context_today() + relativedelta(years=1, month=1, day=1)).strftime('%Y-%m-%d'))]"/>
                 <separator/>
-                <group>
+                <group name="group_9">
                     <filter name="group_by_asset" string="Asset" context="{'group_by': 'asset_id'}"/>
                     <filter name="group_by_category" string="Category" context="{'group_by': 'category_id'}"/>
                     <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>

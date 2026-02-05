@@ -10,7 +10,7 @@
                         Select a date and optionally a set of assets to calculate depreciation.
                         If no assets are selected, depreciation will be calculated for all eligible assets.
                     </p>
-                    <group>
+                    <group name="group_1">
                         <field name="date"/>
                         <field name="asset_category_id"/>
                     </group>

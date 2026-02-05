@@ -15,7 +15,7 @@
             <form string="Asset Intelligence">
 
                 <!-- ==================== TEMPLATE QUICK START ==================== -->
-                <group name="template_section" string="Quick Start" class="ops_wizard_section">
+                <group name="template_section" string="Quick Start">
                     <field name="report_template_id"
                            placeholder="Load a saved template or configure manually..."
                            options="{'no_create': True, 'no_open': True}"
@@ -29,7 +29,7 @@
                 </group>
 
                 <!-- ==================== REPORT TYPE SELECTION ==================== -->
-                <group name="report_type_section" string="Report Selection" class="ops_wizard_section">
+                <group name="report_type_section" string="Report Selection">
                     <field name="report_type"
                            widget="radio"
                            options="{'horizontal': false}"
@@ -38,8 +38,8 @@
                 </group>
 
                 <!-- ==================== DATE & PERIOD ==================== -->
-                <group name="period_section" string="Reporting Period" class="ops_wizard_section">
-                    <group>
+                <group name="period_section" string="Reporting Period">
+                    <group name="group_1">
                         <!-- Register uses as_of_date -->
                         <field name="as_of_date"
                                invisible="report_type != 'register'"
@@ -57,7 +57,7 @@
                                required="report_type != 'register'"
                                help="End date of reporting period"/>
                     </group>
-                    <group>
+                    <group name="group_2">
                         <field name="asset_state"
                                widget="radio"
                                help="Filter by asset status (active, sold, disposed, or all)"/>
@@ -68,8 +68,8 @@
                 </group>
 
                 <!-- ==================== SCOPE & FILTERS ==================== -->
-                <group name="scope_section" string="Scope &amp; Filters" class="ops_wizard_section">
-                    <group>
+                <group name="scope_section" string="Scope &amp; Filters">
+                    <group name="group_3">
                         <field name="company_id"
                                options="{'no_create': True}"
                                help="Company to report on"/>
@@ -82,7 +82,7 @@
                                options="{'no_create': True, 'color_field': 'color'}"
                                help="Filter by business units"/>
                     </group>
-                    <group>
+                    <group name="group_4">
                         <field name="asset_category_ids"
                                widget="many2many_tags"
                                options="{'no_create': True}"
@@ -95,12 +95,12 @@
                 </group>
 
                 <!-- ==================== ADVANCED OPTIONS ==================== -->
-                <notebook class="ops_wizard_notebook">
+                <notebook>
 
                     <!-- Display Options -->
                     <page string="Display Options" name="display_options">
-                        <group>
-                            <group>
+                        <group name="group_5">
+                            <group name="group_6">
                                 <field name="group_by"
                                        widget="radio"
                                        help="Group assets by category, branch, or business unit"/>
@@ -132,8 +132,8 @@
                 </notebook>
 
                 <!-- ==================== PREVIEW SECTION ==================== -->
-                <group name="preview_section" string="Report Preview" class="ops_wizard_section">
-                    <group>
+                <group name="preview_section" string="Report Preview">
+                    <group name="group_7">
                         <field name="asset_count"
                                readonly="1"
                                string="Matching Assets"
@@ -145,7 +145,7 @@
                                options="{'currency_field': 'currency_id'}"
                                help="Sum of original acquisition costs"/>
                     </group>
-                    <group>
+                    <group name="group_8">
                         <field name="total_nbv"
                                readonly="1"
                                widget="monetary"

@@ -21,18 +21,20 @@
             <form string="Matrix Financial Intelligence">
 
                 <!-- Hidden computed/related fields -->
-                <field name="currency_id" invisible="1"/>
-                <field name="report_title" invisible="1"/>
+                <group invisible="1" name="hidden_fields">
+                    <field name="currency_id"/>
+                    <field name="report_title"/>
+                </group>
 
                 <!-- ROW 0: Template Quick Start (compact) -->
                 <group name="template_section">
-                    <group>
+                    <group name="group_1">
                         <field name="report_template_id"
                                string="Template"
                                placeholder="Select a saved template..."
                                options="{'no_create': True, 'no_open': True}"/>
                     </group>
-                    <group>
+                    <group name="group_2">
                         <button name="action_save_template" type="object"
                                 string="Save Template"
                                 class="btn-link btn-sm"
@@ -43,7 +45,7 @@
                 <separator/>
 
                 <!-- ROW 1: Report Type (left) + Period (right) | Master two column control -->
-                <group>
+                <group name="group_3">
                     <group string="Report Type" name="report_type_section">
                         <field name="report_type" widget="radio" nolabel="1"/>
                     </group>
@@ -75,8 +77,8 @@
 
                     <!-- TAB 1: SCOPE | Where am I looking? | Organization + Matrix dimension mode -->
                     <page string="Scope" name="scope_tab">
-                        <group>
-                            <group string="Organization">
+                        <group name="group_4">
+                            <group name="organization" string="Organization">
                                 <field name="company_id"
                                        options="{'no_create': True}"/>
                                 <field name="branch_ids"
@@ -88,7 +90,7 @@
                                        options="{'no_create': True, 'color_field': 'color'}"
                                        placeholder="All business units"/>
                             </group>
-                            <group string="Matrix Filter Mode">
+                            <group name="matrix_filter_mode_1" string="Matrix Filter Mode">
                                 <field name="matrix_filter_mode"
                                        widget="radio" nolabel="1"/>
                             </group>
@@ -97,8 +99,8 @@
 
                     <!-- TAB 2: FILTERS | What data am I selecting? | Account and Partner filters -->
                     <page string="Filters" name="filters_tab">
-                        <group>
-                            <group string="Account Filters"
+                        <group name="group_7">
+                            <group name="account_filters" string="Account Filters"
                                    invisible="report_type in ('aged', 'soa')">
                                 <field name="journal_ids"
                                        widget="many2many_tags"
@@ -115,7 +117,7 @@
                                        widget="radio"
                                        invisible="report_type not in ('gl', 'tb')"/>
                             </group>
-                            <group string="Partner Filters"
+                            <group name="partner_filters" string="Partner Filters"
                                    invisible="report_type in ('tb', 'pl', 'bs', 'cf')">
                                 <field name="partner_ids"
                                        widget="many2many_tags"
@@ -139,14 +141,14 @@
 
                     <!-- TAB 3: DISPLAY | How should it look? | Format and Consolidation -->
                     <page string="Display" name="display_tab">
-                        <group>
-                            <group string="Format">
+                        <group name="group_10">
+                            <group name="format" string="Format">
                                 <field name="report_format" widget="radio"/>
                                 <field name="sort_by"/>
                                 <field name="group_by_date"
                                        invisible="report_type != 'gl'"/>
                             </group>
-                            <group string="Consolidation">
+                            <group name="consolidation" string="Consolidation">
                                 <field name="consolidate_by_branch"/>
                                 <field name="consolidate_by_bu"/>
                                 <field name="consolidate_by_partner"

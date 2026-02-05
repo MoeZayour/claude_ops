@@ -9,12 +9,12 @@
         <field name="arch" type="xml">
             <form string="Follow-up Configuration">
                 <sheet>
-                    <group>
-                        <group>
+                    <group name="group_1">
+                        <group name="group_2">
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="branch_specific"/>
                         </group>
-                        <group>
+                        <group name="group_3">
                             <field name="default_partner_days"/>
                             <field name="auto_send_email"/>
                         </group>
@@ -61,33 +61,33 @@
         <field name="arch" type="xml">
             <form string="Follow-up Level">
                 <sheet>
-                    <group>
-                        <group string="Basic">
+                    <group name="group_4">
+                        <group name="basic" string="Basic">
                             <field name="name"/>
                             <field name="delay"/>
                             <field name="sequence" readonly="1"/>
                             <field name="followup_id" invisible="1"/>
                         </group>
-                        <group string="Actions">
+                        <group name="actions" string="Actions">
                             <field name="send_email"/>
                             <field name="email_template_id" invisible="not send_email"/>
                             <field name="send_letter"/>
                             <field name="block_credit"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Activity">
+                    <group name="group_7">
+                        <group name="activity" string="Activity">
                             <field name="create_activity"/>
                             <field name="activity_type_id" invisible="not create_activity"/>
                             <field name="activity_user_id" invisible="not create_activity"/>
                             <field name="activity_days" invisible="not create_activity"/>
                         </group>
-                        <group string="Manual Action">
+                        <group name="manual_action_1" string="Manual Action">
                             <field name="manual_action"/>
                             <field name="manual_action_note" invisible="not manual_action"/>
                         </group>
                     </group>
-                    <group string="Follow-up Message">
+                    <group name="followup_message" string="Follow-up Message">
                         <field name="description" nolabel="1"/>
                     </group>
                 </sheet>
@@ -142,8 +142,8 @@
                             <field name="partner_id" readonly="1"/>
                         </h1>
                     </div>
-                    <group>
-                        <group string="Current Status">
+                    <group name="group_11">
+                        <group name="current_status" string="Current Status">
                             <field name="followup_level_id"/>
                             <field name="followup_level_sequence"/>
                             <field name="max_overdue_days"/>
@@ -151,14 +151,14 @@
                             <field name="total_balance"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
-                        <group string="Follow-up History">
+                        <group name="followup_history" string="Follow-up History">
                             <field name="last_followup_date"/>
                             <field name="last_followup_level_id"/>
                             <field name="next_followup_date"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Organization">
+                    <group name="group_14">
+                        <group name="organization" string="Organization">
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="ops_branch_id"/>
                         </group>
@@ -311,8 +311,8 @@
         <field name="model">ops.credit.override.wizard</field>
         <field name="arch" type="xml">
             <form string="Credit Override Request">
-                <group>
-                    <group>
+                <group name="group_16">
+                    <group name="group_17">
                         <field name="partner_id" readonly="1"/>
                         <field name="total_overdue" readonly="1"/>
                         <field name="max_overdue_days" readonly="1"/>
@@ -320,11 +320,11 @@
                         <field name="currency_id" invisible="1"/>
                         <field name="partner_followup_id" invisible="1"/>
                     </group>
-                    <group>
+                    <group name="group_18">
                         <field name="override_expiry"/>
                     </group>
                 </group>
-                <group>
+                <group name="group_19">
                     <field name="reason" placeholder="Explain why credit should be extended to this customer despite overdue payments..."/>
                 </group>
                 <footer>

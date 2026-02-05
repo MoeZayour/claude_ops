@@ -12,9 +12,11 @@
         <field name="model">ops.period.close.wizard</field>
         <field name="arch" type="xml">
             <form string="Close Fiscal Period">
-                <field name="state" invisible="1"/>
-                <field name="checklist_count" invisible="1"/>
-                <field name="checklist_progress" invisible="1"/>
+                <group invisible="1" name="hidden_fields">
+                    <field name="state"/>
+                    <field name="checklist_count"/>
+                    <field name="checklist_progress"/>
+                </group>
 
                 <!-- STEP 1: OVERVIEW -->
                 <div invisible="state != 'overview'">
@@ -23,13 +25,13 @@
                         <p>This wizard will guide you through closing the fiscal period.</p>
                     </div>
 
-                    <group string="Period Information">
-                        <group>
+                    <group name="period_information" string="Period Information">
+                        <group name="group_2">
                             <field name="period_name" readonly="1"/>
                             <field name="period_date_from" readonly="1"/>
                             <field name="period_date_to" readonly="1"/>
                         </group>
-                        <group>
+                        <group name="group_3">
                             <field name="current_lock_state" readonly="1"
                                    widget="badge"
                                    decoration-danger="current_lock_state == 'hard_lock'"
@@ -101,7 +103,7 @@
                         uncompleted checklist items.
                     </div>
 
-                    <group string="Lock Options">
+                    <group name="lock_options" string="Lock Options">
                         <field name="lock_action" widget="radio"/>
                     </group>
 
@@ -110,7 +112,7 @@
                         <p><strong>Hard Lock:</strong> No journal entries can be posted to this period. All checklist items must be complete.</p>
                     </div>
 
-                    <group string="Close Notes">
+                    <group name="close_notes" string="Close Notes">
                         <field name="notes" nolabel="1" placeholder="Enter any notes about this period close..."/>
                     </group>
                 </div>

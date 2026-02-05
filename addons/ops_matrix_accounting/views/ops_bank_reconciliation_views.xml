@@ -25,33 +25,33 @@
                             <field name="name" readonly="1"/>
                         </h1>
                     </div>
-                    <group>
-                        <group>
+                    <group name="group_1">
+                        <group name="group_2">
                             <field name="company_id" invisible="1"/>
                             <field name="journal_id"/>
                             <field name="ops_branch_id"/>
                             <field name="date"/>
                         </group>
-                        <group>
+                        <group name="group_3">
                             <field name="date_from"/>
                             <field name="date_to"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Balances">
+                    <group name="group_4">
+                        <group name="balances" string="Balances">
                             <field name="balance_start"/>
                             <field name="balance_end_statement"/>
                         </group>
-                        <group string="Computed">
+                        <group name="computed" string="Computed">
                             <field name="balance_end_computed"/>
                             <field name="balance_difference"
                                    decoration-danger="balance_difference != 0"
                                    decoration-success="balance_difference == 0"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Statistics">
+                    <group name="group_7">
+                        <group name="statistics" string="Statistics">
                             <field name="total_lines"/>
                             <field name="matched_lines"/>
                             <field name="unmatched_lines" decoration-warning="unmatched_lines > 0"/>
@@ -143,19 +143,19 @@
         <field name="model">ops.bank.statement.import.wizard</field>
         <field name="arch" type="xml">
             <form string="Import Bank Statement">
-                <group>
+                <group name="group_9">
                     <field name="reconciliation_id" invisible="1"/>
                     <field name="file_data" filename="file_name"/>
                     <field name="file_name" invisible="1"/>
                     <field name="file_format"/>
                 </group>
                 <group string="CSV Options" invisible="file_format != 'csv'">
-                    <group>
+                    <group name="group_10">
                         <field name="date_format" placeholder="%Y-%m-%d"/>
                         <field name="delimiter"/>
                         <field name="skip_header"/>
                     </group>
-                    <group>
+                    <group name="group_11">
                         <field name="col_date"/>
                         <field name="col_ref"/>
                         <field name="col_desc"/>

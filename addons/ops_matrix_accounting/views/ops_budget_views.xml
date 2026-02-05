@@ -83,13 +83,13 @@
                             <field name="name" placeholder="e.g. 2024 Q1 Marketing Budget"/>
                         </h1>
                     </div>
-                    <group col="4">
-                        <group colspan="2">
+                    <group name="group_1" col="4">
+                        <group name="group_2" colspan="2">
                             <field name="ops_branch_id"/>
                             <field name="ops_business_unit_id"/>
                             <field name="currency_id" groups="base.group_multi_currency"/>
                         </group>
-                        <group colspan="2">
+                        <group name="group_3" colspan="2">
                             <field name="date_from"/>
                             <field name="date_to"/>
                             <field name="active" invisible="1"/>
@@ -107,7 +107,7 @@
                                     <field name="currency_id" invisible="1"/>
                                 </list>
                             </field>
-                            <group class="oe_subtotal_footer oe_right" colspan="2">
+                            <group name="group_4" class="oe_subtotal_footer oe_right" colspan="2">
                                 <field name="total_planned" widget="monetary"/>
                                 <field name="total_practical" widget="monetary"/>
                                 <field name="total_committed" widget="monetary"/>
