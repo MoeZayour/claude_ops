@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.7.1.0',
+    'version': '19.0.7.2.0',
     'category': 'Themes/Backend',
     'summary': 'Minimal OPS Framework theme with clean debranding',
     'description': """
