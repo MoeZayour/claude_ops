@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Matrix Core',
-    'version': '19.0.1.13.0',
+    'version': '19.0.1.14.0',
     'category': 'Operations',
     'summary': 'Core module for OPS Matrix Framework',
     'description': """
@@ -65,6 +65,7 @@
         'views/ops_business_unit_views.xml',
         'views/ops_branch_views.xml',
         'views/res_company_views.xml',
+        'views/res_company_branding_views.xml',
         'views/ops_inter_branch_transfer_views.xml',
         'views/ops_persona_views.xml',
         'views/ops_persona_delegation_views.xml',
@@ -120,6 +121,9 @@
         'data/ops_report_templates.xml',
         'data/ops_archive_templates.xml',
         'report/ops_external_layout.xml',
+        'report/ops_report_quotation.xml',
+        'report/ops_report_purchase.xml',
+        'report/ops_report_delivery.xml',
         'reports/ops_products_availability_report.xml',
         'reports/sale_order_documentation_report.xml',
         'reports/sale_order_availability_report.xml',

@@ -5,6 +5,7 @@
 # ==================================================================
 # 1. Core Structure (Company → Branch → BU → Config → Mixin)
 from . import res_company          # First: base Odoo model
+from . import res_company_branding  # Company branding fields for reports
 from . import ops_branch            # Second: Branch model (depends on company)
 from . import ops_business_unit     # Third: BU model (depends on branch)
 from . import ops_matrix_config     # Fourth: Configuration model
@@ -39,6 +40,10 @@ from . import ops_corporate_audit_log  # Corporate audit trail (SOX/ISO/GDPR)
 from . import ops_persona
 from . import ops_persona_delegation
 from . import res_users
+from . import res_users_authority
+from . import res_users_sod
+from . import res_users_group_mapper
+from . import res_users_api
 
 # 3a. Inter-Branch Transfers
 from . import ops_inter_branch_transfer
@@ -69,6 +74,8 @@ from . import product
 from . import partner
 from . import pricelist
 from . import sale_order
+from . import sale_order_approval
+from . import sale_order_line
 from . import purchase_order
 from . import account_move
 from . import account_payment
