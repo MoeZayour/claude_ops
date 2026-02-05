@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="0">
     <!--
-    Phase 13: UAT Fixes - Hide Duplicate Reports
+    Phase 13: UAT Fixes - Report Menu Management
 
-    Remove the simpler "Availability Report" from the print menu
-    to reduce clutter. Keep only the detailed "Products Availability" report.
+    Stock Availability Report is now the primary availability report with OPS branding.
+    Re-enabled via binding in sale_order_availability_report.xml.
     -->
 
-    <!-- Remove binding from the legacy/simple Availability Report -->
-    <record id="ops_matrix_core.action_report_sale_order_availability" model="ir.actions.report">
-        <field name="binding_model_id" eval="False"/>
-    </record>
+    <!-- No reports are hidden - the availability report is now enabled with OPS branding -->
 
 </odoo>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Matrix Core',
-    'version': '19.0.1.12.0',
+    'version': '19.0.1.13.0',
     'category': 'Operations',
     'summary': 'Core module for OPS Matrix Framework',
     'description': """
@@ -119,6 +119,7 @@
         'data/email_templates.xml',
         'data/ops_report_templates.xml',
         'data/ops_archive_templates.xml',
+        'report/ops_external_layout.xml',
         'reports/ops_products_availability_report.xml',
         'reports/sale_order_documentation_report.xml',
         'reports/sale_order_availability_report.xml',
@@ -143,6 +144,9 @@
             'ops_matrix_core/static/src/css/ops_theme.css',
             'ops_matrix_core/static/src/js/storage_guard.js',
             'ops_matrix_core/static/src/js/report_action_override.js',
+        ],
+        'web.report_assets_common': [
+            'ops_matrix_core/static/src/css/ops_external_report.css',
         ],
     },
     'post_init_hook': 'post_init_hook',

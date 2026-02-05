@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- OPS External Document Base Layout -->
+    <template id="ops_external_layout">
+        <t t-set="company" t-value="doc.company_id or env.company"/>
+        <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
+        <t t-set="show_badge" t-value="company.ops_show_external_badge if hasattr(company, 'ops_show_external_badge') else True"/>
+        <t t-set="amount_lang" t-value="company.ops_amount_words_lang or 'en'"/>
+
+        <div class="ops-external-doc" t-attf-style="--ops-primary: #{primary_color};">
+
+            <!-- Letterhead -->
+            <div class="ops-letterhead">
+                <div class="ops-company-block">
+                    <img t-if="company.logo" class="ops-company-logo"
+                         t-att-src="image_data_uri(company.logo)"/>
+                    <div t-else="" class="ops-company-logo-placeholder">
+                        <t t-esc="(company.name or 'CO')[:2].upper()"/>
+                    </div>
+                    <div>
+                        <div class="ops-company-name"><t t-esc="company.name"/></div>
+                        <div class="ops-company-details">
+                            <t t-if="company.street"><t t-esc="company.street"/><br/></t>
+                            <t t-if="company.street2"><t t-esc="company.street2"/><br/></t>
+                            <t t-if="company.city"><t t-esc="company.city"/></t>
+                            <t t-if="company.country_id">, <t t-esc="company.country_id.name"/></t>
+                            <br/>
+                            <t t-if="company.phone">Tel: <t t-esc="company.phone"/></t>
+                            <t t-if="company.email"> | <t t-esc="company.email"/></t>
+                            <br/>
+                            <t t-if="company.company_registry">CR: <t t-esc="company.company_registry"/></t>
+                            <t t-if="company.vat"> | VAT: <t t-esc="company.vat"/></t>
+                        </div>
+                    </div>
+                </div>
+                <div class="ops-doc-meta">
+                    <div class="ops-doc-ref"><t t-esc="doc.name or ''"/></div>
+                    <t t-raw="0"/><!-- Document-specific meta injected here -->
+                </div>
+            </div>
+
+            <!-- Document Content (injected by child templates) -->
+            <t t-raw="1"/>
+
+            <!-- Footer -->
+            <div class="ops-footer">
+                <div class="ops-footer-company">
+                    <strong><t t-esc="company.name"/></strong>
+                    <t t-if="company.company_registry"> | CR: <t t-esc="company.company_registry"/></t>
+                    <t t-if="company.vat"> | VAT: <t t-esc="company.vat"/></t>
+                    <t t-if="company.website"> | <t t-esc="company.website"/></t>
+                </div>
+                <div class="ops-footer-right">
+                    <div t-if="show_badge" class="ops-external-badge">
+                        <span class="powered-by">Powered by</span>
+                        <span class="badge">OPS Framework</span>
+                    </div>
+                    <span class="ops-page-number">
+                        Page <span class="page"/> of <span class="topage"/>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </template>
+
+    <!-- Continuation Header for multi-page documents -->
+    <template id="ops_external_continuation_header">
+        <t t-set="company" t-value="doc.company_id or env.company"/>
+        <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
+
+        <div class="ops-continuation-header" t-attf-style="--ops-primary: #{primary_color};">
+            <span class="ch-company"><t t-esc="company.name"/></span>
+            <span class="ch-ref"><t t-esc="doc.name or ''"/></span>
+            <span class="ch-page"><t t-esc="doc_title or 'Document'"/> — Page <span class="page"/> of <span class="topage"/></span>
+        </div>
+    </template>
+
+</odoo>
