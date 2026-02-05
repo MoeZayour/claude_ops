@@ -21,6 +21,7 @@
               name="PDC Receivable"
               parent="account.menu_finance_receivables"
               action="action_ops_pdc_receivable"
-              sequence="50"/>
+              sequence="50"
+                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
     
 </odoo>

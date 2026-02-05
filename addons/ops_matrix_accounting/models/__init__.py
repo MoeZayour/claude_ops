@@ -25,3 +25,6 @@ from . import ops_followup
 from . import ops_interbranch_transfer
 from . import ops_bank_reconciliation
 from . import ops_lease
+
+# SoD Extensions for Accounting
+from . import ops_sod_accounting

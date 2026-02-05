@@ -193,6 +193,7 @@
               name="Matrix Financial Intelligence"
               parent="account.menu_finance_reports"
               action="action_ops_general_ledger_wizard_enhanced"
-              sequence="10"/>
+              sequence="10"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
 </odoo>

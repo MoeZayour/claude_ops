@@ -35,7 +35,8 @@
     <menuitem id="menu_ops_accounting_management"
         name="Management"
         parent="account.menu_finance"
-        sequence="25"/>
+        sequence="25"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
 
     <!-- Analytic Items - Native Odoo action -->
     <menuitem id="menu_ops_analytic_items"
@@ -50,14 +51,16 @@
         name="Budgets"
         parent="menu_ops_accounting_management"
         action="action_ops_budget"
-        sequence="20"/>
+        sequence="20"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader"/>
 
     <!-- Leases - moved from top-level Leases (IFRS 16) -->
     <menuitem id="menu_ops_leases_sub"
         name="Leases (IFRS 16)"
         parent="menu_ops_accounting_management"
         action="action_ops_lease"
-        sequence="30"/>
+        sequence="30"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
 
     <!-- =================== BANK & TREASURY SECTION =================== -->
     <!-- Section under Accounting for bank reconciliation and treasury management -->
@@ -65,21 +68,24 @@
     <menuitem id="menu_ops_bank_treasury"
         name="Bank &amp; Treasury"
         parent="account.menu_finance"
-        sequence="30"/>
+        sequence="30"
+                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
 
     <!-- Bank Reconciliation - moved from top-level -->
     <menuitem id="menu_ops_bank_reconciliation_sub"
         name="Bank Reconciliation"
         parent="menu_ops_bank_treasury"
         action="action_ops_bank_reconciliation"
-        sequence="10"/>
+        sequence="10"
+                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
 
     <!-- Bank Statements - Native Odoo action -->
     <menuitem id="menu_ops_bank_statements"
         name="Bank Statements"
         parent="menu_ops_bank_treasury"
         action="account.action_bank_statement_tree"
-        sequence="20"/>
+        sequence="20"
+                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
 
     <!-- =================== DEACTIVATE OLD TOP-LEVEL MENUS =================== -->
     <!-- These menus have been moved to sections under Accounting -->
@@ -106,7 +112,8 @@
         id="menu_ops_asset_management"
         name="Asset Management"
         parent="account.menu_finance"
-        sequence="20"/>
+        sequence="20"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
 
     <!-- Menu for Assets -->
     <menuitem
@@ -114,7 +121,8 @@
         name="Assets"
         parent="menu_ops_asset_management"
         action="action_ops_asset"
-        sequence="10"/>
+        sequence="10"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
 
     <!-- Menu for Depreciation Lines -->
     <menuitem
@@ -122,7 +130,8 @@
         name="Depreciation Lines"
         parent="menu_ops_asset_management"
         action="action_ops_asset_depreciation"
-        sequence="20"/>
+        sequence="20"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
 
     <!-- Generate Assets Entries - Calculate depreciation for assets -->
     <menuitem
@@ -130,14 +139,16 @@
         name="Generate Assets Entries"
         parent="menu_ops_asset_management"
         action="action_ops_asset_depreciation_wizard"
-        sequence="25"/>
+        sequence="25"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
 
     <!-- Asset Configuration Menu -->
     <menuitem
         id="menu_ops_asset_configuration"
         name="Configuration"
         parent="menu_ops_asset_management"
-        sequence="100"/>
+        sequence="100"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
 
     <!-- Menu for Asset Categories -->
     <menuitem
@@ -145,7 +156,8 @@
         name="Asset Categories"
         parent="menu_ops_asset_configuration"
         action="action_ops_asset_category"
-        sequence="10"/>
+        sequence="10"
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
     <!-- =================== FINANCIAL REPORTS =================== -->
 
@@ -197,21 +209,24 @@
               name="Invoice Analysis"
               parent="account.menu_finance_reports"
               action="account.action_account_invoice_report_all"
-              sequence="40"/>
+              sequence="40"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <!-- 5. Analytic Report (Native Odoo Action) -->
     <menuitem id="menu_reporting_analytic_report"
               name="Analytic Report"
               parent="account.menu_finance_reports"
               action="account.action_analytic_reporting"
-              sequence="50"/>
+              sequence="50"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <!-- 6. PDC Reports -->
     <menuitem id="menu_reporting_pdc_reports"
               name="PDC Reports"
               parent="account.menu_finance_reports"
               action="action_ops_pdc_reports"
-              sequence="60"/>
+              sequence="60"
+                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
 
     <!-- =================== PERIOD END MANAGEMENT =================== -->
 
@@ -220,7 +235,8 @@
         id="menu_ops_period_end"
         name="Period End"
         parent="account.menu_finance"
-        sequence="35"/>
+        sequence="35"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
 
     <!-- Fiscal Periods -->
     <menuitem
@@ -228,7 +244,8 @@
         name="Fiscal Periods"
         parent="menu_ops_period_end"
         action="action_ops_fiscal_period"
-        sequence="10"/>
+        sequence="10"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
 
     <!-- Close Period Checklist -->
     <menuitem
@@ -236,7 +253,8 @@
         name="Close Checklist"
         parent="menu_ops_period_end"
         action="action_ops_period_checklist"
-        sequence="20"/>
+        sequence="20"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
 
     <!-- Branch Period Locks -->
     <menuitem
@@ -244,7 +262,8 @@
         name="Branch Period Locks"
         parent="menu_ops_period_end"
         action="action_ops_period_branch_lock"
-        sequence="30"/>
+        sequence="30"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
 
     <!-- =================== CONFIGURATION - FISCAL PERIODS =================== -->
 
@@ -254,7 +273,8 @@
         name="Fiscal Periods"
         parent="account.menu_finance_configuration"
         action="action_ops_fiscal_period"
-        sequence="50"/>
+        sequence="50"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant"/>
 
     <!-- =================== DAILY REPORTS =================== -->
 
@@ -263,7 +283,8 @@
         id="menu_ops_daily_reports"
         name="Daily Reports"
         parent="account.menu_finance_reports"
-        sequence="70"/>
+        sequence="70"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <!-- Cash Book -->
     <menuitem
@@ -271,7 +292,8 @@
         name="Cash Book"
         parent="menu_ops_daily_reports"
         action="action_ops_cash_book_wizard"
-        sequence="10"/>
+        sequence="10"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <!-- Day Book -->
     <menuitem
@@ -279,7 +301,8 @@
         name="Day Book"
         parent="menu_ops_daily_reports"
         action="action_ops_day_book_wizard"
-        sequence="20"/>
+        sequence="20"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <!-- Bank Book -->
     <menuitem
@@ -287,7 +310,8 @@
         name="Bank Book"
         parent="menu_ops_daily_reports"
         action="action_ops_bank_book_wizard"
-        sequence="30"/>
+        sequence="30"
+                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
 
     <!-- =================== CUSTOMER FOLLOW-UP =================== -->
 
@@ -296,7 +320,8 @@
         id="menu_ops_followup_main"
         name="Follow-ups"
         parent="account.menu_finance_receivables"
-        sequence="50"/>
+        sequence="50"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
 
     <!-- Customer Follow-ups List -->
     <menuitem
@@ -304,7 +329,8 @@
         name="Customer Follow-ups"
         parent="menu_ops_followup_main"
         action="action_ops_partner_followup"
-        sequence="10"/>
+        sequence="10"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
 
     <!-- Credit Blocked Customers -->
     <menuitem
@@ -312,7 +338,8 @@
         name="Credit Blocked"
         parent="menu_ops_followup_main"
         action="action_ops_partner_followup_blocked"
-        sequence="20"/>
+        sequence="20"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
 
     <!-- Follow-ups Due Today -->
     <menuitem
@@ -320,7 +347,8 @@
         name="Due Today"
         parent="menu_ops_followup_main"
         action="action_ops_partner_followup_due"
-        sequence="30"/>
+        sequence="30"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_cfo"/>
 
     <!-- =================== CONFIGURATION - FOLLOW-UP =================== -->
 
@@ -330,7 +358,8 @@
         name="Follow-up Configuration"
         parent="account.menu_finance_configuration"
         action="action_ops_followup_config"
-        sequence="60"/>
+        sequence="60"
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
     <!-- =================== CONFIGURATION - FINANCIAL REPORTS =================== -->
 
@@ -339,7 +368,8 @@
         id="menu_ops_config_financial_report_structure"
         name="Financial Report Structure"
         parent="account.menu_finance_configuration"
-        sequence="70"/>
+        sequence="70"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <!-- Balance Sheet Structure -->
     <menuitem
@@ -347,7 +377,8 @@
         name="Balance Sheet Structure"
         parent="menu_ops_config_financial_report_structure"
         action="action_ops_financial_report_config_bs"
-        sequence="10"/>
+        sequence="10"
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
     <!-- P&L Structure -->
     <menuitem
@@ -355,7 +386,8 @@
         name="Profit &amp; Loss Structure"
         parent="menu_ops_config_financial_report_structure"
         action="action_ops_financial_report_config_pl"
-        sequence="20"/>
+        sequence="20"
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
     <!-- All Report Configurations -->
     <menuitem
@@ -363,6 +395,7 @@
         name="All Report Lines"
         parent="menu_ops_config_financial_report_structure"
         action="action_ops_financial_report_config"
-        sequence="30"/>
+        sequence="30"
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
 </odoo>

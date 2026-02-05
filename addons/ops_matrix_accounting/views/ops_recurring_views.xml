@@ -418,24 +418,28 @@
     <menuitem id="menu_ops_automation"
               name="Automation"
               parent="account.menu_finance_entries"
-              sequence="90"/>
+              sequence="90"
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
     <menuitem id="menu_ops_recurring_template"
               name="Recurring Templates"
               parent="menu_ops_automation"
               action="action_ops_recurring_template"
-              sequence="10"/>
+              sequence="10"
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
     <menuitem id="menu_ops_recurring_entry"
               name="Recurring Entries"
               parent="menu_ops_automation"
               action="action_ops_recurring_entry"
-              sequence="20"/>
+              sequence="20"
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
     <menuitem id="menu_ops_journal_template"
               name="Journal Templates"
               parent="menu_ops_automation"
               action="action_ops_journal_template"
-              sequence="30"/>
+              sequence="30"
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager"/>
 
 </odoo>

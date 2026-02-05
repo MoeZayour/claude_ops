@@ -90,30 +90,35 @@
               name="Profit and Loss"
               parent="menu_ops_accounting_reports"
               action="action_ops_financial_report_pl"
-              sequence="10"/>
+              sequence="10"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <menuitem id="menu_ops_financial_report_bs"
               name="Balance Sheet"
               parent="menu_ops_accounting_reports"
               action="action_ops_financial_report_bs"
-              sequence="20"/>
+              sequence="20"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <menuitem id="menu_ops_financial_report_tb"
               name="Trial Balance"
               parent="menu_ops_accounting_reports"
               action="action_ops_financial_report_tb"
-              sequence="30"/>
+              sequence="30"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <menuitem id="menu_ops_financial_report_cf"
               name="Cash Flow Statement"
               parent="menu_ops_accounting_reports"
               action="action_ops_financial_report_cf"
-              sequence="40"/>
+              sequence="40"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
 
     <menuitem id="menu_ops_financial_report_wizard"
               name="All Financial Reports"
               parent="menu_ops_accounting_reports"
               action="action_ops_financial_report_wizard"
-              sequence="100"/>
+              sequence="100"
+                  groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
     -->
 </odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ===============================================================
+             Bank Reconciliation SoD Rule
+
+             This rule is separate from ops_matrix_core because it references
+             the ops.bank.reconciliation model which is defined in this module.
+             =============================================================== -->
+
+        <!-- Rule: Bank Reconciliation - Reconcile + Approve Separation
+
+             Prevents: Same user performing and approving bank reconciliation
+             Applies to: ALL bank reconciliations (threshold=0)
+             Purpose: Prevent unauthorized reconciliation adjustments
+             Compliance: Ensures independent review of cash/bank positions
+        -->
+        <record id="sod_rule_bank_reconciliation_approve" model="ops.segregation.of.duties">
+            <field name="name">Bank Reconciliation: Reconcile + Approve Separation</field>
+            <field name="model_name">ops.bank.reconciliation</field>
+            <field name="action_1">reconcile</field>
+            <field name="action_2">approve</field>
+            <field name="threshold_amount">0.0</field>
+            <field name="active">True</field>
+            <field name="enabled">False</field>
+            <field name="block_violation">True</field>
+            <field name="is_system_rule">True</field>
+            <field name="description">Segregation of Duties: The user who performs bank reconciliation cannot approve it. A different user must review and approve to ensure independent verification of cash positions.</field>
+        </record>
+
+    </data>
+</odoo>

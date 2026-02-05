@@ -73,7 +73,7 @@
         </record>
         
         <!-- Rule 4: Payment - Create + Post Separation
-             
+
              Prevents: Same user creating and posting payments
              Applies to: Payments >= $2,000
              Purpose: Prevent unauthorized cash disbursement
@@ -91,6 +91,29 @@
             <field name="is_system_rule">True</field>
             <field name="description">Segregation of Duties: Payment creator cannot post the payment if amount >= $2,000. A different user must authorize and post to ensure dual control over cash disbursements.</field>
         </record>
-        
+
+        <!-- Rule 5: Inventory Adjustment - Create + Approve Separation
+
+             Prevents: Same user creating and approving inventory adjustments
+             Applies to: ALL inventory adjustments (threshold=0)
+             Purpose: Prevent unauthorized inventory manipulation
+             Compliance: Ensures independent review of stock changes
+        -->
+        <record id="sod_rule_inventory_adjustment_create_approve" model="ops.segregation.of.duties">
+            <field name="name">Inventory Adjustment: Create + Approve Separation</field>
+            <field name="model_name">stock.picking</field>
+            <field name="action_1">create</field>
+            <field name="action_2">approve</field>
+            <field name="threshold_amount">0.0</field>
+            <field name="active">True</field>
+            <field name="enabled">False</field>
+            <field name="block_violation">True</field>
+            <field name="is_system_rule">True</field>
+            <field name="description">Segregation of Duties: The user who creates an inventory adjustment cannot approve it. A different user must review and approve to ensure independent verification and prevent inventory fraud.</field>
+        </record>
+
+        <!-- Rule 6: Bank Reconciliation - see ops_matrix_accounting/data/ops_sod_bank_rules.xml
+             (moved because ops.bank.reconciliation model is in ops_matrix_accounting) -->
+
     </data>
 </odoo>

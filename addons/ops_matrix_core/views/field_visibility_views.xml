@@ -142,16 +142,8 @@
                 </p>
             </field>
         </record>
-        
-        <!-- ========================================================== -->
-        <!-- Menu Item for Field Visibility Rules                      -->
-        <!-- ========================================================== -->
-        <menuitem id="menu_ops_field_visibility_rules"
-                  name="Field Visibility"
-                  parent="ops_matrix_core.menu_ops_configuration"
-                  action="action_ops_field_visibility_rule"
-                  groups="base.group_system,ops_matrix_core.group_ops_admin_power"
-                  sequence="40"/>
+
+        <!-- Menu defined in ops_settings_menu.xml under Security & Governance -->
         
     </data>
 </odoo>

@@ -235,6 +235,7 @@
               name="Asset Intelligence"
               parent="account.menu_finance_reports"
               action="action_ops_asset_report_wizard"
-              sequence="30"/>
+              sequence="30"
+                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
 
 </odoo>

@@ -292,7 +292,8 @@
  name="Inventory Analysis"
  parent="menu_ops_inventory_intelligence"
  action="action_ops_inventory_report_wizard"
- sequence="10"/>
+ sequence="10"
+                  groups="ops_matrix_core.group_ops_inventory_manager,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_executive"/>
 
  <!-- Quick Access Sub-menus -->
  <menuitem
@@ -300,27 +301,31 @@
  name="Stock Valuation"
  parent="menu_ops_inventory_intelligence"
  action="action_ops_inventory_valuation_quick"
- sequence="20"/>
+ sequence="20"
+                  groups="ops_matrix_core.group_ops_inventory_manager,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_executive"/>
 
  <menuitem
  id="menu_ops_inventory_aging"
  name="Aging Analysis"
  parent="menu_ops_inventory_intelligence"
  action="action_ops_inventory_aging_quick"
- sequence="30"/>
+ sequence="30"
+                  groups="ops_matrix_core.group_ops_inventory_manager,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_executive"/>
 
  <menuitem
  id="menu_ops_inventory_negative"
  name="Negative Stock Alerts"
  parent="menu_ops_inventory_intelligence"
  action="action_ops_inventory_negative_quick"
- sequence="40"/>
+ sequence="40"
+                  groups="ops_matrix_core.group_ops_inventory_manager,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_executive"/>
 
  <menuitem
  id="menu_ops_inventory_movement"
  name="Movement Analysis"
  parent="menu_ops_inventory_intelligence"
  action="action_ops_inventory_movement_quick"
- sequence="50"/>
+ sequence="50"
+                  groups="ops_matrix_core.group_ops_inventory_manager,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_executive"/>
 
 </odoo>

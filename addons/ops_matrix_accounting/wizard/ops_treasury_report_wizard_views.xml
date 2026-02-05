@@ -213,6 +213,7 @@
               name="Treasury Intelligence"
               parent="account.menu_finance_reports"
               action="action_ops_treasury_report_wizard"
-              sequence="20"/>
+              sequence="20"
+                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
 
 </odoo>

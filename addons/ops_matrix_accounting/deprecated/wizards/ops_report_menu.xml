@@ -34,7 +34,8 @@
     </record>
 
     <!-- DEPRECATED: Menu Item (HIDDEN - use Matrix Financial Intelligence instead) -->
-    <menuitem id="menu_ops_financial_reports"
+    <!-- Renamed ID to avoid duplicate with ops_matrix_core -->
+    <menuitem id="menu_ops_financial_reports_deprecated"
               name="Financial Reports (Legacy)"
               parent="account.menu_finance_reports"
               action="action_ops_financial_report_wizard_new"

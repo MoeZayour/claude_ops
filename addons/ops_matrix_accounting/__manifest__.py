@@ -45,6 +45,7 @@
         "data/report_templates.xml",
         "data/report_templates_extra.xml",
         "data/ops_paperformat.xml",
+        "data/ops_sod_bank_rules.xml",
 
         # Views
         "views/ops_asset_category_views.xml",

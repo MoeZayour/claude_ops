@@ -138,6 +138,7 @@
               name="Approval Rules"
               parent="ops_matrix_core.menu_ops_governance_root"
               action="action_ops_approval_rule"
-              sequence="15"/>
+              sequence="15"
+                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_manager"/>
 
 </odoo>
