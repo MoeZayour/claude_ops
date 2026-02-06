@@ -28,7 +28,7 @@
     <template id="report_ops_invoice_document">
         <t t-set="company" t-value="doc.company_id or env.company"/>
         <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
-        <t t-set="show_badge" t-value="company.ops_show_external_badge if hasattr(company, 'ops_show_external_badge') else True"/>
+        <t t-set="show_badge" t-value="company.ops_show_external_badge"/>
         <t t-set="amount_lang" t-value="company.ops_amount_words_lang or 'en'"/>
         <t t-set="is_credit_note" t-value="doc.move_type == 'out_refund'"/>
         <t t-set="doc_title" t-value="'Credit Note' if is_credit_note else 'Tax Invoice'"/>

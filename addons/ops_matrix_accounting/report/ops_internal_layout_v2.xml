@@ -317,7 +317,7 @@
     -->
     <template id="ops_internal_layout_v2">
         <t t-set="company" t-value="company or env.company"/>
-        <t t-set="primary_color" t-value="company.ops_primary_color if hasattr(company, 'ops_primary_color') else '#5B6BBB'"/>
+        <t t-set="primary_color" t-value="company.ops_primary_color or '#5B6BBB'"/>
 
         <div class="ops-report-v2">
             <!-- Inline Styles for wkhtmltopdf -->

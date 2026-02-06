@@ -171,7 +171,7 @@
                     </td>
 
                     <!-- Business Units (if applicable) -->
-                    <t t-if="hasattr(doc, 'business_unit_ids') and doc.business_unit_ids">
+                    <t t-if="doc.business_unit_ids">
                         <td style="padding-right: 20px; vertical-align: middle;">
                             <span style="color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Business Units:</span>
                             <span style="color: #1e293b; font-weight: 600; margin-left: 5px;">
@@ -182,7 +182,7 @@
                     </t>
 
                     <!-- Status (if applicable) -->
-                    <t t-if="hasattr(doc, 'target_move') and doc.target_move">
+                    <t t-if="doc.target_move">
                         <td style="vertical-align: middle;">
                             <span style="color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Entries:</span>
                             <span style="color: #1e293b; font-weight: 600; margin-left: 5px;">
@@ -212,17 +212,17 @@
                     <li style="margin-bottom: 3px;">
                         All amounts are in <t t-esc="doc.company_id.currency_id.name"/> unless otherwise stated.
                     </li>
-                    <t t-if="hasattr(doc, 'show_comparison') and doc.show_comparison">
+                    <t t-if="doc.show_comparison">
                         <li style="margin-bottom: 3px;">
                             Comparative figures are for the same period in the prior year.
                         </li>
                     </t>
-                    <t t-if="hasattr(doc, 'target_move') and doc.target_move == 'posted'">
+                    <t t-if="doc.target_move == 'posted'">
                         <li style="margin-bottom: 3px;">
                             This report includes posted entries only.
                         </li>
                     </t>
-                    <t t-if="hasattr(doc, 'branch_ids') and doc.branch_ids">
+                    <t t-if="doc.branch_ids">
                         <li style="margin-bottom: 3px;">
                             Data is filtered by selected branch(es).
                         </li>

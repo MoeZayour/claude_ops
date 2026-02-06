@@ -26,7 +26,7 @@
     <template id="report_ops_payment_document">
         <t t-set="company" t-value="doc.company_id or env.company"/>
         <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
-        <t t-set="show_badge" t-value="company.ops_show_external_badge if hasattr(company, 'ops_show_external_badge') else True"/>
+        <t t-set="show_badge" t-value="company.ops_show_external_badge"/>
         <t t-set="amount_lang" t-value="company.ops_amount_words_lang or 'en'"/>
         <t t-set="is_inbound" t-value="doc.payment_type == 'inbound'"/>
         <t t-set="doc_title" t-value="'Payment Receipt' if is_inbound else 'Payment Voucher'"/>
@@ -55,7 +55,7 @@
                 <div class="ops-doc-meta">
                     <div class="ops-doc-ref"><t t-esc="doc.name"/></div>
                     Date: <t t-esc="doc.date" t-options='{"widget": "date"}'/><br/>
-                    <t t-if="hasattr(doc, 'ops_branch_id') and doc.ops_branch_id">Branch: <t t-esc="doc.ops_branch_id.name"/></t>
+                    <t t-if="doc.ops_branch_id">Branch: <t t-esc="doc.ops_branch_id.name"/></t>
                 </div>
             </div>
 
