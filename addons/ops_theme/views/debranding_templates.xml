@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================= -->
+    <!-- OPS FRAMEWORK — SERVER-SIDE DEBRANDING                            -->
+    <!-- QWeb template overrides for brand promotion, layout title         -->
+    <!-- ================================================================= -->
+
+    <!-- =================================================================
+         WEB CLIENT LAYOUT — Replace default "Odoo" title
+         ================================================================= -->
+    <template id="ops_debranding_layout_title" inherit_id="web.layout" name="OPS: Layout Title Debranding" priority="99">
+        <xpath expr="//title" position="replace">
+            <title t-esc="title or 'OPS Framework'"/>
+        </xpath>
+    </template>
+
+    <!-- =================================================================
+         BRAND PROMOTION — Replace "Powered by Odoo" message
+         ================================================================= -->
+    <template id="ops_debranding_brand_promotion" inherit_id="web.brand_promotion_message" name="OPS: Brand Promotion Debranding" priority="99">
+        <xpath expr="//t[@t-set='odoo_logo']" position="replace">
+            <t t-set="odoo_logo">
+                <span class="badge text-bg-light">OPS Framework</span>
+            </t>
+        </xpath>
+        <xpath expr="//t[@t-set='final_message']" position="replace">
+            <t t-set="final_message">Powered by %s%s</t>
+        </xpath>
+    </template>
+
+    <!-- =================================================================
+         LOGIN PAGE — Hide the default "Powered by Odoo" footer
+         Note: Our login_templates.xml already replaces the entire
+         login container with our split-screen design including our
+         own "Powered by OPS Framework" footer. This override hides
+         any leftover default footer from web.login_layout.
+         ================================================================= -->
+    <template id="ops_debranding_login_footer" inherit_id="web.login_layout" name="OPS: Login Footer Debranding" priority="98">
+        <xpath expr="//div[hasclass('text-center') and .//a[contains(@href, 'odoo.com')]]" position="attributes">
+            <attribute name="style">display: none !important;</attribute>
+        </xpath>
+    </template>
+
+</odoo>

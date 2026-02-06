@@ -1,17 +1,176 @@
 ///
-/// OPS Framework - Debranding Styles (Minimal)
-/// ============================================
-/// Remove Odoo.com links and branding
+/// OPS Framework — Dynamic Debranding Stylesheet
+/// ==============================================
+/// Uses CSS attribute selectors and pattern matching to hide
+/// Enterprise links, upgrade prompts, and Odoo branding.
+///
+/// PHILOSOPHY: Broad selectors catch current AND future elements.
+/// We target patterns, not individual class names.
 ///
 
 // =============================================================================
-// HIDE ODOO.COM LINKS
+// 1. ENTERPRISE UPGRADE — All upgrade buttons, links, banners
 // =============================================================================
 
-// Hide "Powered by Odoo" footer links
-.o_web_client .o_main_navbar .o_menu_brand,
-a[href*="odoo.com"],
-a[href*="/web/database/manager"] {
+// Any element with "upgrade" in its class
+[class*="o_upgrade"],
+[class*="upgrade_btn"],
+[class*="o_enterprise_upgrade"],
+[class*="enterprise_only"] {
+    display: none !important;
+}
+
+// Any link pointing to Odoo upgrade/pricing
+a[href*="odoo.com/pricing"],
+a[href*="odoo.com/trial"],
+a[href*="odoo.com/page/upgrade"],
+a[href*="/odoo-enterprise"],
+a[href*="odoo.com/odoo-enterprise"] {
+    display: none !important;
+}
+
+// Enterprise feature badges/labels
+[class*="o_enterprise_label"],
+[class*="enterprise_badge"] {
+    display: none !important;
+}
+
+// Database expiration / trial warnings
+[class*="o_database_expiration"],
+[class*="o_expiration_panel"],
+[class*="database_expiration"] {
+    display: none !important;
+}
+
+// =============================================================================
+// 2. ODOO.COM LINKS — Remove all external Odoo links
+// =============================================================================
+
+// Global: hide any link to odoo.com (except documentation for dev use)
+a[href*="odoo.com"]:not([href*="documentation"]):not([href*="github.com"]) {
+    display: none !important;
+}
+
+// Specifically target user menu odoo.com items
+.o_user_menu a[href*="odoo.com"],
+.dropdown-menu a[href*="odoo.com"] {
+    display: none !important;
+}
+
+// =============================================================================
+// 3. "POWERED BY ODOO" — Footer and branding elements
+// =============================================================================
+
+// Brand promotion elements
+.o_brand_promotion,
+[class*="o_brand_promotion"],
+[class*="powered_by_odoo"] {
+    display: none !important;
+}
+
+// Login page footer (native Odoo one, our custom one is separate)
+.o_login_footer {
+    display: none !important;
+}
+
+// =============================================================================
+// 4. SETTINGS PAGE — Hide enterprise-only sections
+// =============================================================================
+
+// Settings upgrade prompts
+.o_settings_container {
+    // Hide upgrade buttons inside settings
+    .btn[name="upgrade"],
+    .o_setting_right_pane a[href*="upgrade"],
+    .o_setting_right_pane a[href*="odoo.com"] {
+        display: none !important;
+    }
+
+    // Hide "Available in Enterprise" messages
+    [class*="o_enterprise"] {
+        display: none !important;
+    }
+}
+
+// Grayed-out enterprise features in settings
+.o_not_community,
+.o_settings_container .o_not_community {
+    display: none !important;
+}
+
+// =============================================================================
+// 5. APP SWITCHER / HOME MENU — Hide enterprise apps
+// =============================================================================
+
+// Enterprise-only app tiles
+.o_apps .o_not_community,
+.o_home_menu .o_not_community,
+[class*="o_enterprise_app"] {
+    display: none !important;
+}
+
+// =============================================================================
+// 6. SYSTRAY — Remove enterprise items from top bar
+// =============================================================================
+
+.o_menu_systray {
+    [class*="o_enterprise"],
+    a[href*="odoo.com/help"],
+    a[href*="odoo.com/support"] {
+        display: none !important;
+    }
+}
+
+// =============================================================================
+// 7. DIALOG / MODAL — Block enterprise prompts
+// =============================================================================
+
+.modal {
+    [class*="o_enterprise_upgrade"],
+    [class*="o_upgrade"],
+    a[href*="odoo.com/pricing"] {
+        display: none !important;
+    }
+}
+
+// =============================================================================
+// 8. FORM VIEWS — Hide enterprise-only fields
+// =============================================================================
+
+.o_form_view {
+    .o_not_community,
+    .o_field_widget.o_not_community,
+    .o_form_label.o_not_community {
+        display: none !important;
+    }
+}
+
+// =============================================================================
+// 9. CHATTER — Remove odoo.com links
+// =============================================================================
+
+.o_chatter,
+.o-mail-Thread {
+    a[href*="odoo.com"] {
+        display: none !important;
+    }
+}
+
+// =============================================================================
+// 10. ODOO BRANDING ELEMENTS — Logo / Icon replacements
+// =============================================================================
+
+// Hide Odoo logo/icon links
+a.o_odoo_icon,
+a.o_brand_link,
+.o_odoo_logo,
+img[src*="odoo_logo"],
+img[alt*="Odoo"] {
+    display: none !important;
+}
+
+// Hide the navbar brand text ("Odoo" menu brand)
+.o_main_navbar .o_menu_brand {
     display: none !important;
 }
 
@@ -21,12 +180,9 @@ a[href*="/web/database/manager"] {
 }
 
 // =============================================================================
-// MINIMAL NAVBAR ADJUSTMENTS
+// 11. INSTALL SCOPED APP — Hide Odoo S.A. reference
 // =============================================================================
 
-.o_main_navbar {
-    // Ensure clean appearance without Odoo branding
-    .o_menu_brand {
-        display: none;
-    }
+.o_install_scoped_app a[href*="odoo.com"] {
+    display: none !important;
 }

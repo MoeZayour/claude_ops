@@ -9,149 +9,196 @@
     <field name="arch" type="xml">
       <xpath expr="//form" position="inside">
 
-        <app data-string="OPS Theme" string="OPS Theme" name="ops_theme">
+        <app data-string="OPS Theme" string="OPS Theme" name="ops_theme" groups="base.group_system">
 
           <!-- ============================================================ -->
-          <!-- FAVICON & BRANDING                                           -->
+          <!-- BRANDING                                                     -->
           <!-- ============================================================ -->
-          <block title="Favicon &amp; Branding" name="ops_favicon_settings">
+          <block title="Branding" name="ops_branding_settings">
             <setting string="Company Favicon"
                      help="Custom favicon for browser tabs (32x32 or 64x64 PNG/ICO)">
-              <field name="ops_favicon" widget="image" class="oe_avatar"
-                     options="{'size': [64, 64]}"/>
+              <div class="content-group">
+                <field name="ops_favicon" widget="image" class="oe_avatar"
+                       options="{'size': [64, 64], 'preview_image': 'ops_favicon'}"/>
+              </div>
+            </setting>
+            <setting string="Theme Preset"
+                     help="Quick-apply a predefined color scheme">
+              <div class="content-group mt-2">
+                <field name="ops_theme_preset" widget="radio"
+                       options="{'horizontal': true}"/>
+              </div>
             </setting>
           </block>
 
           <!-- ============================================================ -->
-          <!-- THEME PRESET                                                 -->
-          <!-- ============================================================ -->
-          <block title="Theme Preset" name="ops_theme_preset_settings">
-            <setting string="Color Scheme"
-                     help="Select a predefined theme or choose Custom">
-              <field name="ops_theme_preset" widget="radio"
-                     options="{'horizontal': true}"/>
-            </setting>
-          </block>
-
-          <!-- ============================================================ -->
-          <!-- BRAND COLORS                                                 -->
+          <!-- BRAND COLORS - Professional 2-column table                   -->
           <!-- ============================================================ -->
           <block title="Brand Colors" name="ops_brand_colors_settings">
-            <setting string="Primary Color"
-                     help="Main color for navbar, headers, primary elements">
-              <field name="ops_primary_color" widget="color"/>
-            </setting>
-            <setting string="Secondary Color"
-                     help="Accent color for buttons, links, highlights">
-              <field name="ops_secondary_color" widget="color"/>
-            </setting>
-            <setting string="Success Color"
-                     help="Color for success states">
-              <field name="ops_success_color" widget="color"/>
-            </setting>
-            <setting string="Warning Color"
-                     help="Color for warnings">
-              <field name="ops_warning_color" widget="color"/>
-            </setting>
-            <setting string="Danger Color"
-                     help="Color for errors">
-              <field name="ops_danger_color" widget="color"/>
-            </setting>
+            <div class="row mt-3 mb-3">
+              <!-- Left Column -->
+              <div class="col-lg-6">
+                <table class="table table-sm table-borderless mb-0">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted" style="width: 140px; vertical-align: middle;">
+                        <strong>Primary</strong><br/>
+                        <small>Navbar, headers</small>
+                      </td>
+                      <td style="vertical-align: middle;">
+                        <field name="ops_primary_color" widget="color" class="o_field_color"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted" style="vertical-align: middle;">
+                        <strong>Secondary</strong><br/>
+                        <small>Buttons, links</small>
+                      </td>
+                      <td style="vertical-align: middle;">
+                        <field name="ops_secondary_color" widget="color" class="o_field_color"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted" style="vertical-align: middle;">
+                        <strong>Success</strong><br/>
+                        <small>Confirmations</small>
+                      </td>
+                      <td style="vertical-align: middle;">
+                        <field name="ops_success_color" widget="color" class="o_field_color"/>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- Right Column -->
+              <div class="col-lg-6">
+                <table class="table table-sm table-borderless mb-0">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted" style="width: 140px; vertical-align: middle;">
+                        <strong>Warning</strong><br/>
+                        <small>Alerts, caution</small>
+                      </td>
+                      <td style="vertical-align: middle;">
+                        <field name="ops_warning_color" widget="color" class="o_field_color"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted" style="vertical-align: middle;">
+                        <strong>Danger</strong><br/>
+                        <small>Errors, delete</small>
+                      </td>
+                      <td style="vertical-align: middle;">
+                        <field name="ops_danger_color" widget="color" class="o_field_color"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2" class="text-center pt-2">
+                        <button name="action_reset_theme_defaults" type="object"
+                                string="Reset Colors" class="btn btn-sm btn-outline-secondary"
+                                icon="fa-refresh"
+                                confirm="Reset all colors to defaults?"/>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </block>
 
           <!-- ============================================================ -->
           <!-- LOGIN PAGE                                                   -->
           <!-- ============================================================ -->
           <block title="Login Page" name="ops_login_settings">
-            <setting string="Background Image"
-                     help="Login page background (1920x1080 recommended)">
-              <field name="ops_login_background" widget="image"
-                     options="{'size': [200, 120]}"/>
-            </setting>
-            <setting string="Tagline"
-                     help="Welcome message on login page">
-              <field name="ops_login_tagline"
-                     placeholder="Enterprise Resource Planning"/>
-            </setting>
-            <setting string="Show Company Logo"
-                     help="Display logo on login page">
-              <field name="ops_login_show_logo" widget="boolean_toggle"/>
-            </setting>
+            <div class="row">
+              <div class="col-lg-6">
+                <setting string="Background Image"
+                         help="1920x1080 recommended">
+                  <field name="ops_login_background" widget="image" class="w-100"
+                         options="{'size': [320, 180]}"/>
+                </setting>
+              </div>
+              <div class="col-lg-6">
+                <setting string="Tagline"
+                         help="Welcome message displayed on login">
+                  <field name="ops_login_tagline"
+                         placeholder="Enterprise Resource Planning"/>
+                </setting>
+                <setting string="Show Company Logo">
+                  <field name="ops_login_show_logo" widget="boolean_toggle"/>
+                </setting>
+              </div>
+            </div>
           </block>
 
           <!-- ============================================================ -->
-          <!-- LAYOUT OPTIONS                                               -->
+          <!-- LAYOUT OPTIONS - Horizontal compact                          -->
           <!-- ============================================================ -->
-          <block title="Layout Options" name="ops_layout_settings">
-            <setting string="Navbar Style"
-                     help="Navigation bar appearance">
-              <field name="ops_navbar_style" widget="radio"
-                     options="{'horizontal': true}"/>
-            </setting>
-            <setting string="Card Shadow"
-                     help="Shadow intensity for cards">
-              <field name="ops_card_shadow" widget="radio"
-                     options="{'horizontal': true}"/>
-            </setting>
-            <setting string="Border Radius"
-                     help="Corner roundness">
-              <field name="ops_border_radius" widget="radio"
-                     options="{'horizontal': true}"/>
-            </setting>
+          <block title="Layout" name="ops_layout_settings">
+            <div class="row">
+              <div class="col-lg-4">
+                <setting string="Navbar Style">
+                  <field name="ops_navbar_style" widget="radio"/>
+                </setting>
+              </div>
+              <div class="col-lg-4">
+                <setting string="Card Shadow">
+                  <field name="ops_card_shadow" widget="radio"/>
+                </setting>
+              </div>
+              <div class="col-lg-4">
+                <setting string="Border Radius">
+                  <field name="ops_border_radius" widget="radio"/>
+                </setting>
+              </div>
+            </div>
           </block>
 
           <!-- ============================================================ -->
-          <!-- REPORT SETTINGS                                              -->
+          <!-- REPORTS                                                      -->
           <!-- ============================================================ -->
-          <block title="Report Settings" name="ops_report_settings">
-            <setting string="Header Background"
-                     help="PDF report header color">
-              <field name="ops_report_header_bg" widget="color"/>
-            </setting>
-            <setting string="Logo Position"
-                     help="Company logo placement in reports">
-              <field name="ops_report_logo_position" widget="radio"
-                     options="{'horizontal': true}"/>
-            </setting>
-            <setting string="Amount in Words"
-                     help="Language for amount conversion on documents">
-              <field name="ops_amount_words_lang"/>
-            </setting>
-            <setting string="Framework Badge"
-                     help="Show 'Powered by OPS Framework' on reports and documents"
-                     groups="base.group_system">
-              <field name="ops_show_external_badge" widget="boolean_toggle"/>
-            </setting>
+          <block title="Reports" name="ops_report_settings" groups="base.group_system">
+            <div class="row">
+              <div class="col-lg-6">
+                <setting string="Header Background">
+                  <field name="ops_report_header_bg" widget="color"/>
+                </setting>
+                <setting string="Logo Position">
+                  <field name="ops_report_logo_position" widget="radio"
+                         options="{'horizontal': true}"/>
+                </setting>
+              </div>
+              <div class="col-lg-6">
+                <setting string="Amount in Words"
+                         help="Language for amount conversion on documents">
+                  <field name="ops_amount_words_lang"/>
+                </setting>
+                <setting string="Framework Badge"
+                         help="Show 'Powered by OPS Framework' on reports">
+                  <field name="ops_show_external_badge" widget="boolean_toggle"/>
+                </setting>
+              </div>
+            </div>
           </block>
 
           <!-- ============================================================ -->
           <!-- USER DEFAULTS                                                -->
           <!-- ============================================================ -->
           <block title="User Defaults" name="ops_user_defaults_settings">
-            <setting string="Default Color Mode"
-                     help="Default appearance for new users">
-              <field name="ops_default_color_mode" widget="radio"
-                     options="{'horizontal': true}"/>
-            </setting>
-            <setting string="Default Chatter Position"
-                     help="Default chatter placement">
-              <field name="ops_default_chatter_position" widget="radio"
-                     options="{'horizontal': true}"/>
-            </setting>
-          </block>
-
-          <!-- ============================================================ -->
-          <!-- ACTIONS                                                      -->
-          <!-- ============================================================ -->
-          <block title="Actions" name="ops_theme_actions_settings">
-            <div class="mt-3">
-              <button name="action_preview_theme" type="object"
-                      string="Preview Theme" class="btn-secondary me-2"
-                      icon="fa-external-link"/>
-              <button name="action_reset_theme_defaults" type="object"
-                      string="Reset to Defaults" class="btn-secondary"
-                      icon="fa-refresh"
-                      confirm="Reset all theme settings to defaults?"/>
+            <div class="row">
+              <div class="col-lg-6">
+                <setting string="Default Color Mode"
+                         help="Applied to new users">
+                  <field name="ops_default_color_mode" widget="radio"
+                         options="{'horizontal': true}"/>
+                </setting>
+              </div>
+              <div class="col-lg-6">
+                <setting string="Default Chatter Position">
+                  <field name="ops_default_chatter_position" widget="radio"
+                         options="{'horizontal': true}"/>
+                </setting>
+              </div>
             </div>
           </block>
 

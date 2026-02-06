@@ -1,130 +1,194 @@
 /** @odoo-module **/
-
-// =============================================================================
-// OPS THEME - DEBRANDING JAVASCRIPT
-// =============================================================================
-// Removes Odoo.com links and enterprise features from JS registries
-// =============================================================================
+/**
+ * OPS Framework — Dynamic Debranding Runtime Interceptor
+ * ======================================================
+ *
+ * Three-pronged approach:
+ * 1. REGISTRY CLEANUP — Remove Odoo items from OWL registries before render
+ * 2. DOM INTERCEPTOR  — MutationObserver catches dynamically injected elements
+ * 3. TITLE ENFORCER   — Keeps browser tab title clean
+ *
+ * This runs once at module load and stays active for the session lifetime.
+ */
 
 import { registry } from "@web/core/registry";
 
-// -----------------------------------------------------------------------------
-// Remove items from User Menu Registry
-// -----------------------------------------------------------------------------
-const userMenuRegistry = registry.category("user_menuitems");
+// =============================================================================
+// CONFIGURATION
+// =============================================================================
 
-// Items to remove from user menu
-const userMenuItemsToRemove = [
-    'odoo_account',      // My Odoo.com Account
-    'install_app',       // Install App
-    'upgrade',           // Upgrade prompt
-    'odoo_help',         // Odoo Help (if exists)
-    'documentation',     // Documentation link to odoo.com
+const OPS_TITLE = "OPS Framework";
+
+// Registry items to remove (user menu dropdown)
+const USER_MENU_REMOVE = [
+    "odoo_account",      // My Odoo.com Account
+    "install_app",       // Install App
+    "upgrade",           // Upgrade
+    "odoo_help",         // Odoo Help
+    "documentation",     // Odoo Documentation
+    "support",           // Odoo Support
 ];
 
-// Remove each item if it exists
-userMenuItemsToRemove.forEach(itemKey => {
-    try {
-        if (userMenuRegistry.contains(itemKey)) {
-            userMenuRegistry.remove(itemKey);
-            console.log(`OPS Theme: Removed '${itemKey}' from user menu`);
-        }
-    } catch (e) {
-        // Item doesn't exist, ignore
-    }
-});
-
-// -----------------------------------------------------------------------------
-// Remove Enterprise-only systray items
-// -----------------------------------------------------------------------------
-const systrayRegistry = registry.category("systray");
-
-const systrayItemsToRemove = [
-    'upgrade',
-    'enterprise_upgrade',
-    'odoo_enterprise',
-    'web_enterprise.ExpiredBanner',
+// Systray items to remove (top-right icons)
+const SYSTRAY_REMOVE = [
+    "upgrade",
+    "enterprise_upgrade",
+    "odoo_enterprise",
+    "web_enterprise.ExpiredBanner",
+    "BurgerMenu.CompanyItem",
 ];
 
-systrayItemsToRemove.forEach(itemKey => {
+// CSS selectors for DOM cleanup (backup for anything CSS misses)
+const HIDE_SELECTORS = [
+    'a[href*="odoo.com"]:not([href*="documentation"])',
+    '[class*="o_enterprise_upgrade"]',
+    '[class*="o_upgrade"]',
+    'button[name="upgrade"]',
+    '.o_not_community',
+    '[class*="o_database_expiration"]',
+    '.o_login_footer',
+    'img[src*="odoo_logo"]',
+    'a.o_odoo_icon',
+    '.o_brand_promotion',
+    '[class*="o_enterprise_label"]',
+    '.o_settings_upgrade_btn',
+    '[data-menu="odoo_account"]',
+    '[data-menu="install_app"]',
+];
+
+// =============================================================================
+// 1. REGISTRY CLEANUP — Remove items before they render
+// =============================================================================
+
+function cleanRegistry(categoryName, itemsToRemove) {
     try {
-        if (systrayRegistry.contains(itemKey)) {
-            systrayRegistry.remove(itemKey);
-            console.log(`OPS Theme: Removed '${itemKey}' from systray`);
-        }
-    } catch (e) {
-        // Item doesn't exist, ignore
-    }
-});
-
-// -----------------------------------------------------------------------------
-// DOM Cleanup on Page Load (Fallback)
-// -----------------------------------------------------------------------------
-document.addEventListener('DOMContentLoaded', function() {
-    // Hide enterprise elements function
-    const hideEnterpriseElements = () => {
-        // Hide by data attributes
-        document.querySelectorAll('[data-menu="odoo_account"], [data-menu="install_app"]').forEach(el => {
-            el.style.display = 'none';
-        });
-
-        // Hide by href
-        document.querySelectorAll('a[href*="odoo.com"]').forEach(el => {
-            // Keep documentation links if needed
-            if (!el.href.includes('documentation') && !el.href.includes('github')) {
-                el.style.display = 'none';
+        const cat = registry.category(categoryName);
+        for (const key of itemsToRemove) {
+            try {
+                if (cat.contains(key)) {
+                    cat.remove(key);
+                    console.debug(`[OPS Debranding] Removed '${key}' from ${categoryName}`);
+                }
+            } catch (e) {
+                // Item doesn't exist, silent
             }
-        });
+        }
+    } catch (e) {
+        // Category doesn't exist, silent
+    }
+}
 
-        // Hide enterprise classes
-        document.querySelectorAll('.o_not_community, .o_enterprise_only, .o_upgrade_btn, .o_enterprise_label').forEach(el => {
-            el.style.display = 'none';
-        });
+// Clean user menu
+cleanRegistry("user_menuitems", USER_MENU_REMOVE);
 
-        // Hide upgrade buttons
-        document.querySelectorAll('button[name="upgrade"], a.o_upgrade_btn, .o_settings_upgrade_btn').forEach(el => {
-            el.style.display = 'none';
-        });
-    };
+// Clean systray
+cleanRegistry("systray", SYSTRAY_REMOVE);
 
+// =============================================================================
+// 2. DOM INTERCEPTOR — MutationObserver for dynamic content
+// =============================================================================
+
+function hideMatchingElements() {
+    for (const selector of HIDE_SELECTORS) {
+        try {
+            document.querySelectorAll(selector).forEach(el => {
+                if (el.style.display !== "none") {
+                    el.style.display = "none";
+                }
+            });
+        } catch (e) {
+            // Invalid selector or element already removed
+        }
+    }
+}
+
+function initDomInterceptor() {
     // Run immediately
-    hideEnterpriseElements();
+    hideMatchingElements();
 
-    // Run again after short delay (for dynamically loaded content)
-    setTimeout(hideEnterpriseElements, 1000);
-    setTimeout(hideEnterpriseElements, 3000);
-    setTimeout(hideEnterpriseElements, 5000);
-
-    // Observe DOM changes and hide new enterprise elements
+    // Observe DOM for dynamically added elements
     const observer = new MutationObserver((mutations) => {
-        let shouldCheck = false;
-        for (const mutation of mutations) {
-            if (mutation.addedNodes.length > 0) {
-                shouldCheck = true;
+        let shouldRun = false;
+        for (const m of mutations) {
+            if (m.addedNodes.length > 0) {
+                shouldRun = true;
                 break;
             }
         }
-        if (shouldCheck) {
-            hideEnterpriseElements();
+        if (shouldRun) {
+            hideMatchingElements();
         }
     });
 
     observer.observe(document.body, {
         childList: true,
-        subtree: true
+        subtree: true,
     });
 
-    // Auto-cleanup observer after 30 seconds to prevent memory leaks
-    // Page should be fully loaded by then
-    setTimeout(() => {
-        observer.disconnect();
-        console.log('[OPS Theme] Debranding observer auto-cleanup after 30s');
-    }, 30000);
-
-    // Also cleanup on page unload
-    window.addEventListener('beforeunload', () => {
+    // Cleanup on page unload
+    window.addEventListener("beforeunload", () => {
         observer.disconnect();
     });
-});
 
-console.log('[OPS Theme] Debranding module loaded');
+    console.debug("[OPS Debranding] DOM interceptor active");
+}
+
+// =============================================================================
+// 3. TITLE ENFORCER — Replace "Odoo" in document title
+// =============================================================================
+
+function enforceTitle() {
+    const originalDescriptor = Object.getOwnPropertyDescriptor(Document.prototype, "title") ||
+                               Object.getOwnPropertyDescriptor(HTMLDocument.prototype, "title");
+
+    if (originalDescriptor && originalDescriptor.set) {
+        Object.defineProperty(document, "title", {
+            get: function() {
+                return originalDescriptor.get.call(this);
+            },
+            set: function(val) {
+                const cleaned = val.replace(/Odoo/gi, OPS_TITLE);
+                originalDescriptor.set.call(this, cleaned);
+            },
+            configurable: true,
+        });
+    }
+
+    // Also clean current title
+    if (document.title && document.title.includes("Odoo")) {
+        document.title = document.title.replace(/Odoo/gi, OPS_TITLE);
+    }
+
+    console.debug("[OPS Debranding] Title enforcer active");
+}
+
+// =============================================================================
+// 4. FAVICON OVERRIDE
+// =============================================================================
+
+function overrideFavicon() {
+    const links = document.querySelectorAll('link[rel*="icon"]');
+    links.forEach(link => {
+        if (link.href && link.href.includes("odoo")) {
+            link.href = "/ops_theme/favicon";
+        }
+    });
+}
+
+// =============================================================================
+// INITIALIZATION
+// =============================================================================
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+        initDomInterceptor();
+        enforceTitle();
+        overrideFavicon();
+    });
+} else {
+    initDomInterceptor();
+    enforceTitle();
+    overrideFavicon();
+}
+
+console.log("[OPS Debranding] Module loaded — 4-layer interceptor active");

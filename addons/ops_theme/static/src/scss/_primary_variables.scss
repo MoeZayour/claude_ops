@@ -1,25 +1,33 @@
 ///
-/// OPS Framework - Primary Variable Overrides
-/// ===========================================
-/// Loads BEFORE Bootstrap compilation to replace Odoo brand colors.
-/// This single file debrands the entire application.
+/// OPS Framework — Primary Variable Overrides
+/// ============================================
+/// Loads BEFORE Bootstrap compilation via web._assets_primary_variables
+/// This single file replaces Odoo purple everywhere it appears in the UI:
+/// buttons, tabs, badges, selections, active states, etc.
 ///
 
 // =============================================================================
-// BRAND COLOR REPLACEMENT
+// BRAND COLOR REPLACEMENT — The Source of All Color
 // =============================================================================
 
-// Replace Odoo purple (#71639e) with OPS Navy (#1e293b)
+// Odoo 19 CE derives its purple (#71639e) from $o-community-color.
+// Override this ONE variable and every native purple element turns navy.
 $o-community-color: #1e293b;
+
+// These cascade from o-community-color but we set them explicitly for safety:
 $o-enterprise-color: #1e293b;
 $o-brand-odoo: #1e293b;
 $o-brand-primary: #1e293b;
 
-// Action color (used for buttons, links, active states)
+// =============================================================================
+// ACTION / ACCENT COLOR — Buttons, Links, Active States
+// =============================================================================
+
+// The "action" color is what Odoo uses for primary buttons and interactive elements.
 $o-action: #3b82f6;  // OPS Blue
 
 // =============================================================================
-// SEMANTIC COLORS (SLIGHTLY ADJUSTED)
+// SEMANTIC COLORS
 // =============================================================================
 
 $o-success: #10b981;  // Teal green
@@ -34,6 +42,12 @@ $o-danger: #ef4444;   // Red
 $o-main-link-color: #3b82f6;  // OPS Blue for links
 
 // =============================================================================
-// DO NOT OVERRIDE ANYTHING ELSE
-// Let Odoo handle: fonts, spacing, borders, shadows, component-specific styles
+// NAVBAR — Top Navigation Bar
 // =============================================================================
+$o-navbar-background: #1e293b;
+$o-navbar-inverse: white;
+
+// =============================================================================
+// FONT — Inter as Primary
+// =============================================================================
+$o-we-font-family-override: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

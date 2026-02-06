@@ -97,15 +97,17 @@ class OPSThemeController(http.Controller):
             return ', '.join(str(int(hex_color[i:i+2], 16)) for i in (0, 2, 4))
 
         # Navbar colors based on style
+        # CRITICAL: "primary" style must use PRIMARY color (dark brand color), not secondary
         navbar_colors = {
-            'dark': {'bg': primary, 'text': '#ffffff'},
-            'light': {'bg': '#f8fafc', 'text': '#1e293b'},
-            'primary': {'bg': secondary, 'text': '#ffffff'},
+            'dark': {'bg': primary, 'text': '#ffffff', 'hover': 'rgba(255, 255, 255, 0.1)'},
+            'light': {'bg': '#f8fafc', 'text': '#1e293b', 'hover': 'rgba(0, 0, 0, 0.05)'},
+            'primary': {'bg': primary, 'text': '#ffffff', 'hover': 'rgba(255, 255, 255, 0.1)'},
         }
         navbar = navbar_colors.get(navbar_style, navbar_colors['dark'])
 
-        # Darken helper for hover states
+        # Darken/lighten helpers for hover states
         secondary_hover = self._darken_color(secondary)
+        primary_hover = self._darken_color(primary)
 
         css = f"""/* OPS Theme Dynamic Variables - Generated from Settings */
 
@@ -113,6 +115,7 @@ class OPSThemeController(http.Controller):
     /* Brand Colors */
     --ops-primary: {primary};
     --ops-primary-rgb: {hex_to_rgb(primary)};
+    --ops-primary-hover: {primary_hover};
     --ops-secondary: {secondary};
     --ops-secondary-rgb: {hex_to_rgb(secondary)};
     --ops-secondary-hover: {secondary_hover};
@@ -126,6 +129,7 @@ class OPSThemeController(http.Controller):
     /* Navbar */
     --ops-navbar-bg: {navbar['bg']};
     --ops-navbar-text: {navbar['text']};
+    --ops-navbar-hover: {navbar['hover']};
     --ops-bg-navbar: {navbar['bg']};
 
     /* Layout */
@@ -138,45 +142,124 @@ class OPSThemeController(http.Controller):
     --ops-report-header-bg: {report_header};
 }}
 
-/* Navbar Background Override */
+/* ===================================================================
+   NAVBAR - Uses PRIMARY color
+   =================================================================== */
 nav.o_main_navbar,
 .o_main_navbar,
-nav.o_main_navbar.d-print-none {{
+nav.o_main_navbar.d-print-none,
+header.o_navbar {{
     background: {navbar['bg']} !important;
     background-color: {navbar['bg']} !important;
 }}
 
+/* Brand name uses secondary (accent) color */
+.o_main_navbar .o_menu_brand {{
+    color: {secondary} !important;
+    font-weight: 700 !important;
+}}
+
 .o_main_navbar .o_menu_toggle,
-.o_main_navbar .o_menu_sections button,
-.o_main_navbar .o_menu_sections a,
-.o_main_navbar .o_menu_systray .dropdown-toggle {{
+.o_main_navbar .o_menu_systray .dropdown-toggle,
+.o_main_navbar .o_navbar_apps_menu .dropdown-toggle {{
     color: {navbar['text']} !important;
 }}
 
-/* Button Primary uses Secondary color */
+/* Menu section items */
+.o_menu_sections > button,
+.o_menu_sections > a,
+.o_menu_sections .o-dropdown > button,
+.o_menu_sections .dropdown-toggle {{
+    color: {navbar['text']} !important;
+}}
+
+.o_menu_sections > button:hover,
+.o_menu_sections > a:hover,
+.o_menu_sections .o-dropdown > button:hover {{
+    background: {navbar['hover']} !important;
+}}
+
+/* ===================================================================
+   DROPDOWN MENUS - Consistent styling
+   =================================================================== */
+.o_main_navbar .dropdown-menu,
+.o_main_navbar .o-dropdown--menu,
+.o_navbar_apps_menu .dropdown-menu,
+.o_navbar_apps_menu .o-dropdown--menu,
+.o_menu_sections .dropdown-menu,
+.o_menu_sections .o-dropdown--menu,
+.o_user_menu .dropdown-menu,
+.o_menu_systray .dropdown-menu {{
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: var(--ops-radius-md, 8px) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+}}
+
+.o_main_navbar .dropdown-item,
+.o_navbar_apps_menu .dropdown-item,
+.o_navbar_apps_menu a,
+.o_menu_sections .dropdown-item,
+.o_user_menu .dropdown-item,
+.o_menu_systray .dropdown-item {{
+    color: #1e293b !important;
+    padding: 8px 16px !important;
+}}
+
+.o_main_navbar .dropdown-item:hover,
+.o_navbar_apps_menu .dropdown-item:hover,
+.o_navbar_apps_menu a:hover,
+.o_menu_sections .dropdown-item:hover,
+.o_user_menu .dropdown-item:hover {{
+    background-color: #f8fafc !important;
+}}
+
+.o_main_navbar .dropdown-item.active,
+.o_main_navbar .dropdown-item:active {{
+    background-color: {secondary} !important;
+    color: #ffffff !important;
+}}
+
+/* ===================================================================
+   BUTTONS - Use SECONDARY (accent) color
+   =================================================================== */
 .btn-primary {{
     background-color: {secondary} !important;
     border-color: {secondary} !important;
+    color: #ffffff !important;
 }}
 
-.btn-primary:hover {{
+.btn-primary:hover,
+.btn-primary:focus {{
     background-color: {secondary_hover} !important;
     border-color: {secondary_hover} !important;
 }}
 
-/* Card Shadow */
+/* ===================================================================
+   STATUS BAR
+   =================================================================== */
+.o_statusbar_status .o_arrow_button.btn-primary,
+.o_statusbar_status .o_arrow_button.o_active {{
+    background-color: {secondary} !important;
+    color: #ffffff !important;
+}}
+
+/* ===================================================================
+   FORM FOCUS STATES
+   =================================================================== */
+.form-control:focus,
+.form-select:focus {{
+    border-color: {secondary} !important;
+    box-shadow: 0 0 0 3px rgba({hex_to_rgb(secondary)}, 0.15) !important;
+}}
+
+/* ===================================================================
+   CARD & LAYOUT
+   =================================================================== */
 .o_form_sheet,
 .o_kanban_record,
 .card {{
     box-shadow: {shadow_map.get(card_shadow, shadow_map['medium'])} !important;
-}}
-
-/* Border Radius */
-.btn,
-.form-control,
-.form-select,
-.card,
-.o_kanban_record {{
     border-radius: {radius_map.get(border_radius, radius_map['rounded'])} !important;
 }}
 """
