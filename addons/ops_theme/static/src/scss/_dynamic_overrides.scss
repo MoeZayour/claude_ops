@@ -254,7 +254,7 @@ a:not(.btn):not(.nav-link):not(.dropdown-item) {
         transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 
         &:hover:not(.selected) {
-            background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.06);
+            background-color: rgba(var(--ops-secondary-rgb), 0.06);
         }
 
         &.selected {
@@ -277,7 +277,7 @@ a:not(.btn):not(.nav-link):not(.dropdown-item) {
 
     &:focus-within {
         border-color: var(--ops-secondary, #3b82f6) !important;
-        box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.12) !important;
+        box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb), 0.12) !important;
     }
 }
 
@@ -287,13 +287,13 @@ a:not(.btn):not(.nav-link):not(.dropdown-item) {
     border-radius: var(--ops-border-radius, 8px);
 
     &:hover {
-        background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.03);
+        background-color: rgba(var(--ops-secondary-rgb), 0.03);
     }
 
     // Branded search highlight (overrides Odoo's tint-color default)
     &.o_setting_highlight {
         --SearchableSetting__highlight-border: var(--ops-secondary, #3b82f6);
-        --SearchableSetting__highlight-background: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.08);
+        --SearchableSetting__highlight-background: rgba(var(--ops-secondary-rgb), 0.08);
     }
 }
 
