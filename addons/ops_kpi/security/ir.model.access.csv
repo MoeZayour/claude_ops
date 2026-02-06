@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ops_kpi_user,ops.kpi.user,model_ops_kpi,group_kpi_user,1,0,0,0
+access_ops_kpi_manager,ops.kpi.manager,model_ops_kpi,group_kpi_manager,1,1,1,1
+access_ops_kpi_internal,ops.kpi.internal,model_ops_kpi,base.group_user,1,0,0,0
+access_ops_kpi_value_user,ops.kpi.value.user,model_ops_kpi_value,group_kpi_user,1,0,0,0
+access_ops_kpi_value_manager,ops.kpi.value.manager,model_ops_kpi_value,group_kpi_manager,1,1,1,1
+access_ops_kpi_value_internal,ops.kpi.value.internal,model_ops_kpi_value,base.group_user,1,0,0,0
+access_ops_kpi_board_user,ops.kpi.board.user,model_ops_kpi_board,group_kpi_user,1,0,0,0
+access_ops_kpi_board_manager,ops.kpi.board.manager,model_ops_kpi_board,group_kpi_manager,1,1,1,1
+access_ops_kpi_board_internal,ops.kpi.board.internal,model_ops_kpi_board,base.group_user,1,0,0,0
+access_ops_kpi_widget_user,ops.kpi.widget.user,model_ops_kpi_widget,group_kpi_user,1,0,0,0
+access_ops_kpi_widget_manager,ops.kpi.widget.manager,model_ops_kpi_widget,group_kpi_manager,1,1,1,1
+access_ops_kpi_widget_internal,ops.kpi.widget.internal,model_ops_kpi_widget,base.group_user,1,0,0,0

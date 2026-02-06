@@ -110,12 +110,14 @@
                     <field name="description" placeholder="Optional: Describe what this template is for..."/>
                     <field name="is_global"/>
                 </group>
+                <group invisible="1" name="hidden_fields">
+                    <field name="source_wizard_model"/>
+                    <field name="source_wizard_id"/>
+                </group>
                 <footer>
                     <button name="action_save" type="object" string="Save Template" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
-                <field name="source_wizard_model" invisible="1"/>
-                <field name="source_wizard_id" invisible="1"/>
             </form>
         </field>
     </record>

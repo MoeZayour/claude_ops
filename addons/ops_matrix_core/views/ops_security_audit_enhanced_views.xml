@@ -1,100 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Enhanced Security Audit Tree View (Phase 5) -->
-    <record id="view_ops_security_audit_tree_enhanced" model="ir.ui.view">
-        <field name="name">ops.security.audit.tree.enhanced</field>
+    <!-- Security Audit Tree View (Standalone - includes all fields) -->
+    <record id="view_ops_security_audit_tree" model="ir.ui.view">
+        <field name="name">ops.security.audit.tree</field>
         <field name="model">ops.security.audit</field>
-        <field name="inherit_id" ref="ops_matrix_core.view_ops_security_audit_tree"/>
         <field name="arch" type="xml">
-            <field name="severity" position="after">
+            <list string="Security Audit Log"
+                  decoration-danger="severity=='critical'"
+                  decoration-warning="severity=='warning'">
+                <field name="timestamp"/>
+                <field name="event_type"/>
+                <field name="user_id"/>
+                <field name="model_name" optional="hide"/>
+                <field name="record_name" optional="hide"/>
+                <field name="ip_address" optional="show"/>
+                <field name="severity" widget="badge"
+                       decoration-success="severity=='info'"
+                       decoration-warning="severity=='warning'"
+                       decoration-danger="severity=='critical'"/>
                 <field name="risk_level" widget="badge"
                        decoration-success="risk_level=='low'"
                        decoration-warning="risk_level=='medium'"
-                       decoration-danger="risk_level in ['high', 'critical']"/>
+                       decoration-danger="risk_level in ('high', 'critical')"/>
                 <field name="status" widget="badge"
                        decoration-success="status=='resolved'"
                        decoration-info="status=='investigating'"
                        decoration-warning="status=='open'"/>
-                <field name="assigned_to_user_id"/>
-            </field>
+                <field name="assigned_to_user_id" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
         </field>
     </record>
 
-    <!-- Enhanced Security Audit Form View (Phase 5) -->
-    <record id="view_ops_security_audit_form_enhanced" model="ir.ui.view">
-        <field name="name">ops.security.audit.form.enhanced</field>
+    <!-- Security Audit Form View (Standalone - includes all fields) -->
+    <record id="view_ops_security_audit_form" model="ir.ui.view">
+        <field name="name">ops.security.audit.form</field>
         <field name="model">ops.security.audit</field>
-        <field name="inherit_id" ref="ops_matrix_core.view_ops_security_audit_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <button name="action_assign_to_me" string="Assign to Me" type="object"
-                        class="oe_highlight" invisible="status in ['resolved', 'investigating'"/>
-                <button name="action_resolve" string="Resolve" type="object"
-                        invisible="status == 'resolved'"/>
-                <button name="action_mark_false_positive" string="False Positive" type="object"
-                        invisible="('status', 'in', ['resolved', 'false_positive'"/>
-            </xpath>
-            <xpath expr="//field[@name='severity'']" position="after">
-                <field name="risk_level" widget="badge"
-                       decoration-success="risk_level=='low'"
-                       decoration-warning="risk_level=='medium'"
-                       decoration-danger="risk_level in ['high', 'critical']"/>
-                <field name="status" widget="badge"
-                       decoration-success="status=='resolved'"
-                       decoration-info="status=='investigating'"
-                       decoration-warning="status=='open'"/>
-            </xpath>
-            <xpath expr="//sheet" position="inside">
-                <notebook>
-                    <page name="investigation" string="Investigation">
-                        <group name="outer_group_1">
+            <form string="Security Audit Entry" create="false">
+                <header>
+                    <button name="action_assign_to_me" string="Assign to Me" type="object"
+                            class="oe_highlight"
+                            invisible="status in ('resolved', 'false_positive')"/>
+                    <button name="action_resolve" string="Resolve" type="object"
+                            invisible="status == 'resolved'"/>
+                    <button name="action_mark_false_positive" string="False Positive" type="object"
+                            invisible="status in ('resolved', 'false_positive')"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="open,investigating,resolved"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_related_events" type="object"
+                                class="oe_stat_button" icon="fa-link">
+                            <span>Related Events</span>
+                        </button>
+                    </div>
+                    <group name="main_info">
+                        <group name="event_details">
+                            <field name="timestamp"/>
+                            <field name="event_type"/>
+                            <field name="user_id"/>
+                            <field name="severity" widget="badge"
+                                   decoration-success="severity=='info'"
+                                   decoration-warning="severity=='warning'"
+                                   decoration-danger="severity=='critical'"/>
+                            <field name="risk_level" widget="badge"
+                                   decoration-success="risk_level=='low'"
+                                   decoration-warning="risk_level=='medium'"
+                                   decoration-danger="risk_level in ('high', 'critical')"/>
+                        </group>
+                        <group name="record_info">
+                            <field name="model_name"/>
+                            <field name="record_id"/>
+                            <field name="record_name"/>
+                            <field name="ip_address"/>
+                            <field name="session_id"/>
+                        </group>
+                    </group>
+                    <group name="org_info">
+                        <group name="org_left">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="branch_id"/>
+                            <field name="business_unit_id"/>
+                        </group>
+                        <group name="org_right">
                             <field name="assigned_to_user_id"/>
-                            <field name="failed_login_count" invisible="event_type != 'brute_force_detected'"/>
+                            <field name="failed_login_count"
+                                   invisible="event_type != 'brute_force_detected'"/>
                         </group>
-                        <group name="outer_group_2" invisible="status not in ['resolved', 'false_positive'">
-                            <field name="resolved_date" readonly="1"/>
-                            <field name="resolved_by_user_id" readonly="1"/>
-                            <field name="resolution_notes" nolabel="1" readonly="1"/>
-                        </group>
-                    </page>
-                    <page name="related_events" string="Related Events">
-                        <field name="related_audit_ids" nolabel="1">
-                            <list>
-                                <field name="timestamp"/>
-                                <field name="event_type"/>
-                                <field name="risk_level"/>
-                                <field name="status"/>
-                            </list>
-                        </field>
-                    </page>
-                </notebook>
-            </xpath>
+                    </group>
+                    <notebook>
+                        <page name="details" string="Event Details">
+                            <field name="details" nolabel="1" readonly="1"/>
+                        </page>
+                        <page name="investigation" string="Investigation"
+                              invisible="status not in ('resolved', 'false_positive', 'investigating')">
+                            <group name="resolution_info"
+                                   invisible="status not in ('resolved', 'false_positive')">
+                                <field name="resolved_date" readonly="1"/>
+                                <field name="resolved_by_user_id" readonly="1"/>
+                            </group>
+                            <separator string="Resolution Notes"
+                                       invisible="status not in ('resolved', 'false_positive')"/>
+                            <field name="resolution_notes" nolabel="1" readonly="1"
+                                   invisible="status not in ('resolved', 'false_positive')"/>
+                        </page>
+                        <page name="related_events" string="Related Events">
+                            <field name="related_audit_ids" nolabel="1">
+                                <list>
+                                    <field name="timestamp"/>
+                                    <field name="event_type"/>
+                                    <field name="risk_level"/>
+                                    <field name="status"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
         </field>
     </record>
 
-    <!-- Enhanced Search View -->
-    <record id="view_ops_security_audit_search_enhanced" model="ir.ui.view">
-        <field name="name">ops.security.audit.search.enhanced</field>
+    <!-- Security Audit Search View (Standalone - includes all filters) -->
+    <record id="view_ops_security_audit_search" model="ir.ui.view">
+        <field name="name">ops.security.audit.search</field>
         <field name="model">ops.security.audit</field>
-        <field name="inherit_id" ref="ops_matrix_core.view_ops_security_audit_search"/>
         <field name="arch" type="xml">
-            <filter name="critical" position="after">
-                <filter name="risk_critical" string="Critical Risk" domain="[('risk_level', '=', 'critical')']"/>
-                <filter name="risk_high" string="High Risk" domain="[('risk_level', '=', 'high')]"/>
+            <search string="Security Audit">
+                <field name="event_type"/>
+                <field name="user_id"/>
+                <field name="ip_address"/>
+                <field name="model_name"/>
+                <filter name="critical" string="Critical Severity"
+                        domain="[('severity', '=', 'critical')]"/>
+                <filter name="warning" string="Warning Severity"
+                        domain="[('severity', '=', 'warning')]"/>
                 <separator/>
-                <filter name="status_open" string="Open" domain="[('status', '=', 'open')]"/>
-                <filter name="status_investigating" string="Investigating" domain="[('status', '=', 'investigating')]"/>
-                <filter name="status_unresolved" string="Unresolved" domain="[('status', 'in', ['open', 'investigating'])]"/>
+                <filter name="risk_critical" string="Critical Risk"
+                        domain="[('risk_level', '=', 'critical')]"/>
+                <filter name="risk_high" string="High Risk"
+                        domain="[('risk_level', '=', 'high')]"/>
                 <separator/>
-                <filter name="brute_force" string="Brute Force" domain="[('event_type', '=', 'brute_force_detected')]"/>
-                <filter name="ip_blocked" string="IP Blocked" domain="[('event_type', '=', 'ip_blocked')]"/>
-                <filter name="suspicious_session" string="Suspicious Session" domain="[('event_type', '=', 'session_suspicious')]"/>
-            </filter>
-            <filter name="group_severity" position="after">
-                <filter name="group_risk_level" string="Risk Level" context="{'group_by': 'risk_level'}"/>
-                <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
-                <filter name="group_assigned" string="Assigned To" context="{'group_by': 'assigned_to_user_id'}"/>
-            </filter>
+                <filter name="status_open" string="Open"
+                        domain="[('status', '=', 'open')]"/>
+                <filter name="status_investigating" string="Investigating"
+                        domain="[('status', '=', 'investigating')]"/>
+                <filter name="status_unresolved" string="Unresolved"
+                        domain="[('status', 'in', ['open', 'investigating'])]"/>
+                <separator/>
+                <filter name="brute_force" string="Brute Force"
+                        domain="[('event_type', '=', 'brute_force_detected')]"/>
+                <filter name="ip_blocked" string="IP Blocked"
+                        domain="[('event_type', '=', 'ip_blocked')]"/>
+                <filter name="suspicious_session" string="Suspicious Session"
+                        domain="[('event_type', '=', 'session_suspicious')]"/>
+                <separator/>
+                <filter name="this_week" string="This Week"
+                        domain="[('timestamp', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="today" string="Today"
+                        domain="[('timestamp', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                <separator/>
+                <group name="group_by_filters">
+                    <filter name="group_severity" string="Severity"
+                            context="{'group_by': 'severity'}"/>
+                    <filter name="group_risk_level" string="Risk Level"
+                            context="{'group_by': 'risk_level'}"/>
+                    <filter name="group_status" string="Status"
+                            context="{'group_by': 'status'}"/>
+                    <filter name="group_event_type" string="Event Type"
+                            context="{'group_by': 'event_type'}"/>
+                    <filter name="group_user" string="User"
+                            context="{'group_by': 'user_id'}"/>
+                    <filter name="group_assigned" string="Assigned To"
+                            context="{'group_by': 'assigned_to_user_id'}"/>
+                </group>
+            </search>
         </field>
     </record>
 
@@ -104,12 +185,14 @@
         <field name="model">ops.security.resolve.wizard</field>
         <field name="arch" type="xml">
             <form string="Resolve Security Event">
-                <group name="outer_group_3">
+                <group name="wizard_fields">
                     <field name="audit_id" invisible="1"/>
-                    <field name="resolution_notes" widget="text" placeholder="Describe the investigation and resolution..."/>
+                    <field name="resolution_notes" widget="text"
+                           placeholder="Describe the investigation and resolution..."/>
                 </group>
                 <footer>
-                    <button string="Resolve" name="action_resolve" type="object" class="btn-primary"/>
+                    <button string="Resolve" name="action_resolve" type="object"
+                            class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

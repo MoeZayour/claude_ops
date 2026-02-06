@@ -103,11 +103,11 @@
         'views/ops_dashboard_widget_views.xml',
         'views/ops_security_compliance_views.xml',
 
-        # STUB VIEWS (Intentionally Excluded - Schema Only, No UI):
-        # 'views/ops_session_manager_views.xml',
-        # 'views/ops_ip_whitelist_views.xml',
-        # 'views/ops_security_audit_enhanced_views.xml',
-        # 'views/ops_performance_monitor_views.xml',
+        # Security & Monitoring Views
+        'views/ops_session_manager_views.xml',
+        'views/ops_ip_whitelist_views.xml',
+        'views/ops_security_audit_enhanced_views.xml',
+        'views/ops_performance_monitor_views.xml',
 
         # 8. Final Config
         'views/ops_settings_menu.xml',
@@ -134,7 +134,6 @@
         'wizard/ops_sale_order_import_wizard_views.xml',
         'wizard/ops_purchase_order_import_wizard_views.xml',
         'wizard/ops_secure_export_wizard_views.xml',
-        'views/sale_order_import_wizard_views.xml',
 
         # Phase 13: UAT Fixes
         'data/hide_duplicate_reports.xml',

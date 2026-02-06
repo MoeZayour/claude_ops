@@ -91,7 +91,6 @@ from . import ops_report_template_line
 # 7. Product Requests
 from . import ops_product_request
 
-# 8. Wizards (Located in models folder currently)
-from . import sale_order_import_wizard
+# 8. Additional model extensions
 from . import account_report
 # Core OPS models

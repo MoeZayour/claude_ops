@@ -7,10 +7,14 @@
             <field name="arch" type="xml">
                 <form string="Asset Register Report">
                     <group name="group_1">
-                        <field name="date_from"/>
-                        <field name="date_to"/>
-                        <field name="asset_category_ids" widget="many2many_tags" options="{'no_create': True}"/>
-                        <field name="branch_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <group name="period">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group name="filters">
+                            <field name="asset_category_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="branch_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
                     </group>
                     <footer>
                         <button name="action_print_report" string="Print PDF" type="object" class="btn-primary" data-hotkey="q"/>

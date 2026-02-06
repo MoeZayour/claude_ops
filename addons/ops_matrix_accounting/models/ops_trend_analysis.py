@@ -708,15 +708,210 @@ class OpsTrendAnalysis(models.TransientModel):
         }
 
     def action_export_excel(self):
-        """Export trend analysis to Excel."""
+        """Export trend analysis to Excel with full variance breakdown."""
         self.ensure_one()
-        # TODO: Implement Excel export
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Excel Export'),
-                'message': _('Excel export feature coming soon.'),
-                'type': 'info',
+        import io
+        import base64
+        try:
+            import xlsxwriter
+        except ImportError:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Missing Library'),
+                    'message': _('xlsxwriter is required for Excel export. Contact your administrator.'),
+                    'type': 'warning',
+                }
             }
+
+        if not self.trend_data or not self.trend_data.get('items'):
+            raise UserError(_('No trend data available. Please generate the report first.'))
+
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        worksheet = workbook.add_worksheet('Trend Analysis')
+
+        # Formats
+        header_fmt = workbook.add_format({
+            'bold': True, 'bg_color': '#1e293b', 'font_color': 'white',
+            'border': 1, 'align': 'center', 'valign': 'vcenter',
+        })
+        number_fmt = workbook.add_format({'num_format': '#,##0.00', 'align': 'right', 'border': 1})
+        pct_fmt = workbook.add_format({'num_format': '0.0%', 'align': 'right', 'border': 1})
+        text_fmt = workbook.add_format({'border': 1, 'align': 'left'})
+        title_fmt = workbook.add_format({'bold': True, 'font_size': 14})
+        subtitle_fmt = workbook.add_format({'italic': True, 'font_size': 10, 'font_color': '#666666'})
+        up_fmt = workbook.add_format({
+            'num_format': '#,##0.00', 'align': 'right', 'border': 1,
+            'font_color': '#16a34a',
+        })
+        down_fmt = workbook.add_format({
+            'num_format': '#,##0.00', 'align': 'right', 'border': 1,
+            'font_color': '#dc2626',
+        })
+        up_pct_fmt = workbook.add_format({
+            'num_format': '0.0%', 'align': 'right', 'border': 1,
+            'font_color': '#16a34a',
+        })
+        down_pct_fmt = workbook.add_format({
+            'num_format': '0.0%', 'align': 'right', 'border': 1,
+            'font_color': '#dc2626',
+        })
+
+        data = self.trend_data
+
+        # Title block
+        comparison_label = data.get('comparison_label', self.comparison_type)
+        worksheet.write(0, 0, f'Trend Analysis: {comparison_label}', title_fmt)
+        worksheet.write(1, 0, f'Company: {data.get("company", self.company_id.name)}', subtitle_fmt)
+
+        current_period = data.get('current_period', {})
+        comp_period = data.get('comparison_period', {})
+        worksheet.write(2, 0, f'Current Period: {current_period.get("start", "")} to {current_period.get("end", "")}', subtitle_fmt)
+        worksheet.write(3, 0, f'Comparison Period: {comp_period.get("start", "")} to {comp_period.get("end", "")}', subtitle_fmt)
+        worksheet.write(4, 0, f'Generated: {fields.Datetime.now().strftime("%Y-%m-%d %H:%M")}', subtitle_fmt)
+        worksheet.write(5, 0, f'Data Source: {"Snapshots" if self.data_source == "snapshot" else "Real-time"}', subtitle_fmt)
+
+        # Determine which metrics to show based on wizard flags
+        metric_defs = []
+        if self.show_revenue:
+            metric_defs.append(('revenue', 'Revenue'))
+        if self.show_cogs:
+            metric_defs.append(('cogs', 'COGS'))
+        if self.show_gross_profit:
+            metric_defs.append(('gross_profit', 'Gross Profit'))
+        if self.show_operating_expense:
+            metric_defs.append(('operating_expense', 'Operating Expense'))
+        if self.show_ebitda:
+            metric_defs.append(('ebitda', 'EBITDA'))
+        if self.show_net_income:
+            metric_defs.append(('net_income', 'Net Income'))
+
+        margin_defs = []
+        if self.show_margins:
+            margin_defs = [
+                ('gross_margin_pct', 'Gross Margin %'),
+                ('net_margin_pct', 'Net Margin %'),
+            ]
+
+        # Build headers: Dimension | Metric Current | Metric Comparison | Variance | Variance % | ...
+        row = 7
+        headers = ['Dimension']
+        for _key, label in metric_defs:
+            headers.extend([
+                f'{label} (Current)',
+                f'{label} (Comparison)',
+                f'{label} (Variance)',
+                f'{label} (Change %)',
+            ])
+        for _key, label in margin_defs:
+            headers.extend([
+                f'{label} (Current)',
+                f'{label} (Comparison)',
+                f'{label} (Change pp)',
+            ])
+
+        for col, header in enumerate(headers):
+            worksheet.write(row, col, header, header_fmt)
+
+        # Write data rows
+        for item in data.get('items', []):
+            row += 1
+            # Determine dimension label
+            dim_label = item.get('dimension_name', '')
+            if not dim_label and item.get('branch_name'):
+                dim_label = f"{item.get('branch_name', '')} / {item.get('bu_name', '')}"
+            if not dim_label:
+                dim_label = item.get('key', 'Total')
+
+            col = 0
+            worksheet.write(row, col, dim_label, text_fmt)
+            col += 1
+
+            current = item.get('current', {})
+            comparison = item.get('comparison', {})
+            variance = item.get('variance', {})
+
+            # Monetary metrics
+            for metric_key, _label in metric_defs:
+                curr_val = current.get(metric_key, 0) or 0
+                comp_val = comparison.get(metric_key, 0) or 0
+                var_info = variance.get(metric_key, {})
+                abs_var = var_info.get('absolute', 0) or 0
+                pct_var = (var_info.get('percentage', 0) or 0) / 100.0  # Convert to decimal for Excel %
+                direction = var_info.get('direction', 'flat')
+
+                var_fmt = up_fmt if direction == 'up' else (down_fmt if direction == 'down' else number_fmt)
+                var_pct = up_pct_fmt if direction == 'up' else (down_pct_fmt if direction == 'down' else pct_fmt)
+
+                worksheet.write(row, col, curr_val, number_fmt)
+                worksheet.write(row, col + 1, comp_val, number_fmt)
+                worksheet.write(row, col + 2, abs_var, var_fmt)
+                worksheet.write(row, col + 3, pct_var, var_pct)
+                col += 4
+
+            # Margin metrics (percentage points, not monetary)
+            for metric_key, _label in margin_defs:
+                curr_val = current.get(metric_key, 0) or 0
+                comp_val = comparison.get(metric_key, 0) or 0
+                var_info = variance.get(metric_key, {})
+                pp_change = var_info.get('absolute', 0) or 0
+                direction = var_info.get('direction', 'flat')
+
+                pp_fmt = up_fmt if direction == 'up' else (down_fmt if direction == 'down' else number_fmt)
+
+                worksheet.write(row, col, curr_val / 100.0, pct_fmt)
+                worksheet.write(row, col + 1, comp_val / 100.0, pct_fmt)
+                worksheet.write(row, col + 2, pp_change, pp_fmt)
+                col += 3
+
+        # Summary section
+        summary = data.get('summary', {})
+        if summary:
+            row += 2
+            summary_title_fmt = workbook.add_format({'bold': True, 'font_size': 12, 'bottom': 1})
+            worksheet.write(row, 0, 'Summary', summary_title_fmt)
+            row += 1
+            bold_fmt = workbook.add_format({'bold': True})
+            worksheet.write(row, 0, 'Total Current Revenue:', bold_fmt)
+            worksheet.write(row, 1, summary.get('total_current_revenue', 0), number_fmt)
+            row += 1
+            worksheet.write(row, 0, 'Total Comparison Revenue:', bold_fmt)
+            worksheet.write(row, 1, summary.get('total_comparison_revenue', 0), number_fmt)
+            row += 1
+            worksheet.write(row, 0, 'Revenue Growth:', bold_fmt)
+            worksheet.write(row, 1, (summary.get('revenue_growth_pct', 0) or 0) / 100.0, pct_fmt)
+            row += 1
+            worksheet.write(row, 0, 'Net Income Growth:', bold_fmt)
+            worksheet.write(row, 1, (summary.get('net_income_growth_pct', 0) or 0) / 100.0, pct_fmt)
+            row += 1
+            worksheet.write(row, 0, 'Items Analyzed:', bold_fmt)
+            worksheet.write(row, 1, summary.get('item_count', 0))
+
+        # Auto-fit columns
+        worksheet.set_column(0, 0, 28)
+        num_cols = len(headers)
+        if num_cols > 1:
+            worksheet.set_column(1, num_cols - 1, 20)
+
+        workbook.close()
+
+        # Create attachment for download
+        file_data = base64.b64encode(output.getvalue())
+        safe_name = (self.company_id.name or 'report').replace(' ', '_')
+        filename = f'trend_analysis_{safe_name}_{fields.Date.today()}.xlsx'
+
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,
+            'datas': file_data,
+            'res_model': self._name,
+            'res_id': self.id,
+            'type': 'binary',
+        })
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'self',
         }

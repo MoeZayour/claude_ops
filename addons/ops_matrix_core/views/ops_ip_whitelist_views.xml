@@ -34,7 +34,7 @@
                         <button name="action_view_blocked_attempts" type="object" class="oe_stat_button" icon="fa-ban">
                             <field name="blocked_count" widget="statinfo" string="Blocked"/>
                         </button>
-                        <button type="object" class="oe_stat_button" icon="fa-check">
+                        <button class="oe_stat_button" icon="fa-check" disabled="1">
                             <field name="allowed_count" widget="statinfo" string="Allowed"/>
                         </button>
                     </div>

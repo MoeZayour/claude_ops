@@ -268,26 +268,31 @@ class OpsBudgetLine(models.Model):
                  'budget_id.ops_branch_id', 'budget_id.ops_business_unit_id')
     def _compute_practical_amount(self):
         """
-        Compute actual spend from posted account moves using SQL for performance.
+        Compute actual spend from posted account moves using batched SQL.
 
         Practical = Sum of debit - credit from posted vendor bills/refunds/entries
         matching the budget's branch, BU, account, and date range.
+
+        Lines are grouped by their parent budget to minimise SQL round-trips.
         """
+        # Partition lines by budget so we can batch all accounts in a single query
+        budget_lines = {}
         for line in self:
-            if not line.general_account_id or not line.budget_id:
+            if not line.general_account_id or not line.budget_id or not line.budget_id.ops_branch_id:
                 line.practical_amount = 0.0
                 continue
+            budget_lines.setdefault(line.budget_id.id, []).append(line)
 
-            if not line.budget_id.ops_branch_id:
-                line.practical_amount = 0.0
-                continue
+        for budget_id, lines in budget_lines.items():
+            budget = lines[0].budget_id
+            account_ids = [l.general_account_id.id for l in lines]
 
-            # Use raw SQL for performance on large datasets
             query = """
-                SELECT COALESCE(SUM(aml.debit - aml.credit), 0)
+                SELECT aml.account_id,
+                       COALESCE(SUM(aml.debit - aml.credit), 0)
                 FROM account_move_line aml
                 JOIN account_move am ON aml.move_id = am.id
-                WHERE aml.account_id = %s
+                WHERE aml.account_id IN %s
                   AND aml.ops_business_unit_id = %s
                   AND aml.ops_branch_id = %s
                   AND aml.date >= %s
@@ -295,30 +300,32 @@ class OpsBudgetLine(models.Model):
                   AND am.state = 'posted'
                   AND am.move_type IN ('in_invoice', 'in_refund', 'entry')
                   AND am.company_id = %s
+                GROUP BY aml.account_id
             """
-
             params = (
-                line.general_account_id.id,
-                line.budget_id.ops_business_unit_id.id,
-                line.budget_id.ops_branch_id.id,
-                line.budget_id.date_from,
-                line.budget_id.date_to,
-                line.budget_id.company_id.id,
+                tuple(account_ids),
+                budget.ops_business_unit_id.id,
+                budget.ops_branch_id.id,
+                budget.date_from,
+                budget.date_to,
+                budget.company_id.id,
             )
 
             try:
                 self.env.cr.execute(query, params)
-                result = self.env.cr.fetchone()
-                line.practical_amount = result[0] if result and result[0] else 0.0
+                results = {row[0]: row[1] for row in self.env.cr.fetchall()}
             except Exception as e:
-                _logger.error("Budget practical amount calculation error: %s", e)
-                line.practical_amount = 0.0
+                _logger.error("Budget practical amount batch calculation error: %s", e)
+                results = {}
+
+            for line in lines:
+                line.practical_amount = results.get(line.general_account_id.id, 0.0)
 
     @api.depends('general_account_id', 'budget_id.date_from', 'budget_id.date_to',
                  'budget_id.ops_branch_id', 'budget_id.ops_business_unit_id')
     def _compute_committed_amount(self):
         """
-        Compute committed amount from purchase orders using SQL for performance.
+        Compute committed amount from purchase orders using batched SQL.
 
         Committed = PO lines (confirmed/done) not yet fully invoiced, matching:
         - Same branch as budget
@@ -326,22 +333,27 @@ class OpsBudgetLine(models.Model):
         - Product expense account matches budget line account
 
         Formula: price_subtotal - (qty_invoiced * price_unit) gives the uninvoiced portion.
+
+        Lines are grouped by their parent budget to minimise SQL round-trips.
         """
+        # Partition lines by budget for batch processing
+        budget_lines = {}
         for line in self:
-            if not line.general_account_id or not line.budget_id:
+            if not line.general_account_id or not line.budget_id or not line.budget_id.ops_branch_id:
                 line.committed_amount = 0.0
                 continue
+            budget_lines.setdefault(line.budget_id.id, []).append(line)
 
-            if not line.budget_id.ops_branch_id:
-                line.committed_amount = 0.0
-                continue
+        for budget_id, lines in budget_lines.items():
+            budget = lines[0].budget_id
+            account_ids = [l.general_account_id.id for l in lines]
 
-            # Use raw SQL for performance on large datasets
-            # Join through product -> product_template -> product_category to get expense account
+            # Batch query: GROUP BY expense account to get committed per account
             query = """
-                SELECT COALESCE(SUM(
-                    pol.price_subtotal - COALESCE(pol.qty_invoiced * pol.price_unit, 0)
-                ), 0)
+                SELECT pc.property_account_expense_categ_id,
+                       COALESCE(SUM(
+                           pol.price_subtotal - COALESCE(pol.qty_invoiced * pol.price_unit, 0)
+                       ), 0)
                 FROM purchase_order_line pol
                 JOIN purchase_order po ON pol.order_id = po.id
                 JOIN product_product pp ON pol.product_id = pp.id
@@ -352,23 +364,25 @@ class OpsBudgetLine(models.Model):
                   AND po.ops_branch_id = %s
                   AND po.date_order >= %s
                   AND po.date_order <= %s
-                  AND pc.property_account_expense_categ_id = %s
+                  AND pc.property_account_expense_categ_id IN %s
                   AND po.company_id = %s
+                GROUP BY pc.property_account_expense_categ_id
             """
-
             params = (
-                line.budget_id.ops_business_unit_id.id,
-                line.budget_id.ops_branch_id.id,
-                line.budget_id.date_from,
-                line.budget_id.date_to,
-                line.general_account_id.id,
-                line.budget_id.company_id.id,
+                budget.ops_business_unit_id.id,
+                budget.ops_branch_id.id,
+                budget.date_from,
+                budget.date_to,
+                tuple(account_ids),
+                budget.company_id.id,
             )
 
             try:
                 self.env.cr.execute(query, params)
-                result = self.env.cr.fetchone()
-                line.committed_amount = result[0] if result and result[0] else 0.0
+                results = {row[0]: row[1] for row in self.env.cr.fetchall()}
             except Exception as e:
-                _logger.error("Budget committed amount calculation error: %s", e)
-                line.committed_amount = 0.0
+                _logger.error("Budget committed amount batch calculation error: %s", e)
+                results = {}
+
+            for line in lines:
+                line.committed_amount = results.get(line.general_account_id.id, 0.0)

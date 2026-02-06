@@ -1,4 +1,8 @@
+import logging
+
 from odoo import models, fields, api
+
+_logger = logging.getLogger(__name__)
 
 class OpsProductCategory(models.Model):
     _inherit = 'product.category'
@@ -42,8 +46,8 @@ class OpsProductCategory(models.Model):
                             ('account_type', '=', fallback_type)
                         ], limit=1)
                         return account.id if account else False
-                    except Exception:
-                        pass
+                    except (ValueError, KeyError, AttributeError) as e:
+                        _logger.debug("Account lookup failed for type %s: %s", fallback_type, e)
                 return False
 
             # 1. Income Account (Sales)
@@ -71,9 +75,8 @@ class OpsProductCategory(models.Model):
                 output_account = find_account(fallback_type='asset_current')
                 defaults['property_stock_account_output_categ_id'] = output_account
 
-        except Exception:
-            # Gracefully fall back if account lookup fails
-            pass
+        except (ValueError, KeyError, AttributeError) as e:
+            _logger.warning("Product category defaults computation failed: %s", e)
 
         return defaults
 

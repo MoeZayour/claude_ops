@@ -61,6 +61,7 @@
                             invisible="state != 'draft'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,running,completed"/>
                 </header>
+                <sheet>
                     <!-- Critical Failures Alert -->
                     <div class="alert alert-danger" role="alert" invisible="failed_count == 0">
                         <strong>Critical:</strong>
@@ -150,6 +151,7 @@
                             <field name="notes" placeholder="Add notes about this compliance check..."/>
                         </page>
                     </notebook>
+                </sheet>
                 <chatter/>
             </form>
         </field>

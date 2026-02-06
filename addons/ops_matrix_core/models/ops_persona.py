@@ -174,51 +174,6 @@ class OpsPersona(models.Model):
     )
     
     # ============================================
-    # LEGACY FIELDS FOR BACKWARD COMPATIBILITY
-    # ============================================
-    # These fields map to res.company for compatibility with existing code
-    branch_id = fields.Many2one(
-        'res.company',
-        string='Primary Branch (Legacy)',
-        compute='_compute_legacy_branch',
-        store=True,
-        readonly=False,
-        tracking=True,
-        help="Legacy field - maps to default_branch_id.company_id"
-    )
-    
-    primary_branch_id = fields.Many2one(
-        'res.company',
-        string='Primary Branch (Access)',
-        related='branch_id',
-        store=True,
-        readonly=False,
-        help="Primary company/branch for access control rules"
-    )
-    
-    allowed_branch_ids = fields.Many2many(
-        'res.company',
-        'persona_branch_allowed_rel',
-        'persona_id',
-        'branch_id',
-        string='Allowed Branches (Legacy)',
-        compute='_compute_legacy_allowed_branches',
-        store=True,
-        readonly=False
-    )
-    
-    allowed_business_unit_ids = fields.Many2many(
-        'ops.business.unit',
-        'persona_bu_allowed_rel',
-        'persona_id',
-        'unit_id',
-        string='Allowed Business Units (Legacy)',
-        compute='_compute_legacy_allowed_bus',
-        store=True,
-        readonly=False
-    )
-    
-    # ============================================
     # ROLE INDICATORS AND AUTHORITIES
     # ============================================
     is_branch_manager = fields.Boolean(
@@ -685,35 +640,18 @@ class OpsPersona(models.Model):
             
             persona.is_active_today = persona.active and active_by_date
     
-    @api.depends('default_branch_id', 'default_branch_id.company_id')
-    def _compute_legacy_branch(self):
-        """Compute legacy branch_id from default_branch_id."""
-        for persona in self:
-            if persona.default_branch_id:
-                persona.branch_id = persona.default_branch_id.company_id
-            elif persona.branch_ids:
-                persona.branch_id = persona.branch_ids[0].company_id
-            else:
-                persona.branch_id = False
-    
-    @api.depends('branch_ids', 'branch_ids.company_id')
-    def _compute_legacy_allowed_branches(self):
-        """Compute legacy allowed_branch_ids from branch_ids."""
-        for persona in self:
-            persona.allowed_branch_ids = [(6, 0, persona.branch_ids.mapped('company_id').ids)]
-    
-    @api.depends('business_unit_ids')
-    def _compute_legacy_allowed_bus(self):
-        """Compute legacy allowed business units."""
-        for persona in self:
-            persona.allowed_business_unit_ids = [(6, 0, persona.business_unit_ids.ids)]
-    
     def _compute_user_count(self):
         """Compute count of users assigned to this persona."""
+        if not self:
+            return
+        user_data = self.env['res.users'].read_group(
+            [('persona_id', 'in', self.ids)],
+            ['persona_id'],
+            ['persona_id']
+        )
+        mapped_data = {d['persona_id'][0]: d['persona_id_count'] for d in user_data if d['persona_id']}
         for record in self:
-            record.user_count = self.env['res.users'].search_count([
-                ('persona_id', '=', record.id)
-            ])
+            record.user_count = mapped_data.get(record.id, 0)
     
     # ============================================
     # CONSTRAINT METHODS

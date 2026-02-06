@@ -6,11 +6,15 @@
         <field name="arch" type="xml">
             <form string="Apply Report Template">
                 <group name="outer_group_1">
-                    <field name="template_id"/>
-                    <field name="date_from"/>
-                    <field name="date_to"/>
-                    <field name="branch_id"/>
-                    <field name="business_unit_id"/>
+                    <group name="template_selection">
+                        <field name="template_id"/>
+                        <field name="branch_id"/>
+                        <field name="business_unit_id"/>
+                    </group>
+                    <group name="date_range">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
                 </group>
                 <footer>
                     <button name="action_apply_template" type="object" 
