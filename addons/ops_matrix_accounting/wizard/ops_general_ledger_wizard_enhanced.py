@@ -1783,7 +1783,10 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
 
         xml_id = report_xml_ids.get(self.report_type, report_xml_ids['gl'])
         report = self.env.ref(xml_id)
-        return report.report_action(self, data=data)
+        # Pass only minimal data to avoid oversized URL (full hierarchy in options
+        # can exceed nginx header limits). Templates call doc._get_report_data()
+        # directly, so the parser fetches fresh data from the wizard record.
+        return report.report_action(self, data={'report_type': self.report_type})
 
     # ============================================
     # ACTION METHODS
