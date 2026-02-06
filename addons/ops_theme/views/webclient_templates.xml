@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+
     <!-- ===================================================================== -->
-    <!-- OPS THEME v7.0 - Webclient Templates (Minimal)                       -->
+    <!-- FAVICON - Override in base layout (affects backend + frontend)        -->
     <!-- ===================================================================== -->
-    <!-- 
-        NOTE: Color mode initialization is handled via JavaScript in 
-        theme_loader.js to avoid XPath issues with Odoo 19's template structure.
-        This follows the "minimal override" philosophy.
-    -->
+    <template id="ops_favicon_backend" inherit_id="web.layout" name="OPS Favicon Backend" priority="100">
+        <xpath expr="//head/link[@rel='shortcut icon']" position="replace">
+            <link type="image/x-icon" rel="shortcut icon" href="/ops_theme/favicon"/>
+            <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
+        </xpath>
+        <xpath expr="//head/title" position="after">
+            <!-- Dynamic CSS Variables from Settings -->
+            <link rel="stylesheet" type="text/css" href="/ops_theme/variables.css"/>
+        </xpath>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- FRONTEND ASSETS - CSS vars + favicon for login/portal pages          -->
+    <!-- ===================================================================== -->
+    <template id="ops_favicon_frontend" inherit_id="web.frontend_layout" name="OPS Favicon Frontend" priority="100">
+        <xpath expr="//head/meta[last()]" position="after">
+            <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
+            <!-- Dynamic CSS Variables from Settings -->
+            <link rel="stylesheet" type="text/css" href="/ops_theme/variables.css"/>
+        </xpath>
+    </template>
+
 </odoo>

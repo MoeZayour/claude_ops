@@ -17,11 +17,20 @@
                     <div class="ops-login-brand"
                          t-attf-style="background: linear-gradient(135deg, #{company.ops_primary_color or '#1e293b'} 0%, #0f172a 100%);">
 
-                        <!-- Company Logo -->
-                        <img t-attf-src="/web/binary/company_logo?company={{ company.id }}"
-                             class="ops-login-logo"
-                             alt="Company Logo"
-                             onerror="this.style.display='none'"/>
+                        <!-- Company Logo (controlled by settings) -->
+                        <t t-if="company.ops_login_show_logo">
+                            <img t-attf-src="/web/binary/company_logo?company={{ company.id }}"
+                                 class="ops-login-logo"
+                                 alt="Company Logo"
+                                 onerror="this.style.display='none'"/>
+                        </t>
+
+                        <!-- Background Image Overlay -->
+                        <t t-if="company.ops_login_background">
+                            <div class="ops-login-bg-overlay"
+                                 t-attf-style="background-image: url('/web/image/res.company/{{ company.id }}/ops_login_background'); background-size: cover; background-position: center;">
+                            </div>
+                        </t>
 
                         <!-- Welcome Container -->
                         <div class="ops-login-welcome">
@@ -114,6 +123,23 @@
                     color: #fff;
                     position: relative;
                     overflow: hidden;
+                }
+                .ops-login-bg-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    opacity: 0.3;
+                    z-index: 0;
+                }
+                .ops-login-welcome {
+                    position: relative;
+                    z-index: 1;
+                }
+                .ops-login-logo {
+                    position: relative;
+                    z-index: 1;
                 }
                 .ops-login-form-panel {
                     flex: 1;
