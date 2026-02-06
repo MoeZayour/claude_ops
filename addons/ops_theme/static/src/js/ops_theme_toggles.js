@@ -1,9 +1,14 @@
 /** @odoo-module **/
 /**
- * OPS Theme - User Preference Toggles (v8.0.0 - Controller-Based)
- * ================================================================
- * Uses server-side controller endpoints with sudo() for reliable persistence.
- * Previous approach using ORM.write was silently blocked by SELF_WRITEABLE_FIELDS.
+ * OPS Theme - User Preference Toggles (v9.0.0)
+ * ==============================================
+ * Professional state-aware user menu items for color mode and chatter position.
+ *
+ * Architecture:
+ * - Reads current state from cookie/session (fastest)
+ * - Falls back to company defaults from session_info (for new users)
+ * - Saves to res.users via sudo controller endpoint
+ * - Applies immediately via DOM + cookie, then reloads
  */
 
 import { registry } from "@web/core/registry";
@@ -13,36 +18,72 @@ import { cookie } from "@web/core/browser/cookie";
 import { session } from "@web/session";
 
 // =============================================================================
+// HELPERS
+// =============================================================================
+
+/**
+ * Resolve color mode: user pref > company default > 'light'
+ */
+function resolveColorMode() {
+    // 1. Cookie is set by Odoo's native dark mode system
+    const fromCookie = cookie.get("color_scheme");
+    if (fromCookie === 'dark' || fromCookie === 'light') {
+        return fromCookie;
+    }
+    // 2. Session preference (set by ir_http.session_info)
+    if (session.ops_color_mode === 'dark' || session.ops_color_mode === 'light') {
+        return session.ops_color_mode;
+    }
+    // 3. Company default (injected by ir_http.session_info)
+    if (session.ops_default_color_mode === 'dark') {
+        return 'dark';
+    }
+    return 'light';
+}
+
+/**
+ * Resolve chatter position: user pref > company default > 'bottom'
+ */
+function resolveChatterPosition() {
+    // 1. Session preference
+    if (session.ops_chatter_position === 'side' || session.ops_chatter_position === 'bottom') {
+        return session.ops_chatter_position;
+    }
+    // 2. Company default
+    if (session.ops_default_chatter_position === 'side') {
+        return 'side';
+    }
+    return 'bottom';
+}
+
+// =============================================================================
 // COLOR MODE TOGGLE
 // =============================================================================
 
 function colorModeToggleItem(env) {
-    // Read current mode from cookie (most reliable source on initial load)
-    const currentScheme = cookie.get("color_scheme") || "light";
-    const isDark = currentScheme === 'dark';
+    const currentMode = resolveColorMode();
+    const isDark = currentMode === 'dark';
 
     return {
         type: "item",
         id: "ops_color_mode",
-        description: isDark ? _t("☀️ Switch to Light Mode") : _t("🌙 Switch to Dark Mode"),
-        callback: async function() {
+        description: isDark
+            ? _t("Color Mode: Dark  \u2192 Switch to Light")
+            : _t("Color Mode: Light  \u2192 Switch to Dark"),
+        callback: async () => {
             const newMode = isDark ? 'light' : 'dark';
-            
+
+            // 1. Set cookie immediately (Odoo reads this for CSS bundle)
+            cookie.set("color_scheme", newMode);
+
+            // 2. Persist to database via controller
             try {
-                // Call controller endpoint (uses sudo() on server side)
-                const result = await rpc("/ops_theme/toggle_color_mode", { mode: newMode });
-                
-                if (result && result.success) {
-                    // Set cookie so Odoo loads correct CSS bundle on reload
-                    cookie.set("color_scheme", result.mode);
-                }
-            } catch (error) {
-                // Even if RPC fails, set cookie and reload
-                cookie.set("color_scheme", newMode);
-                console.warn("[OPS Theme] Color mode RPC failed, cookie set anyway:", error);
+                await rpc("/ops_theme/toggle_color_mode", { mode: newMode });
+            } catch (err) {
+                console.warn("[OPS Theme] Color mode save failed:", err);
             }
-            
-            // ALWAYS reload to apply the change
+
+            // 3. Reload to apply CSS bundle switch
             window.location.reload();
         },
         sequence: 5,
@@ -54,23 +95,26 @@ function colorModeToggleItem(env) {
 // =============================================================================
 
 function chatterPositionToggleItem(env) {
-    // Read from session (set by ir_http.session_info)
-    const currentPosition = session.ops_chatter_position || 'bottom';
+    const currentPosition = resolveChatterPosition();
     const isBottom = currentPosition === 'bottom';
 
     return {
         type: "item",
         id: "ops_chatter_position",
-        description: isBottom ? _t("📌 Chatter: Move to Side") : _t("📌 Chatter: Move to Bottom"),
-        callback: async function() {
+        description: isBottom
+            ? _t("Chatter: Bottom  \u2192 Move to Side")
+            : _t("Chatter: Side  \u2192 Move to Bottom"),
+        callback: async () => {
+            const newPosition = isBottom ? 'side' : 'bottom';
+
+            // Persist to database via controller
             try {
-                // Call controller endpoint (uses sudo() on server side)
-                await rpc("/ops_theme/toggle_chatter", {});
-            } catch (error) {
-                console.warn("[OPS Theme] Chatter toggle RPC failed:", error);
+                await rpc("/ops_theme/toggle_chatter", { position: newPosition });
+            } catch (err) {
+                console.warn("[OPS Theme] Chatter toggle save failed:", err);
             }
-            
-            // ALWAYS reload to apply the change
+
+            // Reload to apply layout change
             window.location.reload();
         },
         sequence: 10,
@@ -84,5 +128,3 @@ function chatterPositionToggleItem(env) {
 registry.category("user_menuitems")
     .add("ops_color_mode", colorModeToggleItem, { sequence: 5 })
     .add("ops_chatter_position", chatterPositionToggleItem, { sequence: 10 });
-
-console.log('[OPS Theme v8.0.0] Controller-based toggles loaded ✓');

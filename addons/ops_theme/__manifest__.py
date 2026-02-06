@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.8.0.0',
+    'version': '19.0.8.1.0',
     'category': 'Themes/Backend',
     'summary': 'Minimal OPS Framework theme with clean debranding',
     'description': """
@@ -76,6 +76,7 @@ Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy
             'ops_theme/static/src/js/debranding.js',
             'ops_theme/static/src/js/ops_theme_toggles.js',
             'ops_theme/static/src/js/chatter_position_patch.js',
+            'ops_theme/static/src/js/theme_preview.js',
 
             # 3. XML templates - User menu with theme toggles
             'ops_theme/static/src/xml/user_menu.xml',

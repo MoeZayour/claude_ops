@@ -100,6 +100,18 @@
                                 confirm="Reset all colors to defaults?"/>
                       </td>
                     </tr>
+                    <tr>
+                      <td colspan="2" class="text-center pt-1">
+                        <a class="btn btn-sm btn-outline-primary ops-preview-btn"
+                           onclick="if(window.opsPreviewTheme) window.opsPreviewTheme()">
+                          <i class="fa fa-eye me-1"/>Preview Theme
+                        </a>
+                        <a class="btn btn-sm btn-outline-secondary ms-1 ops-reset-preview-btn"
+                           onclick="if(window.opsResetPreview) window.opsResetPreview()">
+                          <i class="fa fa-undo me-1"/>Reset Preview
+                        </a>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

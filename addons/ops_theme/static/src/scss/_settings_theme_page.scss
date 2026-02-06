@@ -81,6 +81,39 @@ app[name="ops_theme"] {
     }
 }
 
+    // --- Preview Buttons ---
+    .ops-preview-btn,
+    .ops-reset-preview-btn {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 12px;
+
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        }
+    }
+
+    .ops-preview-btn:hover {
+        background-color: var(--ops-secondary, #3b82f6);
+        border-color: var(--ops-secondary, #3b82f6);
+        color: #ffffff;
+    }
+}
+
+// =============================================================================
+// DARK MODE TRANSITION — Smooth color mode switch
+// =============================================================================
+// Applied globally for a smooth transition when dark/light mode toggles.
+// Only affects background-color and color — no layout properties.
+
+html,
+html body,
+html .o_action_manager,
+html .o_main_navbar {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 // --- Dark Mode Adjustments ---
 html[data-color-mode="dark"] {
     app[name="ops_theme"] {

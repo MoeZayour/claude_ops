@@ -262,6 +262,31 @@ header.o_navbar {{
     box-shadow: {shadow_map.get(card_shadow, shadow_map['medium'])} !important;
     border-radius: {radius_map.get(border_radius, radius_map['rounded'])} !important;
 }}
+
+/* ===================================================================
+   DARK MODE — Override light-mode dropdown colors
+   =================================================================== */
+html[data-color-mode="dark"] .o_main_navbar .dropdown-menu,
+html[data-color-mode="dark"] .o_navbar_apps_menu .dropdown-menu,
+html[data-color-mode="dark"] .o_menu_sections .dropdown-menu,
+html[data-color-mode="dark"] .o_user_menu .dropdown-menu,
+html[data-color-mode="dark"] .o_menu_systray .dropdown-menu {{
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}}
+
+html[data-color-mode="dark"] .o_main_navbar .dropdown-item,
+html[data-color-mode="dark"] .o_navbar_apps_menu .dropdown-item,
+html[data-color-mode="dark"] .o_menu_sections .dropdown-item,
+html[data-color-mode="dark"] .o_user_menu .dropdown-item,
+html[data-color-mode="dark"] .o_menu_systray .dropdown-item {{
+    color: #e2e8f0 !important;
+}}
+
+html[data-color-mode="dark"] .o_main_navbar .dropdown-item:hover,
+html[data-color-mode="dark"] .o_user_menu .dropdown-item:hover {{
+    background-color: #334155 !important;
+}}
 """
         return request.make_response(
             css,
