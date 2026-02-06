@@ -17,6 +17,9 @@ Provides shared utility functions for all OPS corporate reports:
 from odoo import models, api
 from datetime import datetime
 import colorsys
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class OpsReportHelpers(models.AbstractModel):
@@ -24,6 +27,83 @@ class OpsReportHelpers(models.AbstractModel):
 
     _name = 'ops.report.helpers'
     _description = 'OPS Report Helper Functions'
+
+    # =========================================================================
+    # AMOUNT TO WORDS
+    # =========================================================================
+
+    @api.model
+    def amount_to_words(self, amount, currency=None, lang='en'):
+        """Convert numeric amount to words with currency.
+
+        Args:
+            amount: Numeric amount
+            currency: res.currency record (optional)
+            lang: 'en', 'ar', or 'both'
+
+        Returns:
+            dict with 'en' and/or 'ar' keys
+        """
+        result = {}
+        currency_name = currency.name if currency else 'Units'
+
+        currency_map = {
+            'QAR': {'main': 'Qatari Riyal', 'main_plural': 'Qatari Riyals', 'sub': 'Dirham', 'sub_plural': 'Dirhams'},
+            'AED': {'main': 'UAE Dirham', 'main_plural': 'UAE Dirhams', 'sub': 'Fil', 'sub_plural': 'Fils'},
+            'SAR': {'main': 'Saudi Riyal', 'main_plural': 'Saudi Riyals', 'sub': 'Halala', 'sub_plural': 'Halalas'},
+            'USD': {'main': 'US Dollar', 'main_plural': 'US Dollars', 'sub': 'Cent', 'sub_plural': 'Cents'},
+            'EUR': {'main': 'Euro', 'main_plural': 'Euros', 'sub': 'Cent', 'sub_plural': 'Cents'},
+            'GBP': {'main': 'Pound Sterling', 'main_plural': 'Pounds Sterling', 'sub': 'Penny', 'sub_plural': 'Pence'},
+        }
+        curr_info = currency_map.get(currency_name, {
+            'main': currency_name, 'main_plural': currency_name,
+            'sub': 'Cent', 'sub_plural': 'Cents',
+        })
+
+        ar_currency_map = {
+            'QAR': {'main': 'ريال قطري', 'sub': 'درهم'},
+            'AED': {'main': 'درهم إماراتي', 'sub': 'فلس'},
+            'SAR': {'main': 'ريال سعودي', 'sub': 'هللة'},
+            'USD': {'main': 'دولار أمريكي', 'sub': 'سنت'},
+            'EUR': {'main': 'يورو', 'sub': 'سنت'},
+        }
+
+        main_amount = int(amount)
+        decimal_amount = int(round((amount - main_amount) * 100))
+
+        try:
+            from num2words import num2words as n2w
+
+            if lang in ('en', 'both'):
+                main_words = n2w(main_amount, lang='en').title()
+                main_unit = curr_info['main'] if main_amount == 1 else curr_info['main_plural']
+                if decimal_amount > 0:
+                    dec_words = n2w(decimal_amount, lang='en').title()
+                    sub_unit = curr_info['sub'] if decimal_amount == 1 else curr_info['sub_plural']
+                    result['en'] = f"{main_words} {main_unit} and {dec_words} {sub_unit}"
+                else:
+                    result['en'] = f"{main_words} {main_unit}"
+
+            if lang in ('ar', 'both'):
+                try:
+                    main_words_ar = n2w(main_amount, lang='ar')
+                    ar_curr = ar_currency_map.get(currency_name, {'main': currency_name, 'sub': ''})
+                    if decimal_amount > 0:
+                        dec_words_ar = n2w(decimal_amount, lang='ar')
+                        result['ar'] = f"{main_words_ar} {ar_curr['main']} و{dec_words_ar} {ar_curr['sub']}"
+                    else:
+                        result['ar'] = f"{main_words_ar} {ar_curr['main']}"
+                except Exception as e:
+                    _logger.warning("Arabic num2words failed: %s", e)
+
+        except ImportError:
+            _logger.warning("num2words not installed, falling back to numeric display")
+            result['en'] = f"{amount:,.2f} {currency_name}"
+        except Exception as e:
+            _logger.error("amount_to_words error: %s", e)
+            result['en'] = f"{amount:,.2f}"
+
+        return result
 
     # =========================================================================
     # COLOR SCHEME GENERATION

@@ -106,6 +106,7 @@
         "report/ops_treasury_report_templates.xml",   # Treasury Intelligence Reports
         "report/ops_daily_report_templates.xml",        # Daily Cash/Bank/Day Book Reports
         "report/ops_report_invoice.xml",                 # OPS Branded Invoice / Credit Note
+        "report/ops_report_payment.xml",                 # OPS Branded Payment Receipt / Voucher
         # report/ops_balance_sheet_template.xml removed - wizard deprecated in favor of Matrix Financial Intelligence
 
         # Menus

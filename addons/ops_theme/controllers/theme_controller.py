@@ -58,6 +58,58 @@ class OPSThemeController(http.Controller):
         return self.favicon(**kwargs)
 
     # =========================================================================
+    # CSS VARIABLES ENDPOINT
+    # =========================================================================
+
+    @http.route('/ops_theme/variables.css', type='http', auth='public', cors='*')
+    def theme_variables(self, **kwargs):
+        """Generate dynamic CSS variables from company settings."""
+        company_id = request.env.company.id if request.env.company else 1
+        company = request.env['res.company'].sudo().browse(company_id)
+
+        # Brand colors
+        primary = company.ops_primary_color or '#1e293b'
+        secondary = company.ops_secondary_color or '#3b82f6'
+        success = company.ops_success_color or '#10b981'
+        warning = company.ops_warning_color or '#f59e0b'
+        danger = company.ops_danger_color or '#ef4444'
+
+        # Layout settings
+        card_shadow = company.ops_card_shadow or 'medium'
+        border_radius = company.ops_border_radius or 'rounded'
+
+        shadow_map = {
+            'none': 'none',
+            'light': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            'medium': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            'heavy': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        }
+        radius_map = {
+            'sharp': '0px',
+            'rounded': '8px',
+            'pill': '16px',
+        }
+
+        css = f""":root {{
+    --ops-primary: {primary};
+    --ops-secondary: {secondary};
+    --ops-success: {success};
+    --ops-warning: {warning};
+    --ops-danger: {danger};
+    --ops-card-shadow: {shadow_map.get(card_shadow, shadow_map['medium'])};
+    --ops-border-radius: {radius_map.get(border_radius, radius_map['rounded'])};
+    --ops-btn-radius: {radius_map.get(border_radius, radius_map['rounded'])};
+}}
+"""
+        return request.make_response(
+            css,
+            headers=[
+                ('Content-Type', 'text/css'),
+                ('Cache-Control', 'public, max-age=3600'),
+            ]
+        )
+
+    # =========================================================================
     # THEME TOGGLE ROUTES (with sudo() to bypass permission issues)
     # =========================================================================
 

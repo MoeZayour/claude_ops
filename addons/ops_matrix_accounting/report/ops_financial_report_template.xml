@@ -82,6 +82,17 @@
         <field name="print_report_name">'Aged_Partner_%s_%s' % (object.date_from, object.date_to)</field>
         <field name="binding_type">report</field>
     </record>
+    <!-- Balance Sheet Report Action (was missing) -->
+    <record id="action_report_balance_sheet_corporate" model="ir.actions.report">
+        <field name="name">OPS Balance Sheet</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
+        <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
+        <field name="print_report_name">'Balance_Sheet_%s' % (object.as_of_date or object.date_to)</field>
+        <field name="binding_type">report</field>
+    </record>
 
     <!-- ================================================================
          TRIAL BALANCE CORPORATE TEMPLATE

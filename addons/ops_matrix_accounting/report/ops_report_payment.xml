@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- OPS Payment Receipt Report Action -->
+    <record id="action_report_ops_payment" model="ir.actions.report">
+        <field name="name">Payment Receipt (OPS)</field>
+        <field name="model">account.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_ops_payment</field>
+        <field name="report_file">ops_matrix_accounting.report_ops_payment</field>
+        <field name="binding_model_id" ref="account.model_account_payment"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Receipt - %s' % object.name</field>
+    </record>
+
+    <!-- Main Template -->
+    <template id="report_ops_payment">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ops_matrix_accounting.report_ops_payment_document"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Payment Receipt Document Template -->
+    <template id="report_ops_payment_document">
+        <t t-set="company" t-value="doc.company_id or env.company"/>
+        <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
+        <t t-set="show_badge" t-value="company.ops_show_external_badge if hasattr(company, 'ops_show_external_badge') else True"/>
+        <t t-set="amount_lang" t-value="company.ops_amount_words_lang or 'en'"/>
+        <t t-set="is_inbound" t-value="doc.payment_type == 'inbound'"/>
+        <t t-set="doc_title" t-value="'Payment Receipt' if is_inbound else 'Payment Voucher'"/>
+
+        <div class="article ops-external-doc" t-attf-style="--ops-primary: #{primary_color};">
+
+            <!-- LETTERHEAD -->
+            <div class="ops-letterhead">
+                <div class="ops-company-block">
+                    <img t-if="company.logo" class="ops-company-logo"
+                         t-att-src="image_data_uri(company.logo)"/>
+                    <div t-else="" class="ops-company-logo-placeholder">
+                        <t t-esc="(company.name or 'CO')[:2].upper()"/>
+                    </div>
+                    <div>
+                        <div class="ops-company-name"><t t-esc="company.name"/></div>
+                        <div class="ops-company-details">
+                            <t t-if="company.street"><t t-esc="company.street"/><br/></t>
+                            <t t-if="company.street2"><t t-esc="company.street2"/><br/></t>
+                            <t t-if="company.city"><t t-esc="company.city"/></t>
+                            <t t-if="company.country_id">, <t t-esc="company.country_id.name"/></t><br/>
+                            <t t-if="company.phone">Tel: <t t-esc="company.phone"/></t>
+                        </div>
+                    </div>
+                </div>
+                <div class="ops-doc-meta">
+                    <div class="ops-doc-ref"><t t-esc="doc.name"/></div>
+                    Date: <t t-esc="doc.date" t-options='{"widget": "date"}'/><br/>
+                    <t t-if="hasattr(doc, 'ops_branch_id') and doc.ops_branch_id">Branch: <t t-esc="doc.ops_branch_id.name"/></t>
+                </div>
+            </div>
+
+            <!-- TITLE BAR -->
+            <div t-attf-class="ops-title-bar #{'ops-outbound' if not is_inbound else ''}">
+                <h2><t t-esc="doc_title"/></h2>
+                <span class="ops-doc-status">
+                    <t t-if="doc.state == 'posted'">Confirmed</t>
+                    <t t-elif="doc.state == 'draft'">Draft</t>
+                    <t t-elif="doc.state == 'reconciled'">Reconciled</t>
+                    <t t-else=""><t t-esc="doc.state"/></t>
+                </span>
+            </div>
+
+            <!-- PAYMENT CARD -->
+            <div class="ops-payment-card">
+                <div class="ops-payment-header">
+                    <div>
+                        <div class="ops-info-label"><t t-if="is_inbound">Received From</t><t t-else="">Paid To</t></div>
+                        <div class="ops-payment-partner-name"><t t-esc="doc.partner_id.name"/></div>
+                        <div class="ops-address-details">
+                            <t t-if="doc.partner_id.street"><t t-esc="doc.partner_id.street"/><br/></t>
+                            <t t-if="doc.partner_id.vat">VAT: <t t-esc="doc.partner_id.vat"/></t>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="ops-info-label">Payment Method</div>
+                        <div class="ops-payment-partner-name" style="font-size: 10pt;"><t t-esc="doc.journal_id.name"/></div>
+                        <div class="ops-address-details" t-if="doc.ref">Ref: <t t-esc="doc.ref"/></div>
+                    </div>
+                </div>
+
+                <!-- AMOUNT -->
+                <div class="ops-amount-block">
+                    <div class="ops-amount-block-label">Amount <t t-if="is_inbound">Received</t><t t-else="">Paid</t></div>
+                    <div>
+                        <span class="ops-amount-block-value"><t t-esc="'{:,.2f}'.format(doc.amount)"/></span>
+                        <span class="ops-amount-block-currency"><t t-esc="doc.currency_id.name"/></span>
+                    </div>
+                </div>
+
+                <!-- INFO GRID -->
+                <div class="ops-payment-info-grid">
+                    <div class="ops-payment-info-item">
+                        <div class="ops-info-label">Payment Date</div>
+                        <div class="ops-info-value"><t t-esc="doc.date" t-options='{"widget": "date"}'/></div>
+                    </div>
+                    <div class="ops-payment-info-item">
+                        <div class="ops-info-label">Journal</div>
+                        <div class="ops-info-value"><t t-esc="doc.journal_id.name"/></div>
+                    </div>
+                    <div class="ops-payment-info-item" t-if="doc.ref">
+                        <div class="ops-info-label">Memo / Reference</div>
+                        <div class="ops-info-value"><t t-esc="doc.ref"/></div>
+                    </div>
+                    <div class="ops-payment-info-item">
+                        <div class="ops-info-label">Currency</div>
+                        <div class="ops-info-value"><t t-esc="doc.currency_id.name"/></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AMOUNT IN WORDS -->
+            <t t-set="amount_words" t-value="env['ops.report.helpers'].amount_to_words(doc.amount, doc.currency_id, amount_lang)"/>
+            <div class="ops-amount-words" t-if="amount_words">
+                <div class="aw-label">Amount in Words</div>
+                <div class="aw-text" t-if="amount_words.get('en')"><t t-esc="amount_words.get('en')"/></div>
+                <div class="aw-text aw-arabic" t-if="amount_words.get('ar')"><t t-esc="amount_words.get('ar')"/></div>
+            </div>
+
+            <!-- RECONCILED INVOICES -->
+            <t t-set="reconciled_invoices" t-value="doc.reconciled_invoice_ids"/>
+            <div class="ops-reconciled-invoices" t-if="reconciled_invoices">
+                <h4>Reconciled Invoices</h4>
+                <table class="ops-invoices-table">
+                    <thead>
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Date</th>
+                            <th class="num">Original Amount</th>
+                            <th class="num">Amount Due</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="reconciled_invoices" t-as="inv">
+                            <tr>
+                                <td><t t-esc="inv.name"/></td>
+                                <td><t t-esc="inv.invoice_date" t-options='{"widget": "date"}'/></td>
+                                <td class="num"><t t-esc="'{:,.2f}'.format(inv.amount_total)"/></td>
+                                <td class="num"><t t-esc="'{:,.2f}'.format(inv.amount_residual)"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- RECONCILED BILLS (outbound payments) -->
+            <t t-set="reconciled_bills" t-value="doc.reconciled_bill_ids"/>
+            <div class="ops-reconciled-invoices" t-if="reconciled_bills">
+                <h4>Reconciled Bills</h4>
+                <table class="ops-invoices-table">
+                    <thead>
+                        <tr>
+                            <th>Bill</th>
+                            <th>Date</th>
+                            <th class="num">Original Amount</th>
+                            <th class="num">Amount Due</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="reconciled_bills" t-as="bill">
+                            <tr>
+                                <td><t t-esc="bill.name"/></td>
+                                <td><t t-esc="bill.invoice_date" t-options='{"widget": "date"}'/></td>
+                                <td class="num"><t t-esc="'{:,.2f}'.format(bill.amount_total)"/></td>
+                                <td class="num"><t t-esc="'{:,.2f}'.format(bill.amount_residual)"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SIGNATURES -->
+            <div class="ops-signature-row">
+                <div class="ops-signature-block">
+                    <div class="ops-signature-line">
+                        <div class="ops-sig-label">Prepared By</div>
+                        <div class="ops-sig-sub">Accounts Department</div>
+                    </div>
+                </div>
+                <div class="ops-signature-block">
+                    <div class="ops-signature-line">
+                        <div class="ops-sig-label">Approved By</div>
+                        <div class="ops-sig-sub">Finance Manager</div>
+                    </div>
+                </div>
+                <div class="ops-signature-block">
+                    <div class="ops-signature-line">
+                        <div class="ops-sig-label"><t t-if="is_inbound">Payer</t><t t-else="">Payee</t></div>
+                        <div class="ops-sig-sub">Acknowledgment</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="ops-footer">
+                <div class="ops-footer-company">
+                    <strong><t t-esc="company.name"/></strong>
+                    <t t-if="company.company_registry"> | CR: <t t-esc="company.company_registry"/></t>
+                    <t t-if="company.vat"> | VAT: <t t-esc="company.vat"/></t>
+                </div>
+                <div class="ops-footer-right">
+                    <div t-if="show_badge" class="ops-external-badge">
+                        <span class="powered-by">Powered by</span>
+                        <span class="badge">OPS Framework</span>
+                    </div>
+                    <span class="ops-page-number">Page <span class="page"/> of <span class="topage"/></span>
+                </div>
+            </div>
+
+        </div>
+    </template>
+
+</odoo>

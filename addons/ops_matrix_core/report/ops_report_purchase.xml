@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- OPS Purchase Order Report Action -->
+    <record id="action_report_ops_purchase" model="ir.actions.report">
+        <field name="name">Purchase Order (OPS)</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_core.report_ops_purchase</field>
+        <field name="report_file">ops_matrix_core.report_ops_purchase</field>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'PO - %s' % object.name</field>
+    </record>
+
+    <!-- Main Template -->
+    <template id="report_ops_purchase">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ops_matrix_core.report_ops_purchase_document"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Purchase Order Document Template -->
+    <template id="report_ops_purchase_document">
+        <t t-set="company" t-value="doc.company_id or env.company"/>
+        <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
+        <t t-set="show_badge" t-value="company.ops_show_external_badge if hasattr(company, 'ops_show_external_badge') else True"/>
+        <t t-set="amount_lang" t-value="company.ops_amount_words_lang or 'en'"/>
+        <t t-set="is_rfq" t-value="doc.state in ('draft', 'sent')"/>
+        <t t-set="doc_title" t-value="'Request for Quotation' if is_rfq else 'Purchase Order'"/>
+
+        <div class="article ops-external-doc" t-attf-style="--ops-primary: #{primary_color};">
+
+            <!-- LETTERHEAD -->
+            <div class="ops-letterhead">
+                <div class="ops-company-block">
+                    <img t-if="company.logo" class="ops-company-logo"
+                         t-att-src="image_data_uri(company.logo)"/>
+                    <div t-else="" class="ops-company-logo-placeholder">
+                        <t t-esc="(company.name or 'CO')[:2].upper()"/>
+                    </div>
+                    <div>
+                        <div class="ops-company-name"><t t-esc="company.name"/></div>
+                        <div class="ops-company-details">
+                            <t t-if="company.street"><t t-esc="company.street"/><br/></t>
+                            <t t-if="company.street2"><t t-esc="company.street2"/><br/></t>
+                            <t t-if="company.city"><t t-esc="company.city"/></t>
+                            <t t-if="company.country_id">, <t t-esc="company.country_id.name"/></t><br/>
+                            <t t-if="company.phone">Tel: <t t-esc="company.phone"/></t>
+                            <t t-if="company.email"> | <t t-esc="company.email"/></t><br/>
+                            <t t-if="company.company_registry">CR: <t t-esc="company.company_registry"/></t>
+                            <t t-if="company.vat"> | VAT: <t t-esc="company.vat"/></t>
+                        </div>
+                    </div>
+                </div>
+                <div class="ops-doc-meta">
+                    <div class="ops-doc-ref"><t t-esc="doc.name"/></div>
+                    Date: <t t-esc="doc.date_order" t-options='{"widget": "date"}'/><br/>
+                    <t t-if="doc.date_planned">Required: <t t-esc="doc.date_planned" t-options='{"widget": "date"}'/><br/></t>
+                    <t t-if="doc.user_id">Buyer: <t t-esc="doc.user_id.name"/><br/></t>
+                    <t t-if="doc.ops_branch_id">Branch: <t t-esc="doc.ops_branch_id.name"/></t>
+                </div>
+            </div>
+
+            <!-- TITLE BAR -->
+            <div class="ops-title-bar">
+                <h2><t t-esc="doc_title"/></h2>
+                <span class="ops-doc-status">
+                    <t t-if="doc.state == 'draft'">Draft</t>
+                    <t t-elif="doc.state == 'sent'">RFQ Sent</t>
+                    <t t-elif="doc.state == 'purchase'">Confirmed</t>
+                    <t t-elif="doc.state == 'done'">Locked</t>
+                    <t t-else=""><t t-esc="doc.state"/></t>
+                </span>
+            </div>
+
+            <!-- ADDRESS BLOCKS -->
+            <div class="ops-address-row">
+                <div class="ops-address-block">
+                    <div class="ops-address-label">Vendor</div>
+                    <div class="ops-address-name"><t t-esc="doc.partner_id.name"/></div>
+                    <div class="ops-address-details">
+                        <t t-if="doc.partner_id.street"><t t-esc="doc.partner_id.street"/><br/></t>
+                        <t t-if="doc.partner_id.street2"><t t-esc="doc.partner_id.street2"/><br/></t>
+                        <t t-if="doc.partner_id.city"><t t-esc="doc.partner_id.city"/></t>
+                        <t t-if="doc.partner_id.country_id">, <t t-esc="doc.partner_id.country_id.name"/></t><br/>
+                        <t t-if="doc.partner_id.phone">Tel: <t t-esc="doc.partner_id.phone"/><br/></t>
+                        <t t-if="doc.partner_id.vat">VAT: <t t-esc="doc.partner_id.vat"/></t>
+                    </div>
+                </div>
+                <div class="ops-address-block">
+                    <div class="ops-address-label">Ship To</div>
+                    <div class="ops-address-name"><t t-esc="doc.picking_type_id.warehouse_id.name or company.name"/></div>
+                    <div class="ops-address-details">
+                        <t t-esc="company.street or ''"/><br/>
+                        <t t-if="company.street2"><t t-esc="company.street2"/><br/></t>
+                        <t t-esc="company.city or ''"/><t t-if="company.country_id">, <t t-esc="company.country_id.name"/></t>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INFO BAR -->
+            <div class="ops-info-bar">
+                <div class="ops-info-cell" t-if="doc.partner_ref">
+                    <div class="ops-info-label">Vendor Ref</div>
+                    <div class="ops-info-value"><t t-esc="doc.partner_ref"/></div>
+                </div>
+                <div class="ops-info-cell" t-if="doc.payment_term_id">
+                    <div class="ops-info-label">Payment Terms</div>
+                    <div class="ops-info-value"><t t-esc="doc.payment_term_id.name"/></div>
+                </div>
+                <div class="ops-info-cell" t-if="doc.incoterm_id">
+                    <div class="ops-info-label">Incoterm</div>
+                    <div class="ops-info-value"><t t-esc="doc.incoterm_id.code"/></div>
+                </div>
+                <div class="ops-info-cell">
+                    <div class="ops-info-label">Currency</div>
+                    <div class="ops-info-value"><t t-esc="doc.currency_id.name"/></div>
+                </div>
+            </div>
+
+            <!-- LINE ITEMS -->
+            <table class="ops-items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25px;">#</th>
+                        <th style="width: 70px;">Code</th>
+                        <th>Description</th>
+                        <th style="width: 45px;" class="num">Qty</th>
+                        <th style="width: 40px;">UoM</th>
+                        <th style="width: 70px;" class="num">Unit Price</th>
+                        <th style="width: 50px;" class="num">Tax</th>
+                        <th style="width: 80px;" class="num">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-set="line_num" t-value="0"/>
+                    <t t-foreach="doc.order_line" t-as="line">
+                        <t t-if="not line.display_type">
+                            <t t-set="line_num" t-value="line_num + 1"/>
+                            <tr>
+                                <td><t t-esc="line_num"/></td>
+                                <td><t t-esc="line.product_id.default_code or '-'"/></td>
+                                <td>
+                                    <strong><t t-esc="line.product_id.name or line.name"/></strong>
+                                    <t t-if="line.name and line.name != (line.product_id.name or '')">
+                                        <span class="ops-item-code"><t t-esc="line.name[:80]"/></span>
+                                    </t>
+                                </td>
+                                <td class="num"><t t-esc="'{:,.2f}'.format(line.product_qty)"/></td>
+                                <td><t t-esc="line.product_uom.name or ''"/></td>
+                                <td class="num"><t t-esc="'{:,.2f}'.format(line.price_unit)"/></td>
+                                <td class="num"><t t-esc="', '.join(line.taxes_id.mapped('name')) or ''"/></td>
+                                <td class="num" style="font-weight: 600;"><t t-esc="'{:,.2f}'.format(line.price_subtotal)"/></td>
+                            </tr>
+                        </t>
+                        <t t-if="line.display_type == 'line_section'">
+                            <tr>
+                                <td colspan="8" style="font-weight: 700; background: #f1f5f9; padding-top: 10px;">
+                                    <t t-esc="line.name"/>
+                                </td>
+                            </tr>
+                        </t>
+                        <t t-if="line.display_type == 'line_note'">
+                            <tr>
+                                <td colspan="8" style="font-style: italic; color: #64748b;">
+                                    <t t-esc="line.name"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </t>
+                </tbody>
+            </table>
+
+            <!-- TOTALS -->
+            <div class="ops-totals-wrapper">
+                <div class="ops-totals-block">
+                    <div class="ops-totals-line">
+                        <span class="t-label">Subtotal</span>
+                        <span class="t-value"><t t-esc="'{:,.2f}'.format(doc.amount_untaxed)"/></span>
+                    </div>
+                    <div class="ops-totals-line">
+                        <span class="t-label">Tax</span>
+                        <span class="t-value"><t t-esc="'{:,.2f}'.format(doc.amount_tax)"/></span>
+                    </div>
+                    <div class="ops-totals-line grand-total">
+                        <span class="t-label">Total</span>
+                        <span class="t-value">
+                            <t t-esc="'{:,.2f}'.format(doc.amount_total)"/>
+                            <span style="font-size: 8pt; font-weight: 500; opacity: 0.8; margin-left: 4px;">
+                                <t t-esc="doc.currency_id.name"/>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AMOUNT IN WORDS -->
+            <t t-set="amount_words" t-value="env['ops.report.helpers'].amount_to_words(doc.amount_total, doc.currency_id, amount_lang)"/>
+            <div class="ops-amount-words" t-if="amount_words">
+                <div class="aw-label">Amount in Words</div>
+                <div class="aw-text" t-if="amount_words.get('en')"><t t-esc="amount_words.get('en')"/></div>
+                <div class="aw-text aw-arabic" t-if="amount_words.get('ar')"><t t-esc="amount_words.get('ar')"/></div>
+            </div>
+
+            <!-- SIGNATURES -->
+            <div class="ops-signature-row">
+                <div class="ops-signature-block">
+                    <div class="ops-signature-line">
+                        <div class="ops-sig-label">Prepared By</div>
+                        <div class="ops-sig-sub"><t t-esc="doc.user_id.name or ''"/></div>
+                    </div>
+                </div>
+                <div class="ops-signature-block">
+                    <div class="ops-signature-line">
+                        <div class="ops-sig-label">Approved By</div>
+                        <div class="ops-sig-sub">Authorized Signatory</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TERMS -->
+            <div class="ops-terms" t-if="doc.notes">
+                <h4>Terms &amp; Conditions</h4>
+                <p><t t-esc="doc.notes"/></p>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="ops-footer">
+                <div class="ops-footer-company">
+                    <strong><t t-esc="company.name"/></strong>
+                    <t t-if="company.company_registry"> | CR: <t t-esc="company.company_registry"/></t>
+                    <t t-if="company.vat"> | VAT: <t t-esc="company.vat"/></t>
+                    <t t-if="company.website"> | <t t-esc="company.website"/></t>
+                </div>
+                <div class="ops-footer-right">
+                    <div t-if="show_badge" class="ops-external-badge">
+                        <span class="powered-by">Powered by</span>
+                        <span class="badge">OPS Framework</span>
+                    </div>
+                    <span class="ops-page-number">Page <span class="page"/> of <span class="topage"/></span>
+                </div>
+            </div>
+
+        </div>
+    </template>
+
+</odoo>

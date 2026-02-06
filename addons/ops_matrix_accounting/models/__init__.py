@@ -6,7 +6,11 @@ from . import ops_budget
 from . import ops_product_category_defaults
 from . import ops_matrix_standard_extensions
 from . import ops_matrix_snapshot
-from . import ops_consolidated_reporting
+from . import ops_company_consolidation
+from . import ops_branch_report
+from . import ops_business_unit_report
+from . import ops_consolidated_balance_sheet
+from . import ops_matrix_profitability_analysis
 from . import ops_trend_analysis
 from . import ops_asset_category
 from . import ops_asset
