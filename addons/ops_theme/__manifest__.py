@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.7.3.0',
+    'version': '19.0.7.4.0',
     'category': 'Themes/Backend',
     'summary': 'Minimal OPS Framework theme with clean debranding',
     'description': """
@@ -67,6 +67,7 @@ Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy
             'ops_theme/static/src/scss/_debranding.scss',
             'ops_theme/static/src/scss/_chatter_position.scss',
             'ops_theme/static/src/scss/_ops_dark_mode.scss',
+            'ops_theme/static/src/scss/_dynamic_overrides.scss',
 
             # 2. JavaScript - Theme initialization and toggles
             'ops_theme/static/src/js/theme_loader.js',

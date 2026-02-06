@@ -2,27 +2,49 @@
 <odoo>
 
     <!-- ===================================================================== -->
-    <!-- FAVICON - Override in base layout (affects backend + frontend)        -->
+    <!-- FAVICON - BACKEND                                                     -->
     <!-- ===================================================================== -->
     <template id="ops_favicon_backend" inherit_id="web.layout" name="OPS Favicon Backend" priority="100">
         <xpath expr="//head/link[@rel='shortcut icon']" position="replace">
-            <link type="image/x-icon" rel="shortcut icon" href="/ops_theme/favicon"/>
-            <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
+            <link rel="shortcut icon" type="image/x-icon" href="/ops_theme/favicon"/>
         </xpath>
-        <xpath expr="//head/title" position="after">
-            <!-- Dynamic CSS Variables from Settings -->
+        <xpath expr="//head" position="inside">
+            <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
+            <!-- Dynamic CSS Variables - loaded AFTER main assets to override -->
             <link rel="stylesheet" type="text/css" href="/ops_theme/variables.css"/>
         </xpath>
     </template>
 
     <!-- ===================================================================== -->
-    <!-- FRONTEND ASSETS - CSS vars + favicon for login/portal pages          -->
+    <!-- FAVICON - FRONTEND/LOGIN                                              -->
     <!-- ===================================================================== -->
     <template id="ops_favicon_frontend" inherit_id="web.frontend_layout" name="OPS Favicon Frontend" priority="100">
-        <xpath expr="//head/meta[last()]" position="after">
+        <xpath expr="//head" position="inside">
+            <link rel="shortcut icon" type="image/x-icon" href="/ops_theme/favicon"/>
             <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
-            <!-- Dynamic CSS Variables from Settings -->
             <link rel="stylesheet" type="text/css" href="/ops_theme/variables.css"/>
+        </xpath>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- INTER FONT FROM GOOGLE FONTS                                          -->
+    <!-- ===================================================================== -->
+    <template id="ops_assets_font" inherit_id="web.layout" name="OPS Font Assets">
+        <xpath expr="//head" position="inside">
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+        </xpath>
+    </template>
+
+    <!-- ===================================================================== -->
+    <!-- ADD NAVBAR STYLE DATA ATTRIBUTES TO HTML                              -->
+    <!-- ===================================================================== -->
+    <template id="ops_html_attrs" inherit_id="web.layout" name="OPS HTML Attributes" priority="100">
+        <xpath expr="//html" position="attributes">
+            <attribute name="t-att-data-ops-navbar">request.env.company.ops_navbar_style or 'dark'</attribute>
+            <attribute name="t-att-data-ops-radius">request.env.company.ops_border_radius or 'rounded'</attribute>
+            <attribute name="t-att-data-ops-shadow">request.env.company.ops_card_shadow or 'medium'</attribute>
         </xpath>
     </template>
 

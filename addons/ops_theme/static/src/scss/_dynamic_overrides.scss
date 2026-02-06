@@ -1,0 +1,239 @@
+// =============================================================================
+// OPS THEME - DYNAMIC OVERRIDES
+// =============================================================================
+// These rules ensure CSS variables from /ops_theme/variables.css take effect
+// by using the same selectors as the base theme but with dynamic var() values.
+// =============================================================================
+
+// =============================================================================
+// NAVBAR - RESPECTS data-ops-navbar ATTRIBUTE
+// =============================================================================
+
+// Dark navbar (default)
+html[data-ops-navbar="dark"] {
+    .o_main_navbar,
+    nav.o_main_navbar {
+        background: var(--ops-navbar-bg, var(--ops-primary)) !important;
+
+        .o_menu_toggle,
+        .o_menu_sections button,
+        .o_menu_sections a,
+        .o_menu_systray .dropdown-toggle {
+            color: var(--ops-navbar-text, #ffffff) !important;
+        }
+    }
+}
+
+// Light navbar
+html[data-ops-navbar="light"] {
+    .o_main_navbar,
+    nav.o_main_navbar {
+        background: #f8fafc !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+
+        .o_menu_toggle,
+        .o_menu_sections button,
+        .o_menu_sections a,
+        .o_menu_systray .dropdown-toggle {
+            color: #1e293b !important;
+        }
+
+        .o_menu_sections button:hover,
+        .o_menu_sections a:hover {
+            background: rgba(0, 0, 0, 0.05) !important;
+        }
+    }
+}
+
+// Primary color navbar
+html[data-ops-navbar="primary"] {
+    .o_main_navbar,
+    nav.o_main_navbar {
+        background: var(--ops-secondary) !important;
+
+        .o_menu_toggle,
+        .o_menu_sections button,
+        .o_menu_sections a,
+        .o_menu_systray .dropdown-toggle {
+            color: #ffffff !important;
+        }
+    }
+}
+
+// =============================================================================
+// BORDER RADIUS - RESPECTS data-ops-radius ATTRIBUTE
+// =============================================================================
+
+html[data-ops-radius="sharp"] {
+    --ops-radius-md: 0px;
+    --ops-border-radius: 0px;
+
+    .btn,
+    .form-control,
+    .form-select,
+    .card,
+    .o_kanban_record,
+    .modal-content,
+    .dropdown-menu {
+        border-radius: 0px !important;
+    }
+}
+
+html[data-ops-radius="rounded"] {
+    --ops-radius-md: 8px;
+    --ops-border-radius: 8px;
+
+    .btn,
+    .form-control,
+    .form-select,
+    .card,
+    .o_kanban_record,
+    .modal-content,
+    .dropdown-menu {
+        border-radius: 8px !important;
+    }
+}
+
+html[data-ops-radius="pill"] {
+    --ops-radius-md: 16px;
+    --ops-border-radius: 16px;
+
+    .btn {
+        border-radius: 9999px !important;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 16px !important;
+    }
+
+    .card,
+    .o_kanban_record,
+    .modal-content,
+    .dropdown-menu {
+        border-radius: 16px !important;
+    }
+}
+
+// =============================================================================
+// CARD SHADOW - RESPECTS data-ops-shadow ATTRIBUTE
+// =============================================================================
+
+html[data-ops-shadow="none"] {
+    .o_form_sheet,
+    .o_kanban_record,
+    .card {
+        box-shadow: none !important;
+    }
+}
+
+html[data-ops-shadow="light"] {
+    .o_form_sheet,
+    .o_kanban_record,
+    .card {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    }
+}
+
+html[data-ops-shadow="medium"] {
+    .o_form_sheet,
+    .o_kanban_record,
+    .card {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    }
+}
+
+html[data-ops-shadow="heavy"] {
+    .o_form_sheet,
+    .o_kanban_record,
+    .card {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    }
+}
+
+// =============================================================================
+// BUTTON COLORS - USE CSS VARIABLES
+// =============================================================================
+
+.btn-primary {
+    background-color: var(--ops-secondary) !important;
+    border-color: var(--ops-secondary) !important;
+    color: #ffffff !important;
+
+    &:hover,
+    &:focus {
+        background-color: var(--ops-secondary-hover, #2563eb) !important;
+        border-color: var(--ops-secondary-hover, #2563eb) !important;
+    }
+}
+
+.btn-success {
+    background-color: var(--ops-success) !important;
+    border-color: var(--ops-success) !important;
+}
+
+.btn-warning {
+    background-color: var(--ops-warning) !important;
+    border-color: var(--ops-warning) !important;
+}
+
+.btn-danger {
+    background-color: var(--ops-danger) !important;
+    border-color: var(--ops-danger) !important;
+}
+
+// =============================================================================
+// LINKS USE SECONDARY COLOR
+// =============================================================================
+
+a:not(.btn):not(.nav-link):not(.dropdown-item) {
+    color: var(--ops-secondary);
+
+    &:hover {
+        color: var(--ops-secondary-hover, #2563eb);
+    }
+}
+
+// =============================================================================
+// BADGES
+// =============================================================================
+
+.badge.text-bg-primary,
+.badge.bg-primary {
+    background-color: var(--ops-secondary) !important;
+}
+
+.badge.text-bg-success,
+.badge.bg-success {
+    background-color: var(--ops-success) !important;
+}
+
+.badge.text-bg-warning,
+.badge.bg-warning {
+    background-color: var(--ops-warning) !important;
+}
+
+.badge.text-bg-danger,
+.badge.bg-danger {
+    background-color: var(--ops-danger) !important;
+}
+
+// =============================================================================
+// FORM FOCUS STATES
+// =============================================================================
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--ops-secondary) !important;
+    box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb), 0.15) !important;
+}
+
+// =============================================================================
+// STATUSBAR USES SECONDARY
+// =============================================================================
+
+.o_statusbar_status .o_arrow_button.btn-primary,
+.o_statusbar_status .o_arrow_button.o_active {
+    background-color: var(--ops-secondary) !important;
+    color: #ffffff !important;
+}
