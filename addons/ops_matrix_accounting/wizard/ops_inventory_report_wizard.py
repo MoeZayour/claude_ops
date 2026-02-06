@@ -224,13 +224,13 @@ class OpsInventoryReportWizard(models.TransientModel):
         self.ensure_one()
 
         template_mapping = {
-            'valuation': 'ops_matrix_accounting.report_stock_valuation',
-            'aging': 'ops_matrix_accounting.report_inventory_aging',
-            'movement': 'ops_matrix_accounting.report_inventory_movement',
-            'negative': 'ops_matrix_accounting.report_negative_stock',
+            'valuation': 'ops_matrix_accounting.report_inventory_valuation_document_corporate',
+            'aging': 'ops_matrix_accounting.report_inventory_aging_document_corporate',
+            'movement': 'ops_matrix_accounting.report_inventory_movement_document_corporate',
+            'negative': 'ops_matrix_accounting.report_inventory_negative_document_corporate',
         }
 
-        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_stock_valuation')
+        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_inventory_valuation_document_corporate')
 
     def _add_filter_summary_parts(self, parts):
         """Add inventory-specific filter descriptions."""

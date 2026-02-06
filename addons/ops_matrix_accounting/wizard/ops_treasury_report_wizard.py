@@ -180,12 +180,12 @@ class OpsTreasuryReportWizard(models.TransientModel):
         self.ensure_one()
 
         template_mapping = {
-            'registry': 'ops_matrix_accounting.report_pdc_registry',
-            'maturity': 'ops_matrix_accounting.report_pdc_maturity',
-            'on_hand': 'ops_matrix_accounting.report_pdc_on_hand',
+            'registry': 'ops_matrix_accounting.report_treasury_registry_corporate',
+            'maturity': 'ops_matrix_accounting.report_treasury_maturity_corporate',
+            'on_hand': 'ops_matrix_accounting.report_treasury_on_hand_corporate',
         }
 
-        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_pdc_registry')
+        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_treasury_registry_corporate')
 
     def _add_filter_summary_parts(self, parts):
         """Add treasury-specific filter descriptions."""

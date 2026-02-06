@@ -313,18 +313,17 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
         self.ensure_one()
 
         template_mapping = {
-            'gl': 'ops_matrix_accounting.report_general_ledger',
-            'tb': 'ops_matrix_accounting.report_trial_balance',
-            'pl': 'ops_matrix_accounting.report_profit_loss',
-            'bs': 'ops_matrix_accounting.report_balance_sheet',
-            'cf': 'ops_matrix_accounting.report_cash_flow',
-            'aged_receivable': 'ops_matrix_accounting.report_aged_receivable',
-            'aged_payable': 'ops_matrix_accounting.report_aged_payable',
-            'partner': 'ops_matrix_accounting.report_partner_ledger',
-            'statement': 'ops_matrix_accounting.report_statement_account',
+            'gl': 'ops_matrix_accounting.report_general_ledger_corporate',
+            'tb': 'ops_matrix_accounting.report_trial_balance_corporate',
+            'pl': 'ops_matrix_accounting.report_profit_loss_corporate',
+            'bs': 'ops_matrix_accounting.report_ops_financial_minimal',
+            'cf': 'ops_matrix_accounting.report_cash_flow_corporate',
+            'aged': 'ops_matrix_accounting.report_aged_partner_corporate',
+            'partner': 'ops_matrix_accounting.report_general_ledger_corporate',
+            'soa': 'ops_matrix_accounting.report_general_ledger_corporate',
         }
 
-        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_general_ledger')
+        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_general_ledger_corporate')
 
     def _add_filter_summary_parts(self, parts):
         """Add financial-specific filter descriptions."""

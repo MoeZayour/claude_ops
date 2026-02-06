@@ -198,12 +198,13 @@ class OpsAssetReportWizard(models.TransientModel):
         self.ensure_one()
 
         template_mapping = {
-            'register': 'ops_matrix_accounting.report_asset_register',
-            'depreciation': 'ops_matrix_accounting.report_depreciation_schedule',
-            'disposal': 'ops_matrix_accounting.report_asset_disposal',
+            'register': 'ops_matrix_accounting.report_asset_register_document_corporate',
+            'forecast': 'ops_matrix_accounting.report_depreciation_schedule_document_corporate',
+            'disposal': 'ops_matrix_accounting.report_asset_register_document_corporate',
+            'movement': 'ops_matrix_accounting.report_asset_register_document_corporate',
         }
 
-        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_asset_register')
+        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_asset_register_document_corporate')
 
     def _add_filter_summary_parts(self, parts):
         """Add asset-specific filter descriptions."""
@@ -705,20 +706,16 @@ class OpsAssetReportWizard(models.TransientModel):
 
     def _return_report_action(self, data):
         """Return appropriate report action."""
-        report_names = {
-            'register': 'ops_matrix_accounting.report_asset_register',
-            'forecast': 'ops_matrix_accounting.report_asset_forecast',
-            'disposal': 'ops_matrix_accounting.report_asset_disposal',
-            'movement': 'ops_matrix_accounting.report_asset_movement',
+        report_xml_ids = {
+            'register': 'ops_matrix_accounting.report_asset_register_pdf',
+            'forecast': 'ops_matrix_accounting.report_asset_forecast_pdf',
+            'disposal': 'ops_matrix_accounting.report_asset_disposal_pdf',
+            'movement': 'ops_matrix_accounting.report_asset_movement_pdf',
         }
 
-        return {
-            'type': 'ir.actions.report',
-            'report_name': report_names.get(self.report_type, report_names['register']),
-            'report_type': 'qweb-pdf',
-            'data': data,
-            'config': False,
-        }
+        xml_id = report_xml_ids.get(self.report_type, report_xml_ids['register'])
+        report = self.env.ref(xml_id)
+        return report.report_action(self, data=data)
 
     # ============================================
     # ACTION METHODS

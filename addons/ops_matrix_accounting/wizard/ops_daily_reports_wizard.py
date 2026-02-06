@@ -345,7 +345,7 @@ class OpsCashBookWizard(models.TransientModel):
 
     def _get_report_template_xmlid(self):
         """Return XML ID of the cash book report template."""
-        return 'ops_matrix_accounting.report_cash_book'
+        return 'ops_matrix_accounting.report_cash_book_corporate'
 
 
 class OpsDayBookWizard(models.TransientModel):
@@ -634,7 +634,7 @@ class OpsDayBookWizard(models.TransientModel):
 
     def _get_report_template_xmlid(self):
         """Return XML ID of the day book report template."""
-        return 'ops_matrix_accounting.report_day_book'
+        return 'ops_matrix_accounting.report_day_book_corporate'
 
 
 class OpsBankBookWizard(models.TransientModel):
@@ -1090,4 +1090,4 @@ class OpsBankBookWizard(models.TransientModel):
 
     def _get_report_template_xmlid(self):
         """Return XML ID of the bank book report template."""
-        return 'ops_matrix_accounting.report_bank_book'
+        return 'ops_matrix_accounting.report_bank_book_corporate'
