@@ -30,45 +30,54 @@
 
     <!-- ============================================ -->
     <!-- HIDE OLD SECTION MENUS (replaced by new IDs) -->
+    <!-- Each record needs a name field for fresh installs -->
     <!-- ============================================ -->
 
     <!-- Old "Management" section replaced by "Analytics & Planning" -->
     <record id="menu_ops_accounting_management" model="ir.ui.menu">
+        <field name="name">Management (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 
     <!-- Old "Bank & Treasury" section - items moved to Operations -->
     <record id="menu_ops_bank_treasury" model="ir.ui.menu">
+        <field name="name">Bank &amp; Treasury (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 
     <!-- Old "Asset Management" section replaced by "Assets" -->
     <record id="menu_ops_asset_management" model="ir.ui.menu">
+        <field name="name">Asset Management (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 
     <!-- Old "Asset Configuration" sub-section -->
     <record id="menu_ops_asset_configuration" model="ir.ui.menu">
+        <field name="name">Asset Configuration (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 
     <!-- Old "Period End" section replaced by "Period Close" -->
     <record id="menu_ops_period_end" model="ir.ui.menu">
+        <field name="name">Period End (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 
     <!-- Old FX Revaluation menu under native entries (moved to Operations) -->
     <record id="menu_ops_fx_revaluation" model="ir.ui.menu">
+        <field name="name">FX Revaluation (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 
     <!-- Old Balance Sheet wizard menu (wizard deleted) -->
     <record id="menu_ops_balance_sheet_wizard" model="ir.ui.menu">
+        <field name="name">Balance Sheet Wizard (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 
     <!-- Old Automation under Entries (moved to Configuration > Automation) -->
     <record id="menu_ops_automation" model="ir.ui.menu">
+        <field name="name">Automation (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 
@@ -78,16 +87,19 @@
 
     <!-- Deactivate Budget Control top-level (moved to Analytics & Planning) -->
     <record id="menu_ops_budget" model="ir.ui.menu">
+        <field name="name">Budget Control (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 
     <!-- Deactivate Bank Reconciliation top-level (moved to Operations) -->
     <record id="menu_ops_bank_reconciliation" model="ir.ui.menu">
+        <field name="name">Bank Reconciliation (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 
     <!-- Deactivate Leases top-level (moved to Analytics & Planning) -->
     <record id="menu_ops_lease" model="ir.ui.menu">
+        <field name="name">Leases (Deprecated)</field>
         <field name="active" eval="False"/>
     </record>
 

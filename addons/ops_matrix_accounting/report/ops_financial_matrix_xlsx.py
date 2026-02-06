@@ -25,7 +25,7 @@ class OpsFinancialMatrixXlsx(models.AbstractModel):
     """
     _name = 'report.ops_matrix_accounting.report_financial_matrix_xlsx'
     _description = 'Financial Matrix XLSX Report'
-    _inherit = 'report.report_xlsx.abstract'
+    _inherit = 'ops.xlsx.abstract'
 
     def generate_xlsx_report(self, workbook, data, wizards):
         """

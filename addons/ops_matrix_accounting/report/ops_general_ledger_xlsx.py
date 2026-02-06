@@ -19,7 +19,7 @@ class OpsGeneralLedgerXlsx(models.AbstractModel):
     """
     _name = 'report.ops_matrix_accounting.report_general_ledger_xlsx'
     _description = 'General Ledger XLSX Report'
-    _inherit = 'report.report_xlsx.abstract'
+    _inherit = 'ops.xlsx.abstract'
 
     def generate_xlsx_report(self, workbook, data, partners):
         """

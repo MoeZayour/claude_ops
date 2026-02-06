@@ -23,7 +23,7 @@ class OpsTreasuryReportXlsx(models.AbstractModel):
     """
     _name = 'report.ops_matrix_accounting.report_treasury_xlsx'
     _description = 'Treasury Intelligence XLSX Report'
-    _inherit = 'report.report_xlsx.abstract'
+    _inherit = 'ops.xlsx.abstract'
 
     def generate_xlsx_report(self, workbook, data, wizards):
         """

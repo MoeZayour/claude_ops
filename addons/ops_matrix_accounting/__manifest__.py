@@ -107,7 +107,10 @@
         "report/ops_daily_report_templates.xml",        # Daily Cash/Bank/Day Book Reports
         "report/ops_report_invoice.xml",                 # OPS Branded Invoice / Credit Note
         "report/ops_report_payment.xml",                 # OPS Branded Payment Receipt / Voucher
-        # report/ops_balance_sheet_template.xml removed - wizard deprecated in favor of Matrix Financial Intelligence
+
+        # V2 Layout & Reports (Phase: Report Architecture Refactor)
+        "report/ops_internal_layout_v2.xml",             # V2 internal layout (wkhtmltopdf-compatible)
+        "report/ops_balance_sheet_v2.xml",               # Balance Sheet V2 (uses V2 layout)
 
         # Menus
         # "views/ops_report_menu.xml",  # Disabled - references missing model
