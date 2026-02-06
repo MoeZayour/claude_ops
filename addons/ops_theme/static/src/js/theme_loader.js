@@ -16,11 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
         htmlElement.setAttribute('data-color-mode', 'light');
     }
 
-    // Replace favicon with OPS favicon
+    // Replace favicon with OPS favicon (dynamic route serves company favicon)
     const favicon = document.querySelector('link[rel="icon"]') ||
                     document.querySelector('link[rel="shortcut icon"]');
     if (favicon) {
-        favicon.href = '/ops_theme/static/src/img/favicon.ico';
+        favicon.href = '/ops_theme/favicon';
     }
 
     // Update page title (remove "Odoo" branding)

@@ -5,7 +5,7 @@ OPS Theme - Configuration Settings
 Full settings UI for theme customization.
 """
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ResConfigSettings(models.TransientModel):
@@ -88,10 +88,6 @@ class ResConfigSettings(models.TransientModel):
     # =========================================================================
     # REPORT SETTINGS
     # =========================================================================
-    ops_report_header_bg = fields.Char(
-        related='company_id.ops_report_header_bg',
-        readonly=False,
-    )
     ops_report_logo_position = fields.Selection(
         related='company_id.ops_report_logo_position',
         readonly=False,
@@ -118,6 +114,23 @@ class ResConfigSettings(models.TransientModel):
     )
 
     # =========================================================================
+    # ONCHANGE — Preset applies colors on the settings form
+    # =========================================================================
+    @api.onchange('ops_theme_preset')
+    def _onchange_theme_preset(self):
+        """Apply preset colors when theme preset changes.
+
+        This must live on res.config.settings (not res.company) because
+        the settings form operates on this transient model — onchange
+        defined on the related model does not fire.
+        """
+        if self.ops_theme_preset and self.ops_theme_preset != 'custom':
+            from odoo.addons.ops_theme.models.res_company_branding import ResCompanyBranding
+            preset = ResCompanyBranding.THEME_PRESETS.get(self.ops_theme_preset, {})
+            for field_name, value in preset.items():
+                setattr(self, field_name, value)
+
+    # =========================================================================
     # ACTIONS
     # =========================================================================
     def action_reset_theme_defaults(self):
@@ -137,7 +150,6 @@ class ResConfigSettings(models.TransientModel):
             'ops_navbar_style': 'dark',
             'ops_card_shadow': 'medium',
             'ops_border_radius': 'rounded',
-            'ops_report_header_bg': '#1e293b',
             'ops_report_logo_position': 'left',
             'ops_amount_words_lang': 'en',
             'ops_show_external_badge': True,

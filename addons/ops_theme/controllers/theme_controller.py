@@ -71,8 +71,8 @@ class OPSThemeController(http.Controller):
         border_radius = company.ops_border_radius or 'rounded'
         navbar_style = company.ops_navbar_style or 'dark'
 
-        # Report settings
-        report_header = company.ops_report_header_bg or primary
+        # Report header inherits from primary color
+        report_header = primary
 
         # Shadow values
         shadow_map = {

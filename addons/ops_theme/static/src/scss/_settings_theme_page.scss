@@ -1,0 +1,107 @@
+// =============================================================================
+// OPS THEME — Settings Page Enhancements
+// =============================================================================
+// Targets ONLY the OPS Theme settings block: div[data-key="ops_theme"]
+// Does NOT interfere with Odoo's settings layout system.
+// =============================================================================
+
+// --- Color Swatch Enhancement ---
+// Make color picker fields more visually prominent in the settings page
+app[name="ops_theme"] {
+    .o_field_color {
+        .o_color_pill {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+            &:hover {
+                transform: scale(1.12);
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            }
+        }
+    }
+
+    // --- Preset Radio Cards Enhancement ---
+    // Make radio buttons for presets more visually distinct
+    .o_radio_item {
+        transition: background-color 0.15s ease;
+        border-radius: 6px;
+
+        &:hover {
+            background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.04);
+        }
+
+        label {
+            cursor: pointer;
+        }
+    }
+
+    // --- Block Title Enhancement ---
+    h2 {
+        border-left: 3px solid var(--ops-secondary, #3b82f6);
+        font-weight: 600;
+        letter-spacing: 0.01em;
+    }
+
+    // --- Setting Row Hover ---
+    .o_setting_box {
+        transition: background-color 0.15s ease;
+        border-radius: 6px;
+
+        &:hover {
+            background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.02);
+        }
+    }
+
+    // --- Reset Button Enhancement ---
+    .btn-outline-secondary {
+        transition: all 0.2s ease;
+
+        &:hover {
+            background-color: var(--ops-danger, #ef4444);
+            border-color: var(--ops-danger, #ef4444);
+            color: #ffffff;
+        }
+    }
+
+    // --- Image Upload Area ---
+    .o_field_image {
+        .o_select_file_button {
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            transition: border-color 0.2s ease;
+
+            &:hover {
+                border-color: var(--ops-secondary, #3b82f6);
+            }
+        }
+    }
+}
+
+// --- Dark Mode Adjustments ---
+html[data-color-mode="dark"] {
+    app[name="ops_theme"] {
+        .o_field_color .o_color_pill {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .o_radio_item:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+        }
+
+        .o_setting_box:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .o_field_image .o_select_file_button {
+            border-color: rgba(255, 255, 255, 0.15);
+
+            &:hover {
+                border-color: var(--ops-secondary, #3b82f6);
+            }
+        }
+    }
+}

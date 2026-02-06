@@ -6,8 +6,11 @@ Full theme customization fields for white-label branding.
 """
 
 import base64
+import logging
 
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class ResCompanyBranding(models.Model):
@@ -128,11 +131,6 @@ class ResCompanyBranding(models.Model):
     # =========================================================================
     # REPORT SETTINGS
     # =========================================================================
-    ops_report_header_bg = fields.Char(
-        string='Report Header Background',
-        default='#1e293b',
-        help='Background color for PDF report headers.',
-    )
     ops_report_logo_position = fields.Selection(
         selection=[
             ('left', 'Left'),
@@ -189,7 +187,6 @@ class ResCompanyBranding(models.Model):
             'ops_warning_color': '#f59e0b',
             'ops_danger_color': '#ef4444',
             'ops_navbar_style': 'dark',
-            'ops_report_header_bg': '#1e293b',
         },
         'modern_dark': {
             'ops_primary_color': '#111827',
@@ -198,7 +195,6 @@ class ResCompanyBranding(models.Model):
             'ops_warning_color': '#eab308',
             'ops_danger_color': '#f43f5e',
             'ops_navbar_style': 'dark',
-            'ops_report_header_bg': '#111827',
         },
         'clean_light': {
             'ops_primary_color': '#f8fafc',
@@ -207,7 +203,6 @@ class ResCompanyBranding(models.Model):
             'ops_warning_color': '#f97316',
             'ops_danger_color': '#dc2626',
             'ops_navbar_style': 'light',
-            'ops_report_header_bg': '#64748b',
         },
         'enterprise_navy': {
             'ops_primary_color': '#0f172a',
@@ -216,7 +211,6 @@ class ResCompanyBranding(models.Model):
             'ops_warning_color': '#d97706',
             'ops_danger_color': '#b91c1c',
             'ops_navbar_style': 'dark',
-            'ops_report_header_bg': '#0f172a',
         },
         'warm_professional': {
             'ops_primary_color': '#292524',
@@ -225,9 +219,39 @@ class ResCompanyBranding(models.Model):
             'ops_warning_color': '#ea580c',
             'ops_danger_color': '#dc2626',
             'ops_navbar_style': 'dark',
-            'ops_report_header_bg': '#292524',
         },
     }
+
+    # =========================================================================
+    # THEME-AWARE WRITE — Clear assets on color/layout changes
+    # =========================================================================
+    _THEME_FIELDS = {
+        'ops_primary_color', 'ops_secondary_color', 'ops_success_color',
+        'ops_warning_color', 'ops_danger_color', 'ops_theme_preset',
+        'ops_navbar_style', 'ops_card_shadow', 'ops_border_radius',
+    }
+
+    def write(self, vals):
+        """Override write to clear compiled assets when theme settings change."""
+        res = super().write(vals)
+        if self._THEME_FIELDS & set(vals.keys()):
+            self._clear_theme_assets()
+        return res
+
+    def _clear_theme_assets(self):
+        """Clear compiled asset bundles to force SCSS recompilation."""
+        try:
+            self.env['ir.attachment'].sudo().search([
+                ('name', 'like', 'assets%'),
+                ('res_model', '=', 'ir.ui.view'),
+            ]).unlink()
+            # Clear QWeb caches if the method exists (varies by Odoo version)
+            qweb = self.env.get('ir.qweb')
+            if qweb and hasattr(qweb, 'clear_caches'):
+                qweb.clear_caches()
+            _logger.info("OPS Theme: Cleared asset cache for theme recompilation")
+        except Exception as e:
+            _logger.warning("OPS Theme: Failed to clear asset cache: %s", e)
 
     @api.onchange('ops_theme_preset')
     def _onchange_theme_preset(self):

@@ -160,9 +160,6 @@
           <block title="Reports" name="ops_report_settings" groups="base.group_system">
             <div class="row">
               <div class="col-lg-6">
-                <setting string="Header Background">
-                  <field name="ops_report_header_bg" widget="color"/>
-                </setting>
                 <setting string="Logo Position">
                   <field name="ops_report_logo_position" widget="radio"
                          options="{'horizontal': true}"/>
