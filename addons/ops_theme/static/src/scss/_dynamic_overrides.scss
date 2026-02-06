@@ -237,3 +237,74 @@ a:not(.btn):not(.nav-link):not(.dropdown-item) {
     background-color: var(--ops-secondary) !important;
     color: #ffffff !important;
 }
+
+// =============================================================================
+// SETTINGS PAGE — Visual Enhancement
+// =============================================================================
+// Approved: 2026-02-06 | Risk: LOW | Layout impact: ZERO
+// All enhancements use rgba + CSS vars → auto-adapt to light/dark mode.
+// RULES: Never touch display, flex, grid, width, height, padding, margin,
+//        position on any .o_setting*, .settings*, .tab, .app_settings* selector.
+//        Odoo 19 owns the layout. OPS owns the colors.
+// =============================================================================
+
+// --- 1.1 Sidebar Tab Hover & Active Enhancement ---
+.o_base_settings_view .o_setting_container .settings_tab {
+    .tab {
+        transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+        &:hover:not(.selected) {
+            background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.06);
+        }
+
+        &.selected {
+            box-shadow: inset 3px 0 0 var(--ops-secondary, #3b82f6);
+            font-weight: 600;
+        }
+    }
+}
+
+// --- 1.2 Section Header Left Accent Bar ---
+.o_base_settings_view .settings > .app_settings_block h2 {
+    border-left: 3px solid var(--ops-secondary, #3b82f6);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+// --- 1.3 Search Bar Branded Focus Ring ---
+.o-settings-form-view .o_searchview {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus-within {
+        border-color: var(--ops-secondary, #3b82f6) !important;
+        box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.12) !important;
+    }
+}
+
+// --- 2.1 Setting Box Hover & Search Highlight ---
+.o_settings_container .o_searchable_setting {
+    transition: background-color 0.15s ease;
+    border-radius: var(--ops-border-radius, 8px);
+
+    &:hover {
+        background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.03);
+    }
+
+    // Branded search highlight (overrides Odoo's tint-color default)
+    &.o_setting_highlight {
+        --SearchableSetting__highlight-border: var(--ops-secondary, #3b82f6);
+        --SearchableSetting__highlight-background: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.08);
+    }
+}
+
+// --- 2.2 Label Typography in Settings ---
+.o_settings_container .o_setting_right_pane {
+    .o_form_label {
+        font-weight: 600;
+    }
+}
+
+// --- 3.1 Smooth Scroll Between Sections ---
+.o_base_settings_view .o_setting_container .settings {
+    scroll-behavior: smooth;
+}
