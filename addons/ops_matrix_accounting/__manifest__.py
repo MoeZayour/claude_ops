@@ -111,6 +111,7 @@
         # V2 Layout & Reports (Phase: Report Architecture Refactor)
         "report/ops_internal_layout_v2.xml",             # V2 internal layout (wkhtmltopdf-compatible)
         "report/ops_balance_sheet_v2.xml",               # Balance Sheet V2 (uses V2 layout)
+        "report/ops_financial_reports_v2.xml",            # TB, P&L, CF, Aged V2 (uses V2 layout)
 
         # Menus
         # "views/ops_report_menu.xml",  # Disabled - references missing model

@@ -1,0 +1,663 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+    ================================================================
+    OPS FINANCIAL INTELLIGENCE REPORTS V2
+    Uses ops_internal_layout_v2 for consistent wkhtmltopdf rendering
+
+    Reports in this file:
+    - Trial Balance (tb)
+    - Profit &amp; Loss Statement (pl)
+    - Cash Flow Statement (cf)
+    - Aged Partner Balance (aged)
+
+    Data Flow: doc = wizard record, doc._get_report_data() returns data dict
+    ================================================================
+    -->
+
+    <!-- ================================================================
+         REPORT ACTIONS
+         ================================================================ -->
+
+    <record id="action_report_trial_balance_v2" model="ir.actions.report">
+        <field name="name">Trial Balance (V2)</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_trial_balance_v2</field>
+        <field name="report_file">ops_matrix_accounting.report_trial_balance_v2</field>
+        <field name="print_report_name">'Trial_Balance_%s_%s' % (object.date_from, object.date_to)</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <record id="action_report_profit_loss_v2" model="ir.actions.report">
+        <field name="name">Profit &amp; Loss (V2)</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_profit_loss_v2</field>
+        <field name="report_file">ops_matrix_accounting.report_profit_loss_v2</field>
+        <field name="print_report_name">'Profit_Loss_%s_%s' % (object.date_from, object.date_to)</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <record id="action_report_cash_flow_v2" model="ir.actions.report">
+        <field name="name">Cash Flow Statement (V2)</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_cash_flow_v2</field>
+        <field name="report_file">ops_matrix_accounting.report_cash_flow_v2</field>
+        <field name="print_report_name">'Cash_Flow_%s_%s' % (object.date_from, object.date_to)</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <record id="action_report_aged_partner_v2" model="ir.actions.report">
+        <field name="name">Aged Partner Balance (V2)</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_aged_partner_v2</field>
+        <field name="report_file">ops_matrix_accounting.report_aged_partner_v2</field>
+        <field name="print_report_name">'Aged_Partner_%s' % (object.as_of_date or object.date_to)</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <!-- ================================================================
+         TRIAL BALANCE V2
+         Data: report_data.get('lines') = [{code, account/name, debit, credit, balance}]
+               report_data.get('total_debit'), report_data.get('total_credit')
+         ================================================================ -->
+
+    <template id="report_trial_balance_v2">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="report_data" t-value="doc._get_report_data()"/>
+                <t t-set="company" t-value="doc.company_id or env.company"/>
+                <t t-set="total_debit" t-value="report_data.get('total_debit', 0)"/>
+                <t t-set="total_credit" t-value="report_data.get('total_credit', 0)"/>
+                <t t-set="tb_diff" t-value="abs(total_debit - total_credit)"/>
+
+                <t t-call="ops_matrix_accounting.ops_internal_layout_v2">
+                    <t t-set="report_title" t-value="'Trial Balance'"/>
+                    <t t-set="report_subtitle" t-value="'For the period ' + (doc.date_from.strftime('%b %d, %Y') if doc.date_from else '') + ' to ' + (doc.date_to.strftime('%b %d, %Y') if doc.date_to else '')"/>
+                    <t t-set="filter_items" t-value="[
+                        ('Company', company.name),
+                        ('Period', (doc.date_from.strftime('%d/%m/%Y') if doc.date_from else '') + ' - ' + (doc.date_to.strftime('%d/%m/%Y') if doc.date_to else '')),
+                        ('Entries', doc.target_move == 'posted' and 'Posted Only' or 'All Entries'),
+                    ]"/>
+
+                    <!-- Balance Check Badge -->
+                    <t t-call="ops_matrix_accounting.ops_balance_badge_v2">
+                        <t t-set="check_diff" t-value="tb_diff"/>
+                    </t>
+
+                    <!-- KPI Summary -->
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 10px 0; margin-bottom: 20px;">
+                        <tr>
+                            <td style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 12px 15px; text-align: center; border-radius: 6px; width: 33%;">
+                                <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; margin-bottom: 4px;">Total Debit</div>
+                                <div style="font-size: 14pt; font-weight: 700; color: #3b82f6; font-family: Consolas, Monaco, monospace;">
+                                    <t t-esc="'{:,.2f}'.format(total_debit)"/>
+                                </div>
+                            </td>
+                            <td style="background-color: #fce7f3; border-left: 4px solid #ec4899; padding: 12px 15px; text-align: center; border-radius: 6px; width: 33%;">
+                                <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; margin-bottom: 4px;">Total Credit</div>
+                                <div style="font-size: 14pt; font-weight: 700; color: #ec4899; font-family: Consolas, Monaco, monospace;">
+                                    <t t-esc="'{:,.2f}'.format(total_credit)"/>
+                                </div>
+                            </td>
+                            <td style="background-color: #f1f5f9; border-left: 4px solid #64748b; padding: 12px 15px; text-align: center; border-radius: 6px; width: 33%;">
+                                <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; margin-bottom: 4px;">Difference</div>
+                                <div t-attf-style="font-size: 14pt; font-weight: 700; font-family: Consolas, Monaco, monospace; color: #{tb_diff &lt; 0.01 and '#16a34a' or '#dc2626'};">
+                                    <t t-esc="'{:,.2f}'.format(tb_diff)"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Trial Balance Table -->
+                    <table class="ops-table-v2" width="100%" style="border-collapse: collapse; font-size: 9px; margin-bottom: 20px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #1e293b; background-color: #f8fafc;">
+                                <th style="text-align: left; padding: 8px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; width: 15%;">Code</th>
+                                <th style="text-align: left; padding: 8px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; width: 40%;">Account</th>
+                                <th style="text-align: right; padding: 8px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; width: 15%;">Debit</th>
+                                <th style="text-align: right; padding: 8px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; width: 15%;">Credit</th>
+                                <th style="text-align: right; padding: 8px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; width: 15%;">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="report_data.get('lines', [])" t-as="line">
+                                <t t-set="debit" t-value="line.get('debit', 0)"/>
+                                <t t-set="credit" t-value="line.get('credit', 0)"/>
+                                <t t-set="balance" t-value="line.get('balance', 0)"/>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 6px 10px; color: #64748b; font-family: Consolas, Monaco, monospace; font-size: 8pt;">
+                                        <t t-esc="line.get('code', '')"/>
+                                    </td>
+                                    <td style="padding: 6px 10px; color: #475569;">
+                                        <t t-esc="line.get('account', line.get('name', ''))"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 10px; font-family: Consolas, Monaco, monospace;">
+                                        <t t-if="debit == 0"><span style="color: #94a3b8;">-</span></t>
+                                        <t t-else=""><t t-esc="'{:,.2f}'.format(debit)"/></t>
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 10px; font-family: Consolas, Monaco, monospace;">
+                                        <t t-if="credit == 0"><span style="color: #94a3b8;">-</span></t>
+                                        <t t-else=""><t t-esc="'{:,.2f}'.format(credit)"/></t>
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 10px; font-family: Consolas, Monaco, monospace; font-weight: 600;">
+                                        <t t-if="balance == 0"><span style="color: #94a3b8;">-</span></t>
+                                        <t t-elif="balance &lt; 0"><span style="color: #dc2626;">(<t t-esc="'{:,.2f}'.format(abs(balance))"/>)</span></t>
+                                        <t t-else=""><t t-esc="'{:,.2f}'.format(balance)"/></t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 2px solid #1e293b; border-bottom: 3px double #1e293b; background-color: #f1f5f9;">
+                                <td colspan="2" style="padding: 10px 10px; font-weight: 700; font-size: 10px; text-transform: uppercase;">GRAND TOTAL</td>
+                                <td style="text-align: right; padding: 10px 10px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 10px;">
+                                    <t t-esc="'{:,.2f}'.format(total_debit)"/>
+                                </td>
+                                <td style="text-align: right; padding: 10px 10px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 10px;">
+                                    <t t-esc="'{:,.2f}'.format(total_credit)"/>
+                                </td>
+                                <td style="text-align: right; padding: 10px 10px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 10px;">
+                                    <t t-esc="'{:,.2f}'.format(total_debit - total_credit)"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Notes -->
+                    <t t-call="ops_matrix_accounting.ops_notes_section_v2">
+                        <t t-set="notes_items" t-value="[
+                            'Trial Balance lists all accounts with their debit, credit, and net balance',
+                            'Total debits must equal total credits for the books to be balanced',
+                            'Verifies the fundamental accounting equation: Assets = Liabilities + Equity',
+                            'Zero balances shown as dash (-) for clarity',
+                        ]"/>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- ================================================================
+         PROFIT &amp; LOSS V2
+         Data: report_data.get('income_total'), report_data.get('expense_total'),
+               report_data.get('net_profit'), report_data.get('income_lines'),
+               report_data.get('expense_lines')
+         ================================================================ -->
+
+    <template id="report_profit_loss_v2">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="report_data" t-value="doc._get_report_data()"/>
+                <t t-set="company" t-value="doc.company_id or env.company"/>
+                <t t-set="income" t-value="report_data.get('income_total', 0)"/>
+                <t t-set="expense" t-value="report_data.get('expense_total', 0)"/>
+                <t t-set="net" t-value="report_data.get('net_profit', income - expense)"/>
+                <t t-set="margin" t-value="(net / income * 100) if income > 0 else 0"/>
+
+                <t t-call="ops_matrix_accounting.ops_internal_layout_v2">
+                    <t t-set="report_title" t-value="'Profit &amp; Loss Statement'"/>
+                    <t t-set="report_subtitle" t-value="'For the period ' + (doc.date_from.strftime('%b %d, %Y') if doc.date_from else '') + ' to ' + (doc.date_to.strftime('%b %d, %Y') if doc.date_to else '')"/>
+                    <t t-set="filter_items" t-value="[
+                        ('Company', company.name),
+                        ('Period', (doc.date_from.strftime('%d/%m/%Y') if doc.date_from else '') + ' - ' + (doc.date_to.strftime('%d/%m/%Y') if doc.date_to else '')),
+                        ('Entries', doc.target_move == 'posted' and 'Posted Only' or 'All Entries'),
+                    ]"/>
+
+                    <!-- Performance Alert -->
+                    <t t-if="net &lt; 0">
+                        <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 12px 15px; margin: 0 0 15px 0;">
+                            <span style="font-size: 10px; font-weight: 700; color: #991b1b;">WARNING:</span>
+                            <span style="font-size: 9px; color: #7f1d1d;"> Net loss detected. Immediate attention required.</span>
+                        </div>
+                    </t>
+
+                    <!-- KPI Summary -->
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 10px 0; margin-bottom: 20px;">
+                        <tr>
+                            <td style="background-color: #f0fdf4; border-left: 4px solid #16a34a; padding: 12px 15px; text-align: center; border-radius: 6px; width: 33%;">
+                                <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; margin-bottom: 4px;">Total Revenue</div>
+                                <div style="font-size: 14pt; font-weight: 700; color: #16a34a; font-family: Consolas, Monaco, monospace;">
+                                    <t t-esc="'{:,.2f}'.format(income)"/>
+                                </div>
+                            </td>
+                            <td style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 12px 15px; text-align: center; border-radius: 6px; width: 33%;">
+                                <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; margin-bottom: 4px;">Total Expenses</div>
+                                <div style="font-size: 14pt; font-weight: 700; color: #dc2626; font-family: Consolas, Monaco, monospace;">
+                                    <t t-esc="'{:,.2f}'.format(expense)"/>
+                                </div>
+                            </td>
+                            <td t-attf-style="background-color: #{net >= 0 and '#f0fdf4' or '#fef2f2'}; border-left: 4px solid #{net >= 0 and '#16a34a' or '#dc2626'}; padding: 12px 15px; text-align: center; border-radius: 6px; width: 33%;">
+                                <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b; margin-bottom: 4px;">Net Profit</div>
+                                <div t-attf-style="font-size: 14pt; font-weight: 700; color: #{net >= 0 and '#16a34a' or '#dc2626'}; font-family: Consolas, Monaco, monospace;">
+                                    <t t-if="net &lt; 0">(<t t-esc="'{:,.2f}'.format(abs(net))"/>)</t>
+                                    <t t-else=""><t t-esc="'{:,.2f}'.format(net)"/></t>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- REVENUE Section -->
+                    <t t-call="ops_matrix_accounting.ops_section_header_v2">
+                        <t t-set="title" t-value="'REVENUE'"/>
+                        <t t-set="section_type" t-value="'revenue'"/>
+                    </t>
+
+                    <table class="ops-table-v2" width="100%" style="border-collapse: collapse; font-size: 9px; margin-bottom: 20px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #1e293b; background-color: #f8fafc;">
+                                <th style="text-align: left; padding: 8px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; color: #64748b;">Account</th>
+                                <th style="text-align: right; padding: 8px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; color: #64748b; width: 25%;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="report_data.get('income_lines', [])" t-as="line">
+                                <t t-set="amt" t-value="line.get('amount', line.get('balance', 0))"/>
+                                <t t-set="level" t-value="line.get('level', 0)"/>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td t-attf-style="padding: 6px 10px; padding-left: #{10 + level * 12}px; color: #475569;">
+                                        <t t-esc="line.get('account', line.get('name', ''))"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 10px; font-family: Consolas, Monaco, monospace;">
+                                        <t t-if="amt == 0"><span style="color: #94a3b8;">-</span></t>
+                                        <t t-elif="amt &lt; 0"><span style="color: #dc2626;">(<t t-esc="'{:,.2f}'.format(abs(amt))"/>)</span></t>
+                                        <t t-else=""><t t-esc="'{:,.2f}'.format(amt)"/></t>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-if="not report_data.get('income_lines')">
+                                <tr><td colspan="2" style="padding: 10px; color: #94a3b8; text-align: center; font-style: italic;">No revenue entries for this period</td></tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 2px solid #1e293b; background-color: #f1f5f9;">
+                                <td style="padding: 8px 10px; font-weight: 700; text-transform: uppercase; font-size: 10px;">TOTAL REVENUE</td>
+                                <td style="text-align: right; padding: 8px 10px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 10px; color: #16a34a;">
+                                    <t t-esc="'{:,.2f}'.format(income)"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- EXPENSES Section -->
+                    <t t-call="ops_matrix_accounting.ops_section_header_v2">
+                        <t t-set="title" t-value="'EXPENSES'"/>
+                        <t t-set="section_type" t-value="'expense'"/>
+                    </t>
+
+                    <table class="ops-table-v2" width="100%" style="border-collapse: collapse; font-size: 9px; margin-bottom: 20px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #1e293b; background-color: #f8fafc;">
+                                <th style="text-align: left; padding: 8px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; color: #64748b;">Account</th>
+                                <th style="text-align: right; padding: 8px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; color: #64748b; width: 25%;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="report_data.get('expense_lines', [])" t-as="line">
+                                <t t-set="amt" t-value="line.get('amount', line.get('balance', 0))"/>
+                                <t t-set="level" t-value="line.get('level', 0)"/>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td t-attf-style="padding: 6px 10px; padding-left: #{10 + level * 12}px; color: #475569;">
+                                        <t t-esc="line.get('account', line.get('name', ''))"/>
+                                    </td>
+                                    <td style="text-align: right; padding: 6px 10px; font-family: Consolas, Monaco, monospace;">
+                                        <t t-if="amt == 0"><span style="color: #94a3b8;">-</span></t>
+                                        <t t-elif="amt &lt; 0"><span style="color: #dc2626;">(<t t-esc="'{:,.2f}'.format(abs(amt))"/>)</span></t>
+                                        <t t-else=""><t t-esc="'{:,.2f}'.format(amt)"/></t>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-if="not report_data.get('expense_lines')">
+                                <tr><td colspan="2" style="padding: 10px; color: #94a3b8; text-align: center; font-style: italic;">No expense entries for this period</td></tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 2px solid #1e293b; background-color: #f1f5f9;">
+                                <td style="padding: 8px 10px; font-weight: 700; text-transform: uppercase; font-size: 10px;">TOTAL EXPENSES</td>
+                                <td style="text-align: right; padding: 8px 10px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 10px; color: #dc2626;">
+                                    <t t-esc="'{:,.2f}'.format(expense)"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- NET PROFIT / LOSS -->
+                    <t t-call="ops_matrix_accounting.ops_grand_total_v2">
+                        <t t-set="label" t-value="'NET PROFIT / (LOSS)'"/>
+                        <t t-set="subtitle" t-value="'Margin: ' + '{:.1f}'.format(margin) + '%'"/>
+                        <t t-set="amount" t-value="net"/>
+                        <t t-set="total_color" t-value="net >= 0 and '#16a34a' or '#dc2626'"/>
+                    </t>
+
+                    <!-- Notes -->
+                    <t t-call="ops_matrix_accounting.ops_notes_section_v2">
+                        <t t-set="notes_items" t-value="[
+                            'Profit and Loss shows financial performance for the reporting period',
+                            'Net Profit Margin = (Net Profit / Total Revenue) x 100',
+                            'Margins: Excellent (20%+), Healthy (10%+), Acceptable (5%+), Low (&lt;5%), Loss (&lt;0%)',
+                            'All figures exclude unposted entries unless All Entries filter is selected',
+                        ]"/>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- ================================================================
+         CASH FLOW STATEMENT V2
+         Data: report_data.get('operating_net/investing_net/financing_net/net_cash_flow')
+               report_data.get('operating_lines/investing_lines/financing_lines')
+               report_data.get('opening_cash/closing_cash')
+         ================================================================ -->
+
+    <template id="report_cash_flow_v2">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="report_data" t-value="doc._get_report_data()"/>
+                <t t-set="company" t-value="doc.company_id or env.company"/>
+                <t t-set="operating_net" t-value="report_data.get('operating_net', 0)"/>
+                <t t-set="investing_net" t-value="report_data.get('investing_net', 0)"/>
+                <t t-set="financing_net" t-value="report_data.get('financing_net', 0)"/>
+                <t t-set="net_cf" t-value="report_data.get('net_cash_flow', operating_net + investing_net + financing_net)"/>
+                <t t-set="opening_cash" t-value="report_data.get('opening_cash', 0)"/>
+                <t t-set="closing_cash" t-value="report_data.get('closing_cash', opening_cash + net_cf)"/>
+
+                <t t-call="ops_matrix_accounting.ops_internal_layout_v2">
+                    <t t-set="report_title" t-value="'Cash Flow Statement'"/>
+                    <t t-set="report_subtitle" t-value="'For the period ' + (doc.date_from.strftime('%b %d, %Y') if doc.date_from else '') + ' to ' + (doc.date_to.strftime('%b %d, %Y') if doc.date_to else '')"/>
+                    <t t-set="filter_items" t-value="[
+                        ('Company', company.name),
+                        ('Period', (doc.date_from.strftime('%d/%m/%Y') if doc.date_from else '') + ' - ' + (doc.date_to.strftime('%d/%m/%Y') if doc.date_to else '')),
+                        ('Entries', doc.target_move == 'posted' and 'Posted Only' or 'All Entries'),
+                    ]"/>
+
+                    <!-- KPI Summary -->
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 8px 0; margin-bottom: 20px;">
+                        <tr>
+                            <td style="background-color: #dbeafe; border-left: 4px solid #0891b2; padding: 10px 12px; text-align: center; border-radius: 6px; width: 25%;">
+                                <div style="font-size: 7pt; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">Operating</div>
+                                <div t-attf-style="font-size: 12pt; font-weight: 700; font-family: Consolas, Monaco, monospace; color: #{operating_net >= 0 and '#0891b2' or '#dc2626'};">
+                                    <t t-if="operating_net &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(operating_net))"/>)</t>
+                                    <t t-else=""><t t-esc="'{:,.0f}'.format(operating_net)"/></t>
+                                </div>
+                            </td>
+                            <td style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px 12px; text-align: center; border-radius: 6px; width: 25%;">
+                                <div style="font-size: 7pt; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">Investing</div>
+                                <div t-attf-style="font-size: 12pt; font-weight: 700; font-family: Consolas, Monaco, monospace; color: #{investing_net >= 0 and '#f59e0b' or '#dc2626'};">
+                                    <t t-if="investing_net &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(investing_net))"/>)</t>
+                                    <t t-else=""><t t-esc="'{:,.0f}'.format(investing_net)"/></t>
+                                </div>
+                            </td>
+                            <td style="background-color: #e9d5ff; border-left: 4px solid #9333ea; padding: 10px 12px; text-align: center; border-radius: 6px; width: 25%;">
+                                <div style="font-size: 7pt; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">Financing</div>
+                                <div t-attf-style="font-size: 12pt; font-weight: 700; font-family: Consolas, Monaco, monospace; color: #{financing_net >= 0 and '#9333ea' or '#dc2626'};">
+                                    <t t-if="financing_net &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(financing_net))"/>)</t>
+                                    <t t-else=""><t t-esc="'{:,.0f}'.format(financing_net)"/></t>
+                                </div>
+                            </td>
+                            <td t-attf-style="background-color: #{net_cf >= 0 and '#f0fdf4' or '#fef2f2'}; border-left: 4px solid #{net_cf >= 0 and '#16a34a' or '#dc2626'}; padding: 10px 12px; text-align: center; border-radius: 6px; width: 25%;">
+                                <div style="font-size: 7pt; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">Net Change</div>
+                                <div t-attf-style="font-size: 12pt; font-weight: 700; font-family: Consolas, Monaco, monospace; color: #{net_cf >= 0 and '#16a34a' or '#dc2626'};">
+                                    <t t-if="net_cf &lt; 0">(<t t-esc="'{:,.0f}'.format(abs(net_cf))"/>)</t>
+                                    <t t-else=""><t t-esc="'{:,.0f}'.format(net_cf)"/></t>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Cash Flow Activity Sections (macro to avoid repetition) -->
+                    <t t-foreach="[
+                        ('CASH FLOW FROM OPERATING ACTIVITIES', 'operating_lines', operating_net, '#0891b2', 'default'),
+                        ('CASH FLOW FROM INVESTING ACTIVITIES', 'investing_lines', investing_net, '#f59e0b', 'default'),
+                        ('CASH FLOW FROM FINANCING ACTIVITIES', 'financing_lines', financing_net, '#9333ea', 'default'),
+                    ]" t-as="cf_section">
+                        <t t-set="sec_title" t-value="cf_section[0]"/>
+                        <t t-set="sec_key" t-value="cf_section[1]"/>
+                        <t t-set="sec_net" t-value="cf_section[2]"/>
+                        <t t-set="sec_color" t-value="cf_section[3]"/>
+
+                        <!-- Section Header -->
+                        <div t-attf-style="border-left: 4px solid #{sec_color}; padding: 8px 12px; margin: 15px 0 8px 0; border-radius: 4px; font-weight: 600; font-size: 9pt; background-color: rgba(0,0,0,0.03);">
+                            <table width="100%" style="border-collapse: collapse;">
+                                <tr>
+                                    <td><t t-esc="sec_title"/></td>
+                                    <td t-attf-style="text-align: right; font-family: Consolas, Monaco, monospace; color: #{sec_color};">
+                                        <t t-if="sec_net &lt; 0">(<t t-esc="'{:,.2f}'.format(abs(sec_net))"/>)</t>
+                                        <t t-else=""><t t-esc="'{:,.2f}'.format(sec_net)"/></t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Activity Lines -->
+                        <table width="100%" style="border-collapse: collapse; font-size: 9px; margin-bottom: 15px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #1e293b; background-color: #f8fafc;">
+                                    <th style="text-align: left; padding: 6px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; color: #64748b;">Description</th>
+                                    <th style="text-align: right; padding: 6px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; color: #64748b; width: 18%;">Inflow</th>
+                                    <th style="text-align: right; padding: 6px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; color: #64748b; width: 18%;">Outflow</th>
+                                    <th style="text-align: right; padding: 6px 10px; font-weight: 600; font-size: 7.5pt; text-transform: uppercase; color: #64748b; width: 18%;">Net</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="sec_lines" t-value="report_data.get(sec_key, [])"/>
+                                <t t-if="sec_key == 'operating_lines' and not sec_lines">
+                                    <t t-set="sec_lines" t-value="report_data.get('lines', [])"/>
+                                </t>
+                                <t t-foreach="sec_lines" t-as="line">
+                                    <t t-set="inflow" t-value="line.get('inflow', 0)"/>
+                                    <t t-set="outflow" t-value="line.get('outflow', 0)"/>
+                                    <t t-set="net_flow" t-value="line.get('net', inflow - outflow)"/>
+                                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                                        <td style="padding: 6px 10px; color: #475569;">
+                                            <t t-esc="line.get('account', line.get('name', ''))"/>
+                                        </td>
+                                        <td style="text-align: right; padding: 6px 10px; font-family: Consolas, Monaco, monospace;">
+                                            <t t-if="inflow == 0"><span style="color: #94a3b8;">-</span></t>
+                                            <t t-else=""><span style="color: #16a34a;"><t t-esc="'{:,.2f}'.format(inflow)"/></span></t>
+                                        </td>
+                                        <td style="text-align: right; padding: 6px 10px; font-family: Consolas, Monaco, monospace;">
+                                            <t t-if="outflow == 0"><span style="color: #94a3b8;">-</span></t>
+                                            <t t-else=""><span style="color: #dc2626;">(<t t-esc="'{:,.2f}'.format(outflow)"/>)</span></t>
+                                        </td>
+                                        <td style="text-align: right; padding: 6px 10px; font-family: Consolas, Monaco, monospace; font-weight: 600;">
+                                            <t t-if="net_flow == 0"><span style="color: #94a3b8;">-</span></t>
+                                            <t t-elif="net_flow &lt; 0"><span style="color: #dc2626;">(<t t-esc="'{:,.2f}'.format(abs(net_flow))"/>)</span></t>
+                                            <t t-else=""><span style="color: #16a34a;"><t t-esc="'{:,.2f}'.format(net_flow)"/></span></t>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-if="not sec_lines">
+                                    <tr><td colspan="4" style="padding: 10px; color: #94a3b8; text-align: center; font-style: italic;">No entries</td></tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <!-- Cash Reconciliation -->
+                    <div style="background-color: #f1f5f9; border-left: 4px solid #64748b; padding: 8px 12px; margin: 15px 0 8px 0; font-weight: 600; font-size: 9pt;">
+                        CASH RECONCILIATION
+                    </div>
+
+                    <table width="100%" style="border-collapse: collapse; font-size: 10px; margin-bottom: 20px;">
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                <td style="padding: 8px 10px; color: #475569;">Cash at Beginning of Period</td>
+                                <td style="text-align: right; padding: 8px 10px; font-family: Consolas, Monaco, monospace; width: 25%;">
+                                    <t t-esc="'{:,.2f}'.format(opening_cash)"/>
+                                </td>
+                            </tr>
+                            <t t-foreach="[('Net Cash from Operating', operating_net), ('Net Cash from Investing', investing_net), ('Net Cash from Financing', financing_net)]" t-as="recon">
+                                <tr style="border-bottom: 1px solid #e2e8f0;">
+                                    <td style="padding: 8px 10px; padding-left: 22px; color: #475569;"><t t-esc="recon[0]"/></td>
+                                    <td style="text-align: right; padding: 8px 10px; font-family: Consolas, Monaco, monospace;">
+                                        <t t-if="recon[1] &lt; 0"><span style="color: #dc2626;">(<t t-esc="'{:,.2f}'.format(abs(recon[1]))"/>)</span></t>
+                                        <t t-else=""><span style="color: #16a34a;"><t t-esc="'{:,.2f}'.format(recon[1])"/></span></t>
+                                    </td>
+                                </tr>
+                            </t>
+                            <tr style="border-top: 2px solid #1e293b; border-bottom: 3px double #1e293b; background-color: #f8fafc;">
+                                <td style="padding: 10px; font-weight: 700; text-transform: uppercase;">CASH AT END OF PERIOD</td>
+                                <td style="text-align: right; padding: 10px; font-family: Consolas, Monaco, monospace; font-weight: 700;">
+                                    <t t-esc="'{:,.2f}'.format(closing_cash)"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Notes -->
+                    <t t-call="ops_matrix_accounting.ops_notes_section_v2">
+                        <t t-set="notes_items" t-value="[
+                            'Cash Flow Statement shows sources and uses of cash during the period',
+                            'Operating: Cash from normal business operations',
+                            'Investing: Cash from buying/selling assets and investments',
+                            'Financing: Cash from debt, equity, and dividends',
+                            'Inflows shown in green, outflows in red (parentheses)',
+                        ]"/>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- ================================================================
+         AGED PARTNER BALANCE V2
+         Data: report_data.get('lines') = [{partner/name, current, 30, 60, 90, older, total}]
+               report_data.get('total_current/total_30/total_60/total_90/total_older')
+         ================================================================ -->
+
+    <template id="report_aged_partner_v2">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="report_data" t-value="doc._get_report_data()"/>
+                <t t-set="company" t-value="doc.company_id or env.company"/>
+                <t t-set="total_current" t-value="report_data.get('total_current', 0)"/>
+                <t t-set="total_30" t-value="report_data.get('total_30', 0)"/>
+                <t t-set="total_60" t-value="report_data.get('total_60', 0)"/>
+                <t t-set="total_90" t-value="report_data.get('total_90', 0)"/>
+                <t t-set="total_older" t-value="report_data.get('total_older', 0)"/>
+                <t t-set="total_balance" t-value="total_current + total_30 + total_60 + total_90 + total_older"/>
+
+                <t t-call="ops_matrix_accounting.ops_internal_layout_v2">
+                    <t t-set="report_title" t-value="'Aged Partner Balance'"/>
+                    <t t-set="report_subtitle" t-value="'As of ' + ((doc.as_of_date or doc.date_to).strftime('%B %d, %Y') if (doc.as_of_date or doc.date_to) else '')"/>
+                    <t t-set="filter_items" t-value="[
+                        ('Company', company.name),
+                        ('Currency', company.currency_id.name or ''),
+                        ('Entries', doc.target_move == 'posted' and 'Posted Only' or 'All Entries'),
+                    ]"/>
+
+                    <!-- Aging KPI Cards -->
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 6px 0; margin-bottom: 20px;">
+                        <tr>
+                            <td style="background-color: #d1fae5; border-left: 4px solid #16a34a; padding: 10px 8px; text-align: center; border-radius: 6px;">
+                                <div style="font-size: 6pt; text-transform: uppercase; color: #64748b;">Current</div>
+                                <div style="font-size: 11pt; font-weight: 700; color: #16a34a; font-family: Consolas, Monaco, monospace;">
+                                    <t t-esc="'{:,.0f}'.format(total_current)"/>
+                                </div>
+                            </td>
+                            <td style="background-color: #fef3c7; border-left: 4px solid #eab308; padding: 10px 8px; text-align: center; border-radius: 6px;">
+                                <div style="font-size: 6pt; text-transform: uppercase; color: #64748b;">1-30 Days</div>
+                                <div style="font-size: 11pt; font-weight: 700; color: #ca8a04; font-family: Consolas, Monaco, monospace;">
+                                    <t t-esc="'{:,.0f}'.format(total_30)"/>
+                                </div>
+                            </td>
+                            <td style="background-color: #fed7aa; border-left: 4px solid #f59e0b; padding: 10px 8px; text-align: center; border-radius: 6px;">
+                                <div style="font-size: 6pt; text-transform: uppercase; color: #64748b;">31-60 Days</div>
+                                <div style="font-size: 11pt; font-weight: 700; color: #d97706; font-family: Consolas, Monaco, monospace;">
+                                    <t t-esc="'{:,.0f}'.format(total_60)"/>
+                                </div>
+                            </td>
+                            <td style="background-color: #fecaca; border-left: 4px solid #ef4444; padding: 10px 8px; text-align: center; border-radius: 6px;">
+                                <div style="font-size: 6pt; text-transform: uppercase; color: #64748b;">61-90 Days</div>
+                                <div style="font-size: 11pt; font-weight: 700; color: #dc2626; font-family: Consolas, Monaco, monospace;">
+                                    <t t-esc="'{:,.0f}'.format(total_90)"/>
+                                </div>
+                            </td>
+                            <td style="background-color: #fecaca; border-left: 4px solid #991b1b; padding: 10px 8px; text-align: center; border-radius: 6px;">
+                                <div style="font-size: 6pt; text-transform: uppercase; color: #64748b;">90+ Days</div>
+                                <div style="font-size: 11pt; font-weight: 700; color: #991b1b; font-family: Consolas, Monaco, monospace;">
+                                    <t t-esc="'{:,.0f}'.format(total_older)"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Aging Table -->
+                    <table class="ops-table-v2" width="100%" style="border-collapse: collapse; font-size: 8px; margin-bottom: 20px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #1e293b; background-color: #f8fafc;">
+                                <th style="text-align: left; padding: 6px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; color: #64748b;">Partner</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; color: #16a34a; width: 13%;">Current</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; color: #ca8a04; width: 13%;">1-30</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; color: #d97706; width: 13%;">31-60</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; color: #dc2626; width: 13%;">61-90</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; color: #991b1b; width: 13%;">90+</th>
+                                <th style="text-align: right; padding: 6px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; color: #1e293b; width: 14%;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="report_data.get('lines', [])" t-as="line">
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 5px 8px; color: #475569; font-weight: 500;">
+                                        <t t-esc="line.get('partner', line.get('name', 'Unknown'))"/>
+                                    </td>
+                                    <t t-foreach="['current', '30', '60', '90', 'older']" t-as="bucket">
+                                        <t t-set="val" t-value="line.get(bucket, line.get('age_' + bucket, 0))"/>
+                                        <td style="text-align: right; padding: 5px 8px; font-family: Consolas, Monaco, monospace;">
+                                            <t t-if="val == 0"><span style="color: #94a3b8;">-</span></t>
+                                            <t t-else=""><t t-esc="'{:,.2f}'.format(val)"/></t>
+                                        </td>
+                                    </t>
+                                    <td style="text-align: right; padding: 5px 8px; font-family: Consolas, Monaco, monospace; font-weight: 700;">
+                                        <t t-esc="'{:,.2f}'.format(line.get('total', line.get('balance', 0)))"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-if="not report_data.get('lines')">
+                                <tr><td colspan="7" style="padding: 10px; color: #94a3b8; text-align: center; font-style: italic;">No outstanding balances</td></tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 2px solid #1e293b; border-bottom: 3px double #1e293b; background-color: #f1f5f9;">
+                                <td style="padding: 8px; font-weight: 700; font-size: 9px; text-transform: uppercase;">GRAND TOTAL</td>
+                                <td style="text-align: right; padding: 8px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 9px; color: #16a34a;">
+                                    <t t-esc="'{:,.2f}'.format(total_current)"/>
+                                </td>
+                                <td style="text-align: right; padding: 8px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 9px; color: #ca8a04;">
+                                    <t t-esc="'{:,.2f}'.format(total_30)"/>
+                                </td>
+                                <td style="text-align: right; padding: 8px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 9px; color: #d97706;">
+                                    <t t-esc="'{:,.2f}'.format(total_60)"/>
+                                </td>
+                                <td style="text-align: right; padding: 8px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 9px; color: #dc2626;">
+                                    <t t-esc="'{:,.2f}'.format(total_90)"/>
+                                </td>
+                                <td style="text-align: right; padding: 8px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 9px; color: #991b1b;">
+                                    <t t-esc="'{:,.2f}'.format(total_older)"/>
+                                </td>
+                                <td style="text-align: right; padding: 8px; font-family: Consolas, Monaco, monospace; font-weight: 700; font-size: 9px;">
+                                    <t t-esc="'{:,.2f}'.format(total_balance)"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Notes -->
+                    <t t-call="ops_matrix_accounting.ops_notes_section_v2">
+                        <t t-set="notes_items" t-value="[
+                            'Aging based on due date of each invoice/bill',
+                            'Current = not yet due; aging buckets start from due date',
+                            'Color coding: Green (current) to Dark Red (90+ days overdue)',
+                            'Only unreconciled items are included',
+                        ]"/>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

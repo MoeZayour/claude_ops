@@ -314,11 +314,11 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
 
         template_mapping = {
             'gl': 'ops_matrix_accounting.report_general_ledger_corporate',
-            'tb': 'ops_matrix_accounting.report_trial_balance_corporate',
-            'pl': 'ops_matrix_accounting.report_profit_loss_corporate',
-            'bs': 'ops_matrix_accounting.report_ops_financial_minimal',
-            'cf': 'ops_matrix_accounting.report_cash_flow_corporate',
-            'aged': 'ops_matrix_accounting.report_aged_partner_corporate',
+            'tb': 'ops_matrix_accounting.report_trial_balance_v2',
+            'pl': 'ops_matrix_accounting.report_profit_loss_v2',
+            'bs': 'ops_matrix_accounting.report_balance_sheet_v2',
+            'cf': 'ops_matrix_accounting.report_cash_flow_v2',
+            'aged': 'ops_matrix_accounting.report_aged_partner_v2',
             'partner': 'ops_matrix_accounting.report_general_ledger_corporate',
             'soa': 'ops_matrix_accounting.report_general_ledger_corporate',
         }
@@ -1769,14 +1769,14 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
 
     def _return_report_action(self, data):
         """Return appropriate report action based on report type."""
-        # Corporate report action XML IDs (Phase 4 redesigned templates)
+        # V2 report action XML IDs (wkhtmltopdf-compatible layout)
         report_xml_ids = {
             'gl': 'ops_matrix_accounting.action_report_general_ledger_corporate',
-            'tb': 'ops_matrix_accounting.action_report_trial_balance_corporate',
-            'pl': 'ops_matrix_accounting.action_report_profit_loss_corporate',
-            'bs': 'ops_matrix_accounting.action_report_balance_sheet_corporate',
-            'cf': 'ops_matrix_accounting.action_report_cash_flow_corporate',
-            'aged': 'ops_matrix_accounting.action_report_aged_partner_corporate',
+            'tb': 'ops_matrix_accounting.action_report_trial_balance_v2',
+            'pl': 'ops_matrix_accounting.action_report_profit_loss_v2',
+            'bs': 'ops_matrix_accounting.action_report_balance_sheet_v2',
+            'cf': 'ops_matrix_accounting.action_report_cash_flow_v2',
+            'aged': 'ops_matrix_accounting.action_report_aged_partner_v2',
             'partner': 'ops_matrix_accounting.action_report_general_ledger_corporate',  # Partner ledger uses GL template
             'soa': 'ops_matrix_accounting.action_report_general_ledger_corporate',  # Statement of Account uses GL template
         }
