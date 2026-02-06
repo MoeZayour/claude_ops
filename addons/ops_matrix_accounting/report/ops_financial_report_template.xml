@@ -1265,7 +1265,7 @@
                     <!-- ==================== EQUITY SECTION ==================== -->
 
                     <t t-call="ops_matrix_accounting.section_header_equity">
-                        <t t-set="section_title" t-value="'SHAREHOLDERS&#39; EQUITY'"/>
+                        <t t-set="section_title">SHAREHOLDERS' EQUITY</t>
                     </t>
 
                     <table width="100%" style="border-collapse: collapse; font-size: 9px; margin-bottom: 20px;">
