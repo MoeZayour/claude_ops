@@ -1473,3 +1473,77 @@ class OpsFinancialMinimalReportParser(models.AbstractModel):
 
         values['report_data'] = report_data
         return values
+
+
+# ============================================================
+# PARSER ALIASES — Odoo matches report_name to AbstractModel
+# named 'report.<report_name>'. Without these, docs is empty
+# and the QWeb template renders a blank page.
+# ============================================================
+
+class OpsBalanceSheetCorporateParser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_balance_sheet_corporate'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Balance Sheet Corporate Parser'
+
+
+class OpsTrialBalanceCorporateParser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_trial_balance_corporate'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Trial Balance Corporate Parser'
+
+
+class OpsProfitLossCorporateParser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_profit_loss_corporate'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Profit & Loss Corporate Parser'
+
+
+class OpsCashFlowCorporateParser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_cash_flow_corporate'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Cash Flow Corporate Parser'
+
+
+class OpsAgedPartnerCorporateParser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_aged_partner_corporate'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Aged Partner Corporate Parser'
+
+
+class OpsGeneralLedgerCorporateParser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_general_ledger_corporate'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'General Ledger Corporate Parser'
+
+
+# V2 Report Parsers (wkhtmltopdf-compatible layout)
+
+class OpsBalanceSheetV2Parser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_balance_sheet_v2'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Balance Sheet V2 Parser'
+
+
+class OpsTrialBalanceV2Parser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_trial_balance_v2'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Trial Balance V2 Parser'
+
+
+class OpsProfitLossV2Parser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_profit_loss_v2'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Profit & Loss V2 Parser'
+
+
+class OpsCashFlowV2Parser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_cash_flow_v2'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Cash Flow V2 Parser'
+
+
+class OpsAgedPartnerV2Parser(models.AbstractModel):
+    _name = 'report.ops_matrix_accounting.report_aged_partner_v2'
+    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
+    _description = 'Aged Partner V2 Parser'
