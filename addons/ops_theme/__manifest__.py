@@ -42,6 +42,8 @@ Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy
         'views/login_templates.xml',
         'views/webclient_templates.xml',
         'views/res_config_settings_views.xml',
+        'report/ops_report_css.xml',
+        'report/ops_external_layout.xml',
     ],
     'assets': {
         # =================================================================

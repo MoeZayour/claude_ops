@@ -155,6 +155,16 @@ class ResCompanyBranding(models.Model):
         default=True,
         help='Display "Powered by OPS Framework" badge on reports and external documents.',
     )
+    ops_show_bank_details = fields.Boolean(
+        string='Show Bank Details on Documents',
+        default=True,
+        help='Display bank account details on quotations and invoices.',
+    )
+    ops_show_signature_block = fields.Boolean(
+        string='Show Signature Block',
+        default=True,
+        help='Display signature lines on printed documents.',
+    )
 
     # =========================================================================
     # USER DEFAULTS

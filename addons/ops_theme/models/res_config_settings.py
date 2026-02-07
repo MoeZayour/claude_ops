@@ -100,6 +100,14 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.ops_show_external_badge',
         readonly=False,
     )
+    ops_show_bank_details = fields.Boolean(
+        related='company_id.ops_show_bank_details',
+        readonly=False,
+    )
+    ops_show_signature_block = fields.Boolean(
+        related='company_id.ops_show_signature_block',
+        readonly=False,
+    )
 
     # =========================================================================
     # USER DEFAULTS

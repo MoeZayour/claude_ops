@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         OPS REPORT CSS — Shared styles for all OPS external documents
+         ================================================================
+         Called via t-call="ops_theme.ops_report_css" from any template.
+         ALL styles inline for wkhtmltopdf compatibility.
+         Colors injected via t-esc (NO CSS variables).
+
+         Expects these t-set variables in the calling scope:
+           ops_primary  — hex color string (e.g. '#1e293b')
+           ops_rgb      — RGB triplet string (e.g. '30,41,59')
+    ================================================================ -->
+
+    <template id="ops_report_css">
+        <!-- Ensure color variables exist -->
+        <t t-if="not ops_primary" t-set="ops_primary" t-value="'#1e293b'"/>
+        <t t-if="not ops_rgb" t-set="ops_rgb" t-value="'30,41,59'"/>
+
+        <style>
+            /* ============================================================
+               BASE
+            ============================================================ */
+            .ops-external-doc {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                color: #1e293b;
+                font-size: 8.5pt;
+                line-height: 1.5;
+            }
+
+            /* ============================================================
+               LETTERHEAD
+            ============================================================ */
+            .ops-letterhead {
+                display: table;
+                width: 100%;
+                padding-bottom: 12px;
+                border-bottom: 2.5px solid <t t-esc="ops_primary"/>;
+                margin-bottom: 18px;
+            }
+            .ops-company-block {
+                display: table-cell;
+                vertical-align: top;
+                width: 65%;
+            }
+            .ops-doc-meta {
+                display: table-cell;
+                vertical-align: top;
+                text-align: right;
+                width: 35%;
+                font-size: 8pt;
+                color: #64748b;
+                line-height: 1.7;
+            }
+            .ops-company-logo {
+                width: 55px;
+                height: 55px;
+                border-radius: 5px;
+                vertical-align: top;
+                margin-right: 10px;
+            }
+            .ops-company-logo-placeholder {
+                display: inline-block;
+                width: 55px;
+                height: 55px;
+                border-radius: 5px;
+                background: <t t-esc="ops_primary"/>;
+                color: white;
+                text-align: center;
+                line-height: 55px;
+                font-weight: 700;
+                font-size: 16px;
+                vertical-align: top;
+                margin-right: 10px;
+            }
+            .ops-company-name {
+                font-size: 14pt;
+                font-weight: 700;
+                color: <t t-esc="ops_primary"/>;
+                margin-bottom: 1px;
+            }
+            .ops-company-details {
+                font-size: 7.5pt;
+                color: #64748b;
+                line-height: 1.55;
+            }
+            .ops-doc-ref {
+                font-size: 10pt;
+                font-weight: 700;
+                color: <t t-esc="ops_primary"/>;
+                margin-bottom: 2px;
+            }
+
+            /* ============================================================
+               TITLE BAR
+            ============================================================ */
+            .ops-title-bar {
+                background: <t t-esc="ops_primary"/>;
+                color: white;
+                padding: 8px 14px;
+                border-radius: 4px;
+                margin-bottom: 16px;
+            }
+            .ops-title-bar h2 {
+                font-size: 12pt;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin: 0;
+                display: inline-block;
+                color: white;
+            }
+            .ops-title-bar.credit-note {
+                background: #dc2626;
+            }
+            .ops-title-bar.ops-outbound {
+                background: #b45309;
+            }
+            .ops-doc-status {
+                font-size: 7.5pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                background: rgba(255,255,255,0.2);
+                padding: 2px 8px;
+                border-radius: 3px;
+                float: right;
+                margin-top: 2px;
+                color: white;
+            }
+
+            /* ============================================================
+               ADDRESS BLOCKS
+            ============================================================ */
+            .ops-address-row {
+                display: table;
+                width: 100%;
+                margin-bottom: 16px;
+            }
+            .ops-address-block {
+                display: table-cell;
+                width: 47%;
+                padding: 10px 12px;
+                background: rgba(<t t-esc="ops_rgb"/>, 0.05);
+                border-left: 3px solid <t t-esc="ops_primary"/>;
+                border-radius: 0 4px 4px 0;
+                vertical-align: top;
+            }
+            .ops-address-block + .ops-address-block {
+                margin-left: 6%;
+            }
+            .ops-address-label {
+                font-size: 6.5pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #94a3b8;
+                margin-bottom: 4px;
+            }
+            .ops-address-name {
+                font-size: 10pt;
+                font-weight: 600;
+                color: <t t-esc="ops_primary"/>;
+                margin-bottom: 2px;
+            }
+            .ops-address-details {
+                font-size: 7.5pt;
+                color: #64748b;
+                line-height: 1.55;
+            }
+
+            /* ============================================================
+               INFO BAR
+            ============================================================ */
+            .ops-info-bar {
+                display: table;
+                width: 100%;
+                margin-bottom: 16px;
+                border: 1px solid #e2e8f0;
+                border-radius: 4px;
+            }
+            .ops-info-cell {
+                display: table-cell;
+                padding: 7px 10px;
+                border-right: 1px solid #e2e8f0;
+                vertical-align: top;
+            }
+            .ops-info-cell:last-child { border-right: none; }
+            .ops-info-label {
+                font-size: 6.5pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                color: #94a3b8;
+                margin-bottom: 1px;
+            }
+            .ops-info-value {
+                font-size: 8.5pt;
+                font-weight: 600;
+                color: #1e293b;
+            }
+
+            /* ============================================================
+               LINE ITEMS TABLE
+            ============================================================ */
+            table.ops-items-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 8pt;
+                margin-bottom: 0;
+            }
+            table.ops-items-table thead th {
+                padding: 7px 8px;
+                text-align: left;
+                font-weight: 600;
+                font-size: 6.5pt;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                color: white;
+                background: <t t-esc="ops_primary"/>;
+            }
+            table.ops-items-table thead th:first-child { border-radius: 4px 0 0 0; }
+            table.ops-items-table thead th:last-child { border-radius: 0 4px 0 0; }
+            .num { text-align: right; font-variant-numeric: tabular-nums; }
+            table.ops-items-table tbody td {
+                padding: 6px 8px;
+                vertical-align: top;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            table.ops-items-table tbody tr:nth-child(even) { background: #f8fafc; }
+            .ops-item-code {
+                font-size: 6.5pt;
+                color: #94a3b8;
+                display: block;
+                margin-top: 1px;
+            }
+
+            /* ============================================================
+               TOTALS
+            ============================================================ */
+            .ops-totals-wrapper {
+                text-align: right;
+                margin-bottom: 14px;
+            }
+            .ops-totals-block {
+                display: inline-block;
+                width: 250px;
+                text-align: left;
+                border: 1px solid #e2e8f0;
+                border-top: none;
+                border-radius: 0 0 4px 4px;
+            }
+            .ops-totals-line {
+                display: table;
+                width: 100%;
+                padding: 5px 10px;
+                font-size: 7.5pt;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            .ops-totals-line .t-label {
+                display: table-cell;
+                color: #64748b;
+                font-weight: 500;
+            }
+            .ops-totals-line .t-value {
+                display: table-cell;
+                text-align: right;
+                font-weight: 600;
+                font-variant-numeric: tabular-nums;
+                color: #1e293b;
+            }
+            .ops-totals-line.grand-total {
+                background: <t t-esc="ops_primary"/>;
+                padding: 8px 10px;
+                border-bottom: none;
+                border-radius: 0 0 3px 3px;
+            }
+            .ops-totals-line.grand-total .t-label {
+                color: rgba(255,255,255,0.85);
+                font-weight: 600;
+                font-size: 8pt;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+            .ops-totals-line.grand-total .t-value {
+                color: white;
+                font-weight: 700;
+                font-size: 11pt;
+            }
+            .ops-totals-line.grand-total.credit-note { background: #dc2626; }
+
+            /* ============================================================
+               AMOUNT IN WORDS
+            ============================================================ */
+            .ops-amount-words {
+                padding: 8px 10px;
+                background: rgba(<t t-esc="ops_rgb"/>, 0.05);
+                border-radius: 4px;
+                margin-bottom: 14px;
+                border-left: 3px solid <t t-esc="ops_primary"/>;
+            }
+            .aw-label, .ops-aw-label {
+                font-size: 6.5pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                color: #94a3b8;
+                margin-bottom: 2px;
+            }
+            .aw-text, .ops-aw-text {
+                font-size: 8pt;
+                font-weight: 600;
+                color: <t t-esc="ops_primary"/>;
+            }
+            .aw-arabic, .ops-aw-ar {
+                direction: rtl;
+                text-align: right;
+                margin-top: 2px;
+            }
+
+            /* ============================================================
+               BANK DETAILS
+            ============================================================ */
+            .ops-bank-details {
+                padding: 8px 10px;
+                border: 1px solid #e2e8f0;
+                border-radius: 4px;
+                margin-bottom: 14px;
+            }
+            .ops-bank-details h4 {
+                font-size: 7pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                color: <t t-esc="ops_primary"/>;
+                margin: 0 0 4px 0;
+            }
+            .ops-bank-grid { display: table; width: 100%; }
+            .ops-bank-item { display: table-row; font-size: 7pt; }
+            .b-label {
+                display: table-cell;
+                color: #94a3b8;
+                font-weight: 500;
+                padding: 1px 8px 1px 0;
+                width: 55px;
+            }
+            .b-value {
+                display: table-cell;
+                color: #1e293b;
+                font-weight: 600;
+                padding: 1px 0;
+            }
+
+            /* ============================================================
+               SIGNATURE BLOCK
+            ============================================================ */
+            .ops-signature-row {
+                display: table;
+                width: 100%;
+                margin-bottom: 14px;
+            }
+            .ops-signature-block {
+                display: table-cell;
+                text-align: center;
+                vertical-align: bottom;
+                padding: 0 10px;
+            }
+            .ops-signature-line {
+                border-top: 1px solid #e2e8f0;
+                padding-top: 5px;
+                margin-top: 45px;
+            }
+            .ops-sig-label {
+                font-size: 7pt;
+                font-weight: 600;
+                color: #64748b;
+            }
+            .ops-sig-sub {
+                font-size: 6pt;
+                color: #94a3b8;
+            }
+
+            /* ============================================================
+               TERMS, NOTES, INFO SECTIONS
+            ============================================================ */
+            .ops-terms {
+                padding: 8px 10px;
+                background: #f8fafc;
+                border-radius: 4px;
+                border: 1px solid #e2e8f0;
+                margin-bottom: 12px;
+            }
+            .ops-terms h4 {
+                font-size: 7pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                color: <t t-esc="ops_primary"/>;
+                margin: 0 0 3px 0;
+            }
+            .ops-terms p, .ops-terms div {
+                font-size: 6.5pt;
+                color: #94a3b8;
+                line-height: 1.5;
+                margin: 0;
+            }
+            .ops-info-sections {
+                display: table;
+                width: 100%;
+                margin-bottom: 14px;
+            }
+            .ops-info-section {
+                display: table-cell;
+                width: 48%;
+                vertical-align: top;
+            }
+            .ops-info-section + .ops-info-section { padding-left: 4%; }
+            .ops-info-section h4 {
+                font-size: 7pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                color: <t t-esc="ops_primary"/>;
+                margin: 0 0 4px 0;
+                padding-bottom: 3px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .ops-info-section p, .ops-info-section li {
+                font-size: 7pt;
+                color: #64748b;
+                line-height: 1.5;
+            }
+            .ops-info-section ul { padding-left: 12px; margin: 0; }
+
+            /* ============================================================
+               PAYMENT STATUS
+            ============================================================ */
+            .ops-payment-status {
+                padding: 6px 10px;
+                border-radius: 4px;
+                margin-bottom: 14px;
+                font-size: 8pt;
+                font-weight: 600;
+            }
+            .ops-payment-status.paid {
+                background: #f0fdf4;
+                color: #166534;
+                border: 1px solid #bbf7d0;
+            }
+            .ops-payment-status.partial {
+                background: #fefce8;
+                color: #854d0e;
+                border: 1px solid #fef08a;
+            }
+            .ops-payment-status.unpaid {
+                background: #fef2f2;
+                color: #991b1b;
+                border: 1px solid #fecaca;
+            }
+
+            /* ============================================================
+               FOOTER (standalone reports)
+            ============================================================ */
+            .ops-footer {
+                display: table;
+                width: 100%;
+                border-top: 1px solid #e2e8f0;
+                padding-top: 6px;
+                margin-top: 18px;
+                font-size: 7pt;
+            }
+            .ops-footer-company {
+                display: table-cell;
+                vertical-align: middle;
+                color: #94a3b8;
+            }
+            .ops-footer-company strong { color: #64748b; }
+            .ops-footer-right {
+                display: table-cell;
+                vertical-align: middle;
+                text-align: right;
+            }
+            .ops-external-badge .powered-by, .ops-pby {
+                font-size: 6.5pt;
+                color: #94a3b8;
+                margin-right: 3px;
+            }
+            .ops-external-badge .badge, .ops-badge {
+                background: linear-gradient(135deg, #3b82f6, #1e40af);
+                color: white;
+                padding: 2px 7px;
+                border-radius: 3px;
+                font-weight: 600;
+                font-size: 6pt;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                display: inline-block;
+            }
+            .ops-page-number {
+                font-size: 7pt;
+                color: #94a3b8;
+                margin-left: 8px;
+            }
+
+            /* ============================================================
+               PAYMENT RECEIPT (standalone)
+            ============================================================ */
+            .ops-payment-card {
+                border: 1px solid #e2e8f0;
+                border-radius: 6px;
+                margin-bottom: 16px;
+                overflow: hidden;
+            }
+            .ops-payment-header {
+                display: table;
+                width: 100%;
+                padding: 10px 12px;
+                background: rgba(<t t-esc="ops_rgb"/>, 0.04);
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .ops-payment-header > div {
+                display: table-cell;
+                vertical-align: top;
+                width: 50%;
+            }
+            .ops-payment-partner-name {
+                font-size: 11pt;
+                font-weight: 700;
+                color: <t t-esc="ops_primary"/>;
+                margin-bottom: 2px;
+            }
+            .ops-amount-block {
+                padding: 12px;
+                text-align: center;
+                background: <t t-esc="ops_primary"/>;
+                color: white;
+            }
+            .ops-amount-block-label {
+                font-size: 7pt;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                opacity: 0.8;
+                margin-bottom: 2px;
+            }
+            .ops-amount-block-value {
+                font-size: 20pt;
+                font-weight: 700;
+                font-variant-numeric: tabular-nums;
+            }
+            .ops-amount-block-currency {
+                font-size: 10pt;
+                font-weight: 500;
+                opacity: 0.8;
+                margin-left: 4px;
+            }
+            .ops-payment-info-grid {
+                display: table;
+                width: 100%;
+                padding: 8px 0;
+            }
+            .ops-payment-info-item {
+                display: table-cell;
+                padding: 4px 12px;
+                border-right: 1px solid #e2e8f0;
+            }
+            .ops-payment-info-item:last-child { border-right: none; }
+
+            /* Reconciled invoices/bills table */
+            .ops-reconciled-invoices {
+                margin-bottom: 14px;
+            }
+            .ops-reconciled-invoices h4 {
+                font-size: 7.5pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                color: <t t-esc="ops_primary"/>;
+                margin: 0 0 6px 0;
+            }
+            table.ops-invoices-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 7.5pt;
+            }
+            table.ops-invoices-table thead th {
+                padding: 5px 8px;
+                text-align: left;
+                font-weight: 600;
+                font-size: 6.5pt;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                color: #64748b;
+                border-bottom: 1px solid #e2e8f0;
+                background: #f8fafc;
+            }
+            table.ops-invoices-table tbody td {
+                padding: 5px 8px;
+                border-bottom: 1px solid #f1f5f9;
+            }
+
+            /* ============================================================
+               DELIVERY NOTE SPECIFIC
+            ============================================================ */
+            .ops-delivery-summary {
+                display: table;
+                width: 100%;
+                margin-bottom: 14px;
+                border: 1px solid #e2e8f0;
+                border-radius: 4px;
+            }
+            .ops-summary-item {
+                display: table-cell;
+                padding: 8px 12px;
+                border-right: 1px solid #e2e8f0;
+                text-align: center;
+            }
+            .ops-summary-item:last-child { border-right: none; }
+            .ops-summary-label {
+                font-size: 6.5pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.4px;
+                color: #94a3b8;
+                margin-bottom: 2px;
+            }
+            .ops-summary-value {
+                font-size: 14pt;
+                font-weight: 700;
+                color: <t t-esc="ops_primary"/>;
+            }
+
+            /* ============================================================
+               MISC / O_MAIN_TABLE styling for standard Odoo reports
+            ============================================================ */
+            .o_report_layout_ops table.o_main_table thead th {
+                background: <t t-esc="ops_primary"/>;
+                color: white;
+                font-size: 7pt;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                padding: 7px 8px;
+            }
+            .o_report_layout_ops table.o_main_table thead th:first-child { border-radius: 4px 0 0 0; }
+            .o_report_layout_ops table.o_main_table thead th:last-child { border-radius: 0 4px 0 0; }
+            .o_report_layout_ops table.o_main_table tbody td {
+                padding: 6px 8px;
+                font-size: 8pt;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            .o_report_layout_ops table.o_main_table tbody tr:nth-child(even) { background: #f8fafc; }
+        </style>
+    </template>
+
+</odoo>

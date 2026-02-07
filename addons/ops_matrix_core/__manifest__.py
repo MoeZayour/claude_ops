@@ -25,6 +25,7 @@
         'stock_account',
         'hr',
         'spreadsheet_dashboard',  # Native Dashboards app - OPS Dashboards integration
+        'ops_theme',  # OPS external document styles and layout
     ],
     'data': [
         # 1. Base Framework

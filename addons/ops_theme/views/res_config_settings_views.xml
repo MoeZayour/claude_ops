@@ -186,6 +186,14 @@
                          help="Show 'Powered by OPS Framework' on reports">
                   <field name="ops_show_external_badge" widget="boolean_toggle"/>
                 </setting>
+                <setting string="Bank Details"
+                         help="Show bank account details on quotations and invoices">
+                  <field name="ops_show_bank_details" widget="boolean_toggle"/>
+                </setting>
+                <setting string="Signature Block"
+                         help="Show signature lines (Prepared / Authorized / Customer)">
+                  <field name="ops_show_signature_block" widget="boolean_toggle"/>
+                </setting>
               </div>
             </div>
           </block>
