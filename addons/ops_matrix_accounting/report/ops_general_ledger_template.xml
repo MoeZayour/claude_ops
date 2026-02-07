@@ -9,7 +9,7 @@
         All layouts use tables/inline-block for QtWebKit ~534.
 
         DESIGN: Balance Sheet corporate design system
-        LAYOUT: Landscape A4, 8-column layout
+        LAYOUT: Portrait A4, 8-column layout
         COLORS: Dynamic from company.ops_report_primary_color
     -->
 
@@ -42,8 +42,8 @@
                         /* Print color-adjust for backgrounds */
                         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-                        /* Page setup */
-                        @page { size: A4 landscape; margin: 12mm; }
+                        /* Page setup — Portrait A4 */
+                        @page { size: A4; margin: 15mm 12mm 25mm 12mm; }
 
                         /* Number cells — monospace for alignment */
                         .num { text-align: right; font-family: Consolas, Monaco, 'Courier New', monospace; }
@@ -52,9 +52,19 @@
                         .val-positive { color: #16a34a; }
                         .val-negative { color: #dc2626; }
                         .val-zero { color: #bbbbbb; }
+
+                        /* Fixed footer — pinned to bottom of every page */
+                        .page-footer-fixed {
+                            position: fixed;
+                            bottom: 0;
+                            left: 0;
+                            right: 0;
+                            padding: 6px 0 0 0;
+                            border-top: 1px solid #e2e8f0;
+                        }
                     </style>
 
-                    <div class="page ops-report landscape" t-attf-style="color: {{body_text_color}}; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, Helvetica, sans-serif; font-size: 8.5pt; line-height: 1.45;">
+                    <div class="page ops-report" t-attf-style="color: {{body_text_color}}; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, Helvetica, sans-serif; font-size: 8.5pt; line-height: 1.45;">
 
                         <!-- ================================================
                              HEADER
@@ -189,14 +199,14 @@
                             <table class="report-table" width="100%" style="border-collapse: collapse; font-size: 8pt; margin-bottom: 2px;">
                                 <thead>
                                     <tr>
-                                        <th style="width: 8%; padding: 7px 8px; text-align: left; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Date</th>
+                                        <th style="width: 9%; padding: 7px 8px; text-align: left; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Date</th>
                                         <th style="width: 7%; padding: 7px 8px; text-align: left; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Journal</th>
-                                        <th style="width: 14%; padding: 7px 8px; text-align: left; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Partner</th>
-                                        <th style="width: 14%; padding: 7px 8px; text-align: left; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Reference</th>
-                                        <th style="width: 25%; padding: 7px 8px; text-align: left; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Description</th>
-                                        <th class="num" style="width: 11%; padding: 7px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Debit (<t t-esc="currency_name"/>)</th>
-                                        <th class="num" style="width: 11%; padding: 7px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Credit (<t t-esc="currency_name"/>)</th>
-                                        <th class="num" style="width: 10%; padding: 7px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Balance (<t t-esc="currency_name"/>)</th>
+                                        <th style="width: 13%; padding: 7px 8px; text-align: left; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Partner</th>
+                                        <th style="width: 12%; padding: 7px 8px; text-align: left; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Reference</th>
+                                        <th style="width: 24%; padding: 7px 8px; text-align: left; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Description</th>
+                                        <th class="num" style="width: 12%; padding: 7px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Debit (<t t-esc="currency_name"/>)</th>
+                                        <th class="num" style="width: 12%; padding: 7px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Credit (<t t-esc="currency_name"/>)</th>
+                                        <th class="num" style="width: 11%; padding: 7px 8px; font-weight: 600; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #666666; border: none; border-bottom: 2px solid #1e293b; background: #f8fafc;">Balance (<t t-esc="currency_name"/>)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -347,41 +357,6 @@
                         </div>
 
                         <!-- ================================================
-                             VERIFICATION BLOCK (table-based for wkhtmltopdf)
-                             ================================================ -->
-                        <t t-set="balance_diff" t-value="abs(grand_total.get('debit', 0) - grand_total.get('credit', 0))"/>
-                        <t t-if="balance_diff &lt; 0.01">
-                            <table width="100%" style="border-collapse: collapse; margin-top: 16px; border-radius: 4px; background: #f0fdf4; border-left: 4px solid #16a34a; page-break-inside: avoid;">
-                                <tr>
-                                    <td style="vertical-align: middle; padding: 10px 0 10px 14px; width: 30px; font-size: 14pt; line-height: 1; color: #166534;">
-                                        &#x2713;
-                                    </td>
-                                    <td style="vertical-align: middle; padding: 10px 14px 10px 6px; font-size: 8.5pt; color: #166534;">
-                                        <strong>Balance Verified</strong>
-                                        <span style="font-size: 7.5pt; opacity: 0.75; display: block; margin-top: 1px;">
-                                            Total Debits equal Total Credits - ledger is in balance
-                                        </span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </t>
-                        <t t-else="">
-                            <table width="100%" style="border-collapse: collapse; margin-top: 16px; border-radius: 4px; background: #fef2f2; border-left: 4px solid #dc2626; page-break-inside: avoid;">
-                                <tr>
-                                    <td style="vertical-align: middle; padding: 10px 0 10px 14px; width: 30px; font-size: 14pt; line-height: 1; color: #991b1b;">
-                                        &#x2717;
-                                    </td>
-                                    <td style="vertical-align: middle; padding: 10px 14px 10px 6px; font-size: 8.5pt; color: #991b1b;">
-                                        <strong>Unbalanced - Difference: <t t-esc="'{:,.2f}'.format(balance_diff)"/></strong>
-                                        <span style="font-size: 7.5pt; opacity: 0.75; display: block; margin-top: 1px;">
-                                            Total Debits do not equal Total Credits
-                                        </span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </t>
-
-                        <!-- ================================================
                              SIGNATURE BLOCK
                              ================================================ -->
                         <div style="margin-top: 28px; page-break-inside: avoid;">
@@ -415,13 +390,27 @@
                             </table>
                         </div>
 
-                        <!-- Confidentiality Notice -->
-                        <div style="margin-top: 14px; font-size: 6.5pt; color: #94a3b8; text-align: center; text-transform: uppercase; letter-spacing: 0.5px;">
-                            CONFIDENTIAL - For authorized personnel only. Generated from <t t-esc="company.name"/> ERP system.
+                        <!-- ================================================
+                             FIXED FOOTER — renders at bottom of every page
+                             Confidentiality + OPS badge pinned via position:fixed
+                             ================================================ -->
+                        <div class="page-footer-fixed" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 6px 0 0 0; border-top: 1px solid #e2e8f0;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;">
+                                        <span style="font-size: 8pt; color: #666666;">Powered by</span>
+                                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png"
+                                             style="height: 16px; vertical-align: middle; margin-left: 4px;"
+                                             alt="OPS Framework"/>
+                                    </td>
+                                    <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;">
+                                        <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Confidential &#x2014; For authorized personnel only
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
-
-                        <!-- In-Page Footer with Badge -->
-                        <t t-call="ops_matrix_accounting.report_corporate_in_page_footer"/>
 
                     </div>
                 </t>
@@ -441,7 +430,7 @@
         <field name="report_file">ops_matrix_accounting.report_general_ledger_corporate</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="paperformat_ops_corporate_landscape"/>
+        <field name="paperformat_id" ref="paperformat_ops_corporate_a4"/>
     </record>
 
     <!-- Legacy report action for backward compatibility -->
@@ -453,7 +442,7 @@
         <field name="report_file">ops_matrix_accounting.report_general_ledger_corporate</field>
         <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="paperformat_ops_corporate_landscape"/>
+        <field name="paperformat_id" ref="paperformat_ops_corporate_a4"/>
     </record>
 
 </odoo>
