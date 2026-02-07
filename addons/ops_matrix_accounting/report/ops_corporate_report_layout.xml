@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- OPS Corporate PDF Layout: wkhtmltopdf header/footer for page numbers -->
+
+    <template id="ops_corporate_pdf_layout">
+        <!-- Empty header (prevents default wkhtmltopdf header, no visual output) -->
+        <div class="header" style="border: none; padding: 0; margin: 0; max-height: 0; overflow: hidden;"/>
+
+        <!-- Report content slot -->
+        <t t-raw="0"/>
+
+        <!-- OPS Footer (rendered by wkhtmltopdf on every page) -->
+        <div class="footer" style="border: none; padding: 0 2mm;">
+            <table width="100%" style="border-collapse: collapse; border-top: 1px solid #e2e8f0; font-family: Arial, Helvetica, sans-serif;">
+                <tr>
+                    <td style="vertical-align: middle; width: 50%; padding: 5px 0;">
+                        <span style="font-size: 8px; color: #94a3b8;">Powered by</span>
+                        <span style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">OPS Framework</span>
+                    </td>
+                    <td style="text-align: right; vertical-align: middle; width: 50%; padding: 5px 0;">
+                        <span style="font-size: 9px; color: #64748b;">
+                            Page <span class="page"/> of <span class="topage"/>
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+</odoo>

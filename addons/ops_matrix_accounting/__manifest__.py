@@ -93,6 +93,7 @@
         "views/accounting_menus.xml",
 
         # Reports - Shared Components
+        "report/ops_corporate_report_layout.xml",  # Corporate PDF layout (footer + page numbers)
         "report/components/ops_corporate_report_components.xml",  # Corporate report components (16 official reports)
         "report/ops_report_layout.xml",  # Corporate branding & shared styles
         "report/ops_report_minimal_styles.xml",  # Minimal report styling system

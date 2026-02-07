@@ -125,9 +125,6 @@ class OpsReportController(http.Controller):
         """
         report_title = wizard.report_title if hasattr(wizard, 'report_title') else 'OPS Report'
 
-        # Get base URL for assets
-        base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
-
         toolbar_html = f"""
         <div class="ops-report-toolbar" style="display: flex; justify-content: flex-end; gap: 12px;
              margin-bottom: 16px; padding: 12px; background: white; border-radius: 8px;
@@ -136,23 +133,24 @@ class OpsReportController(http.Controller):
                     style="display: flex; align-items: center; gap: 6px; padding: 8px 16px;
                            background: #5B6BBB; color: white; border: none; border-radius: 6px;
                            font-size: 9pt; font-weight: 500; cursor: pointer;">
-                <i class="fa fa-print"></i> Print PDF
+                Print PDF
             </button>
             <a href="/ops/report/excel/{template_xmlid}?wizard_id={wizard.id}"
                style="display: flex; align-items: center; gap: 6px; padding: 8px 16px;
                       background: #16a34a; color: white; border: none; border-radius: 6px;
                       font-size: 9pt; font-weight: 500; text-decoration: none;">
-                <i class="fa fa-file-excel-o"></i> Export Excel
+                Export Excel
             </a>
             <button onclick="window.close()"
                     style="display: flex; align-items: center; gap: 6px; padding: 8px 16px;
                            background: #6b7280; color: white; border: none; border-radius: 6px;
                            font-size: 9pt; font-weight: 500; cursor: pointer;">
-                <i class="fa fa-times"></i> Close
+                Close
             </button>
         </div>
         """
 
+        # Use relative URL for CSS to avoid mixed content (HTTP/HTTPS mismatch)
         wrapper = f"""
         <!DOCTYPE html>
         <html>
@@ -160,14 +158,12 @@ class OpsReportController(http.Controller):
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>{report_title} - OPS Framework</title>
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-            <link rel="stylesheet" href="{base_url}/ops_matrix_accounting/static/src/scss/ops_corporate_reports.scss"/>
+            <link rel="stylesheet" href="/ops_matrix_accounting/static/src/css/ops_report.css"/>
             <style>
                 body {{
                     margin: 0;
                     background: #f5f5f5;
-                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
                 }}
                 .ops-report-ui-view {{
                     max-width: 1200px;
@@ -234,6 +230,21 @@ class OpsReportController(http.Controller):
             'report_aged_payable': 'ops.general.ledger.wizard.enhanced',
             'report_partner_ledger': 'ops.general.ledger.wizard.enhanced',
             'report_statement_account': 'ops.general.ledger.wizard.enhanced',
+
+            # Corporate Financial Intelligence
+            'report_general_ledger_corporate': 'ops.general.ledger.wizard.enhanced',
+            'report_trial_balance_corporate': 'ops.general.ledger.wizard.enhanced',
+            'report_profit_loss_corporate': 'ops.general.ledger.wizard.enhanced',
+            'report_balance_sheet_corporate': 'ops.general.ledger.wizard.enhanced',
+            'report_cash_flow_corporate': 'ops.general.ledger.wizard.enhanced',
+            'report_aged_partner_corporate': 'ops.general.ledger.wizard.enhanced',
+
+            # V2 Financial Intelligence
+            'report_trial_balance_v2': 'ops.general.ledger.wizard.enhanced',
+            'report_profit_loss_v2': 'ops.general.ledger.wizard.enhanced',
+            'report_balance_sheet_v2': 'ops.general.ledger.wizard.enhanced',
+            'report_cash_flow_v2': 'ops.general.ledger.wizard.enhanced',
+            'report_aged_partner_v2': 'ops.general.ledger.wizard.enhanced',
 
             # Treasury Intelligence
             'report_pdc_registry': 'ops.treasury.report.wizard',
