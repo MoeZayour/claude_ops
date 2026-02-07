@@ -275,7 +275,7 @@ class OpsKpi(models.Model):
         Get time series data for trend charts (area/line charts).
         Returns list of {date, value} points for charting.
 
-        Uses read_group for batched aggregation instead of per-point queries.
+        Uses _read_group for batched aggregation instead of per-point queries.
 
         Args:
             period: 'today', 'this_week', 'this_month', 'this_quarter', 'this_year', 'last_30_days'
