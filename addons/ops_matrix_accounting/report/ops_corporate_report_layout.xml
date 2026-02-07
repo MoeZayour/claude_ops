@@ -3,6 +3,9 @@
     <!-- OPS Corporate PDF Layout: wkhtmltopdf header/footer for page numbers -->
 
     <template id="ops_corporate_pdf_layout">
+        <!-- Force UTF-8 charset for wkhtmltopdf (QtWebKit needs http-equiv version) -->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
         <!-- Empty header (prevents default wkhtmltopdf header, no visual output) -->
         <div class="header" style="border: none !important; padding: 0; margin: 0; max-height: 0; overflow: hidden; box-shadow: none !important;"/>
 
