@@ -314,7 +314,7 @@
     <!-- DRILLDOWN BREADCRUMB                                                -->
     <!-- =================================================================== -->
     <t t-name="ops_kpi.DrilldownBreadcrumb">
-        <div class="ops-drilldown-breadcrumb" t-if="props.path and props.path.length > 1">
+        <div class="ops-drilldown-breadcrumb" t-if="props.path and props.path.length >= 1">
             <button class="back-btn" t-on-click="onBackClick">
                 <i class="fa fa-arrow-left"/>
                 Back

@@ -259,12 +259,18 @@ class OpsDashboardAction extends Component {
     async onKPIDrilldown(widget) {
         if (!widget.kpi_id) return;
 
-        // Add to drilldown path
-        this.state.drilldownPath.push({
-            label: widget.name,
-            kpi_id: widget.kpi_id,
-            type: "kpi",
-        });
+        // Set drilldown path: root (dashboard) + KPI
+        this.state.drilldownPath = [
+            {
+                label: this.state.chartData?.dashboard_name || "Dashboard",
+                type: "root",
+            },
+            {
+                label: widget.name,
+                kpi_id: widget.kpi_id,
+                type: "kpi",
+            },
+        ];
 
         try {
             // Load detailed data for this KPI
@@ -294,14 +300,13 @@ class OpsDashboardAction extends Component {
     }
 
     onDrilldownNavigate(index) {
-        if (index < 0) {
-            // Back to main dashboard
+        if (index <= 0) {
+            // Back to main dashboard (index -1 = back button, 0 = root)
             this.state.drilldownPath = [];
             this.state.drilldownData = null;
         } else {
             // Navigate to specific level
             this.state.drilldownPath = this.state.drilldownPath.slice(0, index + 1);
-            // Reload data for that level if needed
         }
     }
 

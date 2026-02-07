@@ -268,11 +268,11 @@ class OpsKpiBoard(models.Model):
                 result['kpi_cards'].append(widget_data)
 
         # Generate trend charts from revenue/sales KPIs
-        chart_codes = [c.strip() for c in (dashboard.chart_kpi_codes or 'SALES_TOTAL,REVENUE_MTD,SALES_MTD').split(',') if c.strip()]
+        chart_codes = [c.strip() for c in (dashboard.chart_kpi_codes or 'SALES_REVENUE_MTD,SALES_ORDERS_MTD').split(',') if c.strip()]
         trend_kpis = self.env['ops.kpi'].search([
             ('code', 'in', chart_codes),
             ('active', '=', True),
-        ], limit=1)
+        ])
 
         for kpi in trend_kpis:
             if kpi._check_user_access():
@@ -292,23 +292,34 @@ class OpsKpiBoard(models.Model):
         breakdown_kpis = self.env['ops.kpi'].search([
             ('code', 'in', breakdown_codes),
             ('active', '=', True),
-        ], limit=2)
+        ])
 
         for kpi in breakdown_kpis:
             if kpi._check_user_access():
-                # Try ops_branch_id first
                 Model = self.env.get(kpi.source_model)
-                if Model and 'ops_branch_id' in Model._fields:
-                    breakdown_data = kpi.get_breakdown(period=period, group_by='ops_branch_id')
-                    if breakdown_data.get('data'):
-                        result['breakdown_charts'].append({
-                            'kpi_id': kpi.id,
-                            'kpi_code': kpi.code,
-                            'title': f'{kpi.name} by Branch',
-                            'data': breakdown_data['data'],
-                            'group_by': 'ops_branch_id',
-                            'format_type': kpi.format_type,
-                        })
+                if Model is None:
+                    continue
+
+                # Try ops_branch_id first, then company_id as fallback
+                if 'ops_branch_id' in Model._fields:
+                    gb_field = 'ops_branch_id'
+                    gb_label = 'Branch'
+                elif 'company_id' in Model._fields:
+                    gb_field = 'company_id'
+                    gb_label = 'Company'
+                else:
+                    continue
+
+                breakdown_data = kpi.get_breakdown(period=period, group_by=gb_field)
+                if breakdown_data.get('data'):
+                    result['breakdown_charts'].append({
+                        'kpi_id': kpi.id,
+                        'kpi_code': kpi.code,
+                        'title': f'{kpi.name} by {gb_label}',
+                        'data': breakdown_data['data'],
+                        'group_by': gb_field,
+                        'format_type': kpi.format_type,
+                    })
 
         # Generate alerts from KPIs with negative trends or thresholds
         alert_threshold = dashboard.alert_threshold or -10.0

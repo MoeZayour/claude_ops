@@ -498,50 +498,53 @@ class OpsKpi(models.Model):
                     (date_field, '<=', fields.Date.to_string(period_end)),
                 ])
 
-            # Determine aggregation field
+            # Build aggregates for _read_group
             if self.calculation_type == 'count':
-                agg_field = 'id:count'
+                aggregates = ['__count']
             elif self.calculation_type == 'sum' and self.measure_field:
-                agg_field = f'{self.measure_field}:sum'
+                aggregates = [f'{self.measure_field}:sum']
             elif self.calculation_type == 'average' and self.measure_field:
-                agg_field = f'{self.measure_field}:avg'
+                aggregates = [f'{self.measure_field}:avg']
             else:
-                agg_field = 'id:count'
+                aggregates = ['__count']
 
-            # Use read_group for aggregation
-            results = Model.read_group(
-                domain=domain,
-                fields=[group_by, agg_field],
-                groupby=[group_by],
-                orderby=f'{agg_field.split(":")[0]} desc' if ':' in agg_field else 'id desc',
-            )
+            # Use _read_group for aggregation (Odoo 19 API)
+            try:
+                grouped = Model._read_group(
+                    domain, groupby=[group_by], aggregates=aggregates,
+                    order=f'{group_by} asc',
+                )
+            except Exception as e:
+                _logger.warning("_read_group failed for KPI %s breakdown: %s", self.code, e)
+                grouped = []
 
             data = []
-            for result in results:
-                group_value = result.get(group_by)
-                if isinstance(group_value, tuple):
-                    # Many2one field returns (id, name)
-                    group_id = group_value[0]
-                    group_name = group_value[1]
+            for row in grouped:
+                # row is a tuple: (group_value, agg_value)
+                # For Many2one fields, group_value is a recordset
+                group_value = row[0]
+                agg_value = row[1] or 0
+
+                if hasattr(group_value, 'id'):
+                    # Many2one field — recordset
+                    if not group_value:
+                        continue  # Skip null groups
+                    group_id = group_value.id
+                    group_name = group_value.display_name
                 else:
+                    if not group_value:
+                        continue  # Skip null groups
                     group_id = group_value
-                    group_name = str(group_value) if group_value else 'Undefined'
+                    group_name = str(group_value)
 
-                # Get the aggregated value
-                if self.calculation_type == 'count':
-                    value = result.get(f'{group_by}_count', 0)
-                elif self.calculation_type in ('sum', 'average'):
-                    value = result.get(self.measure_field, 0)
-                else:
-                    value = 0
+                data.append({
+                    'id': group_id,
+                    'name': group_name,
+                    'value': round(agg_value, 2) if isinstance(agg_value, float) else agg_value,
+                })
 
-                if group_name:  # Skip null groups
-                    data.append({
-                        'id': group_id,
-                        'name': group_name,
-                        'value': round(value, 2) if isinstance(value, float) else value,
-                    })
-
+            # Sort by value descending (highest first)
+            data.sort(key=lambda x: x['value'], reverse=True)
             return {'data': data, 'error': None}
 
         except Exception as e:

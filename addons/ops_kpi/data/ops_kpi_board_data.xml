@@ -18,6 +18,7 @@
             <field name="auto_refresh" eval="True"/>
             <field name="refresh_interval">60000</field>
             <field name="columns">4</field>
+            <field name="chart_kpi_codes">SYS_USERS_ACTIVE,SYS_SESSIONS</field>
         </record>
 
         <!-- P01 Widget: Active Users (SYS_USERS_ACTIVE) -->
@@ -78,6 +79,7 @@
             <field name="auto_refresh" eval="True"/>
             <field name="refresh_interval">120000</field>
             <field name="columns">4</field>
+            <field name="chart_kpi_codes">SALES_REVENUE_MTD,SALES_ORDERS_MTD,AR_TOTAL</field>
         </record>
 
         <!-- P02 Widget: Sales YTD (maps to SALES_TOTAL) -->
@@ -194,6 +196,7 @@
             <field name="auto_refresh" eval="True"/>
             <field name="refresh_interval">120000</field>
             <field name="columns">4</field>
+            <field name="chart_kpi_codes">SALES_REVENUE_MTD,AR_TOTAL,AP_TOTAL</field>
         </record>
 
         <!-- P03 Widget: Revenue MTD (SALES_REVENUE_MTD) -->
@@ -387,6 +390,7 @@
             <field name="auto_refresh" eval="True"/>
             <field name="refresh_interval">60000</field>
             <field name="columns">4</field>
+            <field name="chart_kpi_codes">SALES_REVENUE_MTD,SALES_ORDERS_MTD</field>
         </record>
 
         <!-- P05 Widget: Sales YTD (maps to SALES_TOTAL) -->
@@ -566,6 +570,7 @@
             <field name="auto_refresh" eval="True"/>
             <field name="refresh_interval">60000</field>
             <field name="columns">4</field>
+            <field name="chart_kpi_codes">SALES_REVENUE_MTD,SALES_ORDERS_MTD</field>
         </record>
 
         <!-- P06 Widget: Sales YTD (maps to SALES_TOTAL) -->
@@ -694,6 +699,7 @@
             <field name="auto_refresh" eval="True"/>
             <field name="refresh_interval">60000</field>
             <field name="columns">4</field>
+            <field name="chart_kpi_codes">PURCHASE_TOTAL_MTD,PURCHASE_ORDERS_MTD</field>
         </record>
 
         <!-- P07 Widget: Purchases MTD (maps to PO_TOTAL) -->
@@ -821,6 +827,7 @@
             <field name="auto_refresh" eval="True"/>
             <field name="refresh_interval">60000</field>
             <field name="columns">4</field>
+            <field name="chart_kpi_codes">MY_SALES_MTD,MY_ORDERS_MTD</field>
         </record>
 
         <!-- P10 Widget: My Sales MTD (maps to MY_SALES_TOTAL) -->
@@ -899,6 +906,7 @@
             <field name="auto_refresh" eval="True"/>
             <field name="refresh_interval">60000</field>
             <field name="columns">4</field>
+            <field name="chart_kpi_codes">AR_TOTAL,AR_OVERDUE,AR_COLLECTED_MTD</field>
         </record>
 
         <!-- P13 Widget: Total Receivables (AR_TOTAL) -->
@@ -1003,6 +1011,7 @@
             <field name="auto_refresh" eval="True"/>
             <field name="refresh_interval">60000</field>
             <field name="columns">4</field>
+            <field name="chart_kpi_codes">AP_TOTAL,AP_OVERDUE,AP_DUE_7_DAYS</field>
         </record>
 
         <!-- P14 Widget: Total Payables (AP_TOTAL) -->
@@ -1092,6 +1101,7 @@
             <field name="auto_refresh" eval="True"/>
             <field name="refresh_interval">60000</field>
             <field name="columns">4</field>
+            <field name="chart_kpi_codes">TREASURY_CASH_BALANCE,TREASURY_CASH_IN_MTD</field>
         </record>
 
         <!-- P15 Widget: Cash Balance (TREASURY_CASH_BALANCE) -->

@@ -76,6 +76,7 @@ Enterprise-grade KPI center for trading companies with:
             'ops_kpi/static/src/xml/ops_kpi_center_templates.xml',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': True,
     'auto_install': False,

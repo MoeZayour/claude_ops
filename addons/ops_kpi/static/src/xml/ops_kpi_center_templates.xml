@@ -155,7 +155,7 @@
                 <!-- Main Dashboard View -->
                 <t t-else="">
                     <!-- KPI Cards Row -->
-                    <div class="ops-dashboard-grid">
+                    <div t-attf-class="ops-dashboard-grid #{state.viewMode === 'list' ? 'list-view' : ''}">
                         <t t-foreach="kpiCards" t-as="widget" t-key="widget.widget_id || widget.kpi_id">
                             <div t-attf-class="ops-kpi-card #{getCardColorClass(widget)}"
                                  t-on-click="() => this.onKPIDrilldown(widget)"
