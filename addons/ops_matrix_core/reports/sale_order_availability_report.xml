@@ -18,7 +18,7 @@
             <t t-foreach="docs" t-as="doc">
                 <t t-set="company" t-value="doc.company_id or env.company"/>
                 <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
-                <t t-set="show_badge" t-value="company.ops_show_external_badge if hasattr(company, 'ops_show_external_badge') else True"/>
+                <t t-set="show_badge" t-value="company.ops_show_external_badge"/>
 
                 <div class="article ops-external-doc"
                      t-attf-style="--ops-primary: #{primary_color}; font-family: 'Inter', -apple-system, sans-serif;">
@@ -105,7 +105,7 @@
                             <strong>Warehouse:</strong><br/>
                             <span><t t-esc="doc.warehouse_id.name if doc.warehouse_id else 'Default'"/></span>
                         </div>
-                        <div class="ops-info-block" t-if="hasattr(doc, 'ops_branch_id') and doc.ops_branch_id">
+                        <div class="ops-info-block" t-if="doc.ops_branch_id">
                             <strong>Branch:</strong><br/>
                             <span><t t-esc="doc.ops_branch_id.name"/></span>
                         </div>
@@ -151,7 +151,7 @@
                                     <td><t t-esc="line.product_id.default_code or '-'"/></td>
                                     <td class="num">
                                         <t t-esc="'{:,.2f}'.format(ordered)"/>
-                                        <t t-esc="line.product_uom.name"/>
+                                        <t t-esc="line.product_uom_id.name"/>
                                     </td>
                                     <td class="num">
                                         <t t-esc="'{:,.2f}'.format(available)"/>

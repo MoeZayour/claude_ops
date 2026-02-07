@@ -26,7 +26,7 @@
     <template id="report_ops_purchase_document">
         <t t-set="company" t-value="doc.company_id or env.company"/>
         <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
-        <t t-set="show_badge" t-value="company.ops_show_external_badge if hasattr(company, 'ops_show_external_badge') else True"/>
+        <t t-set="show_badge" t-value="company.ops_show_external_badge"/>
         <t t-set="amount_lang" t-value="company.ops_amount_words_lang or 'en'"/>
         <t t-set="is_rfq" t-value="doc.state in ('draft', 'sent')"/>
         <t t-set="doc_title" t-value="'Request for Quotation' if is_rfq else 'Purchase Order'"/>
@@ -150,9 +150,9 @@
                                     </t>
                                 </td>
                                 <td class="num"><t t-esc="'{:,.2f}'.format(line.product_qty)"/></td>
-                                <td><t t-esc="line.product_uom.name or ''"/></td>
+                                <td><t t-esc="line.product_uom_id.name or ''"/></td>
                                 <td class="num"><t t-esc="'{:,.2f}'.format(line.price_unit)"/></td>
-                                <td class="num"><t t-esc="', '.join(line.taxes_id.mapped('name')) or ''"/></td>
+                                <td class="num"><t t-esc="', '.join(line.tax_ids.mapped('name')) or ''"/></td>
                                 <td class="num" style="font-weight: 600;"><t t-esc="'{:,.2f}'.format(line.price_subtotal)"/></td>
                             </tr>
                         </t>
@@ -222,9 +222,9 @@
             </div>
 
             <!-- TERMS -->
-            <div class="ops-terms" t-if="doc.notes">
+            <div class="ops-terms" t-if="doc.note">
                 <h4>Terms &amp; Conditions</h4>
-                <p><t t-esc="doc.notes"/></p>
+                <p><t t-esc="doc.note"/></p>
             </div>
 
             <!-- FOOTER -->

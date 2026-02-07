@@ -26,7 +26,7 @@
     <template id="report_ops_delivery_document">
         <t t-set="company" t-value="doc.company_id or env.company"/>
         <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
-        <t t-set="show_badge" t-value="company.ops_show_external_badge if hasattr(company, 'ops_show_external_badge') else True"/>
+        <t t-set="show_badge" t-value="company.ops_show_external_badge"/>
         <t t-set="is_outgoing" t-value="doc.picking_type_code == 'outgoing'"/>
         <t t-set="is_incoming" t-value="doc.picking_type_code == 'incoming'"/>
         <t t-set="doc_title" t-value="'Delivery Note' if is_outgoing else ('Goods Receipt' if is_incoming else 'Transfer Note')"/>
@@ -117,13 +117,9 @@
                     <div class="ops-info-label">Operation Type</div>
                     <div class="ops-info-value"><t t-esc="doc.picking_type_id.name"/></div>
                 </div>
-                <div class="ops-info-cell" t-if="doc.carrier_id">
-                    <div class="ops-info-label">Carrier</div>
-                    <div class="ops-info-value"><t t-esc="doc.carrier_id.name"/></div>
-                </div>
-                <div class="ops-info-cell" t-if="doc.carrier_tracking_ref">
-                    <div class="ops-info-label">Tracking</div>
-                    <div class="ops-info-value"><t t-esc="doc.carrier_tracking_ref"/></div>
+                <div class="ops-info-cell" t-if="doc.origin">
+                    <div class="ops-info-label">Source</div>
+                    <div class="ops-info-value"><t t-esc="doc.origin"/></div>
                 </div>
                 <div class="ops-info-cell">
                     <div class="ops-info-label">Total Items</div>
@@ -183,9 +179,9 @@
                     <div class="ops-summary-label">Total Quantity</div>
                     <div class="ops-summary-value"><t t-esc="'{:,.0f}'.format(sum(doc.move_ids.mapped('quantity')))"/></div>
                 </div>
-                <div class="ops-summary-item" t-if="doc.weight">
+                <div class="ops-summary-item" t-if="doc.shipping_weight">
                     <div class="ops-summary-label">Total Weight</div>
-                    <div class="ops-summary-value"><t t-esc="'{:,.2f}'.format(doc.weight)"/> kg</div>
+                    <div class="ops-summary-value"><t t-esc="'{:,.2f}'.format(doc.shipping_weight)"/> kg</div>
                 </div>
             </div>
 
