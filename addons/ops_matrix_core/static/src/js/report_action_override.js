@@ -3,54 +3,38 @@
 import { registry } from "@web/core/registry";
 
 /**
- * Task 3: Global PDF "New Tab" Behavior
- * Override the IR Actions Report Handler to force PDFs to open in new tab
+ * OPS PDF "New Tab" Behavior
  *
- * Odoo 19 Compatibility: Safely check for existing handler before overriding
+ * Opens qweb-pdf reports in a new browser tab instead of triggering
+ * a file download.  The URL follows the standard Odoo 19 pattern:
+ *
+ *   /report/pdf/<report_name>/<docids>
+ *
+ * Document IDs come from action.context.active_ids (set by
+ * report.report_action() on the server side).
+ *
+ * For non-PDF reports we return `false` so Odoo's built-in
+ * handlers continue to process the action normally.
  */
 
 const reportHandlerRegistry = registry.category("ir.actions.report handlers");
 
-// Safely get the original handler if it exists
-let originalHandler = null;
-try {
-    originalHandler = reportHandlerRegistry.get("handler");
-} catch (e) {
-    // Handler may not be registered yet - that's okay
-    console.debug("Original report handler not found in registry yet");
-}
+reportHandlerRegistry.add("ops_pdf_new_tab", async function (action, options, env) {
+    if (action.report_type !== "qweb-pdf") {
+        // Not a PDF – let Odoo's default handler take over
+        return false;
+    }
 
-reportHandlerRegistry.add("handler", async function (action, options, env) {
-    // Check if this is a PDF report
-    if (action.report_type === 'qweb-pdf') {
-        // Build the report URL
-        const type = action.report_type === 'qweb-pdf' ? 'pdf' : 'text';
-        let url = `/report/${type}/${action.report_name}`;
-        const actionContext = action.context || {};
-        
-        if (action.data && JSON.stringify(action.data) !== '{}') {
-            const options_param = encodeURIComponent(JSON.stringify(action.data));
-            const context_param = encodeURIComponent(JSON.stringify(actionContext));
-            url += `?options=${options_param}&context=${context_param}`;
-        } else {
-            if (actionContext.active_ids) {
-                url += `/${actionContext.active_ids.join(',')}`;
-            }
-            if (action.report_file) {
-                url += `?report_file=${encodeURIComponent(action.report_file)}`;
-            }
-        }
-        
-        // Force open in new tab
-        window.open(url, '_blank');
-        return true;
+    const context = action.context || {};
+    const activeIds = context.active_ids || [];
+
+    // Build the standard Odoo report URL
+    let url = `/report/pdf/${action.report_name}`;
+    if (activeIds.length) {
+        url += `/${activeIds.join(",")}`;
     }
-    
-    // For non-PDF reports, use original handler if it exists
-    if (originalHandler) {
-        return originalHandler(action, options, env);
-    }
-    
-    // Fallback: return true to prevent default behavior
+
+    // Open in a new tab for convenient viewing / browser print
+    window.open(url, "_blank");
     return true;
-}, { force: true });
+});

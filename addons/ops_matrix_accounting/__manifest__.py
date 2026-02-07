@@ -61,6 +61,7 @@
         "views/res_config_settings_views.xml",
         # DEPRECATED: ops_financial_report_wizard_views.xml moved to deprecated/
         # DEPRECATED: ops_general_ledger_wizard_views.xml moved to deprecated/
+        "views/res_company_report_colors_views.xml",
         "views/ops_general_ledger_wizard_enhanced_views.xml",
         "views/ops_matrix_snapshot_views.xml",
         "views/ops_trend_analysis_views.xml",
@@ -125,6 +126,9 @@
             "ops_matrix_accounting/static/src/css/ops_accounting.css",
             "ops_matrix_accounting/static/src/css/ops_report.css",
             "ops_matrix_accounting/static/src/scss/ops_corporate_reports.scss",
+        ],
+        "web.report_assets_common": [
+            "ops_matrix_accounting/static/src/css/ops_internal_report.css",
         ],
     },
     "post_init_hook": "post_init_hook",

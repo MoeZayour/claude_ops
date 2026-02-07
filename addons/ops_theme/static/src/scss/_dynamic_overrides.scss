@@ -15,11 +15,24 @@ html[data-ops-navbar="dark"] {
     nav.o_main_navbar {
         background: var(--ops-navbar-bg, var(--ops-primary)) !important;
 
+        // Ensure nav entries match navbar bg (prevents two-tone bar)
+        .o_menu_sections .o_nav_entry,
+        .o_menu_sections .dropdown-toggle {
+            background: var(--ops-navbar-bg, var(--ops-primary)) !important;
+        }
+
         .o_menu_toggle,
         .o_menu_sections button,
         .o_menu_sections a,
         .o_menu_systray .dropdown-toggle {
             color: var(--ops-navbar-text, #ffffff) !important;
+        }
+    }
+
+    // Override discuss module navbar color override (dark mode leak)
+    .o_web_client:where(:has(.o-mail-Discuss)) {
+        .o_main_navbar {
+            background-color: var(--ops-navbar-bg, var(--ops-primary)) !important;
         }
     }
 }
@@ -30,6 +43,11 @@ html[data-ops-navbar="light"] {
     nav.o_main_navbar {
         background: #f8fafc !important;
         border-bottom: 1px solid #e2e8f0 !important;
+
+        .o_menu_sections .o_nav_entry,
+        .o_menu_sections .dropdown-toggle {
+            background: #f8fafc !important;
+        }
 
         .o_menu_toggle,
         .o_menu_sections button,
@@ -43,6 +61,12 @@ html[data-ops-navbar="light"] {
             background: rgba(0, 0, 0, 0.05) !important;
         }
     }
+
+    .o_web_client:where(:has(.o-mail-Discuss)) {
+        .o_main_navbar {
+            background-color: #f8fafc !important;
+        }
+    }
 }
 
 // Primary color navbar
@@ -51,11 +75,22 @@ html[data-ops-navbar="primary"] {
     nav.o_main_navbar {
         background: var(--ops-secondary) !important;
 
+        .o_menu_sections .o_nav_entry,
+        .o_menu_sections .dropdown-toggle {
+            background: var(--ops-secondary) !important;
+        }
+
         .o_menu_toggle,
         .o_menu_sections button,
         .o_menu_sections a,
         .o_menu_systray .dropdown-toggle {
             color: #ffffff !important;
+        }
+    }
+
+    .o_web_client:where(:has(.o-mail-Discuss)) {
+        .o_main_navbar {
+            background-color: var(--ops-secondary) !important;
         }
     }
 }

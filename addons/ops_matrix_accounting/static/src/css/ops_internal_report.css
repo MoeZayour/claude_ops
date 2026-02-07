@@ -1,0 +1,467 @@
+/* ============================================================
+   OPS Framework — Internal Report Stylesheet
+   Module: ops_matrix_accounting
+   Purpose: Corporate financial reports (GL, TB, P&L, BS, etc.)
+
+   ARCHITECTURE NOTE:
+   - Colors are NOT hardcoded here — they come from company settings
+     via inline t-attf-style in QWeb templates
+   - This file defines STRUCTURE and TYPOGRAPHY only
+   - Color tokens (primary, text-on-primary, etc.) are set per-report
+   ============================================================ */
+
+/* === PAGE SETUP === */
+@page {
+    size: A4;
+    margin: 15mm 12mm 15mm 12mm;
+}
+
+@page landscape {
+    size: A4 landscape;
+    margin: 15mm 12mm 15mm 12mm;
+}
+
+.ops-report {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, Helvetica, sans-serif;
+    font-size: 8.5pt;
+    color: #1a1a1a;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.ops-report.landscape {
+    page: landscape;
+}
+
+/* === HEADER === */
+.ops-report .report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    /* border-bottom set via t-attf-style with primary_color */
+}
+
+.ops-report .company-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ops-report .company-logo {
+    width: 45px;
+    height: 45px;
+    border-radius: 6px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.ops-report .company-logo-placeholder {
+    width: 45px;
+    height: 45px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 14pt;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+    /* background set via t-attf-style */
+}
+
+.ops-report .company-name {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.ops-report .company-location {
+    font-size: 8.5pt;
+    color: #666666;
+    margin-top: 1px;
+}
+
+.ops-report .report-info {
+    text-align: right;
+    font-size: 8pt;
+    color: #666666;
+    white-space: nowrap;
+    line-height: 1.6;
+}
+
+.ops-report .report-id {
+    font-family: 'Courier New', monospace;
+    font-size: 7pt;
+    color: #94a3b8;
+    letter-spacing: 0.3px;
+}
+
+/* === TITLE BLOCK === */
+.ops-report .report-title {
+    font-size: 16pt;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.ops-report .report-subtitle {
+    font-size: 8.5pt;
+    color: #666666;
+}
+
+.ops-report .report-subtitle .sep {
+    color: #94a3b8;
+}
+
+/* === SUMMARY ROW === */
+.ops-report .summary-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 48px;
+    padding: 12px 16px;
+    margin-bottom: 22px;
+    border-radius: 4px;
+    /* background set via t-attf-style with primary_light */
+}
+
+.ops-report .summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ops-report .summary-label {
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 600;
+    /* color set via t-attf-style with primary_dark */
+}
+
+.ops-report .summary-value {
+    font-size: 13pt;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #1e293b;
+}
+
+.ops-report .summary-value.balanced {
+    color: #16a34a;
+}
+
+/* === SECTION HEADERS === */
+.ops-report .account-header {
+    padding: 7px 12px;
+    margin-top: 20px;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background + border-left set via t-attf-style */
+}
+
+.ops-report .account-header.first {
+    margin-top: 0;
+}
+
+.ops-report .account-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ops-report .account-code-name {
+    font-weight: 600;
+    font-size: 9pt;
+    /* color set via t-attf-style with primary_dark */
+}
+
+.ops-report .account-type-badge {
+    font-size: 6.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* Account type badge colors — fixed (accounting convention) */
+.ops-report .badge-asset { background: #dbeafe; color: #1e40af; }
+.ops-report .badge-liability { background: #fef3c7; color: #92400e; }
+.ops-report .badge-income { background: #dcfce7; color: #166534; }
+.ops-report .badge-expense { background: #fee2e2; color: #991b1b; }
+.ops-report .badge-equity { background: #f3e8ff; color: #6b21a8; }
+
+.ops-report .account-header-right {
+    font-size: 7.5pt;
+    color: #94a3b8;
+}
+
+/* === DATA TABLES === */
+.ops-report table.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin-bottom: 2px;
+}
+
+.ops-report table.report-table thead th {
+    padding: 7px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 7pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #666666;
+    border: none;
+    border-bottom: 2px solid #1e293b;
+    background: #f8fafc;
+}
+
+.ops-report table.report-table thead th.num {
+    text-align: right;
+}
+
+.ops-report table.report-table tbody td {
+    padding: 5px 8px;
+    vertical-align: top;
+    border: none;
+    font-variant-numeric: tabular-nums;
+}
+
+.ops-report table.report-table tbody tr:nth-child(odd) {
+    background: white;
+}
+
+.ops-report table.report-table tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+.ops-report .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: Consolas, Monaco, 'Courier New', monospace;
+}
+
+/* Value formatting — FIXED colors (accounting convention) */
+.ops-report .positive { color: #16a34a; }
+.ops-report .negative { color: #dc2626; }
+.ops-report .zero { color: #bbbbbb; }
+.ops-report .dash { color: #bbbbbb; text-align: right; }
+
+/* Opening balance row */
+.ops-report table.report-table tbody tr.opening-balance {
+    background: #fefce8 !important;
+}
+
+.ops-report table.report-table tbody tr.opening-balance td {
+    font-style: italic;
+    font-weight: 500;
+    color: #666666;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+/* Account total rows */
+.ops-report table.report-table tbody tr.account-total-row {
+    font-weight: 600;
+    /* background set via t-attf-style with primary_light */
+}
+
+.ops-report table.report-table tbody tr.account-total-row td {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    font-size: 8pt;
+    /* color set via t-attf-style with primary_dark */
+}
+
+.ops-report .txn-count {
+    font-size: 7pt;
+    color: #94a3b8;
+    font-weight: 400;
+    margin-left: 8px;
+}
+
+/* === GRAND TOTAL === */
+.ops-report .grand-total {
+    margin-top: 24px;
+    border-radius: 4px;
+    overflow: hidden;
+    /* background + color set via t-attf-style */
+}
+
+.ops-report .grand-total table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ops-report .grand-total td {
+    padding: 13px 8px;
+    border: none;
+}
+
+.ops-report .grand-total .label-cell {
+    font-weight: 600;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding-left: 14px;
+}
+
+.ops-report .grand-total .num {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-size: 10pt;
+}
+
+/* === VERIFICATION BLOCK === */
+.ops-report .verification-block {
+    margin-top: 16px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 8.5pt;
+}
+
+.ops-report .verification-block.pass {
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a;
+    color: #166534;
+}
+
+.ops-report .verification-block.fail {
+    background: #fef2f2;
+    border-left: 4px solid #dc2626;
+    color: #991b1b;
+}
+
+.ops-report .verification-icon {
+    font-size: 14pt;
+    line-height: 1;
+}
+
+.ops-report .verification-text strong {
+    font-weight: 700;
+}
+
+.ops-report .verification-text .detail {
+    font-size: 7.5pt;
+    opacity: 0.75;
+    display: block;
+    margin-top: 1px;
+}
+
+/* === SIGNATURE BLOCK === */
+.ops-report .signature-block {
+    margin-top: 28px;
+    display: flex;
+    gap: 0;
+}
+
+.ops-report .signature-item {
+    flex: 1;
+    padding: 0 16px;
+    border-right: 1px solid #e2e8f0;
+}
+
+.ops-report .signature-item:last-child {
+    border-right: none;
+}
+
+.ops-report .signature-item:first-child {
+    padding-left: 0;
+}
+
+.ops-report .signature-role {
+    font-size: 7.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-bottom: 24px;
+}
+
+.ops-report .signature-line {
+    border-top: 1px solid #cbd5e1;
+    padding-top: 4px;
+    font-size: 7.5pt;
+    color: #666666;
+}
+
+.ops-report .confidentiality {
+    margin-top: 14px;
+    font-size: 6.5pt;
+    color: #94a3b8;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* === IN-PAGE FOOTER === */
+.ops-report .report-footer {
+    margin-top: 28px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ops-report .footer-branding {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ops-report .powered-by {
+    font-size: 8pt;
+    color: #666666;
+}
+
+.ops-report .page-number {
+    font-size: 8pt;
+    color: #666666;
+}
+
+/* === GL-SPECIFIC COLUMN WIDTHS === */
+.ops-report .col-date { width: 8%; }
+.ops-report .col-jrnl { width: 7%; }
+.ops-report .col-partner { width: 14%; }
+.ops-report .col-ref { width: 14%; }
+.ops-report .col-desc { width: 25%; }
+.ops-report .col-debit { width: 11%; }
+.ops-report .col-credit { width: 11%; }
+.ops-report .col-balance { width: 10%; }
+
+/* === PAGE BREAK PROTECTION === */
+.ops-report .account-header {
+    page-break-after: avoid;
+}
+
+.ops-report table.report-table {
+    page-break-inside: auto;
+}
+
+.ops-report table.report-table tr {
+    page-break-inside: avoid;
+}
+
+.ops-report .grand-total {
+    page-break-inside: avoid;
+}
+
+.ops-report .verification-block {
+    page-break-inside: avoid;
+}
+
+.ops-report .signature-block {
+    page-break-inside: avoid;
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add OPS Report Colors section to company form OPS Branding tab -->
+    <record id="view_company_form_report_colors" model="ir.ui.view">
+        <field name="name">res.company.form.report.colors</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="priority">55</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='ops_branding']" position="inside">
+                <group string="OPS REPORT COLORS">
+                    <group>
+                        <field name="ops_report_primary_color" widget="color"/>
+                        <field name="ops_report_text_on_primary" widget="color"/>
+                    </group>
+                    <group>
+                        <field name="ops_report_body_text_color" widget="color"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

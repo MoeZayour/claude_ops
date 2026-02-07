@@ -4,26 +4,16 @@
 
     <template id="ops_corporate_pdf_layout">
         <!-- Empty header (prevents default wkhtmltopdf header, no visual output) -->
-        <div class="header" style="border: none; padding: 0; margin: 0; max-height: 0; overflow: hidden;"/>
+        <div class="header" style="border: none !important; padding: 0; margin: 0; max-height: 0; overflow: hidden; box-shadow: none !important;"/>
 
         <!-- Report content slot -->
         <t t-out="0"/>
 
-        <!-- OPS Footer (rendered by wkhtmltopdf on every page) -->
-        <div class="footer" style="border: none; padding: 0 2mm;">
-            <table width="100%" style="border-collapse: collapse; border-top: 1px solid #e2e8f0; font-family: Arial, Helvetica, sans-serif;">
-                <tr>
-                    <td style="vertical-align: middle; width: 50%; padding: 5px 0;">
-                        <span style="font-size: 8px; color: #94a3b8;">Powered by</span>
-                        <span style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">OPS Framework</span>
-                    </td>
-                    <td style="text-align: right; vertical-align: middle; width: 50%; padding: 5px 0;">
-                        <span style="font-size: 9px; color: #64748b;">
-                            Page <span class="page"/> of <span class="topage"/>
-                        </span>
-                    </td>
-                </tr>
-            </table>
+        <!-- wkhtmltopdf footer: page numbers only (badge is in-page via report_corporate_in_page_footer) -->
+        <div class="footer" style="border: none !important; box-shadow: none !important; outline: none !important; padding: 0 12mm; margin: 0;">
+            <div style="text-align: right; font-size: 8pt; color: #94a3b8; font-family: Arial, Helvetica, sans-serif;">
+                Page <span class="page"/> of <span class="topage"/>
+            </div>
         </div>
     </template>
 </odoo>

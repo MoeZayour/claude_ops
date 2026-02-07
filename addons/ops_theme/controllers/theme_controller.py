@@ -140,6 +140,12 @@ class OPSThemeController(http.Controller):
 
     /* Reports */
     --ops-report-header-bg: {report_header};
+
+    /* Navbar entry backgrounds — keeps menu tabs in sync with navbar */
+    --NavBar-entry-backgroundColor: {navbar['bg']};
+    --NavBar-entry-backgroundColor--hover: {navbar['hover']};
+    --NavBar-entry-backgroundColor--focus: {navbar['hover']};
+    --NavBar-entry-backgroundColor--active: {navbar['hover']};
 }}
 
 /* ===================================================================
@@ -151,6 +157,18 @@ nav.o_main_navbar,
 nav.o_main_navbar.d-print-none,
 header.o_navbar {{
     background: {navbar['bg']} !important;
+    background-color: {navbar['bg']} !important;
+}}
+
+/* Ensure nav entries match the navbar background (prevents two-tone bar) */
+.o_main_navbar .o_menu_sections .o_nav_entry,
+.o_main_navbar .o_menu_sections .dropdown-toggle {{
+    background: {navbar['bg']} !important;
+}}
+
+/* Override discuss-specific navbar color (mail module dark mode leak) */
+.o_web_client:has(.o-mail-Discuss) .o_main_navbar,
+.o_web_client:has(.o-mail-Discuss) .o_control_panel {{
     background-color: {navbar['bg']} !important;
 }}
 

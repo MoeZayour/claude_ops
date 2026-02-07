@@ -7,8 +7,8 @@ class ResCompanyBranding(models.Model):
 
     ops_primary_color = fields.Char(
         string='Primary Brand Color',
-        default='#5B6BBB',
-        help='Hex color code for report headers and accents (e.g., #5B6BBB)',
+        default='#1e293b',
+        help='Hex color code for report headers and accents (e.g., #1e293b)',
     )
     ops_show_external_badge = fields.Boolean(
         string='Show OPS Badge on Reports',

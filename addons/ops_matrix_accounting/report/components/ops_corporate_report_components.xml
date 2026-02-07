@@ -242,21 +242,16 @@
 
     <template id="report_corporate_footer">
         <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
-            <table width="100%" style="border-collapse: collapse; font-family: Arial, Helvetica, sans-serif;">
-                <tr>
+            <table width="100%" style="border-collapse: collapse; border: none; font-family: Arial, Helvetica, sans-serif;">
+                <tr style="border: none;">
                     <!-- Branding (Left) -->
-                    <td style="vertical-align: middle; width: 50%;">
-                        <span style="font-size: 8px; color: #94a3b8;">Powered by</span>
-                        <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af);
-                                     color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt;
-                                     font-weight: 600; margin-left: 5px; letter-spacing: 0.5px;
-                                     text-transform: uppercase;">
-                            OPS Framework
-                        </span>
+                    <td style="vertical-align: middle; width: 50%; border: none;">
+                        <span style="font-size: 8px; color: #94a3b8; vertical-align: middle;">Powered by</span>
+                        <img src="data:image/png;base64,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" style="height: 18px; vertical-align: middle; margin-left: 5px;" alt="OPS Framework"/>
                     </td>
 
                     <!-- Page Info (Right) -->
-                    <td style="text-align: right; vertical-align: middle; width: 50%;">
+                    <td style="text-align: right; vertical-align: middle; width: 50%; border: none;">
                         <span style="font-size: 9px; color: #64748b;">
                             Page <span class="page"/> of <span class="topage"/>
                         </span>
@@ -470,6 +465,28 @@
                     UNBALANCED - Difference: <t t-esc="'{:,.2f}'.format(difference or 0)"/>
                 </span>
             </t>
+        </div>
+    </template>
+
+    <!-- ================================================================
+         IN-PAGE BRANDED FOOTER
+         Renders INSIDE the page body (reliable in wkhtmltopdf)
+         Badge via static file path — no base64 embedding
+         ================================================================ -->
+
+    <template id="report_corporate_in_page_footer" name="OPS In-Page Branded Footer">
+        <div style="margin-top: 28px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+            <table width="100%" style="border-collapse: collapse; border: none;">
+                <tr style="border: none;">
+                    <td style="border: none; vertical-align: middle;">
+                        <span style="font-size: 8pt; color: #666666;">Powered by</span>
+                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png"
+                             width="120" height="20"
+                             style="vertical-align: middle; margin-left: 2px;"
+                             alt="OPS Framework"/>
+                    </td>
+                </tr>
+            </table>
         </div>
     </template>
 

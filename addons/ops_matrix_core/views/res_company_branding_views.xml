@@ -8,12 +8,8 @@
     <field name="arch" type="xml">
       <xpath expr="//page[@name='general_info']" position="after">
         <page string="OPS Branding" name="ops_branding">
-          <group>
-            <group string="Report Appearance">
-              <field name="ops_primary_color" widget="color"/>
-              <field name="ops_show_external_badge"/>
-            </group>
-          </group>
+          <!-- Report color fields added by ops_matrix_accounting -->
+          <!-- Theme settings (primary color, navbar, etc.) available in Settings > OPS Theme -->
         </page>
       </xpath>
     </field>
