@@ -1,139 +1,111 @@
-// =============================================================================
-// OPS THEME — Settings Page Enhancements
-// =============================================================================
-// Targets ONLY the OPS Theme settings block: div[data-key="ops_theme"]
-// Does NOT interfere with Odoo's settings layout system.
-// =============================================================================
+/* =============================================================================
+   OPS Theme — Settings Page Styles
+   Scoped to app[name="ops_theme"] inside Odoo Settings
+   Minimal overrides — native <setting> and <block> handle layout
+   ============================================================================= */
 
-// --- Color Swatch Enhancement ---
-// Make color picker fields more visually prominent in the settings page
+/* --- Section sub-headers (h4 dividers within blocks) --- */
 app[name="ops_theme"] {
-    .o_field_color {
-        .o_color_pill {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 2px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
 
-            &:hover {
-                transform: scale(1.12);
-                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-            }
-        }
+    .ops-settings-sub-header {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--o-color-500, #64748b);
+        padding-bottom: 6px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid var(--o-color-200, #e2e8f0);
     }
 
-    // --- Preset Radio Cards Enhancement ---
-    // Make radio buttons for presets more visually distinct
-    .o_radio_item {
-        transition: background-color 0.15s ease;
-        border-radius: 6px;
-
-        &:hover {
-            background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.04);
-        }
-
-        label {
-            cursor: pointer;
-        }
-    }
-
-    // --- Block Title Enhancement ---
-    h2 {
-        border-left: 3px solid var(--ops-secondary, #3b82f6);
-        font-weight: 600;
-        letter-spacing: 0.01em;
-    }
-
-    // --- Setting Row Hover ---
-    .o_setting_box {
-        transition: background-color 0.15s ease;
-        border-radius: 6px;
-
-        &:hover {
-            background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.02);
-        }
-    }
-
-    // --- Reset Button Enhancement ---
-    .btn-outline-secondary {
-        transition: all 0.2s ease;
-
-        &:hover {
-            background-color: var(--ops-danger, #ef4444);
-            border-color: var(--ops-danger, #ef4444);
-            color: #ffffff;
-        }
-    }
-
-    // --- Image Upload Area ---
-    .o_field_image {
-        .o_select_file_button {
-            border: 2px dashed rgba(0, 0, 0, 0.15);
-            border-radius: 8px;
-            transition: border-color 0.2s ease;
-
-            &:hover {
-                border-color: var(--ops-secondary, #3b82f6);
-            }
-        }
-    }
-
-    // --- Preview Buttons ---
-    .ops-preview-btn,
-    .ops-reset-preview-btn {
+    /* --- Color picker fields: enlarge swatch for visual clarity --- */
+    .o_field_color input[type="color"],
+    .o_color_picker input[type="color"] {
+        width: 40px !important;
+        height: 40px !important;
+        padding: 2px !important;
+        border-radius: 8px !important;
+        border: 2px solid rgba(0, 0, 0, 0.08) !important;
         cursor: pointer;
-        transition: all 0.2s ease;
-        font-size: 12px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
 
         &:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            transform: scale(1.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
         }
     }
 
-    .ops-preview-btn:hover {
-        background-color: var(--ops-secondary, #3b82f6);
-        border-color: var(--ops-secondary, #3b82f6);
-        color: #ffffff;
+    /* --- Color grid: tighten vertical spacing --- */
+    .ops-color-grid .o_setting_box {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    /* --- Preset radio: horizontal card-like appearance --- */
+    .o_field_radio.o_light_label {
+        .o_radio_item {
+            margin-bottom: 4px;
+        }
+    }
+
+    /* --- Signature columns: equal height --- */
+    .col-lg-4 .o_field_widget {
+        width: 100%;
+    }
+
+    /* --- Setting rows: subtle hover feedback --- */
+    .o_setting_box {
+        border-radius: 6px;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.015);
+        }
+    }
+
+    /* --- Action buttons row --- */
+    .d-flex.gap-2 .btn-link.text-danger {
+        font-weight: 500;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    /* --- Image widgets: constrained preview size --- */
+    .o_field_image.oe_avatar {
+        max-width: 64px;
+        max-height: 64px;
+        border-radius: 8px;
+    }
+
+    /* --- HTML field (terms): minimum height --- */
+    .o_field_html {
+        min-height: 120px;
     }
 }
 
-// =============================================================================
-// DARK MODE TRANSITION — Smooth color mode switch
-// =============================================================================
-// Applied globally for a smooth transition when dark/light mode toggles.
-// Only affects background-color and color — no layout properties.
-
-html,
-html body,
-html .o_action_manager,
-html .o_main_navbar {
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-// --- Dark Mode Adjustments ---
+/* --- Dark mode adjustments --- */
 html[data-bs-theme="dark"] {
     app[name="ops_theme"] {
-        .o_field_color .o_color_pill {
-            border-color: rgba(255, 255, 255, 0.15);
+
+        .ops-settings-sub-header {
+            color: #94a3b8;
+            border-bottom-color: #334155;
         }
 
-        .o_radio_item:hover {
-            background-color: rgba(255, 255, 255, 0.04);
+        .o_field_color input[type="color"],
+        .o_color_picker input[type="color"] {
+            border-color: rgba(255, 255, 255, 0.1) !important;
+
+            &:hover {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            }
         }
 
         .o_setting_box:hover {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        .o_field_image .o_select_file_button {
-            border-color: rgba(255, 255, 255, 0.15);
-
-            &:hover {
-                border-color: var(--ops-secondary, #3b82f6);
-            }
+            background-color: rgba(255, 255, 255, 0.03);
         }
     }
 }
