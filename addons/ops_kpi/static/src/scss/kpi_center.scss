@@ -3,9 +3,9 @@
    ============================================================================= */
 
 .ops-dashboard {
-    padding: 24px 32px;
     background: var(--o-view-background-color, #f8fafc);
-    min-height: calc(100vh - 50px);
+    height: 100%;
+    overflow-y: auto;
 }
 
 /* =============================================================================
@@ -19,7 +19,6 @@
     margin-bottom: 28px;
     flex-wrap: wrap;
     gap: 16px;
-    max-width: 1400px;
     margin-left: auto;
     margin-right: auto;
 
@@ -101,24 +100,23 @@
 }
 
 /* =============================================================================
-   KPI GRID - Flexbox with Equal-Width Cards
+   KPI GRID - CSS Grid, 4 Cards Per Row
    ============================================================================= */
 
 .ops-dashboard-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    max-width: 1400px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
     margin: 0 auto;
+    align-items: stretch;
+    justify-items: stretch;
 
     /* List view: single-column horizontal cards */
     &.list-view {
-        flex-direction: column;
+        grid-template-columns: 1fr;
         gap: 8px;
 
         .ops-kpi-card {
-            flex: 1 1 100%;
-            max-width: 100%;
             min-height: auto;
             flex-direction: row;
             align-items: center;
@@ -150,16 +148,12 @@
 }
 
 /* =============================================================================
-   KPI CARD - Clean Modern Design with Flexbox Sizing
+   KPI CARD - Clean Modern Design
    ============================================================================= */
 
 .ops-kpi-card {
-    /* Flexbox sizing: 4 cards per row with equal width */
-    flex: 1 1 calc(25% - 15px);
-    min-width: 220px;
-    max-width: calc(25% - 15px);
-
     /* Card styling */
+    width: 100%;
     background: white;
     border-radius: 12px;
     padding: 20px 24px;
@@ -169,7 +163,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    min-height: 140px;
+    min-height: 130px;
 
     &:hover {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -197,19 +191,27 @@
     &.color-orange::before { background: #f97316; }
 }
 
+/* Responsive: 3 cards on smaller desktop */
+@media (max-width: 1200px) {
+    .ops-dashboard-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 /* Responsive: 2 cards on tablet */
-@media (max-width: 1024px) {
-    .ops-kpi-card {
-        flex: 1 1 calc(50% - 10px);
-        max-width: calc(50% - 10px);
+@media (max-width: 900px) {
+    .ops-dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 /* Responsive: 1 card on mobile */
 @media (max-width: 600px) {
-    .ops-kpi-card {
-        flex: 1 1 100%;
-        max-width: 100%;
+    .ops-dashboard {
+        padding: 16px;
+    }
+    .ops-dashboard-grid {
+        grid-template-columns: 1fr;
     }
 }
 

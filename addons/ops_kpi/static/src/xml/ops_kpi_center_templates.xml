@@ -197,41 +197,65 @@
 
                     <!-- Charts Section -->
                     <t t-if="trendCharts.length > 0 or breakdownCharts.length > 0 or alerts.length > 0">
-                        <div class="ops-dashboard-grid-12" style="margin-top: 24px;">
-                            <!-- Trend Charts -->
-                            <t t-foreach="trendCharts" t-as="chart" t-key="chart.kpi_id">
-                                <div class="col-span-8">
-                                    <AreaChart
-                                        title="chart.title"
-                                        subtitle="'Daily trend for selected period'"
-                                        data="chart.data"
-                                        color="chart.color"
-                                        formatType="chart.format_type"
-                                        currencyInfo="currencyInfo"/>
+                        <div class="ops-charts-section">
+                            <!-- Trend Charts: full width when no sidebar, 8/12 with sidebar -->
+                            <t t-set="hasSidebar" t-value="alerts.length > 0 or breakdownCharts.length > 0"/>
+                            <t t-if="hasSidebar">
+                                <div class="ops-dashboard-grid-12">
+                                    <t t-foreach="trendCharts" t-as="chart" t-key="chart.kpi_id">
+                                        <div class="col-span-8">
+                                            <AreaChart
+                                                title="chart.title"
+                                                subtitle="'Daily trend for selected period'"
+                                                data="chart.data"
+                                                color="chart.color"
+                                                formatType="chart.format_type"
+                                                currencyInfo="currencyInfo"/>
+                                        </div>
+                                    </t>
+
+                                    <!-- Alerts Panel -->
+                                    <t t-if="alerts.length > 0">
+                                        <div class="col-span-4">
+                                            <AlertList
+                                                title="'Alerts &amp; Insights'"
+                                                alerts="alerts"
+                                                onClick.bind="onAlertClick"/>
+                                        </div>
+                                    </t>
                                 </div>
+
+                                <!-- Breakdown Charts in their own row -->
+                                <t t-if="breakdownCharts.length > 0">
+                                    <div class="ops-dashboard-grid-12">
+                                        <t t-foreach="breakdownCharts" t-as="chart" t-key="chart.kpi_id + '_breakdown'">
+                                            <div class="col-span-6">
+                                                <HorizontalBarChart
+                                                    title="chart.title"
+                                                    data="chart.data"
+                                                    formatType="chart.format_type"
+                                                    currencyInfo="currencyInfo"
+                                                    showRanking="true"
+                                                    onClick.bind="onChartItemClick"/>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
                             </t>
 
-                            <!-- Alerts Panel -->
-                            <t t-if="alerts.length > 0">
-                                <div class="col-span-4">
-                                    <AlertList
-                                        title="'Alerts &amp; Insights'"
-                                        alerts="alerts"
-                                        onClick.bind="onAlertClick"/>
-                                </div>
-                            </t>
-
-                            <!-- Breakdown Charts -->
-                            <t t-foreach="breakdownCharts" t-as="chart" t-key="chart.kpi_id + '_breakdown'">
-                                <div class="col-span-6">
-                                    <HorizontalBarChart
-                                        title="chart.title"
-                                        data="chart.data"
-                                        formatType="chart.format_type"
-                                        currencyInfo="currencyInfo"
-                                        showRanking="true"
-                                        onClick.bind="onChartItemClick"/>
-                                </div>
+                            <!-- No sidebar: trend charts take full width in a simple stack -->
+                            <t t-if="!hasSidebar">
+                                <t t-foreach="trendCharts" t-as="chart" t-key="chart.kpi_id">
+                                    <div class="ops-chart-card-full">
+                                        <AreaChart
+                                            title="chart.title"
+                                            subtitle="'Daily trend for selected period'"
+                                            data="chart.data"
+                                            color="chart.color"
+                                            formatType="chart.format_type"
+                                            currencyInfo="currencyInfo"/>
+                                    </div>
+                                </t>
                             </t>
                         </div>
                     </t>

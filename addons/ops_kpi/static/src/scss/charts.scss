@@ -32,11 +32,13 @@ $chart-palette: (
 .ops-dashboard-v2 {
     padding: 24px 32px;
     background: var(--o-view-background-color, #f8fafc);
-    min-height: calc(100vh - 50px);
+    height: 100%;
+    overflow-y: auto;
 
     .ops-dashboard-container {
         max-width: 1600px;
         margin: 0 auto;
+        padding-bottom: 40px;
     }
 }
 
@@ -84,6 +86,20 @@ $chart-palette: (
     [class*="col-span-"] {
         grid-column: span 1 !important;
     }
+}
+
+/* =============================================================================
+   CHARTS SECTION - Stacked Layout
+   ============================================================================= */
+.ops-charts-section {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ops-chart-card-full {
+    width: 100%;
 }
 
 /* =============================================================================
