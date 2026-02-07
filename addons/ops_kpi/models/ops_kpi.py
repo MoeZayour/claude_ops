@@ -183,7 +183,7 @@ class OpsKpi(models.Model):
 
         # Get model reference
         model = self.env.get(self.source_model)
-        if not model:
+        if model is None:
             return domain
 
         # Apply scope-based filtering
@@ -275,6 +275,8 @@ class OpsKpi(models.Model):
         Get time series data for trend charts (area/line charts).
         Returns list of {date, value} points for charting.
 
+        Uses read_group for batched aggregation instead of per-point queries.
+
         Args:
             period: 'today', 'this_week', 'this_month', 'this_quarter', 'this_year', 'last_30_days'
             granularity: 'day', 'week', 'month' (for aggregating data points)
@@ -348,52 +350,77 @@ class OpsKpi(models.Model):
 
             # Get model reference
             Model = self.env.get(self.source_model)
-            if not Model:
+            if Model is None:
                 return {'data': [], 'error': f'Model {self.source_model} not found'}
 
-            # Build base domain
+            # Build secure domain with full date range
             from odoo.tools.safe_eval import safe_eval
             from .ops_kpi_value import _get_safe_eval_context
             eval_context = _get_safe_eval_context(self.env)
             base_domain = safe_eval(self.domain_filter, eval_context) if self.domain_filter else []
+            domain = self._get_secure_domain(base_domain.copy())
+            domain.extend([
+                (date_field, '>=', fields.Date.to_string(start)),
+                (date_field, '<=', fields.Date.to_string(today)),
+            ])
 
+            # Map granularity to read_group groupby spec
+            rg_granularity = granularity if granularity in ('day', 'week', 'month') else 'day'
+            groupby_spec = f'{date_field}:{rg_granularity}'
+
+            # Single _read_group call instead of N per-point queries
+            value_map = {}
+            count_map = {}
+
+            if self.calculation_type in ('count', 'sum', 'average'):
+                if self.calculation_type == 'count':
+                    aggregates = ['__count']
+                elif self.calculation_type == 'sum':
+                    aggregates = [f'{self.measure_field}:sum']
+                else:  # average — get sum + count, divide later
+                    aggregates = [f'{self.measure_field}:sum', '__count']
+
+                try:
+                    grouped = Model._read_group(
+                        domain, groupby=[groupby_spec], aggregates=aggregates,
+                    )
+                except Exception as e:
+                    _logger.warning("_read_group failed for KPI %s: %s", self.code, e)
+                    grouped = []
+
+                for row in grouped:
+                    # row is a tuple: (groupby_datetime, agg1, [agg2, ...])
+                    group_dt = row[0]
+                    if not group_dt:
+                        continue
+                    group_date = group_dt.date() if isinstance(group_dt, datetime) else group_dt
+
+                    if self.calculation_type == 'count':
+                        value_map[group_date] = row[1] or 0
+                    elif self.calculation_type == 'sum':
+                        value_map[group_date] = row[1] or 0
+                    elif self.calculation_type == 'average':
+                        value_map[group_date] = row[1] or 0  # sum
+                        count_map[group_date] = row[2] or 0  # count
+
+            # Generate complete series with zero-fill for gaps
             data = []
             current = start
 
             for i in range(num_points):
-                # Calculate period end
-                if isinstance(delta, relativedelta):
-                    period_end = current + delta - timedelta(days=1)
+                # Normalize lookup key to match read_group bucket boundaries
+                if rg_granularity == 'week':
+                    lookup = current - timedelta(days=current.weekday())
+                elif rg_granularity == 'month':
+                    lookup = current.replace(day=1)
                 else:
-                    period_end = current + delta - timedelta(days=1)
+                    lookup = current
 
-                # Don't go beyond today
-                if period_end > today:
-                    period_end = today
+                value = value_map.get(lookup, 0)
 
-                # Build domain for this period
-                domain = self._get_secure_domain(base_domain.copy())
-                domain.extend([
-                    (date_field, '>=', fields.Date.to_string(current)),
-                    (date_field, '<=', fields.Date.to_string(period_end)),
-                ])
-
-                # Calculate value
-                try:
-                    if self.calculation_type == 'count':
-                        value = Model.search_count(domain)
-                    elif self.calculation_type == 'sum':
-                        records = Model.search(domain)
-                        value = sum(records.mapped(self.measure_field) or [0])
-                    elif self.calculation_type == 'average':
-                        records = Model.search(domain)
-                        values = records.mapped(self.measure_field) or [0]
-                        value = sum(values) / len(values) if values else 0
-                    else:
-                        value = 0
-                except Exception as e:
-                    _logger.warning("Error computing time series point: %s", str(e))
-                    value = 0
+                if self.calculation_type == 'average':
+                    count = count_map.get(lookup, 0)
+                    value = value / count if count > 0 else 0
 
                 # Format date label
                 if granularity == 'month':
@@ -410,10 +437,7 @@ class OpsKpi(models.Model):
                 })
 
                 # Move to next period
-                if isinstance(delta, relativedelta):
-                    current = current + delta
-                else:
-                    current = current + delta
+                current = current + delta
 
                 # Don't go beyond today
                 if current > today:
@@ -453,7 +477,7 @@ class OpsKpi(models.Model):
 
             # Get model reference
             Model = self.env.get(self.source_model)
-            if not Model:
+            if Model is None:
                 return {'data': [], 'error': f'Model {self.source_model} not found'}
 
             # Check if group_by field exists
@@ -559,7 +583,7 @@ class OpsKpi(models.Model):
 
             # Get model reference
             Model = self.env.get(self.source_model)
-            if not Model:
+            if Model is None:
                 return {'error': f'Model {self.source_model} not found'}
 
             # Build base domain
