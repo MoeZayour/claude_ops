@@ -1595,7 +1595,7 @@
         <t t-call="ops_matrix_accounting.ops_report_styles"/>
         <t t-call="web.external_layout">
             <div class="ops-report ops-meridian-page">
-                <t t-raw="0"/>
+                <t t-out="0"/>
             </div>
         </t>
     </template>
@@ -1604,7 +1604,7 @@
     <template id="ops_minimal_layout">
         <t t-call="ops_matrix_accounting.ops_report_styles"/>
         <div class="ops-report ops-meridian-page">
-            <t t-raw="0"/>
+            <t t-out="0"/>
         </div>
     </template>
 
@@ -1612,7 +1612,7 @@
     <template id="ops_consulting_layout">
         <t t-call="ops_matrix_accounting.ops_report_styles"/>
         <div class="ops-meridian-page">
-            <t t-raw="0"/>
+            <t t-out="0"/>
         </div>
     </template>
 

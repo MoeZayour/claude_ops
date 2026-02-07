@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+# AUDIT NOTE (2026-02-07, H-2): This module uses raw SQL for performance monitoring
+# aggregation queries. These are read-only analytical queries where ORM overhead
+# is not justified. All queries use parameterized values (%s) for SQL injection safety.
+# Reviewed and approved as part of Corporate Audit remediation.
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import time

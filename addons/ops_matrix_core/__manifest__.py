@@ -10,7 +10,7 @@
         This module provides the foundation for the OPS Matrix Framework.
         It includes Company, Branch, Business Unit models and the security framework.
     """,
-    'author': 'Gemini Agent',
+    'author': 'OPS Framework',
     'website': 'https://www.example.com',
     'license': 'LGPL-3',
     'depends': [
@@ -90,6 +90,7 @@
         'views/partner_views.xml',
         'views/sale_order_views.xml',
         'views/account_move_views.xml',
+        'views/account_payment_views.xml',
         'views/stock_picking_views.xml',
         'views/stock_warehouse_orderpoint_views.xml',
         'views/ops_product_request_views.xml',

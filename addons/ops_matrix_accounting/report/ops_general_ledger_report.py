@@ -214,6 +214,8 @@ class OpsGeneralLedgerReportMinimal(models.AbstractModel):
             domain.append(('ops_branch_id', 'in', wizard.branch_ids.ids))
         if wizard and hasattr(wizard, 'business_unit_ids') and wizard.business_unit_ids:
             domain.append(('ops_business_unit_id', 'in', wizard.business_unit_ids.ids))
+        if wizard and hasattr(wizard, 'partner_ids') and wizard.partner_ids:
+            domain.append(('partner_id', 'in', wizard.partner_ids.ids))
 
         # PERFORMANCE OPTIMIZATION: Use search_read instead of search
         # This fetches dict list directly, avoiding heavy Recordset instantiation
@@ -239,6 +241,7 @@ class OpsGeneralLedgerReportMinimal(models.AbstractModel):
                 accounts_data[account_code] = {
                     'account_code': account_code,
                     'account_name': account_name,
+                    'account_type': account.account_type or '',
                     'lines': [],
                     'total_debit': 0.0,
                     'total_credit': 0.0,
@@ -295,3 +298,14 @@ class OpsGeneralLedgerReportLegacy(models.AbstractModel):
     _name = 'report.ops_matrix_accounting.report_general_ledger'
     _inherit = 'report.ops_matrix_accounting.report_general_ledger_minimal'
     _description = 'General Ledger Report Parser (Legacy)'
+
+
+class OpsGeneralLedgerReportCorporate(models.AbstractModel):
+    """
+    Report parser for the Corporate GL template.
+    Used by GL, Partner Ledger, and SOA reports (all share the same template).
+    Inherits all logic from the minimal parser.
+    """
+    _name = 'report.ops_matrix_accounting.report_general_ledger_corporate'
+    _inherit = 'report.ops_matrix_accounting.report_general_ledger_minimal'
+    _description = 'General Ledger Report Parser (Corporate)'

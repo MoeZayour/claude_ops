@@ -247,9 +247,10 @@
                     <!-- Branding (Left) -->
                     <td style="vertical-align: middle; width: 50%;">
                         <span style="font-size: 8px; color: #94a3b8;">Powered by</span>
-                        <span style="display: inline-block; background-color: #5B6BBB; color: #ffffff;
-                                     padding: 2px 8px; border-radius: 3px; font-size: 8px; font-weight: 600;
-                                     margin-left: 5px; letter-spacing: 0.5px;">
+                        <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af);
+                                     color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt;
+                                     font-weight: 600; margin-left: 5px; letter-spacing: 0.5px;
+                                     text-transform: uppercase;">
                             OPS Framework
                         </span>
                     </td>

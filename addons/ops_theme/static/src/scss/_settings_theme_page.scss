@@ -79,7 +79,6 @@ app[name="ops_theme"] {
             }
         }
     }
-}
 
     // --- Preview Buttons ---
     .ops-preview-btn,
@@ -115,7 +114,7 @@ html .o_main_navbar {
 }
 
 // --- Dark Mode Adjustments ---
-html[data-color-mode="dark"] {
+html[data-bs-theme="dark"] {
     app[name="ops_theme"] {
         .o_field_color .o_color_pill {
             border-color: rgba(255, 255, 255, 0.15);

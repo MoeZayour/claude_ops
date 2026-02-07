@@ -13,9 +13,10 @@ def _auto_configure_matrix(env):
     
     # Step 1: Ensure existing company has OPS fields populated (REQUIRED)
     main_company = env.company
-    if main_company and not main_company.ops_code:
+    if main_company and (not main_company.ops_code or main_company.ops_code == 'New'):
         _logger.info(f"Setting OPS code for existing company: {main_company.name}")
-        main_company.ops_code = env['ir.sequence'].next_by_code('res.company.ops') or 'HQ'
+        ResCompany = env['res.company']
+        main_company.ops_code = ResCompany._generate_ops_code(main_company.name)
         _logger.info(f"✓ Company OPS code set: {main_company.ops_code}")
     else:
         _logger.info(f"✓ Company already configured: {main_company.name} ({main_company.ops_code})")

@@ -274,6 +274,9 @@ class OpsGovernanceMixin(models.AbstractModel):
         if not records:
             return
 
+        # Get the model name
+        model_name = self._name
+
         # ADMIN BYPASS: Skip governance rule enforcement for Administrator and System Managers
         if self.env.su or self.env.user.has_group('base.group_system'):
             # Log admin override for audit trail
@@ -293,9 +296,6 @@ class OpsGovernanceMixin(models.AbstractModel):
             except Exception as e:
                 _logger.warning("Failed to log admin override: %s", str(e))
             return
-
-        # Get the model name
-        model_name = self._name
 
         # Try to find governance rules, but gracefully handle ACL errors
         # CATALOG MODE: Only enforce rules that are both active (visible) AND enabled (enforced)

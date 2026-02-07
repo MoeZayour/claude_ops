@@ -14,7 +14,7 @@
         - Enhanced Financial Reporting
         - Multi-branch Accounting
     """,
-    "author": "OPS Matrix",
+    "author": "OPS Framework",
     "website": "https://github.com/MoeZayour",
     "license": "LGPL-3",
     "depends": [

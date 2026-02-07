@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from psycopg2 import sql
+
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -252,7 +252,7 @@ class OpsBudgetLine(models.Model):
     available_amount = fields.Monetary(string='Available Amount', compute='_compute_available_amount', store=True)
     
     currency_id = fields.Many2one(related='budget_id.currency_id')
-    company_id = fields.Many2one(related='budget_id.ops_branch_id')
+    company_id = fields.Many2one('res.company', related='budget_id.company_id', store=True, readonly=True)
 
     _sql_constraints = [
         ('unique_account_per_budget', 'unique(budget_id, general_account_id)',
@@ -267,15 +267,13 @@ class OpsBudgetLine(models.Model):
     @api.depends('general_account_id', 'budget_id.date_from', 'budget_id.date_to',
                  'budget_id.ops_branch_id', 'budget_id.ops_business_unit_id')
     def _compute_practical_amount(self):
-        """
-        Compute actual spend from posted account moves using batched SQL.
+        """Compute actual spend from posted account moves using ORM (H-1 audit fix).
 
         Practical = Sum of debit - credit from posted vendor bills/refunds/entries
         matching the budget's branch, BU, account, and date range.
-
-        Lines are grouped by their parent budget to minimise SQL round-trips.
         """
-        # Partition lines by budget so we can batch all accounts in a single query
+        AML = self.env['account.move.line'].sudo()
+
         budget_lines = {}
         for line in self:
             if not line.general_account_id or not line.budget_id or not line.budget_id.ops_branch_id:
@@ -283,39 +281,31 @@ class OpsBudgetLine(models.Model):
                 continue
             budget_lines.setdefault(line.budget_id.id, []).append(line)
 
-        for budget_id, lines in budget_lines.items():
+        for _budget_id, lines in budget_lines.items():
             budget = lines[0].budget_id
             account_ids = [l.general_account_id.id for l in lines]
 
-            query = """
-                SELECT aml.account_id,
-                       COALESCE(SUM(aml.debit - aml.credit), 0)
-                FROM account_move_line aml
-                JOIN account_move am ON aml.move_id = am.id
-                WHERE aml.account_id IN %s
-                  AND aml.ops_business_unit_id = %s
-                  AND aml.ops_branch_id = %s
-                  AND aml.date >= %s
-                  AND aml.date <= %s
-                  AND am.state = 'posted'
-                  AND am.move_type IN ('in_invoice', 'in_refund', 'entry')
-                  AND am.company_id = %s
-                GROUP BY aml.account_id
-            """
-            params = (
-                tuple(account_ids),
-                budget.ops_business_unit_id.id,
-                budget.ops_branch_id.id,
-                budget.date_from,
-                budget.date_to,
-                budget.company_id.id,
-            )
+            domain = [
+                ('account_id', 'in', account_ids),
+                ('move_id.state', '=', 'posted'),
+                ('move_id.move_type', 'in', ('in_invoice', 'in_refund', 'entry')),
+                ('date', '>=', budget.date_from),
+                ('date', '<=', budget.date_to),
+                ('company_id', '=', budget.company_id.id),
+            ]
+            if budget.ops_branch_id:
+                domain.append(('ops_branch_id', '=', budget.ops_branch_id.id))
+            if budget.ops_business_unit_id:
+                domain.append(('ops_business_unit_id', '=', budget.ops_business_unit_id.id))
 
             try:
-                self.env.cr.execute(query, params)
-                results = {row[0]: row[1] for row in self.env.cr.fetchall()}
+                move_lines = AML.search(domain)
+                results = {}
+                for aml in move_lines:
+                    acc_id = aml.account_id.id
+                    results[acc_id] = results.get(acc_id, 0.0) + (aml.debit - aml.credit)
             except Exception as e:
-                _logger.error("Budget practical amount batch calculation error: %s", e)
+                _logger.error("Budget practical amount calculation error: %s", e)
                 results = {}
 
             for line in lines:
@@ -344,44 +334,33 @@ class OpsBudgetLine(models.Model):
                 continue
             budget_lines.setdefault(line.budget_id.id, []).append(line)
 
+        POL = self.env['purchase.order.line']
+
         for budget_id, lines in budget_lines.items():
             budget = lines[0].budget_id
             account_ids = [l.general_account_id.id for l in lines]
 
-            # Batch query: GROUP BY expense account to get committed per account
-            query = """
-                SELECT pc.property_account_expense_categ_id,
-                       COALESCE(SUM(
-                           pol.price_subtotal - COALESCE(pol.qty_invoiced * pol.price_unit, 0)
-                       ), 0)
-                FROM purchase_order_line pol
-                JOIN purchase_order po ON pol.order_id = po.id
-                JOIN product_product pp ON pol.product_id = pp.id
-                JOIN product_template pt ON pp.product_tmpl_id = pt.id
-                JOIN product_category pc ON pt.categ_id = pc.id
-                WHERE po.state IN ('purchase', 'done')
-                  AND po.ops_business_unit_id = %s
-                  AND po.ops_branch_id = %s
-                  AND po.date_order >= %s
-                  AND po.date_order <= %s
-                  AND pc.property_account_expense_categ_id IN %s
-                  AND po.company_id = %s
-                GROUP BY pc.property_account_expense_categ_id
-            """
-            params = (
-                budget.ops_business_unit_id.id,
-                budget.ops_branch_id.id,
-                budget.date_from,
-                budget.date_to,
-                tuple(account_ids),
-                budget.company_id.id,
-            )
-
+            # Use ORM search instead of raw SQL to avoid JSONB
+            # comparison issues with company-dependent fields in Odoo 19
             try:
-                self.env.cr.execute(query, params)
-                results = {row[0]: row[1] for row in self.env.cr.fetchall()}
+                po_lines = POL.search([
+                    ('order_id.state', 'in', ['purchase', 'done']),
+                    ('order_id.ops_business_unit_id', '=', budget.ops_business_unit_id.id),
+                    ('order_id.ops_branch_id', '=', budget.ops_branch_id.id),
+                    ('order_id.date_order', '>=', budget.date_from),
+                    ('order_id.date_order', '<=', budget.date_to),
+                    ('order_id.company_id', '=', budget.company_id.id),
+                ])
+
+                # Build committed amounts by expense account
+                results = {}
+                for pol in po_lines:
+                    account = pol.product_id.categ_id.property_account_expense_categ_id
+                    if account and account.id in account_ids:
+                        uninvoiced = pol.price_subtotal - (pol.qty_invoiced * pol.price_unit)
+                        results[account.id] = results.get(account.id, 0.0) + uninvoiced
             except Exception as e:
-                _logger.error("Budget committed amount batch calculation error: %s", e)
+                _logger.error("Budget committed amount calculation error: %s", e)
                 results = {}
 
             for line in lines:

@@ -1,46 +1,177 @@
 ///
-/// OPS Dark Mode - ONLY for OPS-custom components
-/// ================================================
-/// Native Odoo components handle their own dark mode.
-/// This file ONLY styles OPS-custom components (login, future app grid).
+/// OPS Dark Mode — OPS-branded dark mode enhancements
+/// ====================================================
+/// Native Odoo components handle their own dark mode via Bootstrap 5.3.
+/// This file ONLY styles:
+///   1. Branded navbar integration (dropdowns under a branded navbar)
+///   2. OPS-custom components (login page, app grid)
+///   3. CSS variable adaptations for dark context
+///
+/// RULE: Never override .o_form_view, .o_list_view, .o_kanban_view,
+///       .o_control_panel, .modal-content, or any native Odoo component.
+///       Odoo 19 + Bootstrap dark bundle handles those.
 ///
 
 // =============================================================================
-// LOGIN PAGE (OPS CUSTOM)
+// 1. DARK MODE CSS VARIABLE ADAPTATIONS
+// =============================================================================
+// Ensure OPS CSS variables produce sensible values in dark context.
+
+html[data-bs-theme="dark"] {
+    // Soften box shadows for dark backgrounds
+    --ops-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+// =============================================================================
+// 2. BRANDED NAVBAR — DROPDOWN MENUS IN DARK MODE
+// =============================================================================
+// The navbar stays branded (company color) in both modes.
+// Dropdown menus opened from it need dark backgrounds, not white.
+
+html[data-bs-theme="dark"] {
+    // Navbar dropdown menus (app switcher, systray, user menu)
+    .o_main_navbar {
+        .dropdown-menu,
+        .o-dropdown--menu {
+            background-color: var(--bs-body-bg, #212529);
+            border-color: var(--bs-border-color, #495057);
+            color: var(--bs-body-color, #dee2e6);
+
+            .dropdown-item {
+                color: var(--bs-body-color, #dee2e6);
+
+                &:hover,
+                &:focus {
+                    background-color: rgba(255, 255, 255, 0.08);
+                    color: #ffffff;
+                }
+
+                &.active,
+                &:active {
+                    background-color: rgba(255, 255, 255, 0.12);
+                }
+            }
+
+            .dropdown-divider {
+                border-color: var(--bs-border-color, #495057);
+            }
+        }
+
+        // App switcher panel
+        .o_navbar_apps_menu .dropdown-menu {
+            background-color: var(--bs-body-bg, #212529);
+        }
+    }
+
+    // Sub-menu dropdowns under top menu items
+    .o_menu_sections {
+        .dropdown-menu,
+        .o-dropdown--menu {
+            background-color: var(--bs-body-bg, #212529);
+            border-color: var(--bs-border-color, #495057);
+
+            .dropdown-item,
+            a,
+            button {
+                color: var(--bs-body-color, #dee2e6);
+
+                &:hover,
+                &:focus {
+                    background-color: rgba(255, 255, 255, 0.08);
+                    color: #ffffff;
+                }
+            }
+        }
+    }
+}
+
+// =============================================================================
+// 3. POPUPS / TOASTS / AUTOCOMPLETE IN DARK MODE
+// =============================================================================
+// Ensure OPS-relevant popup surfaces use dark backgrounds.
+// Native modals are handled by Bootstrap — do NOT override .modal-content.
+
+html[data-bs-theme="dark"] {
+    // Notification toasts
+    .o_notification {
+        &.border-info,
+        &.border-success,
+        &.border-warning,
+        &.border-danger {
+            background-color: var(--bs-body-bg, #212529);
+            color: var(--bs-body-color, #dee2e6);
+        }
+    }
+
+    // Many2one dropdown autocomplete
+    .o-autocomplete--dropdown-menu {
+        background-color: var(--bs-body-bg, #212529);
+        border-color: var(--bs-border-color, #495057);
+
+        .o-autocomplete--dropdown-item {
+            color: var(--bs-body-color, #dee2e6);
+
+            &:hover,
+            &.focus {
+                background-color: rgba(255, 255, 255, 0.08);
+            }
+        }
+    }
+
+    // Command palette (Ctrl+K)
+    .o_command_palette {
+        .o_command_palette_search input {
+            background-color: var(--bs-body-bg, #212529);
+            color: var(--bs-body-color, #dee2e6);
+            border-color: var(--bs-border-color, #495057);
+        }
+
+        .o_command {
+            color: var(--bs-body-color, #dee2e6);
+
+            &:hover,
+            &.focused {
+                background-color: rgba(255, 255, 255, 0.08);
+            }
+        }
+    }
+}
+
+// =============================================================================
+// 4. LOGIN PAGE (OPS CUSTOM COMPONENT)
 // =============================================================================
 
 [data-color-mode="dark"] {
     .ops-login-container {
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     }
-    
+
     .ops-login-panel {
         background: #1e293b;
         border-color: #334155;
     }
-    
+
     .ops-login-brand {
         color: #f1f5f9;
     }
-    
+
     .ops-login-form-panel {
         background-color: #0f172a !important;
         color: #f1f5f9;
     }
-    
+
     .ops-login-header h2,
     .ops-login-header p {
         color: #f1f5f9;
     }
-    
-    // Form inputs in dark mode
+
     .ops-login-form-panel input[type="text"],
     .ops-login-form-panel input[type="password"],
     .ops-login-form-panel input[type="email"] {
         background-color: #1e293b;
         border-color: #334155;
         color: #f1f5f9;
-        
+
         &:focus {
             background-color: #1e293b;
             border-color: #3b82f6;
@@ -49,18 +180,18 @@
 }
 
 // =============================================================================
-// APP GRID (OPS CUSTOM - FUTURE FEATURE)
+// 5. APP GRID (OPS CUSTOM — FUTURE)
 // =============================================================================
 
 [data-color-mode="dark"] {
     .ops-app-grid {
         background: #0f172a;
     }
-    
+
     .ops-app-tile {
         background: #1e293b;
         border-color: #334155;
-        
+
         &:hover {
             background: #334155;
         }
@@ -69,13 +200,11 @@
 
 // =============================================================================
 // DO NOT ADD OVERRIDES FOR NATIVE ODOO COMPONENTS:
-// - .o_form_view
-// - .o_list_view  
-// - .modal, .modal-content
+// - .o_form_view, .o_list_view, .o_kanban_view
+// - .modal, .modal-content (Bootstrap dark bundle handles these)
 // - .o_settings_container
-// - .o_kanban_view
 // - .o_control_panel
 // - Any other native Odoo class
-// 
-// Odoo 19 handles its own dark mode for these components!
+//
+// Odoo 19 + Bootstrap dark bundle handles these components!
 // =============================================================================

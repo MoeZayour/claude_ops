@@ -9,7 +9,7 @@ from . import res_company_branding  # Company branding fields for reports
 from . import ops_branch            # Second: Branch model (depends on company)
 from . import ops_business_unit     # Third: BU model (depends on branch)
 from . import ops_matrix_config     # Fourth: Configuration model
-from . import ops_mixin             # Fifth: Mixin (depends on branch/BU)
+# ops_mixin deprecated: merged into ops_matrix_mixin (M-5 audit fix)
 from . import ops_matrix_mixin      # Sixth: Matrix dimension propagation mixin
 from . import ops_approval_mixin    # Approval locking mixin
 from . import ops_segregation_of_duties  # SoD rule management

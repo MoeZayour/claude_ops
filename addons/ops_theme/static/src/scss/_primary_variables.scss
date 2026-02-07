@@ -48,6 +48,13 @@ $o-navbar-background: #1e293b;
 $o-navbar-inverse: white;
 
 // =============================================================================
+// DARK MODE — Re-enable Bootstrap 5.3 dark mode (Odoo disables it)
+// =============================================================================
+// Odoo sets $enable-dark-mode: false !default; in bootstrap_overridden.scss
+// We re-enable it so Bootstrap generates [data-bs-theme="dark"] CSS rules.
+$enable-dark-mode: true;
+
+// =============================================================================
 // FONT — Inter as Primary
 // =============================================================================
 $o-we-font-family-override: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

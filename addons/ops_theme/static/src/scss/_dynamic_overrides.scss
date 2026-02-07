@@ -152,90 +152,82 @@ html[data-ops-shadow="heavy"] {
 }
 
 // =============================================================================
-// BUTTON COLORS - USE CSS VARIABLES
+// BUTTON COLORS — LIGHT MODE ONLY
 // =============================================================================
+// In dark mode, Odoo's dark CSS bundle handles all component colors natively.
+// OPS only brands buttons/badges/links in light mode.
 
-.btn-primary {
-    background-color: var(--ops-secondary) !important;
-    border-color: var(--ops-secondary) !important;
-    color: #ffffff !important;
+html:not([data-bs-theme="dark"]) {
+    .btn-primary {
+        background-color: var(--ops-secondary) !important;
+        border-color: var(--ops-secondary) !important;
+        color: #ffffff !important;
 
-    &:hover,
-    &:focus {
-        background-color: var(--ops-secondary-hover, #2563eb) !important;
-        border-color: var(--ops-secondary-hover, #2563eb) !important;
+        &:hover,
+        &:focus {
+            background-color: var(--ops-secondary-hover, #2563eb) !important;
+            border-color: var(--ops-secondary-hover, #2563eb) !important;
+        }
     }
-}
 
-.btn-success {
-    background-color: var(--ops-success) !important;
-    border-color: var(--ops-success) !important;
-}
-
-.btn-warning {
-    background-color: var(--ops-warning) !important;
-    border-color: var(--ops-warning) !important;
-}
-
-.btn-danger {
-    background-color: var(--ops-danger) !important;
-    border-color: var(--ops-danger) !important;
-}
-
-// =============================================================================
-// LINKS USE SECONDARY COLOR
-// =============================================================================
-
-a:not(.btn):not(.nav-link):not(.dropdown-item) {
-    color: var(--ops-secondary);
-
-    &:hover {
-        color: var(--ops-secondary-hover, #2563eb);
+    .btn-success {
+        background-color: var(--ops-success) !important;
+        border-color: var(--ops-success) !important;
     }
-}
 
-// =============================================================================
-// BADGES
-// =============================================================================
+    .btn-warning {
+        background-color: var(--ops-warning) !important;
+        border-color: var(--ops-warning) !important;
+    }
 
-.badge.text-bg-primary,
-.badge.bg-primary {
-    background-color: var(--ops-secondary) !important;
-}
+    .btn-danger {
+        background-color: var(--ops-danger) !important;
+        border-color: var(--ops-danger) !important;
+    }
 
-.badge.text-bg-success,
-.badge.bg-success {
-    background-color: var(--ops-success) !important;
-}
+    // Links
+    a:not(.btn):not(.nav-link):not(.dropdown-item) {
+        color: var(--ops-secondary);
 
-.badge.text-bg-warning,
-.badge.bg-warning {
-    background-color: var(--ops-warning) !important;
-}
+        &:hover {
+            color: var(--ops-secondary-hover, #2563eb);
+        }
+    }
 
-.badge.text-bg-danger,
-.badge.bg-danger {
-    background-color: var(--ops-danger) !important;
-}
+    // Badges
+    .badge.text-bg-primary,
+    .badge.bg-primary {
+        background-color: var(--ops-secondary) !important;
+    }
 
-// =============================================================================
-// FORM FOCUS STATES
-// =============================================================================
+    .badge.text-bg-success,
+    .badge.bg-success {
+        background-color: var(--ops-success) !important;
+    }
 
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--ops-secondary) !important;
-    box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb), 0.15) !important;
-}
+    .badge.text-bg-warning,
+    .badge.bg-warning {
+        background-color: var(--ops-warning) !important;
+    }
 
-// =============================================================================
-// STATUSBAR USES SECONDARY
-// =============================================================================
+    .badge.text-bg-danger,
+    .badge.bg-danger {
+        background-color: var(--ops-danger) !important;
+    }
 
-.o_statusbar_status .o_arrow_button.btn-primary,
-.o_statusbar_status .o_arrow_button.o_active {
-    background-color: var(--ops-secondary) !important;
-    color: #ffffff !important;
+    // Form focus states
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--ops-secondary) !important;
+        box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb), 0.15) !important;
+    }
+
+    // Statusbar
+    .o_statusbar_status .o_arrow_button.btn-primary,
+    .o_statusbar_status .o_arrow_button.o_active {
+        background-color: var(--ops-secondary) !important;
+        color: #ffffff !important;
+    }
 }
 
 // =============================================================================

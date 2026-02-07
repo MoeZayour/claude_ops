@@ -143,7 +143,8 @@ class OPSThemeController(http.Controller):
 }}
 
 /* ===================================================================
-   NAVBAR - Uses PRIMARY color
+   NAVBAR — Brand-specific overrides (both light and dark modes).
+   Navbar stays branded in all modes — it's the company's bar.
    =================================================================== */
 nav.o_main_navbar,
 .o_main_navbar,
@@ -153,7 +154,6 @@ header.o_navbar {{
     background-color: {navbar['bg']} !important;
 }}
 
-/* Brand name uses secondary (accent) color */
 .o_main_navbar .o_menu_brand {{
     color: {secondary} !important;
     font-weight: 700 !important;
@@ -165,7 +165,6 @@ header.o_navbar {{
     color: {navbar['text']} !important;
 }}
 
-/* Menu section items */
 .o_menu_sections > button,
 .o_menu_sections > a,
 .o_menu_sections .o-dropdown > button,
@@ -177,115 +176,6 @@ header.o_navbar {{
 .o_menu_sections > a:hover,
 .o_menu_sections .o-dropdown > button:hover {{
     background: {navbar['hover']} !important;
-}}
-
-/* ===================================================================
-   DROPDOWN MENUS - Consistent styling
-   =================================================================== */
-.o_main_navbar .dropdown-menu,
-.o_main_navbar .o-dropdown--menu,
-.o_navbar_apps_menu .dropdown-menu,
-.o_navbar_apps_menu .o-dropdown--menu,
-.o_menu_sections .dropdown-menu,
-.o_menu_sections .o-dropdown--menu,
-.o_user_menu .dropdown-menu,
-.o_menu_systray .dropdown-menu {{
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: var(--ops-radius-md, 8px) !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
-}}
-
-.o_main_navbar .dropdown-item,
-.o_navbar_apps_menu .dropdown-item,
-.o_navbar_apps_menu a,
-.o_menu_sections .dropdown-item,
-.o_user_menu .dropdown-item,
-.o_menu_systray .dropdown-item {{
-    color: #1e293b !important;
-    padding: 8px 16px !important;
-}}
-
-.o_main_navbar .dropdown-item:hover,
-.o_navbar_apps_menu .dropdown-item:hover,
-.o_navbar_apps_menu a:hover,
-.o_menu_sections .dropdown-item:hover,
-.o_user_menu .dropdown-item:hover {{
-    background-color: #f8fafc !important;
-}}
-
-.o_main_navbar .dropdown-item.active,
-.o_main_navbar .dropdown-item:active {{
-    background-color: {secondary} !important;
-    color: #ffffff !important;
-}}
-
-/* ===================================================================
-   BUTTONS - Use SECONDARY (accent) color
-   =================================================================== */
-.btn-primary {{
-    background-color: {secondary} !important;
-    border-color: {secondary} !important;
-    color: #ffffff !important;
-}}
-
-.btn-primary:hover,
-.btn-primary:focus {{
-    background-color: {secondary_hover} !important;
-    border-color: {secondary_hover} !important;
-}}
-
-/* ===================================================================
-   STATUS BAR
-   =================================================================== */
-.o_statusbar_status .o_arrow_button.btn-primary,
-.o_statusbar_status .o_arrow_button.o_active {{
-    background-color: {secondary} !important;
-    color: #ffffff !important;
-}}
-
-/* ===================================================================
-   FORM FOCUS STATES
-   =================================================================== */
-.form-control:focus,
-.form-select:focus {{
-    border-color: {secondary} !important;
-    box-shadow: 0 0 0 3px rgba({hex_to_rgb(secondary)}, 0.15) !important;
-}}
-
-/* ===================================================================
-   CARD & LAYOUT
-   =================================================================== */
-.o_form_sheet,
-.o_kanban_record,
-.card {{
-    box-shadow: {shadow_map.get(card_shadow, shadow_map['medium'])} !important;
-    border-radius: {radius_map.get(border_radius, radius_map['rounded'])} !important;
-}}
-
-/* ===================================================================
-   DARK MODE — Override light-mode dropdown colors
-   =================================================================== */
-html[data-color-mode="dark"] .o_main_navbar .dropdown-menu,
-html[data-color-mode="dark"] .o_navbar_apps_menu .dropdown-menu,
-html[data-color-mode="dark"] .o_menu_sections .dropdown-menu,
-html[data-color-mode="dark"] .o_user_menu .dropdown-menu,
-html[data-color-mode="dark"] .o_menu_systray .dropdown-menu {{
-    background-color: #1e293b !important;
-    border-color: #334155 !important;
-}}
-
-html[data-color-mode="dark"] .o_main_navbar .dropdown-item,
-html[data-color-mode="dark"] .o_navbar_apps_menu .dropdown-item,
-html[data-color-mode="dark"] .o_menu_sections .dropdown-item,
-html[data-color-mode="dark"] .o_user_menu .dropdown-item,
-html[data-color-mode="dark"] .o_menu_systray .dropdown-item {{
-    color: #e2e8f0 !important;
-}}
-
-html[data-color-mode="dark"] .o_main_navbar .dropdown-item:hover,
-html[data-color-mode="dark"] .o_user_menu .dropdown-item:hover {{
-    background-color: #334155 !important;
 }}
 """
         return request.make_response(
@@ -311,7 +201,7 @@ html[data-color-mode="dark"] .o_user_menu .dropdown-item:hover {{
     # THEME DATA ENDPOINT (for JavaScript)
     # =========================================================================
 
-    @http.route('/ops_theme/data', type='json', auth='public')
+    @http.route('/ops_theme/data', type='jsonrpc', auth='public')
     def theme_data(self, **kwargs):
         """Return theme settings as JSON for JavaScript consumption."""
         company_id = request.env.company.id if request.env.company else 1

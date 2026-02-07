@@ -309,7 +309,7 @@
             <t t-set="report_title" t-value="'Balance Sheet'"/>
             <t t-set="report_subtitle" t-value="'As of ...'"/>
             <t t-set="company" t-value="doc.company_id or env.company"/>
-            ... report content (passed as body via t-raw="0") ...
+            ... report content (passed as body via t-out="0") ...
         </t>
 
     Note: 'doc' is a wizard record; data comes from doc._get_report_data()
@@ -388,7 +388,7 @@
 
             <!-- Content Slot -->
             <div class="ops-content">
-                <t t-raw="0"/>
+                <t t-out="0"/>
             </div>
 
             <!-- Footer (table-based) -->

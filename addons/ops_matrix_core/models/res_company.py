@@ -88,35 +88,15 @@ class ResCompany(models.Model):
 
     def _generate_ops_code(self, company_name: str = None) -> str:
         """
-        Generate OPS code with fallback logic:
-        1. Try to get next value from sequence 'res.company.ops'
-        2. If sequence doesn't exist or returns 'New', use first 3 letters of company name
-        3. Ensure uniqueness by appending a counter if needed
+        Generate OPS code from ir.sequence 'res.company.ops'.
+        Returns sequential codes like CP-0001, CP-0002, etc.
         """
-        # Step 1: Try sequence
         code = self.env['ir.sequence'].next_by_code('res.company.ops')
         if code and code != 'New':
             return code
-
-        # Step 2: Fallback to company name prefix
-        if company_name:
-            # Extract first 3 uppercase letters (alphanumeric only)
-            import re
-            clean_name = re.sub(r'[^a-zA-Z0-9]', '', company_name)
-            base_code = clean_name[:3].upper() if len(clean_name) >= 3 else clean_name.upper().ljust(3, 'X')
-
-            # Step 3: Ensure uniqueness
-            final_code = base_code
-            counter = 1
-            while self.search_count([('ops_code', '=', final_code)]) > 0:
-                final_code = f"{base_code}-{counter:03d}"
-                counter += 1
-
-            _logger.info(f"Generated fallback OPS code '{final_code}' from company name '{company_name}'")
-            return final_code
-
-        # Last resort
-        return 'NEW'
+        # Fallback only if sequence not yet created (should not happen after module install)
+        _logger.warning("Sequence 'res.company.ops' not found — using fallback code")
+        return f"CP-{self.search_count([]) + 1:04d}"
 
     @api.model_create_multi
     def create(self, vals_list: List[Dict[str, Any]]) -> 'ResCompany':

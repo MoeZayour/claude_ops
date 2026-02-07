@@ -312,7 +312,7 @@
         <t t-call="ops_matrix_accounting.ops_minimal_report_styles"/>
         <t t-call="web.external_layout">
             <div class="ops-report">
-                <t t-raw="0"/>
+                <t t-out="0"/>
             </div>
         </t>
     </template>

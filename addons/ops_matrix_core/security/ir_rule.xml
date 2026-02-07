@@ -197,6 +197,33 @@
         </record>
         
         <!-- =========================================== -->
+        <!-- 6b. PAYMENT ACCESS RULES (C-1 Audit Fix)    -->
+        <!-- =========================================== -->
+
+        <!-- Account Payment: Branch-Level User Access -->
+        <record id="rule_ops_account_payment_branch_user" model="ir.rule">
+            <field name="name">Payment: Branch-Level User Access</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">
+                ['|',
+                    ('ops_branch_id', '=', False),
+                    ('ops_branch_id', 'in', user.ops_allowed_branch_ids.ids)
+                ]
+            </field>
+            <field name="groups" eval="[(4, ref('account.group_account_user')), (4, ref('account.group_account_manager'))]"/>
+        </record>
+
+        <!-- Account Payment: System Admin Full Access -->
+        <record id="ops_account_payment_admin_full_access" model="ir.rule">
+            <field name="name">Payment: System Admin Full Access</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="global" eval="False"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+
+        <!-- =========================================== -->
         <!-- 7. INVENTORY ACCESS RULES                   -->
         <!-- =========================================== -->
         

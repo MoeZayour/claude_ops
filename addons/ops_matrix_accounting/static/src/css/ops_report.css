@@ -45,14 +45,19 @@
    BASE STYLES - PDF COMPATIBLE
    ============================================ */
 
-/* Force all colors to print */
-* {
+/* Force all colors to print — scoped to report containers only */
+.ops-report *,
+.ops-report-container *,
+.ops-financial-report * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
 }
 
-/* Base Typography - System Fonts Only */
-body, .page {
+/* Base Typography - System Fonts Only — scoped to report containers */
+.ops-report,
+.ops-report-container,
+.ops-financial-report,
+.page {
     font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif;
     font-size: 10pt;
     line-height: 1.5;
@@ -1607,72 +1612,93 @@ tr.ops-total td {
     font-size: 10px;
 }
 
-/* Utility Classes */
-.text-end {
+/* Utility Classes — scoped to report containers to avoid breaking Bootstrap grid */
+.ops-report .text-end,
+.ops-report-container .text-end,
+.ops-financial-report .text-end {
     text-align: right !important;
 }
 
-.text-center {
+.ops-report .text-center,
+.ops-report-container .text-center,
+.ops-financial-report .text-center {
     text-align: center !important;
 }
 
-.font-weight-bold,
-strong {
+.ops-report .font-weight-bold,
+.ops-report-container .font-weight-bold,
+.ops-financial-report .font-weight-bold {
     font-weight: bold;
 }
 
-/* Row/Column helpers using tables */
-.row {
+/* Row/Column helpers using tables — scoped to report containers */
+/* CRITICAL: These MUST NOT be global — they override Bootstrap flex grid */
+.ops-report .row,
+.ops-report-container .row,
+.ops-financial-report .row {
     display: table;
     width: 100%;
 }
 
-.row:after {
+.ops-report .row:after,
+.ops-report-container .row:after,
+.ops-financial-report .row:after {
     content: "";
     display: table;
     clear: both;
 }
 
-.col-6 {
+.ops-report .col-6,
+.ops-report-container .col-6,
+.ops-financial-report .col-6 {
     display: table-cell;
     width: 50%;
     vertical-align: top;
 }
 
-.col-3 {
+.ops-report .col-3,
+.ops-report-container .col-3,
+.ops-financial-report .col-3 {
     display: table-cell;
     width: 25%;
     vertical-align: top;
 }
 
-.col-4 {
+.ops-report .col-4,
+.ops-report-container .col-4,
+.ops-financial-report .col-4 {
     display: table-cell;
     width: 33.33%;
     vertical-align: top;
 }
 
-.col-12 {
+.ops-report .col-12,
+.ops-report-container .col-12,
+.ops-financial-report .col-12 {
     display: block;
     width: 100%;
 }
 
-/* Print Styles - Force Color Printing */
+/* Print Styles - Force Color Printing (scoped to reports) */
 @media print {
     .ops-no-print {
         display: none !important;
     }
 
-    body {
+    .ops-report,
+    .ops-report-container,
+    .ops-financial-report {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
 
-    * {
+    .ops-report *,
+    .ops-report-container *,
+    .ops-financial-report * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
 
-    .ops-financial-report,
     .ops-section-header,
     .ops-grand-total,
     .ops-kpi-card,

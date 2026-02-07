@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="seq_res_company_ops" model="ir.sequence">
+        <field name="name">OPS Company Code</field>
+        <field name="code">res.company.ops</field>
+        <field name="prefix">CP-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
     <record id="seq_ops_branch" model="ir.sequence">
         <field name="name">OPS Branch</field>
         <field name="code">ops.branch</field>
