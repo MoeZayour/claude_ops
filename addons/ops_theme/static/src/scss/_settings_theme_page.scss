@@ -1,11 +1,165 @@
 /* =============================================================================
    OPS Theme — Settings Page Styles
-   Scoped to app[name="ops_theme"] inside Odoo Settings
+   Targeting verified Odoo 19 DOM structure (inspected 2026-02-08)
    ============================================================================= */
 
-app[name="ops_theme"] {
+/* --- Scope: OPS Theme settings app block --- */
+.o_base_settings .app_settings_block[data-key="ops_theme"] {
 
-    /* --- Section sub-headers (h4 dividers within blocks) --- */
+    /* =================================================================
+       1. HORIZONTAL RADIO GROUPS
+       Odoo 19 radio widget DOM:
+         .o_field_radio [user classes: d-flex gap-4]
+           └── div[role="radiogroup"].o_vertical   ← has flex-flow: column nowrap
+                 └── .form-check.o_radio_item
+                       ├── input.form-check-input.o_radio_input
+                       └── label.form-check-label.o_form_label
+
+       Problem: .o_vertical forces column layout. Our d-flex on the wrapper
+       doesn't propagate. Must override .o_vertical to row layout.
+       ================================================================= */
+
+    .o_field_radio.d-flex {
+        /* Override the internal radiogroup container */
+        > .o_vertical,
+        > div[role="radiogroup"] {
+            display: flex !important;
+            flex-flow: row wrap !important;
+            gap: 8px 24px !important;
+        }
+
+        /* Each radio item: stay on one line */
+        .o_radio_item,
+        .form-check {
+            white-space: nowrap;
+            margin-bottom: 0 !important;
+            margin-right: 0 !important; /* gap handles spacing */
+        }
+    }
+
+    /* =================================================================
+       2. COLOR SWATCHES — Enlarge from default
+       Odoo 19 color widget DOM:
+         .o_field_color.d-flex   ← THIS is the visible colored element
+           └── input[type="color"].w-100.h-100.opacity-0  (invisible overlay)
+
+       The container div shows the color via background. We size IT.
+       ================================================================= */
+
+    .o_field_color {
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        border-radius: 10px !important;
+        border: 2px solid rgba(0, 0, 0, 0.08) !important;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        flex-shrink: 0;
+
+        &:hover {
+            transform: scale(1.06);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
+        }
+
+        /* The hidden input fills the container (opacity-0 keeps it clickable) */
+        input[type="color"] {
+            border-radius: 10px !important;
+        }
+    }
+
+    /* =================================================================
+       3. TERMS & CONDITIONS EDITOR — Force minimum height
+       Field is fields.Html with widget="html". Class ops-terms-editor
+       is on the <field> wrapper. Editor renders deep inside.
+       ================================================================= */
+
+    .ops-terms-editor {
+        width: 100%;
+
+        /* Override the 50% width constraint from Odoo settings */
+        &.o_field_widget {
+            width: 100% !important;
+        }
+
+        /* Target all possible editor internal elements */
+        .o_field_html,
+        .odoo-editor-editable,
+        .note-editable,
+        .oe_form_field_html_text,
+        iframe,
+        .o_readonly,
+        textarea {
+            min-height: 140px !important;
+            width: 100% !important;
+        }
+    }
+
+    /* Also target by field name as backup */
+    .o_field_widget[name="ops_report_terms"] {
+        width: 100% !important;
+    }
+
+    /* =================================================================
+       4. LOGIN BACKGROUND IMAGE — Constrain preview height
+       Class ops-login-preview is on the <field> wrapper.
+       Image widget renders img inside.
+       ================================================================= */
+
+    .ops-login-preview {
+        /* Constrain the image preview */
+        img {
+            max-height: 120px !important;
+            width: auto !important;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        /* The image wrapper/placeholder */
+        .o_field_image,
+        .o_image,
+        .o_image_preview {
+            max-height: 140px !important;
+            overflow: hidden;
+        }
+    }
+
+    /* =================================================================
+       5. SIGNATURE LABELS — Prevent truncation
+       Using flex layout (XML fix) instead of col-md-4 grid.
+       Override the 50% field widget width from Odoo settings.
+       ================================================================= */
+
+    .ops-signature-row {
+        .o_field_widget {
+            width: 100% !important;
+        }
+
+        label,
+        .o_form_label {
+            white-space: nowrap;
+            overflow: visible !important;
+            text-overflow: unset !important;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: block;
+        }
+    }
+
+    /* Also fix any signature fields by name */
+    .o_field_widget[name*="ops_signature_label"] {
+        width: 100% !important;
+
+        input {
+            width: 100% !important;
+        }
+    }
+
+    /* =================================================================
+       6. SECTION SUB-HEADERS
+       ================================================================= */
+
     .ops-settings-sub-header {
         font-size: 0.8rem;
         font-weight: 700;
@@ -13,40 +167,16 @@ app[name="ops_theme"] {
         letter-spacing: 0.5px;
         color: #64748b;
         padding: 8px 0 6px 12px;
-        margin-bottom: 12px;
+        margin: 16px 0 12px 0;
         border-left: 3px solid #3b82f6;
         background: linear-gradient(90deg, rgba(59, 130, 246, 0.04), transparent);
     }
 
-    /* --- Color picker fields: enlarge swatch --- */
-    .o_field_color input[type="color"],
-    .o_color_picker input[type="color"],
-    input.o_color_pick {
-        width: 48px !important;
-        height: 48px !important;
-        padding: 2px !important;
-        border-radius: 10px !important;
-        border: 2px solid rgba(0, 0, 0, 0.08) !important;
-        cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    /* =================================================================
+       7. GENERAL POLISH
+       ================================================================= */
 
-        &:hover {
-            transform: scale(1.06);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
-        }
-    }
-
-    /* --- Horizontal radio groups: proper inline flow --- */
-    .o_field_radio.d-flex {
-        flex-wrap: wrap;
-
-        .o_radio_item {
-            margin-bottom: 2px;
-            white-space: nowrap;
-        }
-    }
-
-    /* --- Setting rows: subtle hover and breathing room --- */
+    /* Setting boxes: subtle hover */
     .o_setting_box {
         border-radius: 6px;
         transition: background-color 0.12s ease;
@@ -56,30 +186,20 @@ app[name="ops_theme"] {
         }
     }
 
-    /* --- Login preview image: constrain height --- */
-    .ops-login-preview {
-        max-height: 120px;
-        border-radius: 6px;
-        object-fit: cover;
+    /* Override the 50% width for radio fields inside settings */
+    .o_setting_right_pane {
+        .o_field_radio {
+            width: auto !important;
+        }
+
+        /* Setting field inputs: full width */
+        .o_setting_field_input,
+        .o_field_widget input.o_input {
+            max-width: 100% !important;
+        }
     }
 
-    /* --- Terms & Conditions editor: proper min-height --- */
-    .ops-terms-editor,
-    .ops-terms-editor .o_field_html,
-    .ops-terms-editor .odoo-editor-editable,
-    .ops-terms-editor .note-editable,
-    .ops-terms-editor textarea {
-        min-height: 140px !important;
-        width: 100%;
-    }
-
-    /* --- Signature label inputs: fill column width --- */
-    .col-md-4 .o_setting_field_input,
-    .col-md-4 .o_field_widget input {
-        width: 100% !important;
-    }
-
-    /* --- Reset button: muted until hover --- */
+    /* Reset button: muted until hover */
     .btn-outline-secondary {
         opacity: 0.7;
         transition: opacity 0.15s ease;
@@ -89,35 +209,34 @@ app[name="ops_theme"] {
         }
     }
 
-    /* --- Preset radio: wider items for readability --- */
+    /* Preset radio items: minimum width for readability */
     .ops-preset-grid .o_field_radio {
-        .o_radio_item {
+        .o_radio_item,
+        .form-check {
             min-width: 140px;
             padding: 4px 0;
         }
     }
 
-    /* --- Color rows: tighter vertical spacing in grid --- */
+    /* Color rows: tighter vertical spacing */
     .row.g-0 > [class*="col-"] > .o_setting_box {
         padding-top: 10px;
         padding-bottom: 10px;
     }
 
-    /* --- Setting field inputs (tagline etc): proper width --- */
-    .o_setting_field_input {
-        max-width: 100% !important;
-    }
-
-    /* --- Block description text: consistent sizing --- */
-    > .o_app_settings_block > .text-muted {
+    /* Section description text */
+    > .text-muted:first-child,
+    > div > .text-muted:first-child {
         font-size: 0.88em;
-        margin-left: 4px;
     }
 }
 
-/* === Dark mode adjustments === */
+/* =================================================================
+   DARK MODE
+   ================================================================= */
+
 html[data-bs-theme="dark"] {
-    app[name="ops_theme"] {
+    .o_base_settings .app_settings_block[data-key="ops_theme"] {
 
         .ops-settings-sub-header {
             color: #94a3b8;
@@ -125,9 +244,7 @@ html[data-bs-theme="dark"] {
             background: linear-gradient(90deg, rgba(96, 165, 250, 0.06), transparent);
         }
 
-        .o_field_color input[type="color"],
-        .o_color_picker input[type="color"],
-        input.o_color_pick {
+        .o_field_color {
             border-color: rgba(255, 255, 255, 0.1) !important;
 
             &:hover {
