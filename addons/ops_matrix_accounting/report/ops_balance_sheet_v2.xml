@@ -41,6 +41,11 @@
                 <t t-set="total_equity" t-value="summary.get('total_equity', hierarchy.get('equity_total', 0))"/>
                 <t t-set="check_diff" t-value="abs(total_assets - (total_liabilities + total_equity))"/>
 
+                <t t-set="pc" t-value="primary_color or '#5B6BBB'"/>
+                <t t-set="tc" t-value="text_on_primary or '#FFFFFF'"/>
+                <t t-set="pl" t-value="primary_light or '#edeef5'"/>
+                <t t-set="pd" t-value="primary_dark or '#44508c'"/>
+
                 <t t-call="ops_matrix_accounting.ops_internal_layout_v2">
                     <t t-set="report_title" t-value="'Balance Sheet'"/>
                     <t t-set="report_subtitle" t-value="'As of ' + ((doc.as_of_date or doc.date_to).strftime('%B %d, %Y') if (doc.as_of_date or doc.date_to) else '')"/>

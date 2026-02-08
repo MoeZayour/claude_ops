@@ -467,7 +467,7 @@
     <!-- Notes Section -->
     <template id="ops_notes_section_v2">
         <!-- Usage: t-call with t-set: notes_items (list) or notes_text (string) -->
-        <div class="ops-notes-v2" style="margin-top: 15px; padding: 10px 12px; background: #f8fafc; border-left: 3px solid #5B6BBB; border-radius: 0 4px 4px 0; font-size: 7.5pt; color: #64748b;">
+        <div class="ops-notes-v2" t-attf-style="margin-top: 15px; padding: 10px 12px; background: #f8fafc; border-left: 3px solid {{pc or '#5B6BBB'}}; border-radius: 0 4px 4px 0; font-size: 7.5pt; color: #64748b;">
             <div style="font-size: 10px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">Notes</div>
             <t t-if="notes_items">
                 <ul style="margin: 0; padding-left: 20px;">

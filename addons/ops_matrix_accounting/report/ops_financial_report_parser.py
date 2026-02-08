@@ -1572,11 +1572,21 @@ class OpsBalanceSheetV2Parser(models.AbstractModel):
     _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Balance Sheet V2 Parser'
 
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        values = super()._get_report_values(docids, data)
+        return _inject_corporate_vars(self, values, 'BS')
+
 
 class OpsTrialBalanceV2Parser(models.AbstractModel):
     _name = 'report.ops_matrix_accounting.report_trial_balance_v2'
     _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Trial Balance V2 Parser'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        values = super()._get_report_values(docids, data)
+        return _inject_corporate_vars(self, values, 'TB')
 
 
 class OpsProfitLossV2Parser(models.AbstractModel):
@@ -1584,14 +1594,29 @@ class OpsProfitLossV2Parser(models.AbstractModel):
     _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Profit & Loss V2 Parser'
 
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        values = super()._get_report_values(docids, data)
+        return _inject_corporate_vars(self, values, 'PL')
+
 
 class OpsCashFlowV2Parser(models.AbstractModel):
     _name = 'report.ops_matrix_accounting.report_cash_flow_v2'
     _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Cash Flow V2 Parser'
 
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        values = super()._get_report_values(docids, data)
+        return _inject_corporate_vars(self, values, 'CF')
+
 
 class OpsAgedPartnerV2Parser(models.AbstractModel):
     _name = 'report.ops_matrix_accounting.report_aged_partner_v2'
     _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Aged Partner V2 Parser'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        values = super()._get_report_values(docids, data)
+        return _inject_corporate_vars(self, values, 'AP')

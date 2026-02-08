@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from .ops_corporate_report_parsers import get_report_colors
 
 class OpsAssetRegisterReport(models.AbstractModel):
     _name = 'report.ops_matrix_accounting.report_asset_register'
@@ -22,13 +23,18 @@ class OpsAssetRegisterReport(models.AbstractModel):
 
         assets = self.env['ops.asset'].search(domain, order='purchase_date asc')
 
-        return {
+        company = self.env.company
+        colors = get_report_colors(company)
+
+        result = {
             'doc_ids': assets.ids,
             'doc_model': 'ops.asset',
             'docs': assets,
             'data': data,
-            'company': self.env.user.company_id,
+            'company': company,
         }
+        result.update(colors)
+        return result
 
 # Wizard to launch the report with filters
 class AssetRegisterWizard(models.TransientModel):

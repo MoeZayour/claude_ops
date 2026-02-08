@@ -1,19 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- OPS Sales Quotation / SO Confirmation Report Action -->
+    <!-- ================================================================
+         OPS QUOTATION / SALES ORDER CONFIRMATION
+
+         Uses: ops_theme.external_layout_ops via web.external_layout
+         Models: sale.order, sale.order.line
+         Fields verified against Odoo 19 field inventory 2026-02-08
+         ================================================================ -->
+
+    <!-- ======================== REPORT ACTION ======================== -->
     <record id="action_report_ops_quotation" model="ir.actions.report">
         <field name="name">Quotation / Order (OPS)</field>
         <field name="model">sale.order</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">ops_matrix_core.report_ops_quotation</field>
         <field name="report_file">ops_matrix_core.report_ops_quotation</field>
+        <field name="print_report_name">(object.state in ('draft', 'sent') and 'Quotation - ' or 'Order - ') + object.name</field>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
-        <field name="print_report_name">(object.state in ('draft','sent') and 'Quotation - %s' or 'Order - %s') % object.name</field>
+        <field name="paperformat_id" ref="ops_theme.paperformat_ops_external"/>
     </record>
 
-    <!-- Main Quotation Template -->
+    <!-- Deactivate Odoo native sale report binding -->
+    <record id="sale.action_report_saleorder" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- ======================== MAIN WRAPPER ========================= -->
     <template id="report_ops_quotation">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
@@ -22,296 +36,250 @@
         </t>
     </template>
 
-    <!-- Quotation Document Template -->
+    <!-- ======================== DOCUMENT BODY ======================== -->
     <template id="report_ops_quotation_document">
-        <t t-set="company" t-value="doc.company_id or env.company"/>
-        <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
-        <t t-set="show_badge" t-value="company.ops_show_external_badge"/>
-        <t t-set="amount_lang" t-value="company.ops_amount_words_lang or 'en'"/>
+        <t t-set="company" t-value="doc.company_id"/>
+        <t t-set="ops_primary" t-value="company.ops_report_primary_color or '#3d58a3'"/>
+        <t t-set="ops_text_on_primary" t-value="company.ops_report_text_on_primary or '#FFFFFF'"/>
+        <t t-set="ops_rgb" t-value="'%s,%s,%s' % (int(ops_primary[1:3], 16), int(ops_primary[3:5], 16), int(ops_primary[5:7], 16)) if ops_primary.startswith('#') and len(ops_primary) == 7 else '61,88,163'"/>
         <t t-set="is_quotation" t-value="doc.state in ('draft', 'sent')"/>
-        <t t-set="doc_title" t-value="'Sales Quotation' if is_quotation else 'Sales Order Confirmation'"/>
 
-        <t t-set="ops_primary" t-value="primary_color"/>
-        <t t-set="ops_rgb" t-value="'%s,%s,%s' % (int(ops_primary[1:3], 16), int(ops_primary[3:5], 16), int(ops_primary[5:7], 16)) if ops_primary.startswith('#') and len(ops_primary) == 7 else '30,41,59'"/>
+        <t t-call="web.external_layout">
+            <div class="page" style="font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 9pt;">
 
-        <div class="article ops-external-doc">
-            <t t-call="ops_theme.ops_report_css"/>
+                <!-- ========== TITLE BAR ========== -->
+                <div t-attf-style="background: #{ops_primary}; color: #{ops_text_on_primary}; padding: 10px 14px; border-radius: 3px; margin-bottom: 14px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="font-size: 14pt; font-weight: 700;">
+                                <t t-if="is_quotation">Sales Quotation</t>
+                                <t t-else="">Sales Order Confirmation</t>
+                            </td>
+                            <td style="text-align: right; font-size: 12pt; font-weight: 600;">
+                                <t t-esc="doc.name"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
-            <!-- LETTERHEAD -->
-            <div class="ops-letterhead">
-                <div class="ops-company-block">
-                    <img t-if="company.logo" class="ops-company-logo"
-                         t-att-src="image_data_uri(company.logo)"/>
-                    <div t-else="" class="ops-company-logo-placeholder">
-                        <t t-esc="(company.name or 'CO')[:2].upper()"/>
-                    </div>
-                    <div>
-                        <div class="ops-company-name"><t t-esc="company.name"/></div>
-                        <div class="ops-company-details">
-                            <t t-if="company.street"><t t-esc="company.street"/><br/></t>
-                            <t t-if="company.street2"><t t-esc="company.street2"/><br/></t>
-                            <t t-if="company.city"><t t-esc="company.city"/></t>
-                            <t t-if="company.country_id">, <t t-esc="company.country_id.name"/></t><br/>
-                            <t t-if="company.phone">Tel: <t t-esc="company.phone"/></t>
-                            <t t-if="company.email"> | <t t-esc="company.email"/></t><br/>
-                            <t t-if="company.company_registry">CR: <t t-esc="company.company_registry"/></t>
-                            <t t-if="company.vat"> | VAT: <t t-esc="company.vat"/></t>
-                        </div>
-                    </div>
-                </div>
-                <div class="ops-doc-meta">
-                    <div class="ops-doc-ref"><t t-esc="doc.name"/></div>
-                    Date: <t t-esc="doc.date_order" t-options='{"widget": "date"}'/><br/>
-                    <t t-if="is_quotation and doc.validity_date">
-                        Valid Until: <t t-esc="doc.validity_date" t-options='{"widget": "date"}'/><br/>
-                    </t>
-                    <t t-if="doc.user_id">Salesperson: <t t-esc="doc.user_id.name"/><br/></t>
-                    <t t-if="doc.ops_branch_id">Branch: <t t-esc="doc.ops_branch_id.name"/></t>
-                </div>
-            </div>
-
-            <!-- TITLE BAR -->
-            <div class="ops-title-bar">
-                <h2><t t-esc="doc_title"/></h2>
-                <span class="ops-doc-status">
-                    <t t-if="doc.state == 'draft'">Draft</t>
-                    <t t-elif="doc.state == 'sent'">Sent</t>
-                    <t t-elif="doc.state == 'sale'">Confirmed</t>
-                    <t t-else=""><t t-esc="doc.state"/></t>
-                </span>
-            </div>
-
-            <!-- ADDRESS BLOCKS -->
-            <div class="ops-address-row">
-                <div class="ops-address-block">
-                    <div class="ops-address-label">Customer</div>
-                    <div class="ops-address-name"><t t-esc="doc.partner_id.name"/></div>
-                    <div class="ops-address-details">
-                        <t t-if="doc.partner_id.street"><t t-esc="doc.partner_id.street"/><br/></t>
-                        <t t-if="doc.partner_id.street2"><t t-esc="doc.partner_id.street2"/><br/></t>
-                        <t t-if="doc.partner_id.city"><t t-esc="doc.partner_id.city"/></t>
-                        <t t-if="doc.partner_id.country_id">, <t t-esc="doc.partner_id.country_id.name"/></t><br/>
-                        <t t-if="doc.partner_id.phone">Tel: <t t-esc="doc.partner_id.phone"/><br/></t>
-                        <t t-if="doc.partner_id.vat">VAT: <t t-esc="doc.partner_id.vat"/></t>
-                    </div>
-                </div>
-                <div class="ops-address-block" t-if="doc.partner_shipping_id and doc.partner_shipping_id != doc.partner_id">
-                    <div class="ops-address-label">Delivery Address</div>
-                    <div class="ops-address-name"><t t-esc="doc.partner_shipping_id.name"/></div>
-                    <div class="ops-address-details">
-                        <t t-if="doc.partner_shipping_id.street"><t t-esc="doc.partner_shipping_id.street"/><br/></t>
-                        <t t-if="doc.partner_shipping_id.city"><t t-esc="doc.partner_shipping_id.city"/></t>
-                        <t t-if="doc.partner_shipping_id.country_id">, <t t-esc="doc.partner_shipping_id.country_id.name"/></t><br/>
-                        <t t-if="doc.partner_shipping_id.phone">Tel: <t t-esc="doc.partner_shipping_id.phone"/></t>
-                    </div>
-                </div>
-            </div>
-
-            <!-- INFO BAR -->
-            <div class="ops-info-bar">
-                <div class="ops-info-cell" t-if="doc.client_order_ref">
-                    <div class="ops-info-label">Customer Ref</div>
-                    <div class="ops-info-value"><t t-esc="doc.client_order_ref"/></div>
-                </div>
-                <div class="ops-info-cell" t-if="doc.payment_term_id">
-                    <div class="ops-info-label">Payment Terms</div>
-                    <div class="ops-info-value"><t t-esc="doc.payment_term_id.name"/></div>
-                </div>
-                <div class="ops-info-cell" t-if="doc.incoterm">
-                    <div class="ops-info-label">Incoterm</div>
-                    <div class="ops-info-value"><t t-esc="doc.incoterm.code"/></div>
-                </div>
-                <div class="ops-info-cell">
-                    <div class="ops-info-label">Currency</div>
-                    <div class="ops-info-value"><t t-esc="doc.currency_id.name"/></div>
-                </div>
-            </div>
-
-            <!-- LINE ITEMS TABLE -->
-            <table class="ops-items-table">
-                <thead>
+                <!-- ========== ADDRESS BLOCKS ========== -->
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 14px;">
                     <tr>
-                        <th style="width: 25px;">#</th>
-                        <th style="width: 70px;">Code</th>
-                        <th>Description</th>
-                        <th style="width: 45px;" class="num">Qty</th>
-                        <th style="width: 40px;">UoM</th>
-                        <th style="width: 70px;" class="num">Unit Price</th>
-                        <th style="width: 45px;" class="num">Disc%</th>
-                        <th style="width: 50px;" class="num">Tax</th>
-                        <th style="width: 80px;" class="num">Total</th>
+                        <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+                            <t t-call="ops_theme.ops_address_block">
+                                <t t-set="partner" t-value="doc.partner_id"/>
+                                <t t-set="addr_label" t-value="'Invoice To'"/>
+                            </t>
+                        </td>
+                        <td style="width: 50%; vertical-align: top; padding-left: 15px;">
+                            <t t-if="doc.partner_shipping_id and doc.partner_shipping_id != doc.partner_id">
+                                <t t-call="ops_theme.ops_address_block">
+                                    <t t-set="partner" t-value="doc.partner_shipping_id"/>
+                                    <t t-set="addr_label" t-value="'Deliver To'"/>
+                                </t>
+                            </t>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <t t-set="line_num" t-value="0"/>
-                    <t t-foreach="doc.order_line" t-as="line">
-                        <t t-if="not line.display_type">
-                            <t t-set="line_num" t-value="line_num + 1"/>
-                            <tr>
-                                <td><t t-esc="line_num"/></td>
-                                <td><t t-esc="line.product_id.default_code or '-'"/></td>
-                                <td>
-                                    <strong><t t-esc="line.product_id.name or line.name"/></strong>
-                                    <t t-if="line.name and line.name != (line.product_id.name or '')">
-                                        <span class="ops-item-code"><t t-esc="line.name[:80]"/></span>
-                                    </t>
-                                </td>
-                                <td class="num"><t t-esc="'{:,.2f}'.format(line.product_uom_qty)"/></td>
-                                <td><t t-esc="line.product_uom_id.name or ''"/></td>
-                                <td class="num"><t t-esc="'{:,.2f}'.format(line.price_unit)"/></td>
-                                <td class="num">
-                                    <t t-if="line.discount"><t t-esc="'{:.1f}'.format(line.discount)"/>%</t>
-                                </td>
-                                <td class="num">
-                                    <t t-if="line.tax_ids">
+                </table>
+
+                <!-- ========== INFO BAR ========== -->
+                <table t-attf-style="width: 100%; border-collapse: collapse; margin-bottom: 14px; border: 1px solid rgba(#{ops_rgb}, 0.12); border-radius: 3px;">
+                    <tr t-attf-style="background: rgba(#{ops_rgb}, 0.04);">
+                        <td t-if="doc.date_order" style="padding: 6px 10px; text-align: center; border-right: 1px solid #e2e8f0;">
+                            <div style="font-size: 6.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b;">Date</div>
+                            <div style="font-size: 8.5pt; font-weight: 500; margin-top: 2px; color: #1e293b;">
+                                <t t-esc="doc.date_order" t-options="{'widget': 'date'}"/>
+                            </div>
+                        </td>
+                        <td t-if="is_quotation and doc.validity_date" style="padding: 6px 10px; text-align: center; border-right: 1px solid #e2e8f0;">
+                            <div style="font-size: 6.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b;">Valid Until</div>
+                            <div style="font-size: 8.5pt; font-weight: 500; margin-top: 2px; color: #1e293b;">
+                                <t t-esc="doc.validity_date" t-options="{'widget': 'date'}"/>
+                            </div>
+                        </td>
+                        <td t-if="doc.payment_term_id" style="padding: 6px 10px; text-align: center; border-right: 1px solid #e2e8f0;">
+                            <div style="font-size: 6.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b;">Payment Terms</div>
+                            <div style="font-size: 8.5pt; font-weight: 500; margin-top: 2px; color: #1e293b;">
+                                <t t-esc="doc.payment_term_id.name"/>
+                            </div>
+                        </td>
+                        <td t-if="doc.user_id" style="padding: 6px 10px; text-align: center; border-right: 1px solid #e2e8f0;">
+                            <div style="font-size: 6.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b;">Salesperson</div>
+                            <div style="font-size: 8.5pt; font-weight: 500; margin-top: 2px; color: #1e293b;">
+                                <t t-esc="doc.user_id.name"/>
+                            </div>
+                        </td>
+                        <td t-if="doc.client_order_ref" style="padding: 6px 10px; text-align: center;">
+                            <div style="font-size: 6.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b;">Your Reference</div>
+                            <div style="font-size: 8.5pt; font-weight: 500; margin-top: 2px; color: #1e293b;">
+                                <t t-esc="doc.client_order_ref"/>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- ========== LINE ITEMS TABLE ========== -->
+                <t t-set="lines" t-value="doc.order_line"/>
+                <t t-set="has_discount" t-value="any(l.discount for l in lines if l.display_type not in ('line_section', 'line_note'))"/>
+                <t t-set="has_tax" t-value="any(l.tax_ids for l in lines if l.display_type not in ('line_section', 'line_note'))"/>
+                <t t-set="col_count" t-value="6 + (1 if has_discount else 0) + (1 if has_tax else 0)"/>
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
+                    <thead>
+                        <tr t-attf-style="background: #{ops_primary}; color: #{ops_text_on_primary};">
+                            <th style="padding: 6px 8px; text-align: left; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 4%;">#</th>
+                            <th style="padding: 6px 8px; text-align: left; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Description</th>
+                            <th style="padding: 6px 8px; text-align: right; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 8%;">Qty</th>
+                            <th style="padding: 6px 8px; text-align: center; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 8%;">UoM</th>
+                            <th style="padding: 6px 8px; text-align: right; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 12%;">Unit Price</th>
+                            <th t-if="has_discount" style="padding: 6px 8px; text-align: right; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 7%;">Disc.%</th>
+                            <th t-if="has_tax" style="padding: 6px 8px; text-align: center; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 10%;">Tax</th>
+                            <th style="padding: 6px 8px; text-align: right; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 14%;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="line_num" t-value="0"/>
+                        <t t-foreach="lines" t-as="line">
+
+                            <!-- Section header -->
+                            <t t-if="line.display_type == 'line_section'">
+                                <tr>
+                                    <td t-att-colspan="col_count"
+                                        t-attf-style="padding: 8px 8px 4px 8px; font-weight: 600; font-size: 9pt; border-bottom: 1px solid rgba(#{ops_rgb}, 0.25); color: #{ops_primary};">
+                                        <t t-esc="line.name"/>
+                                    </td>
+                                </tr>
+                            </t>
+
+                            <!-- Note -->
+                            <t t-if="line.display_type == 'line_note'">
+                                <tr>
+                                    <td t-att-colspan="col_count"
+                                        style="padding: 2px 8px 2px 16px; font-style: italic; font-size: 8pt; color: #64748b;">
+                                        <t t-esc="line.name"/>
+                                    </td>
+                                </tr>
+                            </t>
+
+                            <!-- Product line -->
+                            <t t-if="not line.display_type">
+                                <t t-set="line_num" t-value="line_num + 1"/>
+                                <tr t-attf-style="border-bottom: 1px solid #f1f5f9; #{('background: #f8fafc;' if line_num % 2 == 0 else '')}">
+                                    <td style="padding: 5px 8px; text-align: center; color: #94a3b8; font-size: 8pt;">
+                                        <t t-esc="line_num"/>
+                                    </td>
+                                    <td style="padding: 5px 8px;">
+                                        <t t-if="line.product_id and line.product_id.default_code">
+                                            <span style="font-weight: 600; font-size: 7pt; color: #64748b;">[<t t-esc="line.product_id.default_code"/>]</span>
+                                            <br/>
+                                        </t>
+                                        <span t-esc="line.name"/>
+                                    </td>
+                                    <td style="padding: 5px 8px; text-align: right; font-variant-numeric: tabular-nums;">
+                                        <t t-esc="line.product_uom_qty" t-options="{'widget': 'float', 'precision': 2}"/>
+                                    </td>
+                                    <td style="padding: 5px 8px; text-align: center; font-size: 8pt; color: #64748b;">
+                                        <t t-if="line.product_uom_id" t-esc="line.product_uom_id.name"/>
+                                    </td>
+                                    <td style="padding: 5px 8px; text-align: right; font-variant-numeric: tabular-nums;">
+                                        <t t-esc="line.price_unit" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                    </td>
+                                    <td t-if="has_discount" style="padding: 5px 8px; text-align: right; font-variant-numeric: tabular-nums;">
+                                        <t t-if="line.discount">
+                                            <t t-esc="line.discount" t-options="{'widget': 'float', 'precision': 1}"/>%
+                                        </t>
+                                    </td>
+                                    <td t-if="has_tax" style="padding: 5px 8px; text-align: center; font-size: 7.5pt; color: #64748b;">
                                         <t t-esc="', '.join(line.tax_ids.mapped('name'))"/>
-                                    </t>
-                                </td>
-                                <td class="num" style="font-weight: 600;">
-                                    <t t-esc="'{:,.2f}'.format(line.price_subtotal)"/>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td style="padding: 5px 8px; text-align: right; font-weight: 500; font-variant-numeric: tabular-nums;">
+                                        <t t-esc="line.price_subtotal" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </t>
                         </t>
-                        <t t-if="line.display_type == 'line_section'">
-                            <tr>
-                                <td colspan="9" style="font-weight: 700; background: #f1f5f9; padding-top: 10px;">
-                                    <t t-esc="line.name"/>
-                                </td>
-                            </tr>
-                        </t>
-                        <t t-if="line.display_type == 'line_note'">
-                            <tr>
-                                <td colspan="9" style="font-style: italic; color: #64748b;">
-                                    <t t-esc="line.name"/>
-                                </td>
-                            </tr>
-                        </t>
+                    </tbody>
+                </table>
+
+                <!-- ========== TOTALS ========== -->
+                <table style="width: 40%; margin-left: auto; border-collapse: collapse; margin-top: 4px;">
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 5px 10px; font-size: 8pt; color: #64748b;">Untaxed Amount</td>
+                        <td style="padding: 5px 10px; text-align: right; font-variant-numeric: tabular-nums; font-size: 9pt;">
+                            <t t-esc="doc.amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                        </td>
+                    </tr>
+                    <t t-if="doc.amount_tax">
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 5px 10px; font-size: 8pt; color: #64748b;">Taxes</td>
+                            <td style="padding: 5px 10px; text-align: right; font-variant-numeric: tabular-nums; font-size: 9pt;">
+                                <t t-esc="doc.amount_tax" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                            </td>
+                        </tr>
                     </t>
-                </tbody>
-            </table>
+                    <tr t-attf-style="background: #{ops_primary}; color: #{ops_text_on_primary};">
+                        <td style="padding: 8px 10px; font-size: 9pt; font-weight: 700;">Total</td>
+                        <td style="padding: 8px 10px; text-align: right; font-size: 11pt; font-weight: 700; font-variant-numeric: tabular-nums;">
+                            <t t-esc="doc.amount_total" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                        </td>
+                    </tr>
+                </table>
 
-            <!-- TOTALS -->
-            <div class="ops-totals-wrapper">
-                <div class="ops-totals-block">
-                    <div class="ops-totals-line">
-                        <span class="t-label">Subtotal</span>
-                        <span class="t-value"><t t-esc="'{:,.2f}'.format(doc.amount_untaxed)"/></span>
+                <!-- ========== AMOUNT IN WORDS ========== -->
+                <t t-if="company.ops_show_amount_words">
+                    <t t-set="words_result" t-value="env['ops.report.helpers'].amount_to_words(doc.amount_total, doc.currency_id, company.ops_amount_words_lang or 'en')"/>
+                    <t t-call="ops_theme.ops_amount_words_block">
+                        <t t-set="amount_words_en" t-value="words_result.get('en', '') if words_result else ''"/>
+                        <t t-set="amount_words_ar" t-value="words_result.get('ar', '') if words_result else ''"/>
+                    </t>
+                </t>
+
+                <!-- ========== BANK DETAILS ========== -->
+                <t t-if="company.ops_show_bank_details and company.bank_ids">
+                    <t t-set="bank" t-value="company.bank_ids[0]"/>
+                    <div style="margin-top: 14px; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 3px; font-size: 7.5pt; page-break-inside: avoid;">
+                        <div t-attf-style="font-weight: 600; margin-bottom: 4px; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #{ops_primary};">Bank Details for Payment</div>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <t t-if="bank.bank_id and bank.bank_id.name">
+                                    <td style="padding: 2px 8px 2px 0;">
+                                        <span style="font-weight: 600; color: #64748b;">Bank:</span>
+                                        <t t-esc="bank.bank_id.name"/>
+                                    </td>
+                                </t>
+                                <t t-if="bank.acc_number">
+                                    <td style="padding: 2px 8px;">
+                                        <span style="font-weight: 600; color: #64748b;">Account:</span>
+                                        <t t-esc="bank.acc_number"/>
+                                    </td>
+                                </t>
+                                <t t-if="bank.bank_id and bank.bank_id.bic">
+                                    <td style="padding: 2px 8px;">
+                                        <span style="font-weight: 600; color: #64748b;">SWIFT:</span>
+                                        <t t-esc="bank.bank_id.bic"/>
+                                    </td>
+                                </t>
+                                <t t-if="bank.acc_holder_name">
+                                    <td style="padding: 2px 0 2px 8px;">
+                                        <span style="font-weight: 600; color: #64748b;">Holder:</span>
+                                        <t t-esc="bank.acc_holder_name"/>
+                                    </td>
+                                </t>
+                            </tr>
+                        </table>
                     </div>
-                    <div class="ops-totals-line">
-                        <span class="t-label">Tax</span>
-                        <span class="t-value"><t t-esc="'{:,.2f}'.format(doc.amount_tax)"/></span>
-                    </div>
-                    <div class="ops-totals-line grand-total">
-                        <span class="t-label">Total</span>
-                        <span class="t-value">
-                            <t t-esc="'{:,.2f}'.format(doc.amount_total)"/>
-                            <span style="font-size: 8pt; font-weight: 500; opacity: 0.8; margin-left: 4px;">
-                                <t t-esc="doc.currency_id.name"/>
-                            </span>
-                        </span>
-                    </div>
-                </div>
+                </t>
+
+                <!-- ========== TERMS & CONDITIONS ========== -->
+                <t t-call="ops_theme.ops_terms_block">
+                    <t t-set="doc_note" t-value="doc.note"/>
+                </t>
+
+                <!-- ========== SIGNATURES ========== -->
+                <t t-call="ops_theme.ops_signature_block"/>
+
             </div>
-
-            <!-- AMOUNT IN WORDS -->
-            <t t-set="amount_words" t-value="env['ops.report.helpers'].amount_to_words(doc.amount_total, doc.currency_id, amount_lang)"/>
-            <div class="ops-amount-words" t-if="amount_words">
-                <div class="aw-label">Amount in Words</div>
-                <div class="aw-text" t-if="amount_words.get('en')"><t t-esc="amount_words.get('en')"/></div>
-                <div class="aw-text aw-arabic" t-if="amount_words.get('ar')"><t t-esc="amount_words.get('ar')"/></div>
-            </div>
-
-            <!-- INFO SECTIONS -->
-            <div class="ops-info-sections">
-                <div class="ops-info-section" t-if="is_quotation">
-                    <h4>Validity &amp; Delivery</h4>
-                    <ul>
-                        <li t-if="doc.validity_date">Quotation valid until <t t-esc="doc.validity_date" t-options='{"widget": "date"}'/></li>
-                        <li t-if="doc.commitment_date">Expected delivery: <t t-esc="doc.commitment_date" t-options='{"widget": "date"}'/></li>
-                        <li>Prices are firm for the validity period</li>
-                        <li>Quantities subject to stock availability</li>
-                    </ul>
-                </div>
-                <div class="ops-info-section">
-                    <h4>Payment Terms</h4>
-                    <ul>
-                        <li t-if="doc.payment_term_id"><t t-esc="doc.payment_term_id.name"/></li>
-                        <li t-else="">Payment on order confirmation</li>
-                        <li>Payment by bank transfer or certified check</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- BANK DETAILS -->
-            <div class="ops-bank-details" t-if="company.bank_ids">
-                <h4>Bank Details for Payment</h4>
-                <t t-set="bank" t-value="company.bank_ids[0]"/>
-                <div class="ops-bank-grid">
-                    <div class="ops-bank-item">
-                        <span class="b-label">Bank:</span>
-                        <span class="b-value"><t t-esc="bank.bank_id.name or bank.bank_name or '-'"/></span>
-                    </div>
-                    <div class="ops-bank-item" t-if="bank.bank_id.bic">
-                        <span class="b-label">SWIFT:</span>
-                        <span class="b-value"><t t-esc="bank.bank_id.bic"/></span>
-                    </div>
-                    <div class="ops-bank-item">
-                        <span class="b-label">Account:</span>
-                        <span class="b-value"><t t-esc="bank.acc_number or '-'"/></span>
-                    </div>
-                    <div class="ops-bank-item" t-if="bank.acc_holder_name">
-                        <span class="b-label">Holder:</span>
-                        <span class="b-value"><t t-esc="bank.acc_holder_name"/></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SIGNATURE BLOCKS (Quotation only) -->
-            <div class="ops-signature-row" t-if="is_quotation">
-                <div class="ops-signature-block">
-                    <div class="ops-signature-line">
-                        <div class="ops-sig-label">Prepared By</div>
-                        <div class="ops-sig-sub"><t t-esc="doc.user_id.name or ''"/></div>
-                    </div>
-                </div>
-                <div class="ops-signature-block">
-                    <div class="ops-signature-line">
-                        <div class="ops-sig-label">Authorized Signatory</div>
-                        <div class="ops-sig-sub">Company Stamp</div>
-                    </div>
-                </div>
-                <div class="ops-signature-block">
-                    <div class="ops-signature-line">
-                        <div class="ops-sig-label">Customer Acceptance</div>
-                        <div class="ops-sig-sub">Sign &amp; Stamp to Confirm Order</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TERMS -->
-            <div class="ops-terms" t-if="doc.note">
-                <h4>Terms &amp; Conditions</h4>
-                <p><t t-esc="doc.note"/></p>
-            </div>
-
-            <!-- FOOTER -->
-            <div class="ops-footer">
-                <div class="ops-footer-company">
-                    <strong><t t-esc="company.name"/></strong>
-                    <t t-if="company.company_registry"> | CR: <t t-esc="company.company_registry"/></t>
-                    <t t-if="company.vat"> | VAT: <t t-esc="company.vat"/></t>
-                    <t t-if="company.website"> | <t t-esc="company.website"/></t>
-                </div>
-                <div class="ops-footer-right">
-                    <div t-if="show_badge" class="ops-external-badge">
-                        <span class="powered-by">Powered by</span>
-                        <span class="badge">OPS Framework</span>
-                    </div>
-                    <span class="ops-page-number">Page <span class="page"/> of <span class="topage"/></span>
-                </div>
-            </div>
-
-        </div>
+        </t>
     </template>
 
 </odoo>

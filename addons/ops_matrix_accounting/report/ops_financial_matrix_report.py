@@ -10,6 +10,7 @@ v19.0.1.0: Initial implementation
 """
 
 from odoo import models, api
+from .ops_corporate_report_parsers import get_report_colors
 
 
 class OpsFinancialMatrixReportParser(models.AbstractModel):
@@ -53,12 +54,17 @@ class OpsFinancialMatrixReportParser(models.AbstractModel):
         # Transform data to match template expectations
         template_data = self._transform_to_template_format(wizard, report_data)
 
-        return {
+        company = wizard.company_id if wizard and hasattr(wizard, 'company_id') else self.env.company
+        colors = get_report_colors(company)
+
+        result = {
             'doc_ids': docids,
             'doc_model': 'ops.general.ledger.wizard.enhanced',
             'docs': wizard,
             'report_data': template_data,
         }
+        result.update(colors)
+        return result
 
     def _transform_to_template_format(self, wizard, data):
         """

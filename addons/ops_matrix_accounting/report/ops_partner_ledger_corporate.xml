@@ -350,6 +350,7 @@
         <field name="report_name">ops_matrix_accounting.report_partner_ledger_corporate</field>
         <field name="report_file">ops_matrix_accounting.report_partner_ledger_corporate</field>
         <field name="paperformat_id" ref="paperformat_ops_corporate_landscape"/>
+        <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
         <field name="binding_type">report</field>
     </record>
 

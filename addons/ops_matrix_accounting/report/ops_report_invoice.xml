@@ -1,323 +1,354 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- OPS Invoice / Credit Note Report Action -->
+    <!-- ================================================================
+         OPS INVOICE / CREDIT NOTE
+
+         Uses: ops_theme.external_layout_ops via web.external_layout
+         Models: account.move, account.move.line
+         Fields verified against Odoo 19 field inventory 2026-02-08
+         ================================================================ -->
+
+    <!-- ======================== REPORT ACTION ======================== -->
     <record id="action_report_ops_invoice" model="ir.actions.report">
         <field name="name">Invoice / Credit Note (OPS)</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">ops_matrix_accounting.report_ops_invoice</field>
         <field name="report_file">ops_matrix_accounting.report_ops_invoice</field>
+        <field name="print_report_name">
+            (object.move_type == 'out_invoice' and 'Invoice' or
+             object.move_type == 'out_refund' and 'Credit Note' or
+             object.move_type == 'in_invoice' and 'Vendor Bill' or
+             object.move_type == 'in_refund' and 'Vendor Credit Note' or
+             'Document') + ' - ' + (object.name or '')
+        </field>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
-        <field name="print_report_name">(object.move_type == 'out_refund' and 'Credit Note - %s' or 'Invoice - %s') % object.name</field>
+        <field name="paperformat_id" ref="ops_theme.paperformat_ops_external"/>
     </record>
 
-    <!-- Main Invoice Template -->
+    <!-- Deactivate Odoo native invoice report bindings -->
+    <record id="account.account_invoices_without_payment" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
+    <record id="account.account_invoices" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- ======================== MAIN WRAPPER ========================= -->
     <template id="report_ops_invoice">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-if="doc.move_type in ('out_invoice', 'out_refund')">
-                    <t t-call="ops_matrix_accounting.report_ops_invoice_document"/>
-                </t>
+                <t t-call="ops_matrix_accounting.report_ops_invoice_document"/>
             </t>
         </t>
     </template>
 
-    <!-- Invoice Document Template -->
+    <!-- ======================== DOCUMENT BODY ======================== -->
     <template id="report_ops_invoice_document">
-        <t t-set="company" t-value="doc.company_id or env.company"/>
-        <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
-        <t t-set="show_badge" t-value="company.ops_show_external_badge"/>
-        <t t-set="amount_lang" t-value="company.ops_amount_words_lang or 'en'"/>
+        <t t-set="company" t-value="doc.company_id"/>
+        <t t-set="ops_primary" t-value="company.ops_report_primary_color or '#3d58a3'"/>
+        <t t-set="ops_text_on_primary" t-value="company.ops_report_text_on_primary or '#FFFFFF'"/>
+        <t t-set="ops_rgb" t-value="'%s,%s,%s' % (int(ops_primary[1:3], 16), int(ops_primary[3:5], 16), int(ops_primary[5:7], 16)) if ops_primary.startswith('#') and len(ops_primary) == 7 else '61,88,163'"/>
+        <!-- Standard color aliases for shared components -->
+        <t t-set="pc" t-value="ops_primary"/>
+        <t t-set="tc" t-value="ops_text_on_primary"/>
+        <t t-set="pl" t-value="company.get_report_primary_light()"/>
+        <t t-set="pd" t-value="company.get_report_primary_dark()"/>
+        <t t-set="body_text_color" t-value="company.ops_report_body_text_color or '#1a1a1a'"/>
         <t t-set="is_credit_note" t-value="doc.move_type == 'out_refund'"/>
-        <t t-set="doc_title" t-value="'Credit Note' if is_credit_note else 'Tax Invoice'"/>
+        <t t-set="is_vendor" t-value="doc.move_type in ('in_invoice', 'in_refund')"/>
 
-        <t t-set="ops_primary" t-value="primary_color"/>
-        <t t-set="ops_rgb" t-value="'%s,%s,%s' % (int(ops_primary[1:3], 16), int(ops_primary[3:5], 16), int(ops_primary[5:7], 16)) if ops_primary.startswith('#') and len(ops_primary) == 7 else '30,41,59'"/>
+        <t t-call="web.external_layout">
+            <div class="page" style="font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 9pt;">
 
-        <div class="article ops-external-doc">
-            <t t-call="ops_theme.ops_report_css"/>
-
-            <!-- LETTERHEAD -->
-            <div class="ops-letterhead">
-                <div class="ops-company-block">
-                    <img t-if="company.logo" class="ops-company-logo"
-                         t-att-src="image_data_uri(company.logo)"/>
-                    <div t-else="" class="ops-company-logo-placeholder">
-                        <t t-esc="(company.name or 'CO')[:2].upper()"/>
-                    </div>
-                    <div>
-                        <div class="ops-company-name"><t t-esc="company.name"/></div>
-                        <div class="ops-company-details">
-                            <t t-if="company.street"><t t-esc="company.street"/><br/></t>
-                            <t t-if="company.street2"><t t-esc="company.street2"/><br/></t>
-                            <t t-if="company.city"><t t-esc="company.city"/></t>
-                            <t t-if="company.country_id">, <t t-esc="company.country_id.name"/></t><br/>
-                            <t t-if="company.phone">Tel: <t t-esc="company.phone"/></t>
-                            <t t-if="company.email"> | <t t-esc="company.email"/></t><br/>
-                            <t t-if="company.company_registry">CR: <t t-esc="company.company_registry"/></t>
-                            <t t-if="company.vat"> | VAT: <t t-esc="company.vat"/></t>
-                        </div>
-                    </div>
-                </div>
-                <div class="ops-doc-meta">
-                    <div class="ops-doc-ref"><t t-esc="doc.name"/></div>
-                    Invoice Date: <t t-esc="doc.invoice_date" t-options='{"widget": "date"}'/><br/>
-                    <t t-if="doc.invoice_date_due">Due Date: <t t-esc="doc.invoice_date_due" t-options='{"widget": "date"}'/><br/></t>
-                    <t t-if="doc.invoice_user_id">Salesperson: <t t-esc="doc.invoice_user_id.name"/><br/></t>
-                    <t t-if="doc.ops_branch_id">Branch: <t t-esc="doc.ops_branch_id.name"/></t>
-                </div>
-            </div>
-
-            <!-- TITLE BAR -->
-            <div t-attf-class="ops-title-bar #{'credit-note' if is_credit_note else ''}">
-                <h2><t t-esc="doc_title"/></h2>
-                <span class="ops-doc-status">
-                    <t t-if="doc.payment_state == 'paid'">PAID</t>
-                    <t t-elif="doc.payment_state == 'partial'">PARTIAL</t>
-                    <t t-elif="doc.state == 'posted'">POSTED</t>
-                    <t t-else=""><t t-esc="doc.state"/></t>
-                </span>
-            </div>
-
-            <!-- PAYMENT STATUS -->
-            <t t-if="not is_credit_note and doc.state == 'posted'">
-                <div t-if="doc.payment_state == 'paid'" class="ops-payment-status paid">
-                    This invoice has been paid in full
-                </div>
-                <div t-elif="doc.payment_state == 'partial'" class="ops-payment-status partial">
-                    Partial payment received — Balance due: <t t-esc="'{:,.2f}'.format(doc.amount_residual)"/> <t t-esc="doc.currency_id.name"/>
-                </div>
-            </t>
-
-            <!-- CREDIT NOTE REFERENCE -->
-            <t t-if="is_credit_note and doc.reversed_entry_id">
-                <div class="ops-payment-status unpaid">
-                    Credit Note for Invoice: <t t-esc="doc.reversed_entry_id.name"/>
-                </div>
-            </t>
-
-            <!-- ADDRESS BLOCKS -->
-            <div class="ops-address-row">
-                <div class="ops-address-block">
-                    <div class="ops-address-label">Bill To</div>
-                    <div class="ops-address-name"><t t-esc="doc.partner_id.name"/></div>
-                    <div class="ops-address-details">
-                        <t t-if="doc.partner_id.street"><t t-esc="doc.partner_id.street"/><br/></t>
-                        <t t-if="doc.partner_id.street2"><t t-esc="doc.partner_id.street2"/><br/></t>
-                        <t t-if="doc.partner_id.city"><t t-esc="doc.partner_id.city"/></t>
-                        <t t-if="doc.partner_id.country_id">, <t t-esc="doc.partner_id.country_id.name"/></t><br/>
-                        <t t-if="doc.partner_id.vat">VAT: <t t-esc="doc.partner_id.vat"/></t>
-                    </div>
-                </div>
-                <div class="ops-address-block" t-if="doc.partner_shipping_id and doc.partner_shipping_id != doc.partner_id">
-                    <div class="ops-address-label">Ship To</div>
-                    <div class="ops-address-name"><t t-esc="doc.partner_shipping_id.name"/></div>
-                    <div class="ops-address-details">
-                        <t t-if="doc.partner_shipping_id.street"><t t-esc="doc.partner_shipping_id.street"/><br/></t>
-                        <t t-if="doc.partner_shipping_id.city"><t t-esc="doc.partner_shipping_id.city"/></t>
-                        <t t-if="doc.partner_shipping_id.country_id">, <t t-esc="doc.partner_shipping_id.country_id.name"/></t>
-                    </div>
-                </div>
-            </div>
-
-            <!-- INFO BAR -->
-            <div class="ops-info-bar">
-                <div class="ops-info-cell" t-if="doc.ref">
-                    <div class="ops-info-label">Reference</div>
-                    <div class="ops-info-value"><t t-esc="doc.ref"/></div>
-                </div>
-                <div class="ops-info-cell" t-if="doc.invoice_origin">
-                    <div class="ops-info-label">Source Document</div>
-                    <div class="ops-info-value"><t t-esc="doc.invoice_origin"/></div>
-                </div>
-                <div class="ops-info-cell" t-if="doc.invoice_payment_term_id">
-                    <div class="ops-info-label">Payment Terms</div>
-                    <div class="ops-info-value"><t t-esc="doc.invoice_payment_term_id.name"/></div>
-                </div>
-                <div class="ops-info-cell">
-                    <div class="ops-info-label">Currency</div>
-                    <div class="ops-info-value"><t t-esc="doc.currency_id.name"/></div>
-                </div>
-            </div>
-
-            <!-- LINE ITEMS TABLE -->
-            <table class="ops-items-table">
-                <thead>
-                    <tr>
-                        <th style="width: 25px;">#</th>
-                        <th style="width: 70px;">Code</th>
-                        <th>Description</th>
-                        <th style="width: 60px;">Account</th>
-                        <th style="width: 45px;" class="num">Qty</th>
-                        <th style="width: 70px;" class="num">Unit Price</th>
-                        <th style="width: 45px;" class="num">Disc%</th>
-                        <th style="width: 50px;" class="num">Tax</th>
-                        <th style="width: 80px;" class="num">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <t t-set="line_num" t-value="0"/>
-                    <t t-foreach="doc.invoice_line_ids.sorted(key=lambda l: (l.sequence, l.id))" t-as="line">
-                        <t t-if="not line.display_type">
-                            <t t-set="line_num" t-value="line_num + 1"/>
-                            <tr>
-                                <td><t t-esc="line_num"/></td>
-                                <td><t t-esc="line.product_id.default_code or '-'"/></td>
-                                <td>
-                                    <strong><t t-esc="line.product_id.name or line.name"/></strong>
-                                    <t t-if="line.name and line.product_id and line.name != line.product_id.name">
-                                        <span class="ops-item-code"><t t-esc="line.name[:80]"/></span>
-                                    </t>
-                                </td>
-                                <td style="font-size: 7pt; color: #94a3b8;">
-                                    <t t-esc="line.account_id.code or ''"/>
-                                </td>
-                                <td class="num"><t t-esc="'{:,.2f}'.format(line.quantity)"/></td>
-                                <td class="num"><t t-esc="'{:,.2f}'.format(line.price_unit)"/></td>
-                                <td class="num">
-                                    <t t-if="line.discount"><t t-esc="'{:.1f}'.format(line.discount)"/>%</t>
-                                </td>
-                                <td class="num">
-                                    <t t-if="line.tax_ids">
-                                        <t t-esc="', '.join(line.tax_ids.mapped('name'))"/>
-                                    </t>
-                                </td>
-                                <td class="num" style="font-weight: 600;">
-                                    <t t-esc="'{:,.2f}'.format(line.price_subtotal)"/>
-                                </td>
-                            </tr>
-                        </t>
-                        <t t-if="line.display_type == 'line_section'">
-                            <tr>
-                                <td colspan="9" style="font-weight: 700; background: #f1f5f9; padding-top: 10px;">
-                                    <t t-esc="line.name"/>
-                                </td>
-                            </tr>
-                        </t>
-                        <t t-if="line.display_type == 'line_note'">
-                            <tr>
-                                <td colspan="9" style="font-style: italic; color: #64748b;">
-                                    <t t-esc="line.name"/>
-                                </td>
-                            </tr>
-                        </t>
-                    </t>
-                </tbody>
-            </table>
-
-            <!-- TOTALS -->
-            <div class="ops-totals-wrapper">
-                <div class="ops-totals-block">
-                    <div class="ops-totals-line">
-                        <span class="t-label">Subtotal</span>
-                        <span class="t-value"><t t-esc="'{:,.2f}'.format(doc.amount_untaxed)"/></span>
-                    </div>
-                    <t t-if="doc.tax_totals and doc.tax_totals.get('has_tax_groups')">
-                        <t t-foreach="doc.tax_totals.get('subtotals', [])" t-as="subtotal">
-                            <t t-foreach="subtotal.get('tax_groups', [])" t-as="tax_group">
-                                <div class="ops-totals-line">
-                                    <span class="t-label"><t t-esc="tax_group.get('group_name', 'Tax')"/></span>
-                                    <span class="t-value"><t t-esc="'{:,.2f}'.format(tax_group.get('tax_amount_currency', 0))"/></span>
+                <!-- ========== TITLE BAR ========== -->
+                <t t-set="title_bg" t-value="'#dc2626' if is_credit_note else ops_primary"/>
+                <t t-set="doc_title" t-value="
+                    'Credit Note' if doc.move_type == 'out_refund' else
+                    'Tax Invoice' if doc.move_type == 'out_invoice' else
+                    'Vendor Bill' if doc.move_type == 'in_invoice' else
+                    'Vendor Credit Note' if doc.move_type == 'in_refund' else 'Document'
+                "/>
+                <div t-attf-style="background: #{title_bg}; color: #{ops_text_on_primary}; padding: 10px 14px; border-radius: 3px; margin-bottom: 14px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="font-size: 14pt; font-weight: 700;">
+                                <t t-esc="doc_title"/>
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="font-size: 12pt; font-weight: 600;">
+                                    <t t-esc="doc.name"/>
                                 </div>
+                                <!-- Payment status badge -->
+                                <t t-if="doc.payment_state == 'paid'">
+                                    <span style="background: #16a34a; color: white; padding: 2px 8px; border-radius: 2px; font-size: 7pt; font-weight: 600; text-transform: uppercase;">PAID</span>
+                                </t>
+                                <t t-elif="doc.payment_state == 'partial'">
+                                    <span style="background: #d97706; color: white; padding: 2px 8px; border-radius: 2px; font-size: 7pt; font-weight: 600; text-transform: uppercase;">PARTIAL</span>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- ========== CREDIT NOTE REFERENCE ========== -->
+                <t t-if="is_credit_note and doc.reversed_entry_id">
+                    <div style="margin-bottom: 10px; padding: 6px 10px; background: #fef2f2; border-left: 3px solid #dc2626; border-radius: 3px; font-size: 8pt; color: #991b1b;">
+                        Credit Note for Invoice: <strong><t t-esc="doc.reversed_entry_id.name"/></strong>
+                    </div>
+                </t>
+
+                <!-- ========== PARTIAL PAYMENT NOTICE ========== -->
+                <t t-if="not is_credit_note and doc.payment_state == 'partial'">
+                    <div style="margin-bottom: 10px; padding: 6px 10px; background: #fef3c7; border-left: 3px solid #d97706; border-radius: 3px; font-size: 8pt; color: #92400e;">
+                        Partial payment received — Balance due:
+                        <strong><t t-esc="doc.amount_residual" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></strong>
+                    </div>
+                </t>
+
+                <!-- ========== ADDRESS BLOCKS ========== -->
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 14px;">
+                    <tr>
+                        <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+                            <t t-call="ops_theme.ops_address_block">
+                                <t t-set="partner" t-value="doc.partner_id"/>
+                                <t t-set="addr_label" t-value="'Vendor' if is_vendor else 'Bill To'"/>
+                            </t>
+                        </td>
+                        <td style="width: 50%; vertical-align: top; padding-left: 15px;">
+                            <t t-if="not is_vendor and doc.partner_shipping_id and doc.partner_shipping_id != doc.partner_id">
+                                <t t-call="ops_theme.ops_address_block">
+                                    <t t-set="partner" t-value="doc.partner_shipping_id"/>
+                                    <t t-set="addr_label" t-value="'Ship To'"/>
+                                </t>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- ========== INFO BAR ========== -->
+                <table t-attf-style="width: 100%; border-collapse: collapse; margin-bottom: 14px; border: 1px solid rgba(#{ops_rgb}, 0.12); border-radius: 3px;">
+                    <tr t-attf-style="background: rgba(#{ops_rgb}, 0.04);">
+                        <td t-if="doc.invoice_date" style="padding: 6px 10px; text-align: center; border-right: 1px solid #e2e8f0;">
+                            <div style="font-size: 6.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b;">
+                                <t t-if="is_vendor">Bill Date</t><t t-else="">Invoice Date</t>
+                            </div>
+                            <div style="font-size: 8.5pt; font-weight: 500; margin-top: 2px; color: #1e293b;">
+                                <t t-esc="doc.invoice_date" t-options="{'widget': 'date'}"/>
+                            </div>
+                        </td>
+                        <td t-if="doc.invoice_date_due" style="padding: 6px 10px; text-align: center; border-right: 1px solid #e2e8f0;">
+                            <div style="font-size: 6.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b;">Due Date</div>
+                            <div style="font-size: 8.5pt; font-weight: 500; margin-top: 2px; color: #1e293b;">
+                                <t t-esc="doc.invoice_date_due" t-options="{'widget': 'date'}"/>
+                            </div>
+                        </td>
+                        <td t-if="doc.ref" style="padding: 6px 10px; text-align: center; border-right: 1px solid #e2e8f0;">
+                            <div style="font-size: 6.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b;">Reference</div>
+                            <div style="font-size: 8.5pt; font-weight: 500; margin-top: 2px; color: #1e293b;">
+                                <t t-esc="doc.ref"/>
+                            </div>
+                        </td>
+                        <td t-if="doc.invoice_origin" style="padding: 6px 10px; text-align: center; border-right: 1px solid #e2e8f0;">
+                            <div style="font-size: 6.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b;">Source Document</div>
+                            <div style="font-size: 8.5pt; font-weight: 500; margin-top: 2px; color: #1e293b;">
+                                <t t-esc="doc.invoice_origin"/>
+                            </div>
+                        </td>
+                        <td t-if="doc.invoice_payment_term_id" style="padding: 6px 10px; text-align: center;">
+                            <div style="font-size: 6.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #64748b;">Payment Terms</div>
+                            <div style="font-size: 8.5pt; font-weight: 500; margin-top: 2px; color: #1e293b;">
+                                <t t-esc="doc.invoice_payment_term_id.name"/>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- ========== LINE ITEMS TABLE ========== -->
+                <t t-set="inv_lines" t-value="doc.invoice_line_ids.sorted(key=lambda l: (l.sequence, l.id))"/>
+                <t t-set="has_discount" t-value="any(l.discount for l in inv_lines if l.display_type not in ('line_section', 'line_note'))"/>
+                <t t-set="has_tax" t-value="any(l.tax_ids for l in inv_lines if l.display_type not in ('line_section', 'line_note'))"/>
+                <t t-set="col_count" t-value="6 + (1 if has_discount else 0) + (1 if has_tax else 0)"/>
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
+                    <thead>
+                        <tr t-attf-style="background: #{title_bg}; color: #{ops_text_on_primary};">
+                            <th style="padding: 6px 8px; text-align: left; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 4%;">#</th>
+                            <th style="padding: 6px 8px; text-align: left; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Description</th>
+                            <th style="padding: 6px 8px; text-align: center; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 7%;">Account</th>
+                            <th style="padding: 6px 8px; text-align: right; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 8%;">Qty</th>
+                            <th style="padding: 6px 8px; text-align: right; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 12%;">Unit Price</th>
+                            <th t-if="has_discount" style="padding: 6px 8px; text-align: right; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 7%;">Disc.%</th>
+                            <th t-if="has_tax" style="padding: 6px 8px; text-align: center; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 10%;">Tax</th>
+                            <th style="padding: 6px 8px; text-align: right; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; width: 14%;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="line_num" t-value="0"/>
+                        <t t-foreach="inv_lines" t-as="line">
+
+                            <!-- Section header -->
+                            <t t-if="line.display_type == 'line_section'">
+                                <tr>
+                                    <td t-att-colspan="col_count"
+                                        t-attf-style="padding: 8px 8px 4px 8px; font-weight: 600; font-size: 9pt; border-bottom: 1px solid rgba(#{ops_rgb}, 0.25); color: #{ops_primary};">
+                                        <t t-esc="line.name"/>
+                                    </td>
+                                </tr>
+                            </t>
+
+                            <!-- Note -->
+                            <t t-if="line.display_type == 'line_note'">
+                                <tr>
+                                    <td t-att-colspan="col_count"
+                                        style="padding: 2px 8px 2px 16px; font-style: italic; font-size: 8pt; color: #64748b;">
+                                        <t t-esc="line.name"/>
+                                    </td>
+                                </tr>
+                            </t>
+
+                            <!-- Product / service line -->
+                            <t t-if="not line.display_type">
+                                <t t-set="line_num" t-value="line_num + 1"/>
+                                <tr t-attf-style="border-bottom: 1px solid #f1f5f9; #{('background: #f8fafc;' if line_num % 2 == 0 else '')}">
+                                    <td style="padding: 5px 8px; text-align: center; color: #94a3b8; font-size: 8pt;">
+                                        <t t-esc="line_num"/>
+                                    </td>
+                                    <td style="padding: 5px 8px;">
+                                        <t t-if="line.product_id and line.product_id.default_code">
+                                            <span style="font-weight: 600; font-size: 7pt; color: #64748b;">[<t t-esc="line.product_id.default_code"/>]</span>
+                                            <br/>
+                                        </t>
+                                        <span t-esc="line.name"/>
+                                    </td>
+                                    <td style="padding: 5px 8px; text-align: center; font-size: 7pt; color: #94a3b8;">
+                                        <t t-if="line.account_id" t-esc="line.account_id.code"/>
+                                    </td>
+                                    <td style="padding: 5px 8px; text-align: right; font-variant-numeric: tabular-nums;">
+                                        <t t-esc="line.quantity" t-options="{'widget': 'float', 'precision': 2}"/>
+                                    </td>
+                                    <td style="padding: 5px 8px; text-align: right; font-variant-numeric: tabular-nums;">
+                                        <t t-esc="line.price_unit" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                    </td>
+                                    <td t-if="has_discount" style="padding: 5px 8px; text-align: right; font-variant-numeric: tabular-nums;">
+                                        <t t-if="line.discount">
+                                            <t t-esc="line.discount" t-options="{'widget': 'float', 'precision': 1}"/>%
+                                        </t>
+                                    </td>
+                                    <td t-if="has_tax" style="padding: 5px 8px; text-align: center; font-size: 7.5pt; color: #64748b;">
+                                        <t t-esc="', '.join(line.tax_ids.mapped('name'))"/>
+                                    </td>
+                                    <td style="padding: 5px 8px; text-align: right; font-weight: 500; font-variant-numeric: tabular-nums;">
+                                        <t t-esc="line.price_subtotal" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                    </td>
+                                </tr>
                             </t>
                         </t>
+                    </tbody>
+                </table>
+
+                <!-- ========== TOTALS ========== -->
+                <table style="width: 40%; margin-left: auto; border-collapse: collapse; margin-top: 4px;">
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 5px 10px; font-size: 8pt; color: #64748b;">Untaxed Amount</td>
+                        <td style="padding: 5px 10px; text-align: right; font-variant-numeric: tabular-nums; font-size: 9pt;">
+                            <t t-esc="doc.amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                        </td>
+                    </tr>
+                    <t t-if="doc.amount_tax">
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 5px 10px; font-size: 8pt; color: #64748b;">Taxes</td>
+                            <td style="padding: 5px 10px; text-align: right; font-variant-numeric: tabular-nums; font-size: 9pt;">
+                                <t t-esc="doc.amount_tax" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                            </td>
+                        </tr>
                     </t>
-                    <t t-else="">
-                        <div class="ops-totals-line">
-                            <span class="t-label">Tax</span>
-                            <span class="t-value"><t t-esc="'{:,.2f}'.format(doc.amount_tax)"/></span>
-                        </div>
+                    <tr t-attf-style="background: #{title_bg}; color: #{ops_text_on_primary};">
+                        <td style="padding: 8px 10px; font-size: 9pt; font-weight: 700;">
+                            <t t-if="is_credit_note">Credit Total</t>
+                            <t t-else="">Total Due</t>
+                        </td>
+                        <td style="padding: 8px 10px; text-align: right; font-size: 11pt; font-weight: 700; font-variant-numeric: tabular-nums;">
+                            <t t-esc="doc.amount_total" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- ========== AMOUNT PAID / BALANCE DUE ========== -->
+                <t t-if="not is_credit_note and doc.payment_state == 'partial'">
+                    <table style="width: 40%; margin-left: auto; border-collapse: collapse; margin-top: -1px;">
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 5px 10px; font-size: 8pt; color: #16a34a;">Amount Paid</td>
+                            <td style="padding: 5px 10px; text-align: right; font-variant-numeric: tabular-nums; font-size: 9pt; color: #16a34a;">
+                                <t t-esc="doc.amount_total - doc.amount_residual" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                            </td>
+                        </tr>
+                        <tr style="background: #fef3c7;">
+                            <td style="padding: 8px 10px; font-size: 9pt; font-weight: 700; color: #92400e;">Balance Due</td>
+                            <td style="padding: 8px 10px; text-align: right; font-size: 11pt; font-weight: 700; font-variant-numeric: tabular-nums; color: #92400e;">
+                                <t t-esc="doc.amount_residual" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+
+                <!-- ========== AMOUNT IN WORDS ========== -->
+                <t t-if="company.ops_show_amount_words">
+                    <t t-set="words_result" t-value="env['ops.report.helpers'].amount_to_words(doc.amount_total, doc.currency_id, company.ops_amount_words_lang or 'en')"/>
+                    <t t-call="ops_theme.ops_amount_words_block">
+                        <t t-set="amount_words_en" t-value="words_result.get('en', '') if words_result else ''"/>
+                        <t t-set="amount_words_ar" t-value="words_result.get('ar', '') if words_result else ''"/>
                     </t>
-                    <div t-attf-class="ops-totals-line grand-total #{'credit-note' if is_credit_note else ''}">
-                        <span class="t-label"><t t-if="is_credit_note">Credit Total</t><t t-else="">Total Due</t></span>
-                        <span class="t-value">
-                            <t t-esc="'{:,.2f}'.format(doc.amount_total)"/>
-                            <span style="font-size: 8pt; font-weight: 500; opacity: 0.8; margin-left: 4px;">
-                                <t t-esc="doc.currency_id.name"/>
-                            </span>
-                        </span>
+                </t>
+
+                <!-- ========== BANK DETAILS (for unpaid invoices) ========== -->
+                <t t-if="not is_credit_note and doc.payment_state != 'paid' and company.ops_show_bank_details and company.bank_ids">
+                    <t t-set="bank" t-value="company.bank_ids[0]"/>
+                    <div style="margin-top: 14px; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 3px; font-size: 7.5pt; page-break-inside: avoid;">
+                        <div t-attf-style="font-weight: 600; margin-bottom: 4px; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #{ops_primary};">Bank Details for Payment</div>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <t t-if="bank.bank_id and bank.bank_id.name">
+                                    <td style="padding: 2px 8px 2px 0;">
+                                        <span style="font-weight: 600; color: #64748b;">Bank:</span>
+                                        <t t-esc="bank.bank_id.name"/>
+                                    </td>
+                                </t>
+                                <t t-if="bank.acc_number">
+                                    <td style="padding: 2px 8px;">
+                                        <span style="font-weight: 600; color: #64748b;">Account:</span>
+                                        <t t-esc="bank.acc_number"/>
+                                    </td>
+                                </t>
+                                <t t-if="bank.bank_id and bank.bank_id.bic">
+                                    <td style="padding: 2px 8px;">
+                                        <span style="font-weight: 600; color: #64748b;">SWIFT:</span>
+                                        <t t-esc="bank.bank_id.bic"/>
+                                    </td>
+                                </t>
+                                <t t-if="bank.acc_holder_name">
+                                    <td style="padding: 2px 0 2px 8px;">
+                                        <span style="font-weight: 600; color: #64748b;">Holder:</span>
+                                        <t t-esc="bank.acc_holder_name"/>
+                                    </td>
+                                </t>
+                            </tr>
+                        </table>
                     </div>
-                </div>
+                </t>
+
+                <!-- ========== TERMS & CONDITIONS ========== -->
+                <t t-call="ops_theme.ops_terms_block">
+                    <t t-set="doc_note" t-value="doc.narration"/>
+                </t>
+
+                <!-- ========== SIGNATURES ========== -->
+                <t t-call="ops_theme.ops_signature_block"/>
+
             </div>
-
-            <!-- AMOUNT PAID / BALANCE DUE (for invoices) -->
-            <t t-if="not is_credit_note and doc.payment_state == 'partial'">
-                <div class="ops-totals-wrapper" style="margin-top: -8px;">
-                    <div class="ops-totals-block" style="border-top: 1px solid #e2e8f0;">
-                        <div class="ops-totals-line">
-                            <span class="t-label">Amount Paid</span>
-                            <span class="t-value" style="color: #16a34a;">
-                                <t t-esc="'{:,.2f}'.format(doc.amount_total - doc.amount_residual)"/>
-                            </span>
-                        </div>
-                        <div class="ops-totals-line" style="background: #fef3c7; border-radius: 0 0 4px 4px;">
-                            <span class="t-label" style="font-weight: 600; color: #92400e;">Balance Due</span>
-                            <span class="t-value" style="font-weight: 700; color: #92400e; font-size: 11pt;">
-                                <t t-esc="'{:,.2f}'.format(doc.amount_residual)"/>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </t>
-
-            <!-- AMOUNT IN WORDS -->
-            <t t-set="amount_words" t-value="env['ops.report.helpers'].amount_to_words(doc.amount_total, doc.currency_id, amount_lang)"/>
-            <div class="ops-amount-words" t-if="amount_words">
-                <div class="aw-label">Amount in Words</div>
-                <div class="aw-text" t-if="amount_words.get('en')"><t t-esc="amount_words.get('en')"/></div>
-                <div class="aw-text aw-arabic" t-if="amount_words.get('ar')"><t t-esc="amount_words.get('ar')"/></div>
-            </div>
-
-            <!-- BANK DETAILS (for unpaid invoices) -->
-            <div class="ops-bank-details" t-if="not is_credit_note and doc.payment_state != 'paid' and company.bank_ids">
-                <h4>Bank Details for Payment</h4>
-                <t t-set="bank" t-value="company.bank_ids[0]"/>
-                <div class="ops-bank-grid">
-                    <div class="ops-bank-item">
-                        <span class="b-label">Bank:</span>
-                        <span class="b-value"><t t-esc="bank.bank_id.name or bank.bank_name or '-'"/></span>
-                    </div>
-                    <div class="ops-bank-item" t-if="bank.bank_id.bic">
-                        <span class="b-label">SWIFT:</span>
-                        <span class="b-value"><t t-esc="bank.bank_id.bic"/></span>
-                    </div>
-                    <div class="ops-bank-item">
-                        <span class="b-label">Account:</span>
-                        <span class="b-value"><t t-esc="bank.acc_number or '-'"/></span>
-                    </div>
-                    <div class="ops-bank-item" t-if="bank.acc_holder_name">
-                        <span class="b-label">Holder:</span>
-                        <span class="b-value"><t t-esc="bank.acc_holder_name"/></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TERMS -->
-            <div class="ops-terms" t-if="doc.narration">
-                <h4>Terms &amp; Conditions</h4>
-                <p><t t-esc="doc.narration"/></p>
-            </div>
-
-            <!-- FOOTER -->
-            <div class="ops-footer">
-                <div class="ops-footer-company">
-                    <strong><t t-esc="company.name"/></strong>
-                    <t t-if="company.company_registry"> | CR: <t t-esc="company.company_registry"/></t>
-                    <t t-if="company.vat"> | VAT: <t t-esc="company.vat"/></t>
-                    <t t-if="company.website"> | <t t-esc="company.website"/></t>
-                </div>
-                <div class="ops-footer-right">
-                    <div t-if="show_badge" class="ops-external-badge">
-                        <span class="powered-by">Powered by</span>
-                        <span class="badge">OPS Framework</span>
-                    </div>
-                    <span class="ops-page-number">Page <span class="page"/> of <span class="topage"/></span>
-                </div>
-            </div>
-
-        </div>
+        </t>
     </template>
 
 </odoo>

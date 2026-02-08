@@ -41,8 +41,8 @@
          ================================================================ -->
 
     <template id="report_corporate_header">
-        <!-- Gold Accent Bar - OPS Brand Color #5B6BBB or Company Primary -->
-        <div style="height: 4px; background-color: #5B6BBB; margin-bottom: 0;"></div>
+        <!-- Gold Accent Bar - Company Primary Color -->
+        <div t-attf-style="height: 4px; background-color: {{pc or '#5B6BBB'}}; margin-bottom: 0;"></div>
 
         <!-- Two-Column Header Table -->
         <table width="100%" style="border-collapse: collapse; margin-top: 15px; margin-bottom: 10px;">
@@ -61,8 +61,8 @@
                             </t>
                             <t t-else="">
                                 <td style="vertical-align: middle; padding-right: 15px;">
-                                    <div style="width: 50px; height: 50px; background-color: #5B6BBB;
-                                                color: #ffffff; font-size: 18px; font-weight: bold;
+                                    <div t-attf-style="width: 50px; height: 50px; background-color: {{pc or '#5B6BBB'}};
+                                                color: {{tc or '#ffffff'}}; font-size: 18px; font-weight: bold;
                                                 text-align: center; line-height: 50px; border-radius: 4px;">
                                         <t t-esc="doc.company_id.name[:2].upper()"/>
                                     </div>
@@ -315,7 +315,7 @@
 
     <!-- Financial Section Header (Blue accent) -->
     <template id="section_header_financial">
-        <div style="background-color: #f8fafc; border-left: 4px solid #5B6BBB;
+        <div t-attf-style="background-color: #f8fafc; border-left: 4px solid {{pc or '#5B6BBB'}};
                     padding: 8px 12px; margin: 15px 0 10px 0;">
             <span style="font-size: 12px; font-weight: 600; color: #1e293b; text-transform: uppercase;
                          letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif;">
@@ -498,7 +498,7 @@
         <div t-att-style="'display: inline-block; width: ' + (width or '23%') + ';
                           margin-right: 1%; vertical-align: top;
                           background-color: #ffffff; border: 1px solid #e2e8f0;
-                          border-top: 3px solid ' + (accent_color or '#5B6BBB') + ';
+                          border-top: 3px solid ' + (accent_color or pc or '#5B6BBB') + ';
                           border-radius: 4px; padding: 12px; text-align: center;'">
             <div style="font-size: 9px; color: #64748b; text-transform: uppercase;
                         letter-spacing: 0.5px; margin-bottom: 5px;

@@ -122,7 +122,6 @@
         'data/email_templates.xml',
         'data/ops_report_templates.xml',
         'data/ops_archive_templates.xml',
-        'report/ops_external_layout.xml',
         'report/ops_report_quotation.xml',
         'report/ops_report_purchase.xml',
         'report/ops_report_delivery.xml',

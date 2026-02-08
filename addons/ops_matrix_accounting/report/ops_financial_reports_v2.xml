@@ -74,6 +74,11 @@
                 <t t-set="total_credit" t-value="report_data.get('total_credit', 0)"/>
                 <t t-set="tb_diff" t-value="abs(total_debit - total_credit)"/>
 
+                <t t-set="pc" t-value="primary_color or '#5B6BBB'"/>
+                <t t-set="tc" t-value="text_on_primary or '#FFFFFF'"/>
+                <t t-set="pl" t-value="primary_light or '#edeef5'"/>
+                <t t-set="pd" t-value="primary_dark or '#44508c'"/>
+
                 <t t-call="ops_matrix_accounting.ops_internal_layout_v2">
                     <t t-set="report_title" t-value="'Trial Balance'"/>
                     <t t-set="report_subtitle" t-value="'For the period ' + (doc.date_from.strftime('%b %d, %Y') if doc.date_from else '') + ' to ' + (doc.date_to.strftime('%b %d, %Y') if doc.date_to else '')"/>
@@ -197,6 +202,11 @@
                 <t t-set="expense" t-value="report_data.get('expense_total', 0)"/>
                 <t t-set="net" t-value="report_data.get('net_profit', income - expense)"/>
                 <t t-set="margin" t-value="(net / income * 100) if income > 0 else 0"/>
+
+                <t t-set="pc" t-value="primary_color or '#5B6BBB'"/>
+                <t t-set="tc" t-value="text_on_primary or '#FFFFFF'"/>
+                <t t-set="pl" t-value="primary_light or '#edeef5'"/>
+                <t t-set="pd" t-value="primary_dark or '#44508c'"/>
 
                 <t t-call="ops_matrix_accounting.ops_internal_layout_v2">
                     <t t-set="report_title" t-value="'Profit &amp; Loss Statement'"/>
@@ -364,6 +374,11 @@
                 <t t-set="net_cf" t-value="report_data.get('net_cash_flow', operating_net + investing_net + financing_net)"/>
                 <t t-set="opening_cash" t-value="report_data.get('opening_cash', 0)"/>
                 <t t-set="closing_cash" t-value="report_data.get('closing_cash', opening_cash + net_cf)"/>
+
+                <t t-set="pc" t-value="primary_color or '#5B6BBB'"/>
+                <t t-set="tc" t-value="text_on_primary or '#FFFFFF'"/>
+                <t t-set="pl" t-value="primary_light or '#edeef5'"/>
+                <t t-set="pd" t-value="primary_dark or '#44508c'"/>
 
                 <t t-call="ops_matrix_accounting.ops_internal_layout_v2">
                     <t t-set="report_title" t-value="'Cash Flow Statement'"/>
@@ -540,6 +555,11 @@
                 <t t-set="total_90" t-value="report_data.get('total_90', 0)"/>
                 <t t-set="total_older" t-value="report_data.get('total_older', 0)"/>
                 <t t-set="total_balance" t-value="total_current + total_30 + total_60 + total_90 + total_older"/>
+
+                <t t-set="pc" t-value="primary_color or '#5B6BBB'"/>
+                <t t-set="tc" t-value="text_on_primary or '#FFFFFF'"/>
+                <t t-set="pl" t-value="primary_light or '#edeef5'"/>
+                <t t-set="pd" t-value="primary_dark or '#44508c'"/>
 
                 <t t-call="ops_matrix_accounting.ops_internal_layout_v2">
                     <t t-set="report_title" t-value="'Aged Partner Balance'"/>
