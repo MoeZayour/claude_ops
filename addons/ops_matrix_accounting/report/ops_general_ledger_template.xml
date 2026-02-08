@@ -116,7 +116,7 @@
                         <!-- ================================================
                              TITLE BLOCK
                              ================================================ -->
-                        <div style="margin: 8px 0 4px 0;">
+                        <div style="margin: 20px 0 4px 0;">
                             <div style="font-size: 16pt; font-weight: 700; color: #1e293b; margin-bottom: 4px;">
                                 General Ledger
                             </div>
@@ -404,8 +404,8 @@
                                              alt="OPS Framework"/>
                                     </td>
                                     <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;">
-                                        <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            Confidential &#x2014; For authorized personnel only
+                                        <span style="font-size: 7pt; color: #94a3b8;">
+                                            Page <span class="page"/> of <span class="topage"/>
                                         </span>
                                     </td>
                                 </tr>
