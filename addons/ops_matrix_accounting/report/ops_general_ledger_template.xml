@@ -2,7 +2,7 @@
 <odoo>
     <!--
         ================================================================
-        OPS CORPORATE GENERAL LEDGER REPORT — BS THEME
+        OPS CORPORATE GENERAL LEDGER REPORT - BS THEME
         ================================================================
         wkhtmltopdf-compatible: NO flexbox, NO font-variant-numeric,
         NO external CSS dependency for critical styles.
@@ -32,7 +32,7 @@
 
                     <!-- Inline styles for wkhtmltopdf (QtWebKit ignores external CSS unreliably) -->
                     <style>
-                        /* Badge colors — accounting convention (MUST be inline for wkhtmltopdf) */
+                        /* Badge colors -- accounting convention (MUST be inline for wkhtmltopdf) */
                         .badge-asset { background: #dbeafe !important; color: #1e40af !important; }
                         .badge-liability { background: #fef3c7 !important; color: #92400e !important; }
                         .badge-income { background: #dcfce7 !important; color: #166534 !important; }
@@ -42,18 +42,18 @@
                         /* Print color-adjust for backgrounds */
                         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-                        /* Page setup — Portrait A4 */
+                        /* Page setup -- Portrait A4 */
                         @page { size: A4; margin: 15mm 12mm 25mm 12mm; }
 
-                        /* Number cells — monospace for alignment */
+                        /* Number cells -- monospace for alignment */
                         .num { text-align: right; font-family: Consolas, Monaco, 'Courier New', monospace; }
 
-                        /* Value colors — accounting convention */
+                        /* Value colors -- accounting convention */
                         .val-positive { color: #16a34a; }
                         .val-negative { color: #dc2626; }
                         .val-zero { color: #bbbbbb; }
 
-                        /* Fixed footer — pinned to bottom of every page */
+                        /* Fixed footer -- pinned to bottom of every page */
                         .page-footer-fixed {
                             position: fixed;
                             bottom: 0;
@@ -391,7 +391,7 @@
                         </div>
 
                         <!-- ================================================
-                             FIXED FOOTER — renders at bottom of every page
+                             FIXED FOOTER - renders at bottom of every page
                              Confidentiality + OPS badge pinned via position:fixed
                              ================================================ -->
                         <div class="page-footer-fixed" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 6px 0 0 0; border-top: 1px solid #e2e8f0;">

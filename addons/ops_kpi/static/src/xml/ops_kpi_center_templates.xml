@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="ops_kpi.KPICenterAction">
-        <div class="ops-dashboard ops-dashboard-v2">
+        <div class="ops-dashboard ops-dashboard-v2"
+             t-att-data-card-style="dashboardDataAttrs['data-card-style']"
+             t-att-data-gradient-headers="dashboardDataAttrs['data-gradient-headers']"
+             t-att-data-sparkline-style="dashboardDataAttrs['data-sparkline-style']"
+             t-att-data-chart-fill="dashboardDataAttrs['data-chart-fill']"
+             t-att-data-color-scheme="dashboardDataAttrs['data-color-scheme']"
+             t-att-data-animation="dashboardDataAttrs['data-animation']">
             <div class="ops-dashboard-container">
                 <!-- Header -->
                 <div class="ops-dashboard-header">

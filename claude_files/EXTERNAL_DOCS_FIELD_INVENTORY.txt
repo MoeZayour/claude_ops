@@ -1,0 +1,745 @@
+================================================================================
+ OPS EXTERNAL DOCUMENTS — FIELD INVENTORY
+ Extracted: 2026-02-08 | Odoo 19.0 | DB: mz-db
+ Company: MZ International Trading LLC
+================================================================================
+
+################################################################################
+# PHASE 1: COMPANY & LETTERHEAD DATA (res.company — 230 fields)
+################################################################################
+
+--- OPS_THEME (9 fields) ---
+  ops_danger_color (char): Danger Color                    → #ef4444
+  ops_default_color_mode (selection): Default Color Mode   → light
+  ops_primary_color (char): Primary Brand Color            → #1e293b
+  ops_report_body_text_color (char): Report Body Text      → #1a1a1a
+  ops_report_primary_color (char): Report Primary Color    → #3d58a3
+  ops_secondary_color (char): OPS Secondary Color          → #3b82f6
+  ops_success_color (char): Success Color                  → #10b981
+  ops_theme_preset (selection): Theme Preset               → corporate_blue
+  ops_warning_color (char): Warning Color                  → #f59e0b
+
+--- OPS_REPORT (10 fields) ---
+  ops_amount_words_lang (selection): Amount in Words Language      → en
+  ops_report_logo_position (selection): Report Logo Position       → left
+  ops_report_terms (html): Default Report Terms                    → False
+  ops_report_text_on_primary (char): Text on Primary               → #FFFFFF
+  ops_show_amount_words (boolean): Show Amount in Words            → True
+  ops_show_external_badge (boolean): Show OPS Badge on Reports     → True
+  ops_show_signature_block (boolean): Show Signature Block         → True
+  ops_signature_label_1 (char): Signature Label 1                  → Prepared By
+  ops_signature_label_2 (char): Signature Label 2                  → Authorized Signatory
+  ops_signature_label_3 (char): Signature Label 3                  → Customer Acceptance
+
+--- OPS_EXTERNAL (13 fields) ---
+  ops_analytic_account_id (many2one): OPS Analytic Account
+  ops_border_radius (selection): Border Radius             → rounded
+  ops_card_shadow (selection): Card Shadow                 → medium
+  ops_code (char): OPS Code                                → CP-0001
+  ops_default_chatter_position (selection): Default Chatter Position → bottom
+  ops_favicon (binary): Custom Favicon
+  ops_favicon_mimetype (char): Favicon MIME Type           → image/png
+  ops_login_background (binary): Login Background Image    → False
+  ops_login_show_logo (boolean): Show Logo on Login        → True
+  ops_login_tagline (char): Login Tagline                  → Enterprise Resource Planning
+  ops_manager_id (many2one): Country Manager               → False
+  ops_navbar_style (selection): Navbar Style               → dark
+  ops_show_bank_details (boolean): Show Bank Details on Documents → True
+
+--- ADDRESS (15 fields) ---
+  city (char): City
+  company_registry (char): Company ID
+  country_id (many2one): Country                           → Qatar
+  currency_id (many2one): Currency                         → USD
+  email (char): Email                                      → False
+  logo (binary): Company Logo                              → <binary 24440 bytes>
+  logo_web (binary): Logo Web
+  name (char): Company Name                                → MZ International Trading LLC
+  phone (char): Phone
+  state_id (many2one): Fed. State
+  street (char): Street
+  street2 (char): Street2
+  vat (char): Tax ID                                       → False
+  website (char): Website Link                             → False
+  zip (char): Zip
+
+--- BRANDING (7 fields) ---
+  external_report_layout_id (many2one): Document Template
+  font (selection): Font
+  paperformat_id (many2one): Paper format
+  primary_color (char): Primary Color
+  report_footer (html): Report Footer
+  report_header (html): Company Tagline
+  secondary_color (char): Secondary Color
+
+--- BANK (4 fields) ---
+  bank_account_code_prefix (char): Prefix of the bank accounts
+  bank_ids (one2many): Banks                               → (no records)
+  bank_journal_ids (one2many): Bank Journals
+  partner_id (many2one): Partner
+
+
+################################################################################
+# PHASE 2: SALE ORDER (sale.order — 124 fields)
+################################################################################
+
+--- OPS EXTENSIONS (7 fields) ---
+  ops_analytic_distribution (json): Matrix Analytic Distribution
+  ops_branch_id (many2one): Branch
+  ops_business_unit_id (many2one): Business Unit
+  ops_company_id (many2one): Legal Entity
+  ops_credit_check_notes (text): Credit Check Notes
+  ops_credit_check_passed (boolean): Credit Check Passed
+  ops_persona_id (many2one): Persona
+
+--- AMOUNTS (14 fields) ---
+  amount_invoiced (monetary): Already invoiced
+  amount_paid (float): Payment Transactions Amount
+  amount_tax (monetary): Taxes
+  amount_to_invoice (monetary): Un-invoiced Balance
+  amount_total (monetary): Total
+  amount_undiscounted (float): Amount Before Discount
+  amount_untaxed (monetary): Untaxed Amount
+  company_price_include (selection): Default Sales Price Include
+  has_active_pricelist (boolean): Has Active Pricelist
+  pricelist_id (many2one): Pricelist
+  show_update_pricelist (boolean): Has Pricelist Changed
+  tax_calculation_rounding_method (selection): Tax Calculation Rounding Method
+  tax_country_id (many2one): Tax Country
+  tax_totals (binary): Tax Totals
+
+--- ADDRESSES (5 fields) ---
+  message_partner_ids (many2many): Followers (Partners)
+  partner_credit_warning (text): Partner Credit Warning
+  partner_id (many2one): Customer
+  partner_invoice_id (many2one): Invoice Address
+  partner_shipping_id (many2one): Delivery Address
+
+--- DATES (11 fields) ---
+  activity_date_deadline (date): Next Activity Deadline
+  commitment_date (datetime): Delivery Date
+  create_date (datetime): Creation Date
+  date_order (datetime): Order Date
+  effective_date (datetime): Effective Date
+  expected_date (datetime): Expected Date
+  my_activity_date_deadline (date): My Activity Deadline
+  show_update_fpos (boolean): Has Fiscal Position Changed
+  signed_on (datetime): Signed On
+  validity_date (date): Expiration
+  write_date (datetime): Last Updated on
+
+--- STATE (4 fields) ---
+  activity_state (selection): Activity State
+  delivery_status (selection): Delivery Status
+  invoice_status (selection): Invoice Status
+  state (selection): Status
+
+--- RELATIONS (8 fields) ---
+  company_id (many2one): Company
+  currency_id (many2one): Currency
+  fiscal_position_id (many2one): Fiscal Position
+  order_line (one2many): Order Lines
+  payment_term_id (many2one): Payment Terms
+  team_id (many2one): Sales Team
+  user_id (many2one): Salesperson
+  warehouse_id (many2one): Warehouse
+
+--- KEY FIELDS (5 fields) ---
+  client_order_ref (char): Customer Reference
+  name (char): Order Reference
+  note (html): Terms and conditions
+  origin (char): Source Document
+  reference (char): Payment Ref.
+
+--- SAMPLE DATA ---
+  S00022 | draft | Gulf Electronics | 2026-02-07 | 500.0 USD
+  Branch: Dubai HQ | BU: Electronics & Technology
+
+
+################################################################################
+# SALE ORDER LINE (sale.order.line — 103 fields)
+################################################################################
+
+--- OPS EXTENSIONS (5 fields) ---
+  ops_analytic_distribution (json): Matrix Analytic Distribution
+  ops_branch_id (many2one): Branch
+  ops_business_unit_id (many2one): Business Unit
+  ops_company_id (many2one): Legal Entity
+  ops_persona_id (many2one): Persona
+
+--- AMOUNTS (20+ fields) ---
+  amount_invoiced (monetary): Invoiced Amount
+  amount_to_invoice (monetary): Un-invoiced Balance
+  discount (float): Discount (%)
+  margin (float): Margin
+  margin_percent (float): Margin %
+  price_reduce_taxexcl (monetary): Price Reduce Tax excl
+  price_reduce_taxinc (monetary): Price Reduce Tax incl
+  price_subtotal (monetary): Subtotal
+  price_tax (float): Total Tax
+  price_total (monetary): Total
+  price_unit (float): Unit Price
+  purchase_price (float): Cost
+  tax_ids (many2many): Taxes
+  untaxed_amount_invoiced (monetary): Untaxed Invoiced Amount
+  untaxed_amount_to_invoice (monetary): Untaxed Amount To Invoice
+
+--- KEY FIELDS (6 fields) ---
+  display_type (selection): Display Type
+  name (text): Description
+  product_uom_qty (float): Quantity
+  qty_delivered (float): Delivery Quantity
+  qty_invoiced (float): Invoiced Quantity
+  sequence (integer): Sequence
+
+--- RELATIONS ---
+  company_id (many2one): Company
+  currency_id (many2one): Currency
+  order_id (many2one): Order Reference
+  product_id (many2one): Product
+  product_uom_id (many2one): Unit of Measure    *** Odoo 19: product_uom_id (NOT product_uom)
+  warehouse_id (many2one): Warehouse
+
+--- SAMPLE LINE ---
+  [SRV-CLOUD-MIG] Cloud Migration Consulting | 1.0 Hours | 500.0 | 0% discount
+
+
+################################################################################
+# PHASE 3: ACCOUNT MOVE / INVOICE (account.move — 221 fields)
+################################################################################
+
+--- OPS EXTENSIONS (7 fields) ---
+  ops_analytic_distribution (json): Matrix Analytic Distribution
+  ops_analytic_summary (char): Analytic Summary
+  ops_branch_id (many2one): Branch
+  ops_business_unit_id (many2one): Business Unit
+  ops_company_id (many2one): Legal Entity
+  ops_persona_id (many2one): Persona
+  ops_source_order_id (reference): Source Order
+
+--- AMOUNTS (28 fields) ---
+  abnormal_amount_warning (text): Abnormal Amount Warning
+  amount_paid (monetary): Amount paid
+  amount_residual (monetary): Amount Due
+  amount_residual_signed (monetary): Amount Due Signed
+  amount_tax (monetary): Tax
+  amount_tax_signed (monetary): Tax Signed
+  amount_total (monetary): Total
+  amount_total_in_currency_signed (monetary): Total in Currency Signed
+  amount_total_signed (monetary): Total Signed
+  amount_total_words (char): Amount total in words          *** Built-in field!
+  amount_untaxed (monetary): Untaxed Amount
+  amount_untaxed_in_currency_signed (monetary): Untaxed Amount Signed Currency
+  amount_untaxed_signed (monetary): Untaxed Amount Signed
+  quick_edit_total_amount (monetary): Total (Tax inc.)
+  tax_totals (binary): Invoice Totals
+  taxes_legal_notes (html): Taxes Legal Notes
+
+--- KEY FIELDS (16 fields) ---
+  currency_id (many2one): Currency
+  fiscal_position_id (many2one): Fiscal Position
+  invoice_date (date): Invoice/Bill Date
+  invoice_date_due (date): Due Date
+  invoice_line_ids (one2many): Invoice lines
+  invoice_origin (char): Origin
+  journal_id (many2one): Journal
+  line_ids (one2many): Journal Items
+  move_type (selection): Type
+  name (char): Number
+  narration (html): Terms and Conditions
+  partner_id (many2one): Partner
+  partner_shipping_id (many2one): Delivery Address
+  payment_reference (char): Payment Reference
+  payment_term_id (many2one): Payment Terms
+  ref (char): Reference
+  state (selection): Status
+
+--- SAMPLE DATA ---
+  Draft INV | out_invoice | Qatar Digital | Due: 2026-02-08 | 25.0 USD
+  Origin: S00021 | Branch: Dubai HQ | BU: Electronics & Technology
+
+
+################################################################################
+# ACCOUNT MOVE LINE (account.move.line — 106 fields)
+################################################################################
+
+--- OPS EXTENSIONS (5 fields) ---
+  ops_analytic_distribution (json): Matrix Analytic Distribution
+  ops_branch_id (many2one): Branch
+  ops_business_unit_id (many2one): Business Unit
+  ops_company_id (many2one): Legal Entity
+  ops_persona_id (many2one): Persona
+
+--- AMOUNTS (21 fields) ---
+  amount_currency (monetary): Amount in Currency
+  amount_residual (monetary): Residual Amount
+  amount_residual_currency (monetary): Residual Amount in Currency
+  balance (monetary): Balance
+  cumulated_balance (monetary): Cumulated Balance
+  discount_amount_currency (monetary): Discount amount in Currency
+  discount_balance (monetary): Discount Balance
+  price_subtotal (monetary): Subtotal
+  price_total (monetary): Total
+  price_unit (float): Unit Price
+  tax_base_amount (monetary): Base Amount
+  tax_ids (many2many): Taxes
+  tax_line_id (many2one): Originator Tax
+  tax_tag_ids (many2many): Tags
+
+--- KEY FIELDS (14 fields) ---
+  account_id (many2one): Account
+  currency_id (many2one): Currency
+  discount (float): Discount (%)
+  display_type (selection): Display Type
+  invoice_date (date): Invoice/Bill Date
+  journal_id (many2one): Journal
+  move_type (selection): Type
+  name (char): Label
+  partner_id (many2one): Partner
+  product_id (many2one): Product
+  product_uom_id (many2one): Unit                          *** Odoo 19: product_uom_id
+  quantity (float): Quantity
+  ref (char): Reference
+  sequence (integer): Sequence
+
+--- SAMPLE LINE ---
+  [RICE-BAS-5KG] Basmati Rice (5kg) | qty 1.0 | Units | 25.0 | 0% disc
+
+
+################################################################################
+# PHASE 4: PURCHASE ORDER (purchase.order — 95 fields)
+################################################################################
+
+--- OPS EXTENSIONS (2 fields) ---
+  ops_branch_id (many2one): Branch
+  ops_business_unit_id (many2one): Business Unit
+
+--- AMOUNTS (8 fields) ---
+  amount_tax (monetary): Taxes
+  amount_total (monetary): Total
+  amount_total_cc (monetary): Total in currency
+  amount_untaxed (monetary): Untaxed Amount
+  company_price_include (selection): Default Sales Price Include
+  tax_calculation_rounding_method (selection): Tax calculation rounding method
+  tax_country_id (many2one): Tax Country
+  tax_totals (binary): Tax Totals
+
+--- KEY FIELDS (18 fields) ---
+  name (char): Order Reference
+  state (selection): Status
+  partner_id (many2one): Vendor
+  date_order (datetime): Order Deadline
+  date_planned (datetime): Expected Arrival
+  amount_untaxed (monetary): Untaxed Amount
+  amount_tax (monetary): Taxes
+  amount_total (monetary): Total
+  currency_id (many2one): Currency
+  payment_term_id (many2one): Payment Terms
+  fiscal_position_id (many2one): Fiscal Position
+  origin (char): Source
+  note (html): Terms and Conditions
+  order_line (one2many): Order Lines
+  picking_ids (many2many): Receptions
+  incoterm_id (many2one): Incoterm
+  user_id (many2one): Buyer
+  partner_ref (char): Vendor Reference
+
+--- SAMPLE DATA ---
+  P00015 | sent | Al Mokha Coffee Traders | 2026-02-04 | 12,000.0 USD
+
+
+################################################################################
+# PURCHASE ORDER LINE (purchase.order.line — 65 fields)
+################################################################################
+
+--- OPS EXTENSIONS (5 fields) ---
+  ops_analytic_distribution (json): Matrix Analytic Distribution
+  ops_branch_id (many2one): Branch
+  ops_business_unit_id (many2one): Business Unit
+  ops_company_id (many2one): Legal Entity
+  ops_persona_id (many2one): Persona
+
+--- AMOUNTS (9 fields) ---
+  amount_to_invoice_at_date (float): Amount
+  price_subtotal (monetary): Subtotal
+  price_tax (float): Tax
+  price_total (monetary): Total
+  price_unit (float): Unit Price
+  price_unit_discounted (float): Unit Price (Discounted)
+  tax_calculation_rounding_method (selection): Tax calculation rounding method
+  tax_ids (many2many): Taxes                               *** Odoo 19: tax_ids (NOT taxes_id)
+  technical_price_unit (float): Technical Price Unit
+
+--- KEY FIELDS (11 fields) ---
+  name (text): Description
+  product_id (many2one): Product
+  product_qty (float): Quantity
+  product_uom_id (many2one): Unit                          *** Odoo 19: product_uom_id (NOT product_uom)
+  price_unit (float): Unit Price
+  tax_ids (many2many): Taxes
+  price_subtotal (monetary): Subtotal
+  price_total (monetary): Total
+  date_planned (datetime): Expected Arrival
+  qty_received (float): Received Qty
+  qty_invoiced (float): Billed Qty
+
+
+################################################################################
+# STOCK PICKING / DELIVERY NOTE (stock.picking — 102 fields)
+################################################################################
+
+--- OPS EXTENSIONS (8 fields) ---
+  ops_analytic_distribution (json): Matrix Analytic Distribution
+  ops_branch_id (many2one): Branch
+  ops_business_unit_id (many2one): Business Unit
+  ops_company_id (many2one): Legal Entity
+  ops_credit_approval_id (many2one): Credit Approval
+  ops_credit_block_reason (text): Credit Block Reason
+  ops_credit_blocked (boolean): Credit Blocked
+  ops_persona_id (many2one): Persona
+
+--- KEY FIELDS (12 fields) ---
+  name (char): Reference
+  state (selection): Status
+  partner_id (many2one): Contact
+  origin (char): Source Document
+  scheduled_date (datetime): Scheduled Date
+  date_done (datetime): Date of Transfer
+  picking_type_id (many2one): Operation Type
+  location_id (many2one): Source Location
+  location_dest_id (many2one): Destination Location
+  move_ids (one2many): Stock Moves
+  note (html): Notes
+  shipping_weight (float): Weight for Shipping
+  *** carrier_tracking_ref NOT found in this instance
+
+--- SAMPLE DATA ---
+  WH/OUT/00014 | assigned | Qatar Digital | Origin: S00021 | Delivery Orders
+
+
+################################################################################
+# STOCK MOVE (stock.move — 104 fields)
+################################################################################
+
+--- OPS EXTENSIONS (5 fields) ---
+  ops_dest_branch_id (many2one): Destination Branch
+  ops_dest_business_unit_id (many2one): Destination Business Unit
+  ops_is_inter_branch (boolean): Inter-Branch Transfer
+  ops_source_branch_id (many2one): Source Branch
+  ops_source_business_unit_id (many2one): Source Business Unit
+
+--- AMOUNTS (2 fields) ---
+  price_unit (float): Price Unit
+  standard_price (float): Standard Price
+
+--- KEY FIELDS (9 fields) ---
+  product_id (many2one): Product
+  product_uom_qty (float): Demand
+  quantity (float): Quantity
+  product_uom (many2one): Unit                             *** stock.move still uses product_uom (NOT product_uom_id)
+  location_id (many2one): Source Location
+  location_dest_id (many2one): Intermediate Location
+  state (selection): Status
+  origin (char): Source Document
+  reference (char): Reference
+
+
+################################################################################
+# PHASE 5: ACCOUNT PAYMENT (account.payment — 85 fields)
+################################################################################
+
+--- OPS EXTENSIONS (2 fields) ---
+  ops_branch_id (many2one): Branch
+  ops_business_unit_id (many2one): Business Unit
+
+--- AMOUNTS (4 fields) ---
+  amount (monetary): Amount
+  amount_available_for_refund (monetary): Amount Available For Refund
+  amount_company_currency_signed (monetary): Amount Company Currency Signed
+  amount_signed (monetary): Amount Signed
+
+--- KEY FIELDS (14 fields) ---
+  amount (monetary): Amount
+  currency_id (many2one): Currency
+  date (date): Date                                        *** NOT payment_date
+  journal_id (many2one): Journal
+  memo (char): Memo
+  move_id (many2one): Journal Entry
+  name (char): Number
+  paired_internal_transfer_payment_id (many2one): Paired Internal Transfer Payment
+  partner_id (many2one): Customer/Vendor
+  partner_type (selection): Partner Type
+  payment_method_id (many2one): Method
+  payment_method_line_id (many2one): Payment Method
+  payment_type (selection): Payment Type
+  state (selection): State
+
+--- DATES (5 fields) ---
+  activity_date_deadline (date): Next Activity Deadline
+  create_date (datetime): Created on
+  date (date): Date
+  my_activity_date_deadline (date): My Activity Deadline
+  write_date (datetime): Last Updated on
+
+--- SAMPLE DATA ---
+  No payment records found in database
+
+
+################################################################################
+# OPS PDC RECEIVABLE (ops.pdc.receivable — 51 fields)
+################################################################################
+
+--- OPS EXTENSIONS (2 fields) ---
+  ops_branch_id (many2one): Branch
+  ops_business_unit_id (many2one): Business Unit
+
+--- KEY FIELDS (8 fields) ---
+  amount (monetary): Amount
+  bank_id (many2one): Customer Bank
+  check_number (char): Check Number
+  currency_id (many2one): Currency
+  journal_id (many2one): Journal
+  name (char): Reference
+  partner_id (many2one): Customer
+  state (selection): Status
+
+--- DATES (9 fields) ---
+  activity_date_deadline (date): Next Activity Deadline
+  bounce_date (date): Bounce Date
+  check_date (date): Check Date
+  clearance_date (date): Clearance Date
+  create_date (datetime): Created on
+  deposit_date (date): Deposit Date
+  maturity_date (date): Maturity Date                      *** Use maturity_date, NOT due_date
+  my_activity_date_deadline (date): My Activity Deadline
+  write_date (datetime): Last Updated on
+
+--- SAMPLE DATA ---
+  PDCR/00005 | draft | Saudi Gourmet | 6,200.0 | CHK-RCV-005
+
+
+################################################################################
+# OPS PDC PAYABLE (ops.pdc.payable — 51 fields)
+################################################################################
+
+--- OPS EXTENSIONS (2 fields) ---
+  ops_branch_id (many2one): Branch
+  ops_business_unit_id (many2one): Business Unit
+
+--- KEY FIELDS (9 fields) ---
+  amount (monetary): Amount
+  bank_id (many2one): Our Bank
+  check_number (char): Check Number
+  currency_id (many2one): Currency
+  issue_date (date): Issue Date
+  journal_id (many2one): PDC Journal
+  name (char): Reference
+  partner_id (many2one): Vendor
+  state (selection): Status
+
+--- DATES (9 fields) ---
+  activity_date_deadline (date): Next Activity Deadline
+  check_date (date): Check Date
+  clearance_date (date): Clearance Date
+  create_date (datetime): Created on
+  issue_date (date): Issue Date
+  maturity_date (date): Maturity Date
+  my_activity_date_deadline (date): My Activity Deadline
+  present_date (date): Present Date
+  write_date (datetime): Last Updated on
+
+--- SAMPLE DATA ---
+  PDCP/00003 | draft | Herman Miller | 85,500.0 | CHK-PAY-003
+
+
+################################################################################
+# PHASE 6: REPORT INFRASTRUCTURE
+################################################################################
+
+========== REPORT ACTIONS (22 reports) ==========
+
+SALE ORDER (6 reports):
+  PDF Quote                  → sale.report_saleorder (qweb-pdf)
+  PRO-FORMA Invoice          → sale.report_saleorder_pro_forma (qweb-pdf)
+  Quotation / Order          → sale.report_saleorder_raw (qweb-pdf)
+  Quotation / Order (OPS)    → ops_matrix_core.report_ops_quotation (qweb-pdf)
+  Products Availability      → ops_matrix_core.report_products_availability_document (qweb-pdf)
+  SO Documentation           → ops_matrix_core.report_sale_order_documentation (qweb-pdf)
+  Stock Availability Report  → ops_matrix_core.report_sale_order_availability (qweb-pdf)
+
+ACCOUNT MOVE (4 reports):
+  Invoice / Credit Note (OPS) → ops_matrix_accounting.report_ops_invoice (qweb-pdf)
+  Invoice PDF                 → account.report_invoice_with_payments (qweb-pdf)
+  Original Bills              → account.report_original_vendor_bill (qweb-pdf)
+  PDF without Payment         → account.report_invoice (qweb-pdf)
+
+PURCHASE ORDER (3 reports):
+  Purchase Order              → purchase.report_purchaseorder (qweb-pdf)
+  Purchase Order (OPS)        → ops_matrix_core.report_ops_purchase (qweb-pdf)
+  Request for Quotation       → purchase.report_purchasequotation (qweb-pdf)
+
+STOCK PICKING (6 reports):
+  Delivery Note (OPS)         → ops_matrix_core.report_ops_delivery (qweb-pdf)
+  Delivery Slip               → stock.report_deliveryslip (qweb-pdf)
+  Packages                    → stock.report_picking_packages (qweb-pdf)
+  Picking Operations          → stock.report_picking (qweb-pdf)
+  Reception Report            → stock.report_reception (qweb-pdf)
+  Return slip                 → stock.report_return_document (qweb-pdf)
+
+ACCOUNT PAYMENT (2 reports):
+  Payment Receipt             → account.report_payment_receipt (qweb-pdf)
+  Payment Receipt (OPS)       → ops_matrix_accounting.report_ops_payment (qweb-pdf)
+
+
+========== EXTERNAL LAYOUT TEMPLATES ==========
+
+  web.external_layout              (web) Active
+  web.external_layout_bold         (web) Active
+  web.external_layout_boxed        (web) Active
+  web.external_layout_bubble       (web) Active
+  web.external_layout_folder       (web) Active
+  web.external_layout_standard     (web) Active
+  web.external_layout_striped      (web) Active
+  web.external_layout_wave         (web) Active
+  ops_theme.external_layout_ops    (ops_theme) Active
+  ops_matrix_core.ops_external_layout          (ops_matrix_core) Active
+  ops_matrix_accounting.ops_external_layout    (ops_matrix_accounting) Active
+  ops_matrix_accounting.ops_minimal_external_layout (ops_matrix_accounting) Active
+
+
+========== PAPER FORMATS ==========
+
+  Standard A4              | A4     | Portrait  | T=52 B=32 L=0 R=0  | Header=52
+  US Letter                | Letter | Portrait  | T=52 B=32 L=0 R=0  | Header=52
+  OPS Corporate A4         | A4     | Portrait  | T=12 B=25 L=12 R=12 | Header=0
+  OPS Corporate A4 Landsc  | A4     | Landscape | T=12 B=25 L=12 R=12 | Header=0
+  OPS A4 Financial Report  | A4     | Portrait  | T=40 B=30 L=15 R=15 | Header=35
+  OPS A4 Financial (Land)  | A4     | Landscape | T=35 B=25 L=15 R=15 | Header=30
+  OPS Letter Financial     | Letter | Portrait  | T=40 B=30 L=15 R=15 | Header=35
+
+
+========== NUM2WORDS ==========
+
+  Installed: YES
+  English (USD): one thousand, two hundred and thirty-four dollars, fifty-six cents
+  English (QAR): NOT SUPPORTED — Currency code "QAR" not implemented
+  Arabic (USD): supported
+  Arabic (QAR): supported (uses SAR fallback)
+
+
+========== RES.PARTNER KEY FIELDS ==========
+
+  name (char): Name
+  display_name (char): Display Name
+  street (char): Street
+  street2 (char): Street2
+  city (char): City
+  state_id (many2one): State
+  zip (char): Zip
+  country_id (many2one): Country
+  phone (char): Phone
+  mobile (char): Mobile             *** Available on partner, NOT on company
+  email (char): Email
+  website (char): Website Link
+  vat (char): Tax ID
+  ref (char): Reference
+  function (char): Job Position
+  commercial_partner_id (many2one): Commercial Entity
+  commercial_company_name (char): Company Name Entity
+  lang (selection): Language
+  property_payment_term_id (many2one): Customer Payment Terms
+  property_supplier_payment_term_id (many2one): Vendor Payment Terms
+  credit_limit (float): Credit Limit
+
+--- OPS PARTNER EXTENSIONS (9 fields) ---
+  ops_approval_notes (text): Approval Notes
+  ops_confirmation_restrictions (text): Confirmation Restrictions
+  ops_cr_number (char): CR Number
+  ops_credit_limit (monetary): OPS Credit Limit
+  ops_master_verified (boolean): Master Verified
+  ops_state (selection): Stewardship State
+  ops_total_outstanding (monetary): Total Outstanding
+  ops_verification_date (date): Verification Date
+  ops_verified_by_id (many2one): Verified By
+
+
+################################################################################
+# OPS TEMPLATE FILES ON FILESYSTEM
+################################################################################
+
+ops_matrix_core/report/:
+  ops_external_layout.xml
+  ops_report_purchase.xml
+  ops_report_quotation.xml
+  ops_report_delivery.xml
+
+ops_matrix_core/reports/:
+  sale_order_availability_report.xml
+  sale_order_documentation_report.xml
+  ops_products_availability_report.xml
+
+ops_matrix_accounting/report/:
+  ops_corporate_report_layout.xml
+  ops_report_layout.xml
+  ops_financial_report_template.xml
+  ops_treasury_report_templates.xml
+  ops_consolidated_report_templates.xml
+  ops_report_invoice.xml
+  ops_daily_report_templates.xml
+  ops_internal_layout_v2.xml
+  ops_financial_report_minimal.xml
+  ops_report_minimal_styles.xml
+  ops_report_payment.xml
+  ops_general_ledger_template.xml
+  ops_financial_reports_v2.xml
+  ops_inventory_report_templates.xml
+  ops_asset_report_templates.xml
+  components/ops_corporate_report_components.xml
+
+ops_theme/report/:
+  ops_external_layout.xml
+  ops_document_extras.xml
+  ops_report_css.xml
+
+
+################################################################################
+# ODOO 19 FIELD NAME WARNINGS (CRITICAL FOR TEMPLATES)
+################################################################################
+
+  sale.order.line.product_uom    → product_uom_id
+  sale.order.line.tax_id         → tax_ids
+  purchase.order.line.product_uom → product_uom_id
+  purchase.order.line.taxes_id   → tax_ids
+  purchase.order.notes           → note (singular, html type)
+  stock.move.product_uom         → product_uom (UNCHANGED — still product_uom)
+  account.payment.payment_date   → date (just "date")
+  account.move.amount_by_group   → use tax_totals dict instead
+  ops.pdc.*.due_date             → maturity_date
+
+
+################################################################################
+# SUMMARY STATISTICS
+################################################################################
+
+  res.company:           230 fields (32 OPS extensions)
+  sale.order:            124 fields (7 OPS extensions)
+  sale.order.line:       103 fields (5 OPS extensions)
+  account.move:          221 fields (7 OPS extensions)
+  account.move.line:     106 fields (5 OPS extensions)
+  purchase.order:         95 fields (2 OPS extensions)
+  purchase.order.line:    65 fields (5 OPS extensions)
+  stock.picking:         102 fields (8 OPS extensions)
+  stock.move:            104 fields (5 OPS extensions)
+  account.payment:        85 fields (2 OPS extensions)
+  ops.pdc.receivable:     51 fields (2 OPS extensions)
+  ops.pdc.payable:        51 fields (2 OPS extensions)
+  res.partner:            -- fields (9 OPS extensions)
+  ──────────────────────────────────────────────────
+  TOTAL:               1,337+ fields | 91 OPS extensions
+  Report Actions:         22 registered
+  Paper Formats:           7 OPS-relevant
+  External Layouts:       12 active
+
+================================================================================
+ END OF INVENTORY
+================================================================================

@@ -1,0 +1,643 @@
+################################################################################
+# SALES QUOTATION REPORT — COMPLETE FIELD INVENTORY
+# Generated: 2026-02-08
+# Source: Odoo 19.0 shell + OPS Framework source code analysis
+################################################################################
+
+
+######################################################################
+# SALE.ORDER — CATEGORIZED FIELDS (124 total)
+######################################################################
+
+============================================================
+  SALE.ORDER — OPS_CUSTOM (7 fields)
+============================================================
+  ops_analytic_distribution                json         Matrix Analytic Distribution
+  ops_branch_id                            many2one     Branch -> ops.branch
+  ops_business_unit_id                     many2one     Business Unit -> ops.business.unit
+  ops_company_id                           many2one     Legal Entity -> res.company
+  ops_credit_check_notes                   text         Credit Check Notes
+  ops_credit_check_passed                  boolean      Credit Check Passed
+  ops_persona_id                           many2one     Persona -> ops.persona
+
+============================================================
+  SALE.ORDER — PARTNER_ADDRESS (10 fields)
+============================================================
+  amount_invoiced                          monetary     Already invoiced
+  amount_to_invoice                        monetary     Un-invoiced Balance
+  invoice_count                            integer      Invoice Count
+  invoice_ids                              many2many    Invoices -> account.move
+  invoice_status                           selection    Invoice Status ['upselling', 'invoiced', 'to invoice', 'no']
+  message_partner_ids                      many2many    Followers (Partners) -> res.partner [RESTRICTED]
+  partner_credit_warning                   text         Partner Credit Warning
+  partner_id                               many2one     Customer -> res.partner *REQ*
+  partner_invoice_id                       many2one     Invoice Address -> res.partner *REQ*
+  partner_shipping_id                      many2one     Delivery Address -> res.partner *REQ*
+
+============================================================
+  SALE.ORDER — FINANCIAL (14 fields)
+============================================================
+  amount_paid                              float        Payment Transactions Amount
+  amount_tax                               monetary     Taxes
+  amount_total                             monetary     Total
+  amount_undiscounted                      float        Amount Before Discount
+  amount_untaxed                           monetary     Untaxed Amount
+  company_price_include                    selection    Default Sales Price Include ['tax_included', 'tax_excluded']
+  currency_rate                            float        Currency Rate
+  has_active_pricelist                     boolean      Has Active Pricelist
+  prepayment_percent                       float        Prepayment percentage
+  pricelist_id                             many2one     Pricelist -> product.pricelist
+  show_update_pricelist                    boolean      Has Pricelist Changed
+  tax_calculation_rounding_method          selection    Tax Calculation Rounding Method ['round_globally', 'round_per_line']
+  tax_country_id                           many2one     Tax Country -> res.country
+  tax_totals                               binary       Tax Totals
+
+============================================================
+  SALE.ORDER — DATES_STATUS (17 fields)
+============================================================
+  activity_date_deadline                   date         Next Activity Deadline [RESTRICTED]
+  activity_exception_decoration            selection    Activity Exception Decoration ['warning', 'danger']
+  activity_state                           selection    Activity State ['overdue', 'today', 'planned'] [RESTRICTED]
+  commitment_date                          datetime     Delivery Date
+  create_date                              datetime     Creation Date
+  date_order                               datetime     Order Date *REQ*
+  delivery_status                          selection    Delivery Status ['pending', 'started', 'partial', 'full']
+  effective_date                           datetime     Effective Date
+  expected_date                            datetime     Expected Date
+  my_activity_date_deadline                date         My Activity Deadline [RESTRICTED]
+  picking_policy                           selection    Shipping Policy ['direct', 'one'] *REQ*
+  show_update_fpos                         boolean      Has Fiscal Position Changed
+  signed_on                                datetime     Signed On
+  state                                    selection    Status ['draft', 'sent', 'sale', 'cancel', 'waiting_approval']
+  terms_type                               selection    Terms & Conditions format ['plain', 'html']
+  validity_date                            date         Expiration
+  write_date                               datetime     Last Updated on
+
+============================================================
+  SALE.ORDER — RELATIONAL (34 fields)
+============================================================
+  activity_ids                             one2many     Activities -> mail.activity [RESTRICTED]
+  activity_type_id                         many2one     Next Activity Type -> mail.activity.type [RESTRICTED]
+  activity_user_id                         many2one     Responsible User -> res.users [RESTRICTED]
+  approval_request_id                      many2one     Approval Request -> ops.approval.request
+  approval_request_ids                     one2many     Approval Requests -> ops.approval.request
+  authorized_transaction_ids               many2many    Authorized Transactions -> payment.transaction [RESTRICTED]
+  available_quotation_document_ids         many2many    Available Quotation Documents -> quotation.document
+  campaign_id                              many2one     Campaign -> utm.campaign
+  company_id                               many2one     Company -> res.company *REQ*
+  create_uid                               many2one     Created by -> res.users
+  currency_id                              many2one     Currency -> res.currency
+  duplicated_order_ids                     many2many    Duplicated Order -> sale.order
+  fiscal_position_id                       many2one     Fiscal Position -> account.fiscal.position
+  incoterm                                 many2one     Incoterm -> account.incoterms
+  journal_id                               many2one     Invoicing Journal -> account.journal
+  medium_id                                many2one     Medium -> utm.medium
+  message_follower_ids                     one2many     Followers -> mail.followers [RESTRICTED]
+  message_ids                              one2many     Messages -> mail.message
+  order_line                               one2many     Order Lines -> sale.order.line
+  payment_term_id                          many2one     Payment Terms -> account.payment.term
+  pending_email_template_id                many2one     Pending Email Template -> mail.template
+  picking_ids                              one2many     Transfers -> stock.picking
+  preferred_payment_method_line_id         many2one     Payment Method -> account.payment.method.line
+  quotation_document_ids                   many2many    Headers/Footers -> quotation.document
+  sale_order_template_id                   many2one     Quotation Template -> sale.order.template
+  source_id                                many2one     Source -> utm.source
+  stock_reference_ids                      many2many    References -> stock.reference
+  tag_ids                                  many2many    Tags -> crm.tag [RESTRICTED]
+  team_id                                  many2one     Sales Team -> crm.team
+  transaction_ids                          many2many    Transactions -> payment.transaction [RESTRICTED]
+  user_id                                  many2one     Salesperson -> res.users
+  warehouse_id                             many2one     Warehouse -> stock.warehouse
+  website_message_ids                      one2many     Website Messages -> mail.message
+  write_uid                                many2one     Last Updated by -> res.users
+
+============================================================
+  SALE.ORDER — OTHER (42 fields)
+============================================================
+  access_token                             char         Security Token
+  access_url                               char         Portal Access URL
+  access_warning                           text         Access warning
+  activity_exception_icon                  char         Icon
+  activity_summary                         char         Next Activity Summary [RESTRICTED]
+  activity_type_icon                       char         Activity Type Icon
+  approval_locked                          boolean      Approval Locked
+  approval_request_count                   integer      Approval Count
+  client_order_ref                         char         Customer Reference
+  country_code                             char         Country code
+  customizable_pdf_form_fields             json         Customizable PDF Form Fields
+  delivery_count                           integer      Delivery Orders
+  display_name                             char         Display Name
+  has_archived_products                    boolean      Has Archived Products
+  has_authorized_transaction_ids           boolean      Has Authorized Transactions
+  has_message                              boolean      Has Message
+  id                                       integer      ID
+  incoterm_location                        char         Incoterm Location
+  is_expired                               boolean      Is Expired
+  is_pdf_quote_builder_available           boolean      Is Pdf Quote Builder Available
+  json_popover                             char         JSON data for the popover widget
+  late_availability                        boolean      Late Availability
+  locked                                   boolean      Locked
+  message_attachment_count                 integer      Attachment Count [RESTRICTED]
+  message_has_error                        boolean      Message Delivery error
+  message_has_error_counter                integer      Number of errors
+  message_has_sms_error                    boolean      SMS Delivery error
+  message_is_follower                      boolean      Is Follower
+  message_needaction                       boolean      Action Needed
+  message_needaction_counter               integer      Number of Actions
+  name                                     char         Order Reference *REQ*
+  note                                     html         Terms and conditions
+  origin                                   char         Source Document
+  purchase_order_count                     integer      Number of Purchase Order Generated [RESTRICTED]
+  reference                                char         Payment Ref.
+  require_payment                          boolean      Online payment
+  require_signature                        boolean      Online signature
+  sale_warning_text                        text         Sale Warning
+  show_json_popover                        boolean      Has late picking
+  signature                                binary       Signature
+  signed_by                                char         Signed By
+  type_name                                char         Type Name
+
+
+######################################################################
+# SALE.ORDER.LINE — CATEGORIZED FIELDS (103 total)
+######################################################################
+
+============================================================
+  SALE.ORDER.LINE — OPS_CUSTOM (5 fields)
+============================================================
+  ops_analytic_distribution                json         Matrix Analytic Distribution
+  ops_branch_id                            many2one     Branch -> ops.branch
+  ops_business_unit_id                     many2one     Business Unit -> ops.business.unit
+  ops_company_id                           many2one     Legal Entity -> res.company
+  ops_persona_id                           many2one     Persona -> ops.persona
+
+============================================================
+  SALE.ORDER.LINE — PRODUCT (16 fields)
+============================================================
+  allowed_uom_ids                          many2many    Allowed Uom -> uom.uom
+  available_product_document_ids           many2many    Available Product Documents -> product.document
+  is_configurable_product                  boolean      Is the product configurable?
+  is_product_archived                      boolean      Is Product Archived
+  product_custom_attribute_value_ids       one2many     Custom Values -> product.attribute.custom.value
+  product_document_ids                     many2many    Product Documents -> product.document
+  product_id                               many2one     Product -> product.product
+  product_no_variant_attribute_value_ids   many2many    Extra Values -> product.template.attribute.value
+  product_template_attribute_value_ids     many2many    Attribute Values -> product.template.attribute.value
+  product_template_id                      many2one     Product Template -> product.template
+  product_type                             selection    Product Type ['consu', 'service', 'combo']
+  product_uom_id                           many2one     Unit -> uom.uom
+  product_uom_qty                          float        Quantity
+  product_uom_readonly                     boolean      Product Uom Readonly
+  product_updatable                        boolean      Can Edit Product
+  translated_product_name                  text         Translated Product Name
+
+============================================================
+  SALE.ORDER.LINE — FINANCIAL (26 fields)
+============================================================
+  amount_invoiced                          monetary     Invoiced Amount
+  amount_to_invoice                        monetary     Un-invoiced Balance
+  amount_to_invoice_at_date                float        Amount
+  can_edit_unit_price                      boolean      Can Edit Unit Price
+  can_user_access_cost_prices              boolean      Can Access Cost Prices
+  collapse_prices                          boolean      Collapse Prices
+  company_price_include                    selection    Default Sales Price Include ['tax_included', 'tax_excluded']
+  customer_lead                            float        Lead Time
+  free_qty_today                           float        Free Qty Today
+  margin                                   float        Margin [RESTRICTED]
+  margin_percent                           float        Margin % [RESTRICTED]
+  price_subtotal                           monetary     Subtotal
+  price_total                              monetary     Total
+  price_unit                               float        Unit Price
+  pricelist_item_id                        many2one     Pricelist Item -> product.pricelist.item
+  purchase_price                           float        Cost [RESTRICTED]
+  qty_available_today                      float        Qty Available Today
+  qty_delivered                            float        Delivery Quantity
+  qty_delivered_at_date                    float        Delivered
+  qty_invoiced                             float        Invoiced Quantity
+  qty_invoiced_at_date                     float        Invoiced
+  qty_invoiced_posted                      float        Invoiced Quantity (posted)
+  qty_to_deliver                           float        Qty To Deliver
+  qty_to_invoice                           float        Quantity To Invoice
+  technical_price_unit                     float        Technical Price Unit
+  virtual_available_at_date                float        Virtual Available At Date
+
+============================================================
+  SALE.ORDER.LINE — TAX_DISCOUNT (10 fields)
+============================================================
+  discount                                 float        Discount (%)
+  extra_tax_data                           json         Extra Tax Data
+  price_reduce_taxexcl                     monetary     Price Reduce Tax excl
+  price_reduce_taxinc                      monetary     Price Reduce Tax incl
+  price_tax                                float        Total Tax
+  tax_calculation_rounding_method          selection    Tax calculation rounding method ['round_globally', 'round_per_line']
+  tax_country_id                           many2one     Tax Country -> res.country
+  tax_ids                                  many2many    Taxes -> account.tax
+  untaxed_amount_invoiced                  monetary     Untaxed Invoiced Amount
+  untaxed_amount_to_invoice                monetary     Untaxed Amount To Invoice
+
+============================================================
+  SALE.ORDER.LINE — RELATIONAL (19 fields)
+============================================================
+  analytic_line_ids                         one2many     Analytic lines -> account.analytic.line
+  categ_id                                 many2one     Product Category -> product.category
+  combo_item_id                            many2one     Combo Item -> product.combo.item
+  company_id                               many2one     Company -> res.company
+  create_uid                               many2one     Created by -> res.users
+  currency_id                              many2one     Currency -> res.currency
+  distribution_analytic_account_ids        many2many    Distribution Analytic Account -> account.analytic.account
+  invoice_lines                            many2many    Invoice Lines -> account.move.line
+  linked_line_id                           many2one     Linked Order Line -> sale.order.line
+  linked_line_ids                          one2many     Linked Order Lines -> sale.order.line
+  move_ids                                 one2many     Stock Moves -> stock.move
+  order_id                                 many2one     Order Reference -> sale.order
+  order_partner_id                         many2one     Customer -> res.partner
+  parent_id                                many2one     Parent Section Line -> sale.order.line
+  purchase_line_ids                        one2many     Generated Purchase Lines -> purchase.order.line
+  route_ids                                many2many    Routes -> stock.route
+  salesman_id                              many2one     Salesperson -> res.users
+  warehouse_id                             many2one     Warehouse -> stock.warehouse
+  write_uid                                many2one     Last Updated by -> res.users
+
+============================================================
+  SALE.ORDER.LINE — OTHER (27 fields)
+============================================================
+  analytic_distribution                    json         Analytic Distribution
+  analytic_precision                       integer      Analytic Precision
+  collapse_composition                     boolean      Collapse Composition
+  create_date                              datetime     Created on
+  display_name                             char         Display Name
+  display_qty_widget                       boolean      Display Qty Widget
+  display_type                             selection    Display Type ['line_section', 'line_subsection', 'line_note']
+  forecast_expected_date                   datetime     Forecast Expected Date
+  id                                       integer      ID
+  invoice_status                           selection    Invoice Status ['upselling', 'invoiced', 'to invoice', 'no']
+  is_downpayment                           boolean      Is a down payment
+  is_expense                               boolean      Is expense
+  is_mto                                   boolean      Is Mto
+  is_optional                              boolean      Optional Line
+  is_storable                              boolean      Track Inventory
+  linked_virtual_id                        char         Linked Virtual
+  name                                     text         Description
+  purchase_line_count                      integer      Number of generated purchase items
+  qty_delivered_method                     selection    Method to update delivered qty ['manual', 'analytic', 'stock_move']
+  sale_line_warn_msg                       text         Sale Line Warn Msg
+  scheduled_date                           datetime     Scheduled Date
+  selected_combo_items                     char         Selected Combo Items
+  sequence                                 integer      Sequence
+  service_tracking                         selection    Create on Order ['no']
+  state                                    selection    Order Status ['draft', 'sent', 'sale', 'cancel', 'waiting_approval']
+  virtual_id                               char         Virtual
+  write_date                               datetime     Last Updated on
+
+
+######################################################################
+# RES.COMPANY — REPORT-RELEVANT FIELDS
+######################################################################
+
+  city                                     char         City
+  company_registry                         char         Company ID
+  country_id                               many2one     Country -> res.country
+  currency_id                              many2one     Currency -> res.currency
+  email                                    char         Email
+  logo                                     binary       Company Logo
+  name                                     char         Company Name
+  ops_amount_words_lang                    selection    Amount in Words Language
+  ops_analytic_account_id                  many2one     OPS Analytic Account -> account.analytic.account
+  ops_border_radius                        selection    Border Radius
+  ops_card_shadow                          selection    Card Shadow
+  ops_code                                 char         OPS Code
+  ops_danger_color                         char         Danger Color
+  ops_default_chatter_position             selection    Default Chatter Position
+  ops_default_color_mode                   selection    Default Color Mode
+  ops_favicon                              binary       Custom Favicon
+  ops_favicon_mimetype                     char         Favicon MIME Type
+  ops_login_background                     binary       Login Background Image
+  ops_login_show_logo                      boolean      Show Logo on Login
+  ops_login_tagline                        char         Login Tagline
+  ops_manager_id                           many2one     Country Manager -> res.users
+  ops_navbar_style                         selection    Navbar Style
+  ops_primary_color                        char         Primary Brand Color
+  ops_report_body_text_color               char         Report Body Text
+  ops_report_logo_position                 selection    Report Logo Position
+  ops_report_primary_color                 char         Report Primary Color
+  ops_report_terms                         html         Default Report Terms
+  ops_report_text_on_primary               char         Text on Primary
+  ops_secondary_color                      char         OPS Secondary Color
+  ops_show_amount_words                    boolean      Show Amount in Words
+  ops_show_bank_details                    boolean      Show Bank Details on Documents
+  ops_show_external_badge                  boolean      Show OPS Badge on Reports
+  ops_show_signature_block                 boolean      Show Signature Block
+  ops_signature_label_1                    char         Signature Label 1
+  ops_signature_label_2                    char         Signature Label 2
+  ops_signature_label_3                    char         Signature Label 3
+  ops_success_color                        char         Success Color
+  ops_theme_preset                         selection    Theme Preset
+  ops_warning_color                        char         Warning Color
+  partner_id                               many2one     Partner -> res.partner
+  phone                                    char         Phone
+  report_footer                            html         Report Footer
+  report_header                            html         Company Tagline
+  state_id                                 many2one     Fed. State -> res.country.state
+  street                                   char         Street
+  street2                                  char         Street2
+  vat                                      char         Tax ID
+  website                                  char         Website Link
+  zip                                      char         Zip
+
+
+######################################################################
+# RES.PARTNER — ADDRESS FIELDS FOR QUOTATION
+######################################################################
+
+  city                                     char         City
+  commercial_partner_id                    many2one     Commercial Entity -> res.partner
+  contact_address                          char         Complete Address
+  country_id                               many2one     Country -> res.country
+  credit                                   monetary     Total Receivable
+  credit_blocked                           boolean      Credit Blocked
+  credit_limit                             float        Credit Limit
+  credit_to_invoice                        monetary     Credit To Invoice
+  display_name                             char         Display Name
+  email                                    char         Email
+  function                                 char         Job Position
+  lang                                     selection    Language
+  name                                     char         Name
+  ops_approval_notes                       text         Approval Notes
+  ops_confirmation_restrictions            text         Confirmation Restrictions
+  ops_cr_number                            char         CR Number
+  ops_credit_limit                         monetary     OPS Credit Limit
+  ops_master_verified                      boolean      Master Verified
+  ops_state                                selection    Stewardship State
+  ops_total_outstanding                    monetary     Total Outstanding
+  ops_verification_date                    date         Verification Date
+  ops_verified_by_id                       many2one     Verified By -> res.users
+  phone                                    char         Phone
+  property_payment_term_id                 many2one     Customer Payment Terms -> account.payment.term
+  property_product_pricelist               many2one     Pricelist -> product.pricelist
+  ref                                      char         Reference
+  state_id                                 many2one     State -> res.country.state
+  street                                   char         Street
+  street2                                  char         Street2
+  vat                                      char         Tax ID
+  zip                                      char         Zip
+
+
+######################################################################
+# OPS.BRANCH — ALL FIELDS
+######################################################################
+
+  active                                   boolean      Active
+  address                                  text         Physical Address
+  analytic_account_id                      many2one     Analytic Account -> account.analytic.account
+  business_unit_count                      integer      Business Units Count
+  child_ids                                one2many     Sub-Branches -> ops.branch
+  code                                     char         Code
+  color                                    integer      Color Index
+  company_id                               many2one     Legal Entity -> res.company
+  email                                    char         Email
+  is_headquarters                          boolean      Is Headquarters
+  manager_id                               many2one     Branch Manager -> res.users
+  name                                     char         Branch Name
+  parent_id                                many2one     Parent Branch -> ops.branch
+  phone                                    char         Phone
+  sequence                                 integer      Sequence
+  warehouse_id                             many2one     Primary Warehouse -> stock.warehouse
+
+
+######################################################################
+# EXISTING REPORT ACTIONS FOR SALE.ORDER
+######################################################################
+
+  Name: PDF Quote
+    report_name: sale.report_saleorder
+    report_type: qweb-pdf
+    paperformat: Default
+
+  Name: PRO-FORMA Invoice
+    report_name: sale.report_saleorder_pro_forma
+    report_type: qweb-pdf
+    paperformat: Default
+
+  Name: Products Availability
+    report_name: ops_matrix_core.report_products_availability_document
+    report_type: qweb-pdf
+    paperformat: Default
+
+  Name: Quotation / Order
+    report_name: sale.report_saleorder_raw
+    report_type: qweb-pdf
+    paperformat: Default
+
+  Name: Quotation / Order (OPS)
+    report_name: ops_matrix_core.report_ops_quotation
+    report_type: qweb-pdf
+    paperformat: Default
+
+  Name: SO Documentation
+    report_name: ops_matrix_core.report_sale_order_documentation
+    report_type: qweb-pdf
+    paperformat: Default
+
+  Name: Stock Availability Report
+    report_name: ops_matrix_core.report_sale_order_availability
+    report_type: qweb-pdf
+    paperformat: Default
+
+
+######################################################################
+# AVAILABLE PAPER FORMATS
+######################################################################
+
+  A4: A4 Portrait margins(T:52.0 B:32.0 L:0.0 R:0.0) dpi:90
+  US Letter: Letter Portrait margins(T:52.0 B:32.0 L:0.0 R:0.0) dpi:90
+  OPS Corporate A4: A4 Portrait margins(T:12.0 B:25.0 L:12.0 R:12.0) dpi:96
+  OPS A4 Financial Report: A4 Portrait margins(T:40.0 B:30.0 L:15.0 R:15.0) dpi:96
+  OPS A4 Financial Report (Landscape): A4 Landscape margins(T:35.0 B:25.0 L:15.0 R:15.0) dpi:96
+  OPS Corporate A4 Landscape: A4 Landscape margins(T:12.0 B:25.0 L:12.0 R:12.0) dpi:96
+
+
+######################################################################
+# TAX CONFIGURATION
+######################################################################
+
+  15%                            rate=15.0% type=percent included=False
+  0% Exports                     rate=0.0% type=percent included=False
+
+
+######################################################################
+# PAYMENT TERMS
+######################################################################
+
+  Immediate Payment
+  15 Days
+  21 Days
+  30 Days
+  45 Days
+  End of Following Month
+  10 Days after End of Next Month
+  30% Now, Balance 60 Days
+  2/7 Net 30
+  90 days, on the 10th
+
+
+######################################################################
+# FISCAL POSITIONS
+######################################################################
+
+  Domestic
+  Foreign Trade
+
+
+######################################################################
+# SAMPLE DATA — 3 MOST RECENT ORDERS
+######################################################################
+
+--- S00022 (draft, $500.00, Qatar Digital) ---
+  ops_branch_id = Branch ID 6
+  ops_business_unit_id = BU ID 3
+  ops_analytic_distribution = {'8': 50.0, '13': 50.0}
+  partner_id = ID 53
+  currency = USD
+  date_order = 2026-02-07
+  validity_date = 2026-03-10
+  1 order line
+
+--- S00021 (sale, $25.00, invoiced) ---
+  ops_branch_id = Branch ID 6
+  ops_business_unit_id = BU ID 3
+  ops_credit_check_passed = True
+  ops_credit_check_notes = CASH GATE PASSED
+  invoice_count = 1
+  delivery_count = 1
+  delivery_status = pending
+
+--- S00020 (draft, $73,500.00, client_order_ref=SEED-SO-020) ---
+  ops_branch_id = Branch ID 10
+  ops_business_unit_id = BU ID 3
+  fiscal_position_id = Foreign Trade
+  payment_term_id = ID 4
+  No taxes applied
+
+
+######################################################################
+# OPS REPORT ABSTRACT MODELS (REGISTERED)
+######################################################################
+
+  ops.asset.report.wizard
+  ops.base.report.wizard
+  ops.branch.report
+  ops.business.unit.report
+  ops.financial.report.config
+  ops.governance.violation.report
+  ops.inventory.report.wizard
+  ops.report.audit
+  ops.report.helpers
+  ops.report.template
+  ops.report.template.line
+  ops.report.template.save.wizard
+  ops.treasury.report.wizard
+  report.ops_matrix_accounting.report_aged_partner_corporate
+  ... (46 total report models)
+
+
+######################################################################
+# OPS SOURCE CODE EXTENSIONS — KEY FILES
+######################################################################
+
+PYTHON:
+  ops_matrix_core/models/sale_order.py          (861 lines) — Governance, approval, credit firewall, matrix dims
+  ops_matrix_core/models/sale_order_approval.py (318 lines) — Approval workflow, product bundle PDF
+  ops_matrix_core/models/sale_order_line.py     (203 lines) — Price protection, cost shield, margin
+  ops_matrix_accounting/models/ops_matrix_standard_extensions.py — Matrix dimension fields (lighter)
+  ops_matrix_accounting/models/ops_report_helpers.py (666 lines) — amount_to_words(), formatting
+  ops_theme/models/res_company_branding.py      (358 lines) — Brand colors, document settings
+  ops_theme/models/ops_report_helpers.py        (217 lines) — Bilingual number-to-words (EN+AR)
+
+XML REPORTS:
+  ops_matrix_core/report/ops_report_quotation.xml       (318 lines) — OPS branded quotation
+  ops_matrix_core/report/reports/ops_products_availability_report.xml — Stock availability
+  ops_matrix_core/report/reports/sale_order_documentation_report.xml — Product docs
+  ops_theme/report/ops_document_extras.xml      (142 lines) — Amount-in-words, bank, signature, terms
+
+HELPER METHODS:
+  company.get_ops_report_settings()   — Crash-proof settings dict for QWeb
+  env['ops.report.helpers'].amount_to_words(amount, currency, lang)  — Bilingual conversion
+
+BRANDING INTEGRATION:
+  primary_color = o.company_id.ops_primary_color or '#1e293b'
+  _ops = o.company_id.get_ops_report_settings()
+  t-call="ops_theme.ops_document_extras" for shared footer blocks
+
+
+######################################################################
+# KEY FIELDS FOR QUOTATION REPORT TEMPLATE DESIGN
+######################################################################
+
+HEADER:
+  o.name                    — Order Reference (S00022)
+  o.type_name               — "Quotation" or "Sales Order"
+  o.date_order              — Order Date
+  o.validity_date           — Expiration Date
+  o.client_order_ref        — Customer Reference
+  o.user_id.name            — Salesperson
+  o.team_id.name            — Sales Team
+  o.state                   — Status (draft/sent/sale/cancel/waiting_approval)
+
+CUSTOMER:
+  o.partner_id.name         — Customer Name
+  o.partner_id.street       — Street
+  o.partner_id.city         — City
+  o.partner_id.state_id.name — State
+  o.partner_id.zip          — ZIP
+  o.partner_id.country_id.name — Country
+  o.partner_id.vat          — Tax ID
+  o.partner_id.phone        — Phone
+  o.partner_id.email        — Email
+  o.partner_id.ref          — Reference
+  o.partner_id.ops_cr_number — CR Number
+
+SHIPPING (if different):
+  o.partner_shipping_id     — Delivery Address
+
+INVOICE (if different):
+  o.partner_invoice_id      — Invoice Address
+
+OPS DIMENSIONS:
+  o.ops_branch_id.name      — Branch Name
+  o.ops_branch_id.code      — Branch Code
+  o.ops_business_unit_id.name — Business Unit
+  o.ops_company_id.name     — Legal Entity
+
+LINES (o.order_line):
+  l.sequence                — Order
+  l.name                    — Description
+  l.product_id.name         — Product Name
+  l.product_uom_qty         — Quantity
+  l.product_uom_id.name     — UoM
+  l.price_unit              — Unit Price
+  l.discount                — Discount %
+  l.tax_ids                 — Taxes
+  l.price_subtotal          — Subtotal (excl tax)
+  l.price_total             — Total (incl tax)
+  l.display_type            — Section/note/subsection indicator
+
+TOTALS:
+  o.amount_untaxed          — Untaxed Amount
+  o.amount_tax              — Tax Amount
+  o.amount_total            — Grand Total
+  o.tax_totals              — Detailed tax breakdown (dict)
+  o.currency_id.symbol      — Currency Symbol
+
+TERMS:
+  o.payment_term_id.name    — Payment Terms
+  o.fiscal_position_id.name — Fiscal Position
+  o.incoterm.name           — Incoterm
+  o.note                    — Terms & Conditions
+
+COMPANY (letterhead):
+  o.company_id.name         — Company Name
+  o.company_id.logo         — Logo
+  o.company_id.street/city/state/zip/country — Address
+  o.company_id.phone/email/website/vat — Contact details
+  o.company_id.ops_primary_color — Brand color
+  o.company_id.get_ops_report_settings() — All OPS branding settings

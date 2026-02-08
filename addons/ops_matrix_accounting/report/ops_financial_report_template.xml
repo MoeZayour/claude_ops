@@ -4,7 +4,7 @@
         ================================================================
         OPS CORPORATE FINANCIAL REPORT TEMPLATES
         ================================================================
-        GL Gold Standard Pattern — wkhtmltopdf-compatible:
+        GL Gold Standard Pattern - wkhtmltopdf-compatible:
         NO flexbox, NO font-variant-numeric, NO external CSS dependency.
         All layouts use tables/inline-block for QtWebKit ~534.
 

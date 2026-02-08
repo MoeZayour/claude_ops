@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        OPS Matrix Consolidated Report Templates — Corporate Redesign
+        OPS Matrix Consolidated Report Templates - Corporate Redesign
         =============================================================
         GL Gold Standard pattern: ops_corporate_pdf_layout, inline CSS,
         table layouts, wkhtmltopdf-safe. No flexbox, no CSS classes.

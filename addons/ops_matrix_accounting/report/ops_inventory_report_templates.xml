@@ -227,7 +227,7 @@
                             Notes to Stock Valuation
                         </div>
                         <ul style="margin: 0; padding-left: 20px; font-size: 9px; color: #475569; line-height: 1.6;">
-                            <li>Stock value = Quantity × Unit Cost</li>
+                            <li>Stock value = Quantity x Unit Cost</li>
                             <li>All values in company currency (<t t-esc="company.currency_id.name"/>)</li>
                             <li>Valuation based on configured costing method (FIFO, AVCO, Standard)</li>
                             <li>Negative stock shown in red with parentheses</li>

@@ -4,6 +4,7 @@ import { registry } from "@web/core/registry";
 import { Component, useState, onWillStart, onMounted, onWillUnmount } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { user } from "@web/core/user";
 
 // Import chart components
 import {
@@ -47,6 +48,7 @@ class OpsDashboardAction extends Component {
         this.orm = useService("orm");
         this.notification = useService("notification");
         this.action = useService("action");
+        this.displaySettings = {};
 
         this.state = useState({
             // Dashboard selection
@@ -94,6 +96,7 @@ class OpsDashboardAction extends Component {
         ];
 
         onWillStart(async () => {
+            await this.loadDisplaySettings();
             await this.loadCurrencyInfo();
             await this.loadDashboards();
         });
@@ -105,6 +108,53 @@ class OpsDashboardAction extends Component {
         onWillUnmount(() => {
             this.clearAutoRefresh();
         });
+    }
+
+    /**
+     * Load KPI display settings from company configuration.
+     * Applied as data-* attributes on the dashboard container.
+     */
+    async loadDisplaySettings() {
+        try {
+            const result = await this.orm.call(
+                "res.company",
+                "read",
+                [user.activeCompany.id],
+                {
+                    fields: [
+                        "ops_kpi_gradient_headers",
+                        "ops_kpi_sparkline_style",
+                        "ops_kpi_chart_fill",
+                        "ops_kpi_animation",
+                        "ops_kpi_card_style",
+                        "ops_kpi_color_scheme",
+                        "ops_kpi_refresh_interval",
+                    ],
+                }
+            );
+            if (result && result.length) {
+                this.displaySettings = result[0];
+            }
+        } catch (e) {
+            // Gracefully fallback to defaults if fields don't exist yet
+            console.warn("[OPS KPI] Could not load display settings:", e.message);
+            this.displaySettings = {};
+        }
+    }
+
+    /**
+     * Get data attributes for the dashboard container based on settings.
+     */
+    get dashboardDataAttrs() {
+        const s = this.displaySettings || {};
+        return {
+            "data-card-style": s.ops_kpi_card_style || "accent",
+            "data-gradient-headers": s.ops_kpi_gradient_headers !== false ? "true" : "false",
+            "data-sparkline-style": s.ops_kpi_sparkline_style || "gradient",
+            "data-chart-fill": s.ops_kpi_chart_fill || "gradient",
+            "data-color-scheme": s.ops_kpi_color_scheme || "default",
+            "data-animation": s.ops_kpi_animation || "full",
+        };
     }
 
     /**

@@ -11,6 +11,9 @@ from . import ops_corporate_report_parsers
 from . import excel_styles
 from . import ops_xlsx_abstract
 
+# Wave 1 — Report-specific Excel builders (TB, P&L, BS, CF)
+from . import ops_excel_report_builders
+
 # XLSX Report Generators (inherit from ops.xlsx.abstract)
 from . import ops_asset_register_xlsx
 from . import ops_general_ledger_xlsx

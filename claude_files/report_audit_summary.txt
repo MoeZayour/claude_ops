@@ -1,0 +1,347 @@
+================================================================================
+  OPS ACCOUNTING REPORT SYSTEM AUDIT — ANALYSIS SUMMARY
+================================================================================
+  Generated: 2026-02-08 11:32:08
+  Module:    ops_matrix_accounting
+  Phases:    1 (Wizard Inventory) + 2 (Template Inventory) + 3 (Cross-Reference)
+
+────────────────────────────────────────────────────────────────────────────────
+  1. INVENTORY COUNTS
+────────────────────────────────────────────────────────────────────────────────
+  Wizard Files:          14
+  Wizard Classes:        17 (16 TransientModel, 1 AbstractModel)
+  Total Fields:          185
+  Total Action Methods:  83
+  XML Template Files:    20
+  QWeb Templates:        89
+  Report Actions:        40
+  Report Refs (wizard):  45 (44 resolved, 1 unresolved)
+
+────────────────────────────────────────────────────────────────────────────────
+  2. COMPLIANCE OVERVIEW PER WIZARD
+────────────────────────────────────────────────────────────────────────────────
+  Wizard Class                                  Refs  Status  Detail
+  ────────────────────────────────────────────  ────  ──────  ──────────────────────────────
+  OpsAssetReportWizard                             6    WARN  [WARN, WARN, WARN, WARN, WARN, WARN]
+  OpsBaseReportWizard                              1    FAIL  [FAIL]
+  OpsBudgetVsActualWizard                          1    WARN  [WARN]
+  OpsConsolidationIntelligenceWizard               4    WARN  [WARN, WARN, WARN, WARN]
+  OpsCashBookWizard                                2    WARN  [WARN, WARN]
+  OpsDayBookWizard                                 2    WARN  [WARN, WARN]
+  OpsBankBookWizard                                2    WARN  [WARN, WARN]
+  OpsGeneralLedgerWizardEnhanced                  13    WARN  [WARN, WARN, WARN, WARN, WARN, WARN, WARN, WARN, WARN, WARN, WARN, WARN, WARN]
+  OpsInventoryReportWizard                         8    FAIL  [FAIL, FAIL, FAIL, FAIL, FAIL, FAIL, FAIL, FAIL]
+  OpsTreasuryReportWizard                          6    WARN  [WARN, WARN, WARN, WARN, WARN, WARN]
+
+  Non-report wizards (N/A): 7
+    - OpsAssetDepreciationWizard (ops.asset.depreciation.wizard)
+    - OpsAssetDisposalWizard (ops.asset.disposal.wizard)
+    - OpsAssetImpairmentWizard (ops.asset.impairment.wizard)
+    - OpsFxRevaluationWizard (ops.fx.revaluation.wizard)
+    - OpsFxRevaluationLine (ops.fx.revaluation.line)
+    - OpsPeriodCloseWizard (ops.period.close.wizard)
+    - OpsThreeWayMatchOverrideWizard (ops.three.way.match.override.wizard)
+
+  Compliance Totals (across 45 ref-mappings):
+    PASS:    0  (0.0%)
+    WARN:   36
+    FAIL:    9
+
+────────────────────────────────────────────────────────────────────────────────
+  3. CRITICAL ISSUES
+────────────────────────────────────────────────────────────────────────────────
+
+  3a. Reports WITHOUT Dynamic Colors: 18
+  ────────────────────────────────────────────────────────────────────────────
+    [OpsGeneralLedgerWizardEnhanced          ] report_trial_balance_v2                            file=ops_financial_reports_v2.xml
+    [OpsGeneralLedgerWizardEnhanced          ] report_profit_loss_v2                              file=ops_financial_reports_v2.xml
+    [OpsGeneralLedgerWizardEnhanced          ] report_balance_sheet_v2                            file=ops_balance_sheet_v2.xml
+    [OpsGeneralLedgerWizardEnhanced          ] report_cash_flow_v2                                file=ops_financial_reports_v2.xml
+    [OpsGeneralLedgerWizardEnhanced          ] report_aged_partner_v2                             file=ops_financial_reports_v2.xml
+    [OpsGeneralLedgerWizardEnhanced          ] report_trial_balance_v2                            file=ops_financial_reports_v2.xml
+    [OpsGeneralLedgerWizardEnhanced          ] report_profit_loss_v2                              file=ops_financial_reports_v2.xml
+    [OpsGeneralLedgerWizardEnhanced          ] report_balance_sheet_v2                            file=ops_balance_sheet_v2.xml
+    [OpsGeneralLedgerWizardEnhanced          ] report_cash_flow_v2                                file=ops_financial_reports_v2.xml
+    [OpsGeneralLedgerWizardEnhanced          ] report_aged_partner_v2                             file=ops_financial_reports_v2.xml
+    [OpsInventoryReportWizard                ] report_inventory_valuation_document_corporate      file=ops_inventory_report_templates.xml
+    [OpsInventoryReportWizard                ] report_inventory_aging_document_corporate          file=ops_inventory_report_templates.xml
+    [OpsInventoryReportWizard                ] report_inventory_movement_document_corporate       file=ops_inventory_report_templates.xml
+    [OpsInventoryReportWizard                ] report_inventory_negative_document_corporate       file=ops_inventory_report_templates.xml
+    [OpsInventoryReportWizard                ] report_inventory_valuation_document_corporate      file=ops_inventory_report_templates.xml
+    [OpsInventoryReportWizard                ] report_inventory_aging_document_corporate          file=ops_inventory_report_templates.xml
+    [OpsInventoryReportWizard                ] report_inventory_negative_document_corporate       file=ops_inventory_report_templates.xml
+    [OpsInventoryReportWizard                ] report_inventory_movement_document_corporate       file=ops_inventory_report_templates.xml
+
+  3b. Unique Templates WITH Hardcoded Hex Colors: 24
+  ────────────────────────────────────────────────────────────────────────────
+    report_budget_vs_actual_corporate                       count= 23  file=ops_budget_vs_actual_corporate.xml
+      colors: #166534, #16a34a, #1e293b, #1e40af, #22c55e, #3b82f6, #64748b, #666666, ... (+15 more)
+    report_general_ledger_corporate                         count= 22  file=ops_general_ledger_template.xml
+      colors: #166534, #16a34a, #1e293b, #1e40af, #64748b, #666666, #6b21a8, #92400e, ... (+14 more)
+    report_aged_partner_v2                                  count= 18  file=ops_financial_reports_v2.xml
+      colors: #16a34a, #1e293b, #475569, #64748b, #94a3b8, #991b1b, #ca8a04, #d1fae5, ... (+10 more)
+    report_partner_ledger_corporate                         count= 18  file=ops_partner_ledger_corporate.xml
+      colors: #16a34a, #1e293b, #1e40af, #64748b, #666666, #6b21a8, #92400e, #94a3b8, ... (+10 more)
+    report_cash_flow_v2                                     count= 17  file=ops_financial_reports_v2.xml
+      colors: #0891b2, #16a34a, #1e293b, #475569, #64748b, #9333ea, #94a3b8, #dbeafe, ... (+9 more)
+    report_balance_sheet_v2                                 count= 16  file=ops_balance_sheet_v2.xml
+      colors: #10b981, #16a34a, #1e293b, #475569, #64748b, #8b5cf6, #94a3b8, #dc2626, ... (+8 more)
+    report_inventory_aging_document_corporate               count= 16  file=ops_inventory_report_templates.xml
+      colors: #0891b2, #16a34a, #1e293b, #2563eb, #475569, #64748b, #7f1d1d, #94a3b8, ... (+8 more)
+    report_inventory_negative_document_corporate            count= 16  file=ops_inventory_report_templates.xml
+      colors: #064e3b, #065f46, #16a34a, #1e293b, #475569, #64748b, #7f1d1d, #94a3b8, ... (+8 more)
+    report_treasury_registry_corporate                      count= 16  file=ops_treasury_report_templates.xml
+      colors: #0891b2, #16a34a, #1e293b, #2563eb, #64748b, #666666, #94a3b8, #bbbbbb, ... (+8 more)
+    report_treasury_on_hand_corporate                       count= 16  file=ops_treasury_report_templates.xml
+      colors: #0891b2, #16a34a, #1e293b, #2563eb, #64748b, #666666, #94a3b8, #bbbbbb, ... (+8 more)
+    report_business_unit_document                           count= 15  file=ops_consolidated_report_templates.xml
+      colors: #16a34a, #1a1a1a, #1e40af, #3d4a8a, #5b6bbb, #64748b, #92400e, #94a3b8, ... (+7 more)
+    report_branch_pl_document                               count= 14  file=ops_consolidated_report_templates.xml
+      colors: #16a34a, #1a1a1a, #3d4a8a, #5b6bbb, #64748b, #92400e, #94a3b8, #cbd5e1, ... (+6 more)
+    report_consol_balance_sheet                             count= 14  file=ops_consolidated_report_templates.xml
+      colors: #16a34a, #1a1a1a, #1e40af, #3d4a8a, #5b6bbb, #64748b, #94a3b8, #cbd5e1, ... (+6 more)
+    report_asset_register_corp                              count= 13  file=ops_asset_report_templates.xml
+      colors: #16a34a, #1e293b, #64748b, #666666, #94a3b8, #bbbbbb, #cbd5e1, #d97706, ... (+5 more)
+    report_depreciation_sched_corp                          count= 13  file=ops_asset_report_templates.xml
+      colors: #16a34a, #1e293b, #64748b, #666666, #94a3b8, #bbbbbb, #cbd5e1, #d97706, ... (+5 more)
+    report_profit_loss_v2                                   count= 13  file=ops_financial_reports_v2.xml
+      colors: #16a34a, #1e293b, #475569, #64748b, #7f1d1d, #94a3b8, #991b1b, #dc2626, ... (+5 more)
+    report_inventory_valuation_document_corporate           count= 13  file=ops_inventory_report_templates.xml
+      colors: #0891b2, #16a34a, #1e293b, #2563eb, #475569, #64748b, #94a3b8, #dc2626, ... (+5 more)
+    report_treasury_maturity_corporate                      count= 13  file=ops_treasury_report_templates.xml
+      colors: #0891b2, #16a34a, #1e293b, #666666, #94a3b8, #bbbbbb, #cbd5e1, #dc2626, ... (+5 more)
+    report_day_book_corporate                               count= 12  file=ops_daily_report_templates.xml
+      colors: #16a34a, #1e293b, #666666, #92400e, #94a3b8, #bbbbbb, #cbd5e1, #dc2626, ... (+4 more)
+    report_trial_balance_v2                                 count= 12  file=ops_financial_reports_v2.xml
+      colors: #16a34a, #1e293b, #3b82f6, #475569, #64748b, #94a3b8, #dbeafe, #dc2626, ... (+4 more)
+    report_inventory_movement_document_corporate            count= 12  file=ops_inventory_report_templates.xml
+      colors: #0891b2, #16a34a, #1e293b, #475569, #64748b, #94a3b8, #d97706, #dc2626, ... (+4 more)
+    report_company_consol                                   count= 11  file=ops_consolidated_report_templates.xml
+      colors: #16a34a, #1a1a1a, #3d4a8a, #5b6bbb, #64748b, #94a3b8, #cbd5e1, #dc2626, ... (+3 more)
+    report_cash_book_corporate                              count= 11  file=ops_daily_report_templates.xml
+      colors: #16a34a, #1e293b, #64748b, #666666, #94a3b8, #bbbbbb, #cbd5e1, #dc2626, ... (+3 more)
+    report_bank_book_corporate                              count= 11  file=ops_daily_report_templates.xml
+      colors: #16a34a, #1e293b, #64748b, #666666, #94a3b8, #bbbbbb, #cbd5e1, #dc2626, ... (+3 more)
+
+  3c. Unique Templates WITHOUT External Layout: 4
+  ────────────────────────────────────────────────────────────────────────────
+    report_inventory_valuation_document_corporate           file=ops_inventory_report_templates.xml
+    report_inventory_aging_document_corporate               file=ops_inventory_report_templates.xml
+    report_inventory_movement_document_corporate            file=ops_inventory_report_templates.xml
+    report_inventory_negative_document_corporate            file=ops_inventory_report_templates.xml
+
+  3d. Unresolved Template References: 1
+  ────────────────────────────────────────────────────────────────────────────
+    [OpsBaseReportWizard] ref=ops_matrix_accounting.report_general_ledger
+
+────────────────────────────────────────────────────────────────────────────────
+  4. LAYOUT DISTRIBUTION ANALYSIS
+────────────────────────────────────────────────────────────────────────────────
+  File-level layout usage (across 20 XML files):
+    ops_corporate_pdf_layout:     8 files
+    web.external_layout:          4 files
+    ops_internal_layout_v2:       3 files
+    No layout detected:           5 files
+
+  Dynamic color usage (file-level):
+    Files WITH dynamic colors:      8
+    Files WITHOUT dynamic colors:  12
+
+  Files WITHOUT dynamic colors:
+    ops_corporate_report_components.xml                     hardcoded_hex=23
+    ops_balance_sheet_v2.xml                                hardcoded_hex=16
+    ops_corporate_report_layout.xml                         hardcoded_hex=1
+    ops_financial_report_minimal.xml                        hardcoded_hex=3
+    ops_financial_reports_v2.xml                            hardcoded_hex=30
+    ops_general_ledger_minimal.xml                          hardcoded_hex=7
+    ops_internal_layout_v2.xml                              hardcoded_hex=22
+    ops_inventory_report_templates.xml                      hardcoded_hex=22
+    ops_report_invoice.xml                                  hardcoded_hex=15
+    ops_report_layout.xml                                   hardcoded_hex=35
+    ops_report_minimal_styles.xml                           hardcoded_hex=10
+    ops_report_payment.xml                                  hardcoded_hex=1
+
+────────────────────────────────────────────────────────────────────────────────
+  5. TOP 5 COMPLEX WIZARD DETAILS
+────────────────────────────────────────────────────────────────────────────────
+
+  #1  OpsGeneralLedgerWizardEnhanced
+  ────────────────────────────────────────────────────────────
+    Model:        ops.general.ledger.wizard.enhanced
+    Type:         TransientModel
+    Inherits:     ops.base.report.wizard
+    File:         ops_general_ledger_wizard_enhanced.py
+    Lines:        2075
+    Fields:       25
+    Field Types:  Selection:11, Many2many:5, Boolean:4, Date:3, Many2one:1, Integer:1
+    Methods:      14
+    Report Refs:  13
+    Refs:
+      - ops_matrix_accounting.report_general_ledger_corporate [WARN]
+      - ops_matrix_accounting.report_trial_balance_v2 [WARN]
+      - ops_matrix_accounting.report_profit_loss_v2 [WARN]
+      - ops_matrix_accounting.report_balance_sheet_v2 [WARN]
+      - ops_matrix_accounting.report_cash_flow_v2 [WARN]
+      - ops_matrix_accounting.report_aged_partner_v2 [WARN]
+      - ops_matrix_accounting.action_report_general_ledger_corporate [WARN]
+      - ops_matrix_accounting.action_report_trial_balance_v2 [WARN]
+      - ops_matrix_accounting.action_report_profit_loss_v2 [WARN]
+      - ops_matrix_accounting.action_report_balance_sheet_v2 [WARN]
+      - ops_matrix_accounting.action_report_cash_flow_v2 [WARN]
+      - ops_matrix_accounting.action_report_aged_partner_v2 [WARN]
+      - ops_matrix_accounting.action_report_partner_ledger_corporate [WARN]
+    Action Methods:
+      - _get_report_template_xmlid
+      - _get_report_data
+      - _get_gl_data
+      - _get_trial_balance_data
+      - _get_financial_statement_data
+      - _get_hierarchical_financial_data
+      - _get_cash_flow_data
+      - _get_aged_partner_data
+      - _get_partner_ledger_data
+      - _get_statement_of_account_data
+      - _return_report_action
+      - action_export_to_excel
+      - action_view_transactions
+      - action_view_account_moves
+
+  #2  OpsInventoryReportWizard
+  ────────────────────────────────────────────────────────────
+    Model:        ops.inventory.report.wizard
+    Type:         TransientModel
+    Inherits:     ops.base.report.wizard
+    File:         ops_inventory_report_wizard.py
+    Lines:        1267
+    Fields:       19
+    Field Types:  Integer:7, Many2many:4, Selection:2, Date:2, Many2one:1, Boolean:1, Monetary:1, Float:1
+    Methods:      9
+    Report Refs:  8
+    Refs:
+      - ops_matrix_accounting.report_inventory_valuation_document_corporate [FAIL]
+      - ops_matrix_accounting.report_inventory_aging_document_corporate [FAIL]
+      - ops_matrix_accounting.report_inventory_movement_document_corporate [FAIL]
+      - ops_matrix_accounting.report_inventory_negative_document_corporate [FAIL]
+      - ops_matrix_accounting.report_inventory_valuation_pdf [FAIL]
+      - ops_matrix_accounting.report_inventory_aging_pdf [FAIL]
+      - ops_matrix_accounting.report_inventory_negative_pdf [FAIL]
+      - ops_matrix_accounting.report_inventory_movement_pdf [FAIL]
+    Action Methods:
+      - _get_report_template_xmlid
+      - _get_report_data
+      - _get_valuation_data
+      - _get_aging_data
+      - _get_negative_data
+      - _get_movement_data
+      - _return_report_action
+      - action_view_quants
+      - action_export_excel
+
+  #3  OpsAssetReportWizard
+  ────────────────────────────────────────────────────────────
+    Model:        ops.asset.report.wizard
+    Type:         TransientModel
+    Inherits:     ops.base.report.wizard
+    File:         ops_asset_report_wizard.py
+    Lines:        854
+    Fields:       16
+    Field Types:  Selection:4, Date:3, Many2many:3, Boolean:2, Monetary:2, Many2one:1, Integer:1
+    Methods:      10
+    Report Refs:  6
+    Refs:
+      - ops_matrix_accounting.report_asset_register_corp [WARN]
+      - ops_matrix_accounting.report_depreciation_sched_corp [WARN]
+      - ops_matrix_accounting.report_asset_register_pdf [WARN]
+      - ops_matrix_accounting.report_asset_forecast_pdf [WARN]
+      - ops_matrix_accounting.report_asset_disposal_pdf [WARN]
+      - ops_matrix_accounting.report_asset_movement_pdf [WARN]
+    Action Methods:
+      - _get_report_template_xmlid
+      - _get_report_data
+      - _get_register_data
+      - _get_forecast_data
+      - _get_disposal_data
+      - _get_movement_data
+      - _return_report_action
+      - action_view_assets
+      - action_view_depreciation
+      - action_export_excel
+
+  #4  OpsConsolidationIntelligenceWizard
+  ────────────────────────────────────────────────────────────
+    Model:        ops.consolidation.intelligence.wizard
+    Type:         TransientModel
+    Inherits:     None
+    File:         ops_consolidation_intelligence_wizard.py
+    Lines:        216
+    Fields:       13
+    Field Types:  Many2one:3, Date:3, Many2many:3, Selection:2, Boolean:2
+    Methods:      1
+    Report Refs:  4
+    Refs:
+      - ops_matrix_accounting.report_company_consolidation_pdf [WARN]
+      - ops_matrix_accounting.report_branch_pl_pdf [WARN]
+      - ops_matrix_accounting.report_business_unit_pdf [WARN]
+      - ops_matrix_accounting.report_consolidated_balance_sheet_pdf [WARN]
+    Action Methods:
+      - action_generate
+
+  #5  OpsFxRevaluationWizard
+  ────────────────────────────────────────────────────────────
+    Model:        ops.fx.revaluation.wizard
+    Type:         TransientModel
+    Inherits:     None
+    File:         ops_fx_revaluation_wizard.py
+    Lines:        247
+    Fields:       13
+    Field Types:  Many2one:4, Monetary:3, Many2many:2, Selection:2, Date:1, One2many:1
+    Methods:      3
+    Report Refs:  0
+    Action Methods:
+      - action_calculate
+      - action_post
+      - action_reset
+
+────────────────────────────────────────────────────────────────────────────────
+  6. KEY FINDINGS & RECOMMENDATIONS
+────────────────────────────────────────────────────────────────────────────────
+
+  FINDING 1: Zero templates achieve PASS compliance
+    All 45 report references scored WARN (36) or FAIL (9).
+    Root cause: every template has hardcoded hex colors alongside any dynamic
+    color usage. Even templates with dynamic colors still embed hardcoded hex.
+
+  FINDING 2: Inventory reports are the worst offenders
+    All 8 inventory report refs scored FAIL — no dynamic colors at all,
+    no external layout, and 12-16 hardcoded hex colors per template.
+    File: ops_inventory_report_templates.xml
+
+  FINDING 3: Corporate components library has zero dynamic colors
+    ops_corporate_report_components.xml (21 shared templates) uses only
+    hardcoded hex colors. Since most report templates call these components,
+    even 'dynamic' reports inherit hardcoded colors from shared components.
+
+  FINDING 4: v2 financial reports lack dynamic colors
+    ops_financial_reports_v2.xml (trial balance, P&L, cash flow, aged partner)
+    and ops_balance_sheet_v2.xml all have 0 dynamic color refs despite being
+    newer templates. These need migration to the dynamic color system.
+
+  FINDING 5: Layout adoption is partial
+    Only 8/20 files use ops_corporate_pdf_layout.
+    5 files have no detected layout wrapper.
+    Non-layout files include: component libraries, style sheets, minimal layouts.
+
+  FINDING 6: One unresolved reference
+    ops_matrix_accounting.report_general_ledger in OpsBaseReportWizard
+    points to a template that does not exist (possibly renamed or removed).
+
+  RECOMMENDED PRIORITY ORDER:
+    1. Fix inventory reports (FAIL -> dynamic colors + layout)
+    2. Migrate v2 financial reports to dynamic color system
+    3. Convert corporate components to use dynamic colors
+    4. Resolve the broken report_general_ledger reference
+    5. Systematically replace remaining hardcoded hex colors
+
+================================================================================
+  END OF AUDIT SUMMARY
+================================================================================

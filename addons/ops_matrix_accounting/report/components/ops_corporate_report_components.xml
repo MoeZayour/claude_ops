@@ -471,7 +471,7 @@
     <!-- ================================================================
          IN-PAGE BRANDED FOOTER
          Renders INSIDE the page body (reliable in wkhtmltopdf)
-         Badge via static file path — no base64 embedding
+         Badge via static file path - no base64 embedding
          ================================================================ -->
 
     <template id="report_corporate_in_page_footer" name="OPS In-Page Branded Footer">

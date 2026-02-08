@@ -103,7 +103,7 @@
                 <!-- ========== PARTIAL PAYMENT NOTICE ========== -->
                 <t t-if="not is_credit_note and doc.payment_state == 'partial'">
                     <div style="margin-bottom: 10px; padding: 6px 10px; background: #fef3c7; border-left: 3px solid #d97706; border-radius: 3px; font-size: 8pt; color: #92400e;">
-                        Partial payment received — Balance due:
+                        Partial payment received -- Balance due:
                         <strong><t t-esc="doc.amount_residual" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></strong>
                     </div>
                 </t>

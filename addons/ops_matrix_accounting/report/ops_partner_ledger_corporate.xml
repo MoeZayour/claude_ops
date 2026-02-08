@@ -2,7 +2,7 @@
 <odoo>
     <!--
         ================================================================
-        OPS CORPORATE PARTNER LEDGER — Wave 7
+        OPS CORPORATE PARTNER LEDGER - Wave 7
         ================================================================
         Landscape A4, 8 columns, grouped by partner.
         wkhtmltopdf-compatible: NO flexbox, tables for layout.

@@ -499,3 +499,140 @@
         color: #94a3b8;
     }
 }
+
+/* =============================================================================
+   ENHANCED KPI CARD STYLE VARIANTS
+   Applied via data-card-style attribute on .ops-dashboard container
+   ============================================================================= */
+
+/* Shadow style — no accent bar, elevated card */
+.ops-dashboard[data-card-style="shadow"] {
+    .ops-kpi-card,
+    .ops-kpi-card-enhanced {
+        &::before {
+            display: none;
+        }
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+        padding-left: 24px;
+
+        &:hover {
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+    }
+}
+
+/* Border style — subtle border, no accent bar */
+.ops-dashboard[data-card-style="border"] {
+    .ops-kpi-card,
+    .ops-kpi-card-enhanced {
+        &::before {
+            display: none;
+        }
+        border: 1px solid #e2e8f0;
+        box-shadow: none;
+        padding-left: 24px;
+
+        &:hover {
+            border-color: var(--ops-secondary, #3b82f6);
+            box-shadow: 0 0 0 1px var(--ops-secondary, #3b82f6);
+        }
+    }
+}
+
+/* =============================================================================
+   GRADIENT SECTION HEADER
+   Replaces flat .chart-header with gradient background
+   ============================================================================= */
+.ops-dashboard[data-gradient-headers="true"] {
+    .ops-chart-container .chart-header {
+        background: linear-gradient(135deg,
+            rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.06) 0%,
+            rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.02) 100%
+        );
+        border-bottom: 1px solid rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.12);
+
+        .chart-title {
+            color: var(--ops-primary, #1e293b);
+        }
+    }
+}
+
+/* =============================================================================
+   COLOR SCHEME VARIANTS
+   ============================================================================= */
+
+/* Vibrant — brighter, more saturated */
+.ops-dashboard[data-color-scheme="vibrant"] {
+    --chart-primary: #2563eb;
+    --chart-success: #059669;
+    --chart-danger: #dc2626;
+    --chart-warning: #d97706;
+    --chart-purple: #7c3aed;
+    --chart-teal: #0d9488;
+}
+
+/* Muted / Pastel */
+.ops-dashboard[data-color-scheme="muted"] {
+    --chart-primary: #93c5fd;
+    --chart-success: #6ee7b7;
+    --chart-danger: #fca5a5;
+    --chart-warning: #fcd34d;
+    --chart-purple: #c4b5fd;
+    --chart-teal: #99f6e4;
+}
+
+/* Monochrome */
+.ops-dashboard[data-color-scheme="monochrome"] {
+    --chart-primary: #475569;
+    --chart-success: #64748b;
+    --chart-danger: #334155;
+    --chart-warning: #94a3b8;
+    --chart-purple: #1e293b;
+    --chart-teal: #cbd5e1;
+}
+
+/* =============================================================================
+   ANIMATION CONTROL
+   ============================================================================= */
+.ops-dashboard[data-animation="reduced"] {
+    .ops-kpi-card,
+    .ops-kpi-card-enhanced,
+    .ops-chart-container {
+        transition-duration: 0.1s !important;
+    }
+}
+
+.ops-dashboard[data-animation="none"] {
+    .ops-kpi-card,
+    .ops-kpi-card-enhanced,
+    .ops-chart-container {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* =============================================================================
+   DARK MODE — KPI Card Style Variants
+   ============================================================================= */
+html[data-bs-theme="dark"] {
+    .ops-dashboard[data-card-style="border"] {
+        .ops-kpi-card,
+        .ops-kpi-card-enhanced {
+            border-color: #334155;
+
+            &:hover {
+                border-color: var(--ops-secondary, #3b82f6);
+            }
+        }
+    }
+
+    .ops-dashboard[data-gradient-headers="true"] {
+        .ops-chart-container .chart-header {
+            background: linear-gradient(135deg,
+                rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.1) 0%,
+                rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.04) 100%
+            );
+            border-bottom-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.15);
+        }
+    }
+}

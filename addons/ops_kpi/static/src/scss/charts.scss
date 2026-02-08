@@ -1140,3 +1140,69 @@ $chart-palette: (
         border: 1px solid #e2e8f0;
     }
 }
+
+/* =============================================================================
+   CHART FILL STYLE VARIANTS — Controlled via data-chart-fill attribute
+   ============================================================================= */
+
+/* Solid fill — flattened gradient for a clean look */
+.ops-dashboard[data-chart-fill="solid"] {
+    .apexcharts-area-series .apexcharts-series-markers {
+        stroke-width: 0;
+    }
+}
+
+/* No fill — line only charts */
+.ops-dashboard[data-chart-fill="none"] {
+    .apexcharts-area-series path[fill-opacity] {
+        fill-opacity: 0 !important;
+    }
+}
+
+/* =============================================================================
+   SPARKLINE STYLE VARIANTS
+   ============================================================================= */
+
+/* Bar sparkline — thicker bars instead of area */
+.ops-dashboard[data-sparkline-style="bar"] {
+    .kpi-sparkline {
+        opacity: 0.5;
+    }
+}
+
+/* Line only sparkline — no fill */
+.ops-dashboard[data-sparkline-style="line"] {
+    .kpi-sparkline {
+        opacity: 0.5;
+
+        .apexcharts-area-series path[fill-opacity] {
+            fill-opacity: 0 !important;
+        }
+    }
+}
+
+/* =============================================================================
+   DARK MODE — Chart Fill & Sparkline Overrides
+   ============================================================================= */
+html[data-bs-theme="dark"] {
+    .ops-dashboard[data-card-style="border"] {
+        .ops-kpi-card,
+        .ops-kpi-card-enhanced {
+            border-color: #334155;
+
+            &:hover {
+                border-color: var(--ops-secondary, #3b82f6);
+            }
+        }
+    }
+
+    .ops-dashboard[data-gradient-headers="true"] {
+        .ops-chart-container .chart-header {
+            background: linear-gradient(135deg,
+                rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.1) 0%,
+                rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.04) 100%
+            );
+            border-bottom-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.15);
+        }
+    }
+}

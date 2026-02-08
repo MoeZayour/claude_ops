@@ -2,16 +2,16 @@
 <odoo>
     <!--
         ================================================================
-        OPS CORPORATE DAILY REPORTS — Wave 1 Redesign
+        OPS CORPORATE DAILY REPORTS - Wave 1 Redesign
         ================================================================
         wkhtmltopdf-compatible: NO flexbox, NO font-variant-numeric,
         NO external CSS dependency for critical styles.
         All layouts use tables/inline-block for QtWebKit ~534.
 
         REPORTS:
-        1. Cash Book  — Portrait A4, 7 columns
-        2. Day Book   — Portrait A4, grouped by journal
-        3. Bank Book  — Portrait A4, grouped by bank account
+        1. Cash Book  - Portrait A4, 7 columns
+        2. Day Book   - Portrait A4, grouped by journal
+        3. Bank Book  - Portrait A4, grouped by bank account
     -->
 
     <!-- ==================== CASH BOOK REPORT ==================== -->
@@ -259,7 +259,7 @@
                         </table>
 
                         <!-- ================================================
-                             GRAND TOTAL — CLOSING BALANCE
+                             GRAND TOTAL - CLOSING BALANCE
                              ================================================ -->
                         <div t-attf-style="margin-top: 4px; border-radius: 4px; overflow: hidden; background: {{pc}}; color: {{tc}}; page-break-inside: avoid;">
                             <table width="100%" style="border-collapse: collapse;">

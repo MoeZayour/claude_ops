@@ -42,6 +42,7 @@ Enterprise-grade KPI center for trading companies with:
     'license': 'LGPL-3',
     'depends': [
         'base',
+        'base_setup',
         'web',
         'mail',
         'sale',
@@ -60,6 +61,7 @@ Enterprise-grade KPI center for trading companies with:
         'views/ops_kpi_widget_views.xml',
         'views/ops_kpi_views.xml',
         'views/ops_kpi_menus.xml',
+        'views/res_config_settings_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

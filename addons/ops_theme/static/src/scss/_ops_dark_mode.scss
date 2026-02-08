@@ -1,651 +1,750 @@
 ///
-/// OPS Dark Mode — Core Layout + OPS Component Overrides
-/// =====================================================
+/// OPS Dark Mode — Unified Dark Theme
+/// ====================================
+/// REWRITTEN: 2026-02-08 — Single palette, CSS variable foundation
 ///
-/// BUNDLE: web.assets_web_dark (only loaded when dark mode active)
-///
-/// WHY THIS FILE EXISTS:
-/// Odoo 19 CE compiles SCSS variables ($o-webclient-background-color,
-/// $o-view-background-color) into hardcoded light-mode values in the CSS.
-/// Even with $enable-dark-mode: true, these fixed values override
-/// Bootstrap 5.3's dark CSS variables.
-///
-/// This file provides runtime CSS overrides under html[data-bs-theme="dark"]
-/// for elements that cannot be fixed at SCSS compile time.
-///
-/// IMPORTANT: Odoo 19 sets $variable-prefix: '' so CSS custom properties
-/// are --body-bg (NOT --bs-body-bg), --body-color (NOT --bs-body-color), etc.
+/// COLOR SYSTEM: Tailwind Slate (matches OPS Theme Guidebook)
+/// All colors flow from CSS custom properties defined once below.
 ///
 
 // =============================================================================
-// 0. FIX BS5 DARK COLOR VARIABLES
+// 0. DESIGN TOKENS — Single Source of Truth
 // =============================================================================
-// BS5 derives dark-mode --link-color from --primary (#1e293b → #787f89 muted gray).
-// Our primary is dark navy which becomes invisible. Override with OPS branded blue.
 
 html[data-bs-theme="dark"] {
-    // Fix link colors — use OPS secondary (blue) instead of BS5 auto-derived gray
-    --link-color: var(--ops-secondary, #3b82f6);
-    --link-hover-color: #60a5fa;
+    // --- Surface layers (light → dark = higher → lower) ---
+    --ops-dm-bg-deep:      #0f172a;   // Page body, bg-view
+    --ops-dm-bg-surface:   #1e293b;   // Cards, form sheets, panels
+    --ops-dm-bg-elevated:  #263548;   // Inputs, search bars, dropdowns
+    --ops-dm-bg-hover:     #334155;   // Row hover, active states
+
+    // --- Borders ---
+    --ops-dm-border:       #475569;   // Primary borders
+    --ops-dm-border-subtle:#334155;   // Inner dividers, light separators
+
+    // --- Text hierarchy ---
+    --ops-dm-text:         #f1f5f9;   // Primary text, headings
+    --ops-dm-text-body:    #cbd5e1;   // Standard body text
+    --ops-dm-text-muted:   #94a3b8;   // Labels, hints, placeholders
+    --ops-dm-text-disabled:#64748b;   // Disabled elements
+
+    // --- Text extended ---
+    --ops-dm-text-soft:    #e2e8f0;   // Slightly muted headings
+    --ops-dm-text-faint:   #64748b;   // Placeholders, disabled
+    --ops-dm-border-strong:#64748b;   // Emphasized borders (facets, badges)
+
+    // --- Accent ---
+    --ops-dm-accent:       #3b82f6;   // Links, primary actions
+    --ops-dm-accent-hover: #60a5fa;   // Hover state
+    --ops-dm-accent-light: #93c5fd;   // Light accent for active items
+    --ops-dm-accent-subtle:rgba(59,130,246,0.15); // Selection bg
+
+    // --- Override Bootstrap's own dark vars to match ---
+    --body-bg:        var(--ops-dm-bg-deep);
+    --body-color:     var(--ops-dm-text-body);
+    --secondary-bg:   var(--ops-dm-bg-surface);
+    --tertiary-bg:    var(--ops-dm-bg-elevated);
+    --border-color:   var(--ops-dm-border);
+    --link-color:     var(--ops-dm-accent);
+    --link-hover-color: var(--ops-dm-accent-hover);
     --link-color-rgb: 59, 130, 246;
     --link-hover-color-rgb: 96, 165, 250;
-
-    // Fix primary text emphasis — BS5 auto-derives #0c1018 (nearly black)
     --primary-text-emphasis: #60a5fa;
     --primary-bg-subtle: #1a2744;
     --primary-border-subtle: #2d4a7a;
 }
 
 // =============================================================================
-// 1. CORE LAYOUT — Fix hardcoded SCSS compile-time backgrounds
+// 1. CORE LAYOUT
 // =============================================================================
 
 html[data-bs-theme="dark"] {
-
-    // ---- Page wrapper (on <body>) ----
     .o_web_client {
-        background-color: var(--body-bg, #212529) !important;
+        background-color: var(--ops-dm-bg-deep) !important;
         color-scheme: dark;
-        color: var(--body-color, #dee2e6);
+        color: var(--ops-dm-text-body);
     }
-
-    // ---- Content areas ----
-    .o_action_manager {
-        background-color: var(--body-bg, #212529);
-    }
-
-    .o_content {
-        background-color: var(--body-bg, #212529);
-    }
-
+    .o_action_manager,
+    .o_content,
     .o_view_controller {
-        background-color: var(--body-bg, #212529);
+        background-color: var(--ops-dm-bg-deep) !important;
+        background-image: none !important;
     }
-
-    // ---- Form view ----
     .o_form_sheet_bg {
-        background-color: var(--body-bg, #212529) !important;
+        background-color: var(--ops-dm-bg-deep) !important;
     }
-
     .o_form_sheet {
-        background-color: var(--tertiary-bg, #2b3035) !important;
-        border-color: var(--border-color, #495057) !important;
-        color: var(--body-color, #dee2e6);
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body);
     }
-
-    // Form nosheet (no card wrapper, e.g. settings)
     .o_form_nosheet {
-        background-color: var(--body-bg, #212529) !important;
+        background-color: var(--ops-dm-bg-deep) !important;
     }
+    // bg-view — nuclear kill for purple hatched pattern
+    .bg-view {
+        background-color: var(--ops-dm-bg-deep) !important;
+        background-image: none !important;
+    }
+}
 
-    // ---- Control panel (breadcrumb / search bar area) ----
+// =============================================================================
+// 2. CONTROL PANEL
+// =============================================================================
+
+html[data-bs-theme="dark"] {
     .o_control_panel,
     .o_control_panel_main {
-        background-color: var(--body-bg, #212529);
-        color: var(--body-color, #dee2e6);
+        background-color: var(--ops-dm-bg-deep);
+        color: var(--ops-dm-text-body);
     }
-
     .o_searchview {
-        background-color: var(--tertiary-bg, #2b3035);
-        border-color: var(--border-color, #495057);
-        color: var(--body-color, #dee2e6);
-
+        background-color: var(--ops-dm-bg-elevated) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body);
         .o_searchview_input {
-            color: var(--body-color, #dee2e6);
+            color: var(--ops-dm-text-body);
         }
     }
-
-    // ---- List view ----
-    .o_list_view {
-        --ListRenderer-thead-bg-color: var(--tertiary-bg, #2b3035);
-        --ListRenderer-tfoot-bg-color: var(--tertiary-bg, #2b3035);
-
-        .o_list_table {
-            --table-bg: var(--body-bg, #212529);
-            --table-color: var(--body-color, #dee2e6);
-            --table-border-color: var(--border-color, #495057);
-            --table-striped-bg: var(--tertiary-bg, #2b3035);
-            --table-hover-bg: rgba(255, 255, 255, 0.05);
-            color: var(--body-color, #dee2e6);
-
-            th {
-                color: var(--body-color, #dee2e6);
-            }
+    // Breadcrumb
+    .o_breadcrumb {
+        background: none !important;
+        * { background-color: transparent !important; }
+        a { color: var(--ops-dm-accent-hover) !important; }
+        .active { color: var(--ops-dm-text) !important; }
+    }
+    // Control panel buttons (New, etc.)
+    .o_control_panel_main_buttons .btn {
+        color: var(--ops-dm-text) !important;
+        &.btn-primary { color: #fff !important; }
+        &:not(.btn-primary) {
+            border-color: var(--ops-dm-border) !important;
+            background-color: var(--ops-dm-bg-elevated) !important;
         }
     }
-
-    // ---- Kanban view ----
-    .o_kanban_view {
-        background-color: var(--body-bg, #212529);
-    }
-
-    .o_kanban_record {
-        background-color: var(--tertiary-bg, #2b3035);
-        border-color: var(--border-color, #495057);
-        color: var(--body-color, #dee2e6);
-    }
-
-    .o_kanban_group_header {
-        background-color: var(--body-bg, #212529);
-    }
-
-    // ---- Calendar view ----
-    .o_calendar_renderer {
-        background-color: var(--body-bg, #212529);
-    }
-
-    .fc {
-        .fc-scrollgrid {
-            border-color: var(--border-color, #495057);
-        }
-
-        .fc-col-header-cell,
-        .fc-daygrid-day,
-        .fc-timegrid-slot {
-            background-color: var(--body-bg, #212529);
-            border-color: var(--border-color, #495057);
-        }
-
-        .fc-day-today {
-            background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.1) !important;
-        }
-    }
-
-    // ---- Pivot view ----
-    .o_pivot {
-        background-color: var(--body-bg, #212529);
-        color: var(--body-color, #dee2e6);
-
-        table {
-            --table-bg: var(--body-bg, #212529);
-            --table-color: var(--body-color, #dee2e6);
-            --table-border-color: var(--border-color, #495057);
-            color: var(--body-color, #dee2e6);
-        }
-
-        .o_pivot_header_cell_closed,
-        .o_pivot_header_cell_opened {
-            background-color: var(--tertiary-bg, #2b3035);
-            color: var(--body-color, #dee2e6);
-        }
-    }
-
-    // ---- Graph view ----
-    .o_graph_renderer {
-        background-color: var(--body-bg, #212529);
-    }
-
-    // ---- Cards (Odoo overrides $card-bg with $o-view-background-color) ----
-    .card {
-        --card-bg: var(--tertiary-bg, #2b3035);
-        --card-border-color: var(--border-color, #495057);
-        --card-color: var(--body-color, #dee2e6);
-        --card-cap-bg: var(--secondary-bg, #343a40);
-    }
-
-    // ---- Modals (Odoo overrides $modal-content-bg) ----
-    .modal-content {
-        background-color: var(--tertiary-bg, #2b3035);
-        border-color: var(--border-color, #495057);
-        color: var(--body-color, #dee2e6);
-    }
-
-    .modal-header,
-    .modal-footer {
-        border-color: var(--border-color, #495057);
-    }
-
-    // ---- Form controls ----
-    .form-control,
-    .form-select {
-        background-color: var(--tertiary-bg, #2b3035);
-        border-color: var(--border-color, #495057);
-        color: var(--body-color, #dee2e6);
-
-        &:focus {
-            background-color: var(--tertiary-bg, #2b3035);
-            border-color: var(--ops-secondary, #3b82f6);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
-
-        &:disabled,
-        &[readonly] {
-            background-color: var(--secondary-bg, #343a40);
-        }
-    }
-
-    // ---- Notebook tabs (form view) ----
-    .o_notebook .nav-link {
-        color: var(--body-color, #dee2e6);
-
-        &.active {
-            background-color: var(--tertiary-bg, #2b3035);
-            border-color: var(--border-color, #495057);
-            border-bottom-color: var(--tertiary-bg, #2b3035);
-        }
-    }
-
-    // ---- Dropdown menus (global) ----
-    .dropdown-menu {
-        --dropdown-bg: var(--tertiary-bg, #2b3035);
-        --dropdown-color: var(--body-color, #dee2e6);
-        --dropdown-border-color: var(--border-color, #495057);
-        --dropdown-link-color: var(--body-color, #dee2e6);
-        --dropdown-link-hover-bg: rgba(255, 255, 255, 0.08);
-        --dropdown-link-hover-color: #fff;
-        --dropdown-divider-bg: var(--border-color, #495057);
-    }
-
-    // ---- List group (Odoo overrides $list-group-bg) ----
-    .list-group-item {
-        background-color: var(--tertiary-bg, #2b3035);
-        border-color: var(--border-color, #495057);
-        color: var(--body-color, #dee2e6);
-    }
-
-    // ==========================================================================
-    // FIX 1: SETTINGS PAGE — Correct selectors matching Odoo 19 DOM
-    // ==========================================================================
-    // Odoo selectors: .o_base_settings_view .o_form_renderer
-    //   .o_setting_container > .settings_tab (sidebar)
-    //   .o_setting_container > .settings (main content, bg: $o-view-background-color)
-    //   .settings h2 (section headers, bg: --settings__title-bg)
-    //   .settingSearchHeader (bg: grays-200)
-
-    .o_base_settings_view .o_form_renderer {
-        // Override the CSS custom properties for dark mode
-        --settings__tab-bg: var(--tertiary-bg, #2b3035);
-        --settings__tab-bg--active: rgba(255, 255, 255, 0.08);
-        --settings__tab-color: var(--body-color, #dee2e6);
-        --settings__title-bg: var(--secondary-bg, #343a40);
-    }
-
-    .o_setting_container {
-        .settings_tab {
-            background: var(--tertiary-bg, #2b3035) !important;
-            border-color: var(--border-color, #495057);
-
-            .tab {
-                color: var(--body-color, #dee2e6);
-
-                &:hover,
-                &.selected {
-                    color: #fff;
-                }
-            }
-
-            .selected {
-                background-color: rgba(255, 255, 255, 0.08) !important;
-            }
-        }
-
-        .settings {
-            background-color: var(--body-bg, #212529) !important;
-            color: var(--body-color, #dee2e6);
-
-            > .app_settings_block {
-                h2 {
-                    background-color: var(--secondary-bg, #343a40) !important;
-                    color: var(--body-color, #dee2e6);
-                }
-            }
-
-            .settingSearchHeader {
-                background-color: var(--secondary-bg, #343a40) !important;
-                color: var(--body-color, #dee2e6);
-            }
-
-            .o_form_label,
-            label {
-                color: var(--body-color, #dee2e6);
-            }
-
-            .highlighter {
-                background: #854d0e;
-                color: #fef3c7;
-            }
-        }
-    }
-
-    // ==========================================================================
-    // FIX 2: DISCUSS / MESSAGING — Full page dark background
-    // ==========================================================================
-    // Odoo's mail .dark.scss files handle sidebar/content via CSS custom properties
-    // but the surface color computation uses mix() with light $o-webclient-bg-color.
-    // Override the CSS variable directly for proper dark surface.
-
-    .o_web_client:where(:has(.o-mail-Discuss)) {
-        --mail-Discuss-surface-dark: var(--tertiary-bg, #2b3035);
-    }
-
-    .o-mail-Discuss {
-        background-color: var(--body-bg, #212529) !important;
-        color: var(--body-color, #dee2e6);
-    }
-
-    .o-mail-DiscussSidebar {
-        background-color: var(--tertiary-bg, #2b3035) !important;
-        border-right-color: var(--border-color, #495057) !important;
-
-        .o-mail-DiscussSidebarCategory-header {
-            color: var(--body-color, #dee2e6);
-        }
-    }
-
-    .o-mail-DiscussContent-header {
-        background-color: var(--tertiary-bg, #2b3035) !important;
-        border-bottom-color: var(--border-color, #495057) !important;
-    }
-
-    .o-mail-Thread {
-        background-color: var(--body-bg, #212529);
-    }
-
-    // Chatter (right side panel on forms)
-    .o-mail-Form-chatter,
-    .o-mail-Chatter {
-        background-color: var(--body-bg, #212529);
-    }
-
-    .o-mail-Message {
-        background-color: var(--body-bg, #212529);
-        color: var(--body-color, #dee2e6);
-    }
-
-    // Composer (message input area)
-    .o-mail-Composer {
-        background-color: var(--tertiary-bg, #2b3035);
-        border-color: var(--border-color, #495057);
-    }
-
-    // ==========================================================================
-    // FIX 3: SPREADSHEET DASHBOARD — Override hardcoded white
-    // ==========================================================================
-    // Odoo's dashboard_action.scss has: background-color: white (hardcoded).
-    // Odoo intentionally forces o-spreadsheet to light mode (no dark support yet).
-    // We darken the dashboard wrapper; the spreadsheet canvas stays light.
-
-    .o_spreadsheet_dashboard_action {
-        background-color: var(--body-bg, #212529) !important;
-    }
-
-    // Dashboard sidebar (search panel)
-    .o_spreadsheet_dashboard_search_panel {
-        background-color: var(--tertiary-bg, #2b3035) !important;
-        border-right-color: var(--border-color, #495057) !important;
-
-        li:hover:not(.active) {
-            background-color: rgba(255, 255, 255, 0.08) !important;
-        }
-
-        .active {
-            background-color: rgba(255, 255, 255, 0.12);
-        }
-    }
-
-    // The spreadsheet itself stays light (Odoo forces color-scheme: light)
-    // but we ensure the control panel above it is dark
-    .o_spreadsheet_dashboard_action .o_control_panel {
-        background-color: var(--body-bg, #212529) !important;
-    }
-
-    // ---- Generic spreadsheet wrapper ----
-    .o_spreadsheet:not(.o_spreadsheet_dashboard_action .o-spreadsheet) {
-        background-color: var(--body-bg, #212529);
-    }
-
-    // ---- Statusbar ----
-    .o_statusbar_status .o_arrow_button {
-        background-color: var(--secondary-bg, #343a40);
-        color: var(--body-color, #dee2e6);
-        border-color: var(--border-color, #495057);
-    }
-
-    // ---- Breadcrumb ----
-    .o_breadcrumb .active {
-        color: var(--body-color, #dee2e6);
-    }
-
-    // ---- Stat buttons (form view KPI blocks) ----
-    .oe_stat_button {
-        border-color: var(--border-color, #495057);
-        color: var(--body-color, #dee2e6);
-
-        .o_stat_value {
-            color: var(--body-color, #dee2e6);
-        }
-    }
-
-    // ---- Home menu (app switcher grid) ----
-    .o_home_menu {
-        background-color: var(--body-bg, #212529);
-    }
-
-    .o_app {
-        color: var(--body-color, #dee2e6);
-    }
-
-    // ---- Scrollbar theming ----
-    * {
-        scrollbar-color: var(--secondary-bg, #343a40) var(--body-bg, #212529);
+    // Pager arrows
+    .o_pager .o_pager_previous,
+    .o_pager .o_pager_next,
+    .o_cp_pager .btn {
+        color: var(--ops-dm-text-body) !important;
+        background-color: var(--ops-dm-bg-elevated) !important;
+        border-color: var(--ops-dm-border) !important;
+        &:hover { background-color: var(--ops-dm-bg-hover) !important; color: var(--ops-dm-text) !important; }
+        &:disabled { color: var(--ops-dm-text-disabled) !important; opacity: 0.5 !important; }
     }
 }
 
 // =============================================================================
-// 2. DARK MODE CSS VARIABLE ADAPTATIONS
+// 3. LIST VIEW
 // =============================================================================
 
 html[data-bs-theme="dark"] {
-    --ops-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    .o_list_view {
+        --ListRenderer-thead-bg-color: var(--ops-dm-bg-surface);
+    }
+    .o_list_table {
+        color: var(--ops-dm-text-body);
+        thead th {
+            background-color: var(--ops-dm-bg-surface) !important;
+            color: var(--ops-dm-text-muted) !important;
+            border-color: var(--ops-dm-border) !important;
+        }
+        tbody tr {
+            &:hover td { background-color: var(--ops-dm-bg-hover) !important; }
+            &.o_data_row td { border-color: var(--ops-dm-border-subtle) !important; }
+        }
+        tfoot td {
+            background-color: var(--ops-dm-bg-surface) !important;
+            color: var(--ops-dm-text) !important;
+            border-color: var(--ops-dm-border) !important;
+        }
+    }
+    .o_list_table .o_group_header {
+        background-color: var(--ops-dm-bg-surface) !important;
+        color: var(--ops-dm-text) !important;
+    }
 }
 
 // =============================================================================
-// 3. BRANDED NAVBAR — DROPDOWN MENUS IN DARK MODE
+// 4. FORM VIEW
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .o_group .o_group_col > table > tbody > tr > td.o_td_label .o_form_label,
+    .o_form_label,
+    .o_td_label .o_form_label {
+        color: var(--ops-dm-text-muted) !important;
+    }
+    .o_field_widget {
+        color: var(--ops-dm-text-body);
+    }
+    .o_field_widget input.o_input,
+    .o_field_widget textarea.o_input,
+    .o_input,
+    .o_select_menu {
+        background-color: var(--ops-dm-bg-elevated) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body) !important;
+    }
+    .o_field_many2one .o_external_button {
+        color: var(--ops-dm-text-muted) !important;
+    }
+    // Group separators
+    .o_horizontal_separator {
+        color: var(--ops-dm-text) !important;
+        border-color: var(--ops-dm-border) !important;
+    }
+    // Stat buttons
+    .oe_button_box .oe_stat_button {
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body) !important;
+        &:hover { background-color: var(--ops-dm-bg-hover) !important; }
+    }
+    // Form title
+    .oe_title .o_field_widget {
+        color: var(--ops-dm-text) !important;
+    }
+}
+
+// =============================================================================
+// 5. NOTEBOOK TABS
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .o_notebook_headers {
+        background-color: transparent !important;
+        border-bottom: 1px solid var(--ops-dm-border);
+    }
+    .o_notebook_headers .nav-link {
+        color: var(--ops-dm-text-muted) !important;
+        &.active {
+            color: var(--ops-dm-text) !important;
+            background-color: var(--ops-dm-bg-surface) !important;
+            border-color: var(--ops-dm-border) var(--ops-dm-border) transparent !important;
+        }
+        &:hover:not(.active) {
+            color: var(--ops-dm-text-body) !important;
+            border-color: var(--ops-dm-border-subtle) var(--ops-dm-border-subtle) transparent !important;
+        }
+    }
+}
+
+// =============================================================================
+// 6. STATUS BAR
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .o_form_statusbar {
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+    }
+    .o_statusbar_status .o_arrow_button {
+        color: var(--ops-dm-text-muted) !important;
+        &.o_arrow_button_current {
+            color: var(--ops-dm-text) !important;
+        }
+        &.btn-primary, &.o_arrow_button_current.btn-primary {
+            color: #fff !important;
+        }
+    }
+    // Request Approval / statusbar after-buttons
+    .o_form_statusbar .o_statusbar_buttons_after .btn {
+        color: var(--ops-dm-text) !important;
+        border-color: var(--ops-dm-border) !important;
+        background-color: var(--ops-dm-bg-elevated) !important;
+        &:hover {
+            background-color: var(--ops-dm-accent-subtle) !important;
+            border-color: var(--ops-dm-accent) !important;
+            color: #fff !important;
+        }
+        .fa, .oi, i { color: inherit !important; }
+    }
+}
+
+// =============================================================================
+// 7. CHATTER
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .o-mail-Chatter-top {
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+    }
+    .o-mail-Thread { color: var(--ops-dm-text-body); }
+    .o-mail-Message {
+        border-color: var(--ops-dm-border-subtle) !important;
+        color: var(--ops-dm-text-body);
+    }
+    .o-mail-Message-author { color: var(--ops-dm-text) !important; }
+    .o-mail-Message-date { color: var(--ops-dm-text-muted) !important; }
+    .o-mail-Chatter .o-mail-Chatter-top .btn-primary { color: #fff !important; }
+}
+
+// =============================================================================
+// 8. BUTTONS — Global consistency
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    // Secondary buttons (Log note, Activity, etc.)
+    .btn-secondary {
+        background-color: var(--ops-dm-bg-elevated) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body) !important;
+        &:hover, &:focus {
+            background-color: var(--ops-dm-bg-hover) !important;
+            border-color: var(--ops-dm-border) !important;
+            color: var(--ops-dm-text) !important;
+        }
+    }
+    // Outline secondary (stat buttons, Request Approval)
+    .btn-outline-secondary {
+        background-color: transparent !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body) !important;
+        &:hover, &:focus {
+            background-color: var(--ops-dm-accent-subtle) !important;
+            border-color: var(--ops-dm-accent) !important;
+            color: var(--ops-dm-text) !important;
+        }
+    }
+    // Light buttons
+    .btn-light {
+        background-color: var(--ops-dm-bg-elevated) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body) !important;
+        &:hover { background-color: var(--ops-dm-bg-hover) !important; }
+    }
+    // Primary stays white text
+    .btn-primary { color: #fff !important; }
+}
+
+// =============================================================================
+// 9. DROPDOWNS
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .dropdown-menu, .o_popover {
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+    }
+    .dropdown-item, .o_popover .list-group-item {
+        color: var(--ops-dm-text-body) !important;
+        &:hover, &:focus, &.focus {
+            background-color: rgba(59,130,246,0.2) !important;
+            color: var(--ops-dm-text) !important;
+        }
+        &.active, &.selected {
+            background-color: var(--ops-dm-accent) !important;
+            color: #fff !important;
+        }
+    }
+    .dropdown-divider { border-color: var(--ops-dm-border-subtle) !important; }
+    // Select menu / Many2one dropdown
+    .o_select_menu_menu,
+    .o-autocomplete--dropdown-menu {
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+    }
+    .o_select_menu_item:hover,
+    .o-autocomplete--dropdown-item:hover,
+    .o-autocomplete--dropdown-item.focus {
+        background-color: rgba(59,130,246,0.2) !important;
+        color: var(--ops-dm-text) !important;
+    }
+}
+
+// =============================================================================
+// 10. KANBAN
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .o_kanban_renderer {
+        background-color: var(--ops-dm-bg-deep) !important;
+        background-image: none !important;
+    }
+    .o_kanban_record, .o_kanban_card {
+        background-color: var(--ops-dm-bg-surface) !important;
+        background-image: none !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body) !important;
+        &:hover {
+            border-color: var(--ops-dm-accent) !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+    }
+    .o_kanban_group_header {
+        background-color: var(--ops-dm-bg-surface) !important;
+        color: var(--ops-dm-text) !important;
+    }
+    .o_column_title { color: var(--ops-dm-text) !important; }
+}
+
+// =============================================================================
+// 11. SETTINGS PAGE — The screenshot problem
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .o_settings_container,
+    .o_base_settings,
+    .app_settings_block {
+        background-color: var(--ops-dm-bg-deep) !important;
+        background-image: none !important;
+    }
+    .o_setting_box {
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body) !important;
+    }
+    .o_setting_left_pane,
+    .o_setting_right_pane {
+        color: var(--ops-dm-text-body) !important;
+    }
+    .o_setting_right_pane .text-muted,
+    .o_setting_right_pane span:not(.btn):not(.badge) {
+        color: var(--ops-dm-text-muted) !important;
+    }
+    .o_settings_container .o_form_label,
+    .o_setting_box label {
+        color: var(--ops-dm-text) !important;
+    }
+    .o_setting_box a { color: var(--ops-dm-accent-hover) !important; }
+    .o_setting_box .btn-primary { color: #fff !important; }
+    // Settings left sidebar
+    .o_base_settings .o_base_settings_sidebar {
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+    }
+    .o_base_settings_sidebar .btn {
+        color: var(--ops-dm-text-body) !important;
+        &.active, &.selected, &:hover {
+            background-color: var(--ops-dm-accent-subtle) !important;
+            color: var(--ops-dm-text) !important;
+        }
+    }
+    // Section headers in settings (Brand Identity, Login Page, etc.)
+    .o_settings_container .o_settings_header {
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text) !important;
+    }
+}
+
+// =============================================================================
+// 12. SEARCH PANEL (LEFT SIDEBAR)
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .o_search_panel {
+        background-color: var(--ops-dm-bg-surface) !important;
+        background-image: none !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body);
+    }
+    .o_search_panel_category_value,
+    .o_search_panel_filter_value {
+        color: var(--ops-dm-text-body) !important;
+        &:hover, &.active {
+            background-color: var(--ops-dm-accent-subtle) !important;
+            color: var(--ops-dm-text) !important;
+        }
+    }
+    .o_search_panel_label { color: var(--ops-dm-text-muted) !important; }
+}
+
+// =============================================================================
+// 13. TOOLTIPS
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .tooltip {
+        .tooltip-inner {
+            background-color: var(--ops-dm-bg-surface) !important;
+            color: var(--ops-dm-text-body) !important;
+            border: 1px solid var(--ops-dm-border);
+        }
+        .tooltip-arrow::before {
+            border-top-color: var(--ops-dm-bg-surface) !important;
+        }
+    }
+}
+
+// =============================================================================
+// 14. MODALS
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .modal-content {
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body);
+    }
+    .modal-header {
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text);
+        .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+    }
+    .modal-footer { border-color: var(--ops-dm-border) !important; }
+    .modal-backdrop { background-color: #000; }
+}
+
+// =============================================================================
+// 15. BADGES
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .badge.text-bg-light {
+        background-color: var(--ops-dm-bg-elevated) !important;
+        color: var(--ops-dm-text-body) !important;
+    }
+    .badge.text-bg-secondary {
+        background-color: var(--ops-dm-bg-hover) !important;
+        color: var(--ops-dm-text-body) !important;
+    }
+}
+
+// =============================================================================
+// 16. NAVBAR (ensure consistency)
 // =============================================================================
 
 html[data-bs-theme="dark"] {
     .o_main_navbar {
-        .dropdown-menu,
-        .o-dropdown--menu {
-            background-color: var(--body-bg, #212529);
-            border-color: var(--border-color, #495057);
-            color: var(--body-color, #dee2e6);
-
-            .dropdown-item {
-                color: var(--body-color, #dee2e6);
-
-                &:hover,
-                &:focus {
-                    background-color: rgba(255, 255, 255, 0.08);
-                    color: #ffffff;
-                }
-
-                &.active,
-                &:active {
-                    background-color: rgba(255, 255, 255, 0.12);
-                }
-            }
-
-            .dropdown-divider {
-                border-color: var(--border-color, #495057);
-            }
-        }
-
-        .o_navbar_apps_menu .dropdown-menu {
-            background-color: var(--body-bg, #212529);
-        }
-    }
-
-    .o_menu_sections {
-        .dropdown-menu,
-        .o-dropdown--menu {
-            background-color: var(--body-bg, #212529);
-            border-color: var(--border-color, #495057);
-
-            .dropdown-item,
-            a,
-            button {
-                color: var(--body-color, #dee2e6);
-
-                &:hover,
-                &:focus {
-                    background-color: rgba(255, 255, 255, 0.08);
-                    color: #ffffff;
-                }
-            }
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+        .o_menu_brand, .o_menu_sections .nav-link {
+            color: var(--ops-dm-text-body) !important;
+            &:hover { color: var(--ops-dm-text) !important; }
         }
     }
 }
 
 // =============================================================================
-// 4. POPUPS / TOASTS / AUTOCOMPLETE IN DARK MODE
+// 17. MISC — Catch-all for remaining elements
 // =============================================================================
 
 html[data-bs-theme="dark"] {
-    .o_notification {
-        &.border-info,
-        &.border-success,
-        &.border-warning,
-        &.border-danger {
-            background-color: var(--body-bg, #212529);
-            color: var(--body-color, #dee2e6);
-        }
+    // Card component (generic Bootstrap)
+    .card {
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body);
+    }
+    .card-header {
+        background-color: var(--ops-dm-bg-elevated) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text);
+    }
+    .card-footer {
+        background-color: var(--ops-dm-bg-surface) !important;
+        border-color: var(--ops-dm-border) !important;
     }
 
-    .o-autocomplete--dropdown-menu {
-        background-color: var(--body-bg, #212529);
-        border-color: var(--border-color, #495057);
+    // Separator
+    hr, .dropdown-divider { border-color: var(--ops-dm-border-subtle) !important; }
 
-        .o-autocomplete--dropdown-item {
-            color: var(--body-color, #dee2e6);
+    // Text utilities
+    .text-muted { color: var(--ops-dm-text-muted) !important; }
+    .text-body { color: var(--ops-dm-text-body) !important; }
 
-            &:hover,
-            &.focus {
-                background-color: rgba(255, 255, 255, 0.08);
-            }
-        }
+    // Table (generic)
+    .table { color: var(--ops-dm-text-body); }
+    .table > :not(caption) > * > * {
+        background-color: transparent;
+        border-color: var(--ops-dm-border-subtle);
+        color: var(--ops-dm-text-body);
     }
 
-    .o_command_palette {
-        .o_command_palette_search input {
-            background-color: var(--body-bg, #212529);
-            color: var(--body-color, #dee2e6);
-            border-color: var(--border-color, #495057);
-        }
+    // Alert / info boxes
+    .o_notification_body { color: var(--ops-dm-text-body); }
 
-        .o_command {
-            color: var(--body-color, #dee2e6);
+    // Loading overlay
+    .o_loading_indicator { background-color: var(--ops-dm-accent) !important; }
 
-            &:hover,
-            &.focused {
-                background-color: rgba(255, 255, 255, 0.08);
-            }
-        }
+    // Scrollbar styling
+    * {
+        scrollbar-color: var(--ops-dm-bg-hover) var(--ops-dm-bg-deep);
     }
 
-    .o_popover,
-    .popover {
-        --popover-bg: var(--tertiary-bg, #2b3035);
-        --popover-border-color: var(--border-color, #495057);
-        --popover-body-color: var(--body-color, #dee2e6);
-        --popover-header-bg: var(--secondary-bg, #343a40);
-    }
-}
-
-// =============================================================================
-// 5. LOGIN PAGE (OPS CUSTOM COMPONENT)
-// =============================================================================
-
-html[data-bs-theme="dark"] {
-    .ops-login-container {
-        background: linear-gradient(135deg, var(--body-bg, #212529) 0%, var(--ops-primary, #1e293b) 100%);
+    // Selection highlight (e.g. selected rows)
+    .o_data_row.o_data_row_selected > .o_data_cell,
+    .o_data_row.o_row_selected > td {
+        background-color: var(--ops-dm-accent-subtle) !important;
     }
 
-    .ops-login-panel {
-        background: var(--ops-primary, #1e293b);
-        border-color: var(--border-color, #495057);
+    // Pivot / Graph views
+    .o_pivot { color: var(--ops-dm-text-body); }
+    .o_graph_renderer { background-color: var(--ops-dm-bg-deep) !important; }
+
+    // Calendar
+    .o_calendar_renderer { background-color: var(--ops-dm-bg-deep) !important; }
+
+    // Many2many tags
+    .o_field_many2many_tags .badge {
+        background-color: var(--ops-dm-bg-hover) !important;
+        color: var(--ops-dm-text-body) !important;
+        border-color: var(--ops-dm-border) !important;
     }
 
-    .ops-login-brand {
-        color: var(--body-color, #dee2e6);
-    }
-
-    .ops-login-form-panel {
-        background-color: var(--body-bg, #212529) !important;
-        color: var(--body-color, #dee2e6);
-    }
-
-    .ops-login-header h2,
-    .ops-login-header p {
-        color: var(--body-color, #dee2e6);
-    }
-
-    .ops-login-form-panel input[type="text"],
-    .ops-login-form-panel input[type="password"],
-    .ops-login-form-panel input[type="email"] {
-        background-color: var(--tertiary-bg, #2b3035);
-        border-color: var(--border-color, #495057);
-        color: var(--body-color, #dee2e6);
-
-        &:focus {
-            background-color: var(--tertiary-bg, #2b3035);
-            border-color: var(--ops-secondary, #3b82f6);
-        }
-    }
-}
-
-// =============================================================================
-// 6. BUTTONS & BADGES — Branded colors in dark mode
-// =============================================================================
-
-html[data-bs-theme="dark"] {
-    .btn-primary {
-        --btn-bg: var(--ops-secondary, #3b82f6);
-        --btn-border-color: var(--ops-secondary, #3b82f6);
-        --btn-hover-bg: #2563eb;
-        --btn-hover-border-color: #2563eb;
-        --btn-active-bg: #1d4ed8;
-        --btn-active-border-color: #1d4ed8;
-        --btn-color: #fff;
-    }
-
-    .btn-success {
-        --btn-bg: var(--ops-success, #10b981);
-        --btn-border-color: var(--ops-success, #10b981);
-    }
-
-    .btn-warning {
-        --btn-bg: var(--ops-warning, #f59e0b);
-        --btn-border-color: var(--ops-warning, #f59e0b);
-    }
-
-    .btn-danger {
-        --btn-bg: var(--ops-danger, #ef4444);
-        --btn-border-color: var(--ops-danger, #ef4444);
-    }
-
-    .badge.text-bg-primary,
-    .badge.bg-primary {
-        background-color: var(--ops-secondary, #3b82f6) !important;
-        color: #fff !important;
-    }
-}
-
-// =============================================================================
-// 7. APP GRID (OPS CUSTOM)
-// =============================================================================
-
-html[data-bs-theme="dark"] {
-    .ops-app-grid {
-        background: var(--body-bg, #212529);
-    }
-
-    .ops-app-tile {
-        background: var(--tertiary-bg, #2b3035);
-        border-color: var(--border-color, #495057);
-
+    // Chatter buttons specifically
+    .o-mail-Chatter-logNote.btn-secondary,
+    .o-mail-Chatter-activity.btn-secondary {
+        background-color: var(--ops-dm-bg-elevated) !important;
+        border-color: var(--ops-dm-border) !important;
+        color: var(--ops-dm-text-body) !important;
         &:hover {
-            background: var(--secondary-bg, #343a40);
+            background-color: var(--ops-dm-bg-hover) !important;
+            color: var(--ops-dm-text) !important;
         }
+    }
+
+    // Header action buttons (Settings cog, etc.)
+    .o_cp_action_menus .dropdown-toggle,
+    .o_control_panel .btn-secondary {
+        color: var(--ops-dm-text-body) !important;
+        background-color: var(--ops-dm-bg-elevated) !important;
+        border-color: var(--ops-dm-border) !important;
+        &:hover {
+            background-color: var(--ops-dm-bg-hover) !important;
+            color: var(--ops-dm-text) !important;
+        }
+    }
+}
+
+// =============================================================================
+// 18. SETTINGS PAGE — Compile-time variable overrides
+// =============================================================================
+// Odoo compiles --settings__tab-bg, --settings__title-bg from $grays at
+// build time. These become hardcoded light values. Override at runtime.
+
+html[data-bs-theme="dark"] {
+    .o_base_settings_view .o_form_renderer {
+        // Override compiled CSS custom properties
+        --settings__tab-bg: var(--ops-dm-bg-surface);
+        --settings__tab-bg--active: var(--ops-dm-accent-subtle);
+        --settings__tab-color: var(--ops-dm-text-body);
+        --settings__title-bg: var(--ops-dm-bg-surface);
+    }
+
+    // Main settings content area (uses $o-view-background-color = white)
+    .o_setting_container .settings {
+        background-color: var(--ops-dm-bg-deep) !important;
+    }
+
+    // Section headers: "Brand Identity", "Login Page", etc.
+    .app_settings_block h2 {
+        background-color: var(--ops-dm-bg-surface) !important;
+        color: var(--ops-dm-text) !important;
+        border-bottom: 1px solid var(--ops-dm-border-subtle);
+    }
+    .app_settings_block h3 {
+        color: var(--ops-dm-text-body) !important;
+    }
+
+    // Sidebar tabs
+    .o_setting_container .settings_tab {
+        background-color: var(--ops-dm-bg-surface) !important;
+
+        .tab {
+            color: var(--ops-dm-text-body) !important;
+            &:hover { color: var(--ops-dm-text) !important; }
+            &.selected {
+                color: var(--ops-dm-text) !important;
+                background-color: var(--ops-dm-accent-subtle) !important;
+            }
+        }
+    }
+
+    // Search highlight header
+    .settings .settingSearchHeader {
+        background-color: var(--ops-dm-bg-surface) !important;
+        color: var(--ops-dm-text) !important;
+    }
+
+    // Radio buttons in settings (Theme Preset list)
+    .o_base_settings_view .form-check-input {
+        background-color: var(--ops-dm-bg-elevated) !important;
+        border-color: var(--ops-dm-border) !important;
+        &:checked {
+            background-color: var(--ops-dm-accent) !important;
+            border-color: var(--ops-dm-accent) !important;
+        }
+    }
+
+    // Toggle switches in settings
+    .o_base_settings_view .form-switch .form-check-input {
+        background-color: var(--ops-dm-bg-hover) !important;
+        &:checked {
+            background-color: var(--ops-dm-accent) !important;
+        }
+    }
+}
+
+// =============================================================================
+// 19. SEARCH FACETS / FILTER BADGES
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .o_searchview_facet {
+        background-color: var(--ops-dm-bg-hover) !important;
+        color: var(--ops-dm-text) !important;
+        border-color: var(--ops-dm-border-strong) !important;
+
+        .o_searchview_facet_label {
+            background-color: var(--ops-dm-accent) !important;
+            color: #fff !important;
+        }
+        .o_facet_value, .o_facet_values {
+            color: var(--ops-dm-text) !important;
+        }
+        .o_facet_remove {
+            color: var(--ops-dm-text-muted) !important;
+            &:hover { color: var(--ops-dm-text) !important; }
+        }
+    }
+}
+
+// =============================================================================
+// 20. INPUT PLACEHOLDERS
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    .o_input::placeholder,
+    input::placeholder,
+    textarea::placeholder,
+    .o_searchview_input::placeholder {
+        color: var(--ops-dm-text-faint) !important;
+    }
+}
+
+// =============================================================================
+// 21. LIST SORTABLE & CHATTER REFINEMENTS
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+    // Sortable column hover
+    .o_list_view .o_column_sortable:hover {
+        color: var(--ops-dm-text) !important;
+    }
+
+    // Chatter top bar buttons
+    .o_ChatterTopbar {
+        border-bottom-color: var(--ops-dm-border) !important;
+        .btn, button {
+            color: var(--ops-dm-text-muted) !important;
+            &:hover { color: var(--ops-dm-text) !important; }
+        }
+    }
+
+    // Status bar disabled arrows
+    .o_statusbar_status .o_arrow_button {
+        &.disabled:not(.o_arrow_button_current) {
+            color: var(--ops-dm-text-faint) !important;
+        }
+    }
+
+    // Stat button value/text separation
+    .oe_stat_button {
+        .o_stat_value { color: var(--ops-dm-text) !important; }
+        .o_stat_text { color: var(--ops-dm-text-muted) !important; }
     }
 }

@@ -2,7 +2,7 @@
 <odoo>
     <!--
         ================================================================
-        OPS CORPORATE TREASURY REPORTS — GL Gold Standard
+        OPS CORPORATE TREASURY REPORTS - GL Gold Standard
         ================================================================
         wkhtmltopdf-compatible: NO flexbox, NO font-variant-numeric.
         All layouts use tables/inline-block for QtWebKit ~534.

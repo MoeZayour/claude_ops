@@ -751,7 +751,7 @@
             <field name="source_model">res.users</field>
             <field name="calculation_type">count</field>
             <field name="domain_filter">[('active', '=', True), ('share', '=', False)]</field>
-            <field name="date_field">login_date</field>
+            <field name="date_field">write_date</field>
             <field name="default_period">all_time</field>
             <field name="format_type">integer</field>
             <field name="icon">fa-users</field>
@@ -771,7 +771,7 @@
             <field name="source_model">res.users</field>
             <field name="calculation_type">count</field>
             <field name="domain_filter">[('active', '=', True)]</field>
-            <field name="date_field">login_date</field>
+            <field name="date_field">write_date</field>
             <field name="default_period">today</field>
             <field name="format_type">integer</field>
             <field name="icon">fa-desktop</field>

@@ -48,3 +48,22 @@ class ResConfigSettings(models.TransientModel):
         readonly=False,
         string='Match Tolerance %',
     )
+
+    # ==================================================================
+    # REPORT COLORS (Company-level)
+    # ==================================================================
+
+    ops_report_primary_color = fields.Char(
+        related='company_id.ops_report_primary_color',
+        readonly=False,
+    )
+
+    ops_report_text_on_primary = fields.Char(
+        related='company_id.ops_report_text_on_primary',
+        readonly=False,
+    )
+
+    ops_report_body_text_color = fields.Char(
+        related='company_id.ops_report_body_text_color',
+        readonly=False,
+    )

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_ops_kpi" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.ops.kpi</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="priority">55</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="KPI Center" string="KPI Center" name="ops_kpi" groups="ops_kpi.group_kpi_manager">
+
+                    <!-- ============================================================ -->
+                    <!-- SECTION 1: KPI CARDS                                         -->
+                    <!-- ============================================================ -->
+                    <block title="KPI Cards" name="ops_kpi_card_settings">
+                        <div class="text-muted mb-4 ms-1">
+                            Control the visual appearance of KPI cards on dashboards.
+                        </div>
+
+                        <div class="row mt-2 o_settings_container">
+                            <div class="col-lg-6">
+                                <setting string="Card Style" help="Visual treatment for individual KPI metric cards.">
+                                    <field name="ops_kpi_card_style" widget="radio" class="o_light_label"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-6">
+                                <setting string="Sparkline Style" help="Mini-chart style shown inside KPI cards.">
+                                    <field name="ops_kpi_sparkline_style" widget="radio" class="o_light_label"/>
+                                </setting>
+                            </div>
+                        </div>
+                    </block>
+
+                    <!-- ============================================================ -->
+                    <!-- SECTION 2: CHARTS &amp; VISUALIZATION                        -->
+                    <!-- ============================================================ -->
+                    <block title="Charts &amp; Visualization" name="ops_kpi_chart_settings">
+                        <div class="text-muted mb-4 ms-1">
+                            Configure chart rendering, color schemes, and animations.
+                        </div>
+
+                        <div class="row mt-2 o_settings_container">
+                            <div class="col-lg-6">
+                                <setting string="Chart Area Fill" help="How area and trend charts are filled beneath the line.">
+                                    <field name="ops_kpi_chart_fill" widget="radio" class="o_light_label"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-6">
+                                <setting string="Color Scheme" help="Color palette for all dashboard charts and visualizations.">
+                                    <field name="ops_kpi_color_scheme" widget="radio" class="o_light_label"/>
+                                </setting>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 o_settings_container">
+                            <div class="col-lg-6">
+                                <setting string="Gradient Section Headers" help="Apply gradient backgrounds on chart section titles.">
+                                    <field name="ops_kpi_gradient_headers"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-6">
+                                <setting string="Chart Animations" help="Level of animation when charts render and update.">
+                                    <field name="ops_kpi_animation" widget="radio" class="o_light_label"/>
+                                </setting>
+                            </div>
+                        </div>
+                    </block>
+
+                    <!-- ============================================================ -->
+                    <!-- SECTION 3: BEHAVIOR                                          -->
+                    <!-- ============================================================ -->
+                    <block title="Behavior" name="ops_kpi_behavior_settings">
+                        <div class="text-muted mb-4 ms-1">
+                            Dashboard refresh and data loading behavior.
+                        </div>
+
+                        <setting string="Auto-Refresh Interval" help="Seconds between automatic data refreshes. Set 0 to disable auto-refresh.">
+                            <field name="ops_kpi_refresh_interval" class="w-25"/>
+                            <span class="text-muted ms-2">seconds</span>
+                        </setting>
+                    </block>
+
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
