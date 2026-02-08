@@ -105,7 +105,7 @@
                         <div style="margin: 8px 0 4px 0;">
                             <div style="font-size: 16pt; font-weight: 700; color: #1e293b; margin-bottom: 4px;">PDC Registry</div>
                             <div style="font-size: 8.5pt; color: #666666;">
-                                <t t-if="date_from and date_to"><t t-esc="date_from"/> &#x2014; <t t-esc="date_to"/></t>
+                                <t t-if="date_from and date_to"><t t-esc="date_from"/> - <t t-esc="date_to"/></t>
                                 <t t-else="">All Dates</t>
                                 <span style="color: #94a3b8;"> | </span><t t-esc="currency_name"/>
                                 <span style="color: #94a3b8;"> | </span><t t-esc="totals.get('total_count', 0)"/> checks
@@ -253,8 +253,8 @@
                         <!-- FIXED FOOTER -->
                         <div class="page-footer-fixed" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 6px 0 0 0; border-top: 1px solid #e2e8f0;">
                             <table style="width: 100%; border-collapse: collapse;"><tr>
-                                <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;"><span style="font-size: 8pt; color: #666666;">Powered by</span><img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png" style="height: 16px; vertical-align: middle; margin-left: 4px;" alt="OPS Framework"/></td>
-                                <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;"><span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Confidential &#x2014; For authorized personnel only</span></td>
+                                <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;"><span style="font-size: 8pt; color: #666666;">Powered by</span><span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span></td>
+                                <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;"><span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Confidential - For authorized personnel only</span></td>
                             </tr></table>
                         </div>
 
@@ -416,8 +416,8 @@
                         <!-- FIXED FOOTER -->
                         <div class="page-footer-fixed" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 6px 0 0 0; border-top: 1px solid #e2e8f0;">
                             <table style="width: 100%; border-collapse: collapse;"><tr>
-                                <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;"><span style="font-size: 8pt; color: #666666;">Powered by</span><img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png" style="height: 16px; vertical-align: middle; margin-left: 4px;" alt="OPS Framework"/></td>
-                                <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;"><span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Confidential &#x2014; For authorized personnel only</span></td>
+                                <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;"><span style="font-size: 8pt; color: #666666;">Powered by</span><span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span></td>
+                                <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;"><span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Confidential - For authorized personnel only</span></td>
                             </tr></table>
                         </div>
 
@@ -628,8 +628,8 @@
                         <!-- FIXED FOOTER -->
                         <div class="page-footer-fixed" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 6px 0 0 0; border-top: 1px solid #e2e8f0;">
                             <table style="width: 100%; border-collapse: collapse;"><tr>
-                                <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;"><span style="font-size: 8pt; color: #666666;">Powered by</span><img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png" style="height: 16px; vertical-align: middle; margin-left: 4px;" alt="OPS Framework"/></td>
-                                <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;"><span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Confidential &#x2014; For authorized personnel only</span></td>
+                                <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;"><span style="font-size: 8pt; color: #666666;">Powered by</span><span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span></td>
+                                <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;"><span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Confidential - For authorized personnel only</span></td>
                             </tr></table>
                         </div>
 

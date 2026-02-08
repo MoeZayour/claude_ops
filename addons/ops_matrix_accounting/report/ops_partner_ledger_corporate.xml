@@ -93,12 +93,12 @@
                                 Partner Ledger
                             </div>
                             <div style="font-size: 8.5pt; color: #64748b; margin-top: 2px;">
-                                <t t-esc="date_from"/> &#x2014; <t t-esc="date_to"/>
+                                <t t-esc="date_from"/> - <t t-esc="date_to"/>
                                 <t t-if="branch_names != 'All'">
-                                    &#x2022; Branches: <t t-esc="branch_names"/>
+                                    * Branches: <t t-esc="branch_names"/>
                                 </t>
                                 <t t-if="partner_filter != 'all'">
-                                    &#x2022; Filter: <t t-esc="partner_filter"/>
+                                    * Filter: <t t-esc="partner_filter"/>
                                 </t>
                             </div>
                         </div>
@@ -210,7 +210,7 @@
                                                 <t t-esc="'{:,.2f}'.format(line['debit'])"/>
                                             </t>
                                             <t t-else="">
-                                                <span style="color: #cbd5e1;">&#x2014;</span>
+                                                <span style="color: #cbd5e1;">-</span>
                                             </t>
                                         </td>
                                         <td class="num" style="padding: 3px 6px;">
@@ -218,7 +218,7 @@
                                                 <t t-esc="'{:,.2f}'.format(line['credit'])"/>
                                             </t>
                                             <t t-else="">
-                                                <span style="color: #cbd5e1;">&#x2014;</span>
+                                                <span style="color: #cbd5e1;">-</span>
                                             </t>
                                         </td>
                                         <td class="num" style="padding: 3px 6px; font-weight: 600;">
@@ -235,7 +235,7 @@
                                 <!-- Partner Total -->
                                 <tr t-attf-style="border-top: 2px solid {{pc}}; font-weight: 700; background: {{pl}};">
                                     <td colspan="5" style="padding: 5px 6px; font-size: 7.5pt;">
-                                        Closing Balance &#x2014; <t t-esc="partner['name']"/>
+                                        Closing Balance - <t t-esc="partner['name']"/>
                                     </td>
                                     <td class="num" style="padding: 5px 6px;">
                                         <t t-if="partner['total_debit']">
@@ -323,13 +323,11 @@
                                 <tr>
                                     <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;">
                                         <span style="font-size: 8pt; color: #666666;">Powered by</span>
-                                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png"
-                                             style="height: 16px; vertical-align: middle; margin-left: 4px;"
-                                             alt="OPS Framework"/>
+                                        <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span>
                                     </td>
                                     <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;">
                                         <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            Confidential &#x2014; For authorized personnel only
+                                            Confidential - For authorized personnel only
                                         </span>
                                     </td>
                                 </tr>

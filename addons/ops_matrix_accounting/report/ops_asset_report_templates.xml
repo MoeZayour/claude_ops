@@ -236,7 +236,7 @@
                             <table width="100%" style="border-collapse: collapse;">
                                 <tr>
                                     <td style="width: 51%; padding: 13px 8px 13px 14px; font-weight: 600; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.3px; border: none;">
-                                        GRAND TOTAL &#x2014; <t t-esc="asset_count"/> Assets
+                                        GRAND TOTAL - <t t-esc="asset_count"/> Assets
                                     </td>
                                     <td class="num" style="width: 16%; padding: 13px 8px; font-weight: 700; font-size: 10pt; border: none;">
                                         <t t-esc="'{:,.2f}'.format(total_gross)"/>
@@ -277,10 +277,10 @@
                                 <tr>
                                     <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;">
                                         <span style="font-size: 8pt; color: #666666;">Powered by</span>
-                                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png" style="height: 16px; vertical-align: middle; margin-left: 4px;" alt="OPS Framework"/>
+                                        <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span>
                                     </td>
                                     <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;">
-                                        <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Confidential &#x2014; For authorized personnel only</span>
+                                        <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Confidential - For authorized personnel only</span>
                                     </td>
                                 </tr>
                             </table>
@@ -365,7 +365,7 @@
                                 Depreciation Schedule
                             </div>
                             <div style="font-size: 8.5pt; color: #666666;">
-                                <t t-if="date_from and date_to"><t t-esc="date_from"/> &#x2014; <t t-esc="date_to"/></t>
+                                <t t-if="date_from and date_to"><t t-esc="date_from"/> - <t t-esc="date_to"/></t>
                                 <t t-else="">All Periods</t>
                                 <span style="color: #94a3b8;"> | </span>
                                 <t t-esc="currency_name"/>
@@ -440,7 +440,7 @@
                             <table width="100%" style="border-collapse: collapse;">
                                 <tr>
                                     <td style="width: 50%; padding: 13px 8px 13px 14px; font-weight: 600; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.3px; border: none;">
-                                        TOTAL DEPRECIATION &#x2014; <t t-esc="totals.get('line_count', 0)"/> Entries
+                                        TOTAL DEPRECIATION - <t t-esc="totals.get('line_count', 0)"/> Entries
                                     </td>
                                     <td class="num" style="width: 25%; padding: 13px 8px; font-weight: 700; font-size: 10pt; border: none;">
                                         <t t-esc="'{:,.2f}'.format(totals.get('total_depreciation', 0))"/>
@@ -480,10 +480,10 @@
                                 <tr>
                                     <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;">
                                         <span style="font-size: 8pt; color: #666666;">Powered by</span>
-                                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png" style="height: 16px; vertical-align: middle; margin-left: 4px;" alt="OPS Framework"/>
+                                        <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span>
                                     </td>
                                     <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;">
-                                        <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Confidential &#x2014; For authorized personnel only</span>
+                                        <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Confidential - For authorized personnel only</span>
                                     </td>
                                 </tr>
                             </table>

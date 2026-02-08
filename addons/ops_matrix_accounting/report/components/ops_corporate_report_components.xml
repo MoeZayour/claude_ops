@@ -480,10 +480,7 @@
                 <tr style="border: none;">
                     <td style="border: none; vertical-align: middle;">
                         <span style="font-size: 8pt; color: #666666;">Powered by</span>
-                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png"
-                             width="120" height="20"
-                             style="vertical-align: middle; margin-left: 2px;"
-                             alt="OPS Framework"/>
+                        <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span>
                     </td>
                 </tr>
             </table>

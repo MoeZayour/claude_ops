@@ -203,7 +203,7 @@
                                                 <t t-esc="'{:,.2f}'.format(line['debit'])"/>
                                             </t>
                                             <t t-else="">
-                                                <span class="val-zero">&#x2014;</span>
+                                                <span class="val-zero">-</span>
                                             </t>
                                         </td>
                                         <!-- Credit -->
@@ -212,7 +212,7 @@
                                                 <t t-esc="'{:,.2f}'.format(line['credit'])"/>
                                             </t>
                                             <t t-else="">
-                                                <span class="val-zero">&#x2014;</span>
+                                                <span class="val-zero">-</span>
                                             </t>
                                         </td>
                                         <!-- Running Balance -->
@@ -221,7 +221,7 @@
                                                 <span class="val-negative">(<t t-esc="'{:,.2f}'.format(abs(line['balance']))"/>)</span>
                                             </t>
                                             <t t-elif="line.get('balance', 0) == 0">
-                                                <span class="val-zero">&#x2014;</span>
+                                                <span class="val-zero">-</span>
                                             </t>
                                             <t t-else="">
                                                 <span class="val-positive"><t t-esc="'{:,.2f}'.format(line['balance'])"/></span>
@@ -317,13 +317,11 @@
                                 <tr>
                                     <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;">
                                         <span style="font-size: 8pt; color: #666666;">Powered by</span>
-                                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png"
-                                             style="height: 16px; vertical-align: middle; margin-left: 4px;"
-                                             alt="OPS Framework"/>
+                                        <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span>
                                     </td>
                                     <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;">
                                         <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            Confidential &#x2014; For authorized personnel only
+                                            Confidential - For authorized personnel only
                                         </span>
                                     </td>
                                 </tr>
@@ -511,7 +509,7 @@
                                         <td style="padding: 5px 8px; font-weight: 600; font-size: 8pt; color: #92400e;">
                                             <t t-esc="move.get('name', '')"/>
                                             <t t-if="move.get('partner')">
-                                                <span style="font-weight: 400; color: #666666;"> &#x2014; <t t-esc="move['partner']"/></span>
+                                                <span style="font-weight: 400; color: #666666;"> - <t t-esc="move['partner']"/></span>
                                             </t>
                                         </td>
                                         <td style="padding: 5px 8px; text-align: right; font-size: 7.5pt; color: #94a3b8;">
@@ -544,7 +542,7 @@
                                                         <t t-esc="'{:,.2f}'.format(line['debit'])"/>
                                                     </t>
                                                     <t t-else="">
-                                                        <span class="val-zero">&#x2014;</span>
+                                                        <span class="val-zero">-</span>
                                                     </t>
                                                 </td>
                                                 <td class="num" style="padding: 5px 8px;">
@@ -552,7 +550,7 @@
                                                         <t t-esc="'{:,.2f}'.format(line['credit'])"/>
                                                     </t>
                                                     <t t-else="">
-                                                        <span class="val-zero">&#x2014;</span>
+                                                        <span class="val-zero">-</span>
                                                     </t>
                                                 </td>
                                             </tr>
@@ -638,13 +636,11 @@
                                 <tr>
                                     <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;">
                                         <span style="font-size: 8pt; color: #666666;">Powered by</span>
-                                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png"
-                                             style="height: 16px; vertical-align: middle; margin-left: 4px;"
-                                             alt="OPS Framework"/>
+                                        <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span>
                                     </td>
                                     <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;">
                                         <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            Confidential &#x2014; For authorized personnel only
+                                            Confidential - For authorized personnel only
                                         </span>
                                     </td>
                                 </tr>
@@ -869,7 +865,7 @@
                                                     <t t-esc="'{:,.2f}'.format(line['debit'])"/>
                                                 </t>
                                                 <t t-else="">
-                                                    <span class="val-zero">&#x2014;</span>
+                                                    <span class="val-zero">-</span>
                                                 </t>
                                             </td>
                                             <!-- Credit -->
@@ -878,7 +874,7 @@
                                                     <t t-esc="'{:,.2f}'.format(line['credit'])"/>
                                                 </t>
                                                 <t t-else="">
-                                                    <span class="val-zero">&#x2014;</span>
+                                                    <span class="val-zero">-</span>
                                                 </t>
                                             </td>
                                             <!-- Running Balance -->
@@ -887,7 +883,7 @@
                                                     <span class="val-negative">(<t t-esc="'{:,.2f}'.format(abs(line['balance']))"/>)</span>
                                                 </t>
                                                 <t t-elif="line.get('balance', 0) == 0">
-                                                    <span class="val-zero">&#x2014;</span>
+                                                    <span class="val-zero">-</span>
                                                 </t>
                                                 <t t-else="">
                                                     <span class="val-positive"><t t-esc="'{:,.2f}'.format(line['balance'])"/></span>
@@ -936,7 +932,7 @@
                             <table width="100%" style="border-collapse: collapse;">
                                 <tr>
                                     <td style="width: 45%; padding: 13px 8px 13px 14px; font-weight: 600; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.3px; border: none;">
-                                        GRAND TOTAL &#x2014; <t t-esc="bank_count"/> Accounts
+                                        GRAND TOTAL - <t t-esc="bank_count"/> Accounts
                                     </td>
                                     <td class="num" style="width: 18%; padding: 13px 8px; border: none;">
                                         <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 1px;">Debit</div>
@@ -1003,13 +999,11 @@
                                 <tr>
                                     <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;">
                                         <span style="font-size: 8pt; color: #666666;">Powered by</span>
-                                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png"
-                                             style="height: 16px; vertical-align: middle; margin-left: 4px;"
-                                             alt="OPS Framework"/>
+                                        <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: Arial, Helvetica, sans-serif; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span>
                                     </td>
                                     <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;">
                                         <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            Confidential &#x2014; For authorized personnel only
+                                            Confidential - For authorized personnel only
                                         </span>
                                     </td>
                                 </tr>
