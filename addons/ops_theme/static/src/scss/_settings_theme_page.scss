@@ -1,49 +1,61 @@
 /* =============================================================================
    OPS Theme — Settings Page Styles
-   Targeting verified Odoo 19 DOM structure (inspected 2026-02-08)
+   Verified against Odoo 19 DOM structure (2026-02-08)
+
+   Radio widget DOM (Odoo 19):
+     .o_field_widget.o_field_radio
+       div[role="radiogroup"].o_horizontal|.o_vertical
+         .form-check.o_radio_item
+           input.form-check-input.o_radio_input
+           label.form-check-label.o_form_label
+
+   Color widget DOM:
+     .o_field_widget.o_field_color.d-flex  (background = selected color)
+       input[type="color"].w-100.h-100.opacity-0
+
+   Settings page DOM:
+     .app_settings_block[data-key="ops_theme"]
+       .o_setting_box
+         .o_setting_left_pane
+         .o_setting_right_pane
    ============================================================================= */
 
-/* --- Scope: OPS Theme settings app block --- */
-.o_base_settings .app_settings_block[data-key="ops_theme"] {
+/* --- Scope: OPS Theme settings app block only --- */
+.app_settings_block[data-key="ops_theme"] {
 
     /* =================================================================
-       1. HORIZONTAL RADIO GROUPS
-       Odoo 19 radio widget DOM:
-         .o_field_radio [user classes: d-flex gap-4]
-           └── div[role="radiogroup"].o_vertical   ← has flex-flow: column nowrap
-                 └── .form-check.o_radio_item
-                       ├── input.form-check-input.o_radio_input
-                       └── label.form-check-label.o_form_label
-
-       Problem: .o_vertical forces column layout. Our d-flex on the wrapper
-       doesn't propagate. Must override .o_vertical to row layout.
+       1. HORIZONTAL RADIO FINE-TUNING
+       Using options="{'horizontal': True}" in XML generates .o_horizontal
+       which Odoo natively makes inline-flex + wrap. We just add gap.
        ================================================================= */
 
-    .o_field_radio.d-flex {
-        /* Override the internal radiogroup container */
-        > .o_vertical,
-        > div[role="radiogroup"] {
-            display: flex !important;
-            flex-flow: row wrap !important;
-            gap: 8px 24px !important;
+    .o_field_radio {
+        /* Horizontal radios: add gap between items */
+        .o_horizontal {
+            gap: 6px 20px;
+
+            .o_radio_item {
+                margin-right: 0 !important; /* gap handles spacing */
+            }
         }
 
-        /* Each radio item: stay on one line */
+        /* Vertical radios (theme preset): tighter spacing */
+        .o_vertical .o_radio_item {
+            padding: 2px 0;
+        }
+
+        /* Radio items: no extra margin */
         .o_radio_item,
         .form-check {
             white-space: nowrap;
-            margin-bottom: 0 !important;
-            margin-right: 0 !important; /* gap handles spacing */
         }
     }
 
-    /* =================================================================
-       2. COLOR SWATCHES — Enlarge from default
-       Odoo 19 color widget DOM:
-         .o_field_color.d-flex   ← THIS is the visible colored element
-           └── input[type="color"].w-100.h-100.opacity-0  (invisible overlay)
 
-       The container div shows the color via background. We size IT.
+    /* =================================================================
+       2. COLOR SWATCHES — Enlarge from default ~24px to 48px
+       .o_field_color is the visible colored div (shows background color).
+       The input[type=color] inside is opacity-0, just a click target.
        ================================================================= */
 
     .o_field_color {
@@ -62,27 +74,20 @@
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
         }
 
-        /* The hidden input fills the container (opacity-0 keeps it clickable) */
         input[type="color"] {
             border-radius: 10px !important;
         }
     }
 
+
     /* =================================================================
-       3. TERMS & CONDITIONS EDITOR — Force minimum height
-       Field is fields.Html with widget="html". Class ops-terms-editor
-       is on the <field> wrapper. Editor renders deep inside.
+       3. TERMS & CONDITIONS EDITOR — Minimum height for HTML widget
+       Field: fields.Html with widget="html", class="ops-terms-editor"
        ================================================================= */
 
     .ops-terms-editor {
-        width: 100%;
+        width: 100% !important;
 
-        /* Override the 50% width constraint from Odoo settings */
-        &.o_field_widget {
-            width: 100% !important;
-        }
-
-        /* Target all possible editor internal elements */
         .o_field_html,
         .odoo-editor-editable,
         .note-editable,
@@ -95,19 +100,17 @@
         }
     }
 
-    /* Also target by field name as backup */
+    /* Backup selector by field name */
     .o_field_widget[name="ops_report_terms"] {
         width: 100% !important;
     }
 
+
     /* =================================================================
        4. LOGIN BACKGROUND IMAGE — Constrain preview height
-       Class ops-login-preview is on the <field> wrapper.
-       Image widget renders img inside.
        ================================================================= */
 
     .ops-login-preview {
-        /* Constrain the image preview */
         img {
             max-height: 120px !important;
             width: auto !important;
@@ -115,7 +118,6 @@
             border-radius: 6px;
         }
 
-        /* The image wrapper/placeholder */
         .o_field_image,
         .o_image,
         .o_image_preview {
@@ -124,10 +126,9 @@
         }
     }
 
+
     /* =================================================================
-       5. SIGNATURE LABELS — Prevent truncation
-       Using flex layout (XML fix) instead of col-md-4 grid.
-       Override the 50% field widget width from Odoo settings.
+       5. SIGNATURE LABELS — Prevent truncation, full-width inputs
        ================================================================= */
 
     .ops-signature-row {
@@ -147,7 +148,6 @@
         }
     }
 
-    /* Also fix any signature fields by name */
     .o_field_widget[name*="ops_signature_label"] {
         width: 100% !important;
 
@@ -156,8 +156,9 @@
         }
     }
 
+
     /* =================================================================
-       6. SECTION SUB-HEADERS
+       6. SECTION SUB-HEADERS (blue left border accent)
        ================================================================= */
 
     .ops-settings-sub-header {
@@ -172,11 +173,11 @@
         background: linear-gradient(90deg, rgba(59, 130, 246, 0.04), transparent);
     }
 
+
     /* =================================================================
        7. GENERAL POLISH
        ================================================================= */
 
-    /* Setting boxes: subtle hover */
     .o_setting_box {
         border-radius: 6px;
         transition: background-color 0.12s ease;
@@ -186,13 +187,11 @@
         }
     }
 
-    /* Override the 50% width for radio fields inside settings */
     .o_setting_right_pane {
         .o_field_radio {
             width: auto !important;
         }
 
-        /* Setting field inputs: full width */
         .o_setting_field_input,
         .o_field_widget input.o_input {
             max-width: 100% !important;
@@ -209,15 +208,6 @@
         }
     }
 
-    /* Preset radio items: minimum width for readability */
-    .ops-preset-grid .o_field_radio {
-        .o_radio_item,
-        .form-check {
-            min-width: 140px;
-            padding: 4px 0;
-        }
-    }
-
     /* Color rows: tighter vertical spacing */
     .row.g-0 > [class*="col-"] > .o_setting_box {
         padding-top: 10px;
@@ -231,12 +221,13 @@
     }
 }
 
+
 /* =================================================================
    DARK MODE
    ================================================================= */
 
 html[data-bs-theme="dark"] {
-    .o_base_settings .app_settings_block[data-key="ops_theme"] {
+    .app_settings_block[data-key="ops_theme"] {
 
         .ops-settings-sub-header {
             color: #94a3b8;

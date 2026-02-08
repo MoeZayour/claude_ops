@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.8.1.0',
+    'version': '19.0.9.1.0',
     'category': 'Themes/Backend',
     'summary': 'Minimal OPS Framework theme with clean debranding',
     'description': """
@@ -43,6 +43,7 @@ Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy
         'views/webclient_templates.xml',
         'views/res_config_settings_views.xml',
         'report/ops_report_css.xml',
+        'report/ops_document_extras.xml',
         'report/ops_external_layout.xml',
     ],
     'assets': {

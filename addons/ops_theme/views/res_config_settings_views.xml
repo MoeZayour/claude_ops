@@ -120,19 +120,19 @@
 
                         <!-- Navbar — full width, horizontal radio -->
                         <setting string="Navigation Bar Style" help="Visual style of the top navigation bar across the application.">
-                            <field name="ops_navbar_style" widget="radio" class="o_light_label d-flex gap-4"/>
+                            <field name="ops_navbar_style" widget="radio" class="o_light_label" options="{'horizontal': True}"/>
                         </setting>
 
                         <!-- Card Shadow + Border Radius — side by side -->
                         <div class="row g-0">
                             <div class="col-lg-6">
                                 <setting string="Card Shadows" help="Shadow intensity on card panels and form containers.">
-                                    <field name="ops_card_shadow" widget="radio" class="o_light_label d-flex gap-3"/>
+                                    <field name="ops_card_shadow" widget="radio" class="o_light_label" options="{'horizontal': True}"/>
                                 </setting>
                             </div>
                             <div class="col-lg-6">
                                 <setting string="Corner Radius" help="Border roundness on buttons, cards, and inputs.">
-                                    <field name="ops_border_radius" widget="radio" class="o_light_label d-flex gap-3"/>
+                                    <field name="ops_border_radius" widget="radio" class="o_light_label" options="{'horizontal': True}"/>
                                 </setting>
                             </div>
                         </div>
@@ -146,12 +146,12 @@
                         <div class="row g-0">
                             <div class="col-lg-6">
                                 <setting string="Default Color Mode" help="Light or dark interface theme for new users.">
-                                    <field name="ops_default_color_mode" widget="radio" class="o_light_label d-flex gap-4"/>
+                                    <field name="ops_default_color_mode" widget="radio" class="o_light_label" options="{'horizontal': True}"/>
                                 </setting>
                             </div>
                             <div class="col-lg-6">
                                 <setting string="Default Chatter Position" help="Discussion panel placement for new users.">
-                                    <field name="ops_default_chatter_position" widget="radio" class="o_light_label d-flex gap-4"/>
+                                    <field name="ops_default_chatter_position" widget="radio" class="o_light_label" options="{'horizontal': True}"/>
                                 </setting>
                             </div>
                         </div>
@@ -170,7 +170,7 @@
 
                         <!-- Logo Position — horizontal radio -->
                         <setting string="Logo Position" help="Company logo placement in the header of printed PDF reports.">
-                            <field name="ops_report_logo_position" widget="radio" class="o_light_label d-flex gap-4"/>
+                            <field name="ops_report_logo_position" widget="radio" class="o_light_label" options="{'horizontal': True}"/>
                         </setting>
 
                         <!-- Badge + Amount Language — side by side -->
@@ -182,7 +182,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <setting string="Amount in Words" help="Language for spelling out monetary amounts.">
-                                    <field name="ops_amount_words_lang" widget="radio" class="o_light_label d-flex gap-3"/>
+                                    <field name="ops_amount_words_lang" widget="radio" class="o_light_label" options="{'horizontal': True}"/>
                                 </setting>
                             </div>
                         </div>
