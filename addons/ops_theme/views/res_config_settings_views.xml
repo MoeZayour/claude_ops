@@ -12,73 +12,68 @@
 
                     <!-- ============================================================ -->
                     <!-- SECTION 1: BRAND IDENTITY                                    -->
-                    <!-- Preset, favicon, primary/secondary, status colors            -->
                     <!-- ============================================================ -->
                     <block title="Brand Identity" name="ops_brand_identity_settings">
-                        <div class="text-muted mb-3">
-                            Theme preset, favicon, and core brand colors that define your company's visual identity across the platform.
+                        <div class="text-muted mb-4 ms-1">
+                            Theme preset, favicon, and brand colors that define your company's visual identity across the platform.
                         </div>
 
-                        <!-- Theme Preset -->
-                        <setting string="Theme Preset"
-                                 help="Quick-start color scheme. Selecting a preset fills all color fields below. Choose Custom to set your own.">
-                            <field name="ops_theme_preset" widget="radio" class="o_light_label"/>
-                        </setting>
-
-                        <!-- Action buttons row -->
-                        <setting string="Theme Actions"
-                                 help="Preview your current theme in a new tab, or reset all colors back to the Corporate Blue defaults.">
-                            <div class="d-flex gap-2 mt-2">
-                                <button name="action_preview_theme" type="object"
-                                        string="Preview Theme" class="btn-secondary"
-                                        icon="fa-eye"/>
-                                <button name="action_reset_theme_defaults" type="object"
-                                        string="Reset Defaults" class="btn-link text-danger"
-                                        icon="fa-refresh"
-                                        confirm="This will reset all theme colors to Corporate Blue defaults. Continue?"/>
+                        <!-- Theme Preset — radio with Reset button inline -->
+                        <setting help="Select a color scheme to instantly apply. Choose Custom to define your own colors below.">
+                            <div class="d-flex align-items-start">
+                                <div class="flex-grow-1">
+                                    <b class="mb-2 d-block">Theme Preset</b>
+                                    <field name="ops_theme_preset" widget="radio" class="o_light_label w-100 mt-2"/>
+                                </div>
+                                <div class="ms-4 flex-shrink-0">
+                                    <button name="action_reset_theme_defaults" type="object"
+                                            string="Reset to Defaults" class="btn btn-sm btn-outline-secondary"
+                                            icon="fa-refresh"
+                                            confirm="This will reset all theme colors to Corporate Blue defaults. Continue?"/>
+                                </div>
                             </div>
                         </setting>
 
                         <!-- Favicon -->
-                        <setting string="Browser Favicon"
-                                 help="Icon shown in browser tabs. Upload a square image, recommended 64x64 pixels.">
-                            <field name="ops_favicon" widget="image" class="oe_avatar float-start me-3"
-                                   options="{'size': [64, 64]}"/>
+                        <setting help="Icon shown in browser tabs. Upload a square image, recommended 64x64 pixels.">
+                            <div class="d-flex align-items-center gap-3">
+                                <field name="ops_favicon" widget="image" class="oe_avatar"
+                                       options="{'size': [64, 64]}"/>
+                                <div>
+                                    <b>Browser Favicon</b>
+                                    <div class="text-muted" style="font-size: 0.85em;">Square image, 64x64px recommended</div>
+                                </div>
+                            </div>
                         </setting>
 
-                        <!-- Primary Colors — 2-column -->
-                        <div class="ops-color-grid row mt-3">
+                        <!-- Primary + Secondary Colors — side by side -->
+                        <div class="row g-0">
                             <div class="col-lg-6">
-                                <setting string="Primary Color"
-                                         help="Used for navbar, headers, and strong interface elements.">
+                                <setting string="Primary Color" help="Navbar, headers, and strong interface elements.">
                                     <field name="ops_primary_color" widget="color"/>
                                 </setting>
                             </div>
                             <div class="col-lg-6">
-                                <setting string="Secondary Color"
-                                         help="Used for buttons, links, active states, and accent elements.">
+                                <setting string="Secondary Color" help="Buttons, links, active states, and accents.">
                                     <field name="ops_secondary_color" widget="color"/>
                                 </setting>
                             </div>
                         </div>
 
-                        <!-- Status Colors — 2-column -->
-                        <div class="ops-color-grid row">
-                            <div class="col-lg-6">
-                                <setting string="Success Color"
-                                         help="Confirmations, approved states, and positive values.">
+                        <!-- Status Colors — 3-across -->
+                        <div class="row g-0">
+                            <div class="col-lg-4">
+                                <setting string="Success Color" help="Confirmations and positive values.">
                                     <field name="ops_success_color" widget="color"/>
                                 </setting>
                             </div>
-                            <div class="col-lg-6">
-                                <setting string="Warning Color"
-                                         help="Pending states, attention items, and caution indicators.">
+                            <div class="col-lg-4">
+                                <setting string="Warning Color" help="Pending states and caution items.">
                                     <field name="ops_warning_color" widget="color"/>
                                 </setting>
                             </div>
-                            <div class="col-lg-6">
-                                <setting string="Danger Color"
-                                         help="Errors, rejections, and negative values.">
+                            <div class="col-lg-4">
+                                <setting string="Danger Color" help="Errors, rejections, and negatives.">
                                     <field name="ops_danger_color" widget="color"/>
                                 </setting>
                             </div>
@@ -87,81 +82,76 @@
 
                     <!-- ============================================================ -->
                     <!-- SECTION 2: LOGIN PAGE                                        -->
-                    <!-- Background, logo toggle, tagline                             -->
                     <!-- ============================================================ -->
                     <block title="Login Page" name="ops_login_settings">
-                        <div class="text-muted mb-3">
+                        <div class="text-muted mb-4 ms-1">
                             Customize the split-screen login experience your users see when they sign in.
                         </div>
 
-                        <!-- Show Logo Toggle -->
-                        <setting string="Show Company Logo"
-                                 help="Display your company logo on the login page branding panel.">
-                            <field name="ops_login_show_logo"/>
-                        </setting>
+                        <!-- Show Logo + Background side by side -->
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <setting string="Show Company Logo" help="Display your company logo on the login page branding panel.">
+                                    <field name="ops_login_show_logo"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-6">
+                                <setting string="Background Image" help="Branding panel background. Recommended: 1920x1080px.">
+                                    <field name="ops_login_background" widget="image"
+                                           options="{'size': [240, 135]}" class="ops-login-preview"/>
+                                </setting>
+                            </div>
+                        </div>
 
-                        <!-- Login Background -->
-                        <setting string="Background Image"
-                                 help="Background image for the branding panel on the login page. Recommended size: 1920x1080 pixels.">
-                            <field name="ops_login_background" widget="image" class="w-50"
-                                   options="{'size': [320, 180]}"/>
-                        </setting>
-
-                        <!-- Tagline -->
-                        <setting string="Tagline"
-                                 help="Short text displayed below your company name on the login page.">
-                            <field name="ops_login_tagline" placeholder="e.g. Enterprise Governance Platform"/>
+                        <!-- Tagline — full width -->
+                        <setting string="Tagline" help="Short text displayed below your company name on the login page.">
+                            <field name="ops_login_tagline" placeholder="e.g. Enterprise Governance Platform"
+                                   class="o_setting_field_input"/>
                         </setting>
                     </block>
 
                     <!-- ============================================================ -->
                     <!-- SECTION 3: LAYOUT & USER EXPERIENCE                          -->
-                    <!-- Navbar, shadows, radius + default user preferences           -->
                     <!-- ============================================================ -->
                     <block title="Layout &amp; User Experience" name="ops_layout_settings">
-                        <div class="text-muted mb-3">
+                        <div class="text-muted mb-4 ms-1">
                             Interface styling and default preferences applied to new user accounts.
                         </div>
 
-                        <!-- Navbar Style -->
-                        <setting string="Navigation Bar Style"
-                                 help="Visual style of the top navigation bar across the application.">
-                            <field name="ops_navbar_style" widget="radio" class="o_light_label"/>
+                        <!-- Navbar — full width, horizontal radio -->
+                        <setting string="Navigation Bar Style" help="Visual style of the top navigation bar across the application.">
+                            <field name="ops_navbar_style" widget="radio" class="o_light_label d-flex gap-4"/>
                         </setting>
 
-                        <!-- Card Shadow + Border Radius — 2-column -->
-                        <div class="row">
+                        <!-- Card Shadow + Border Radius — side by side -->
+                        <div class="row g-0">
                             <div class="col-lg-6">
-                                <setting string="Card Shadows"
-                                         help="Shadow intensity on card panels and form containers.">
-                                    <field name="ops_card_shadow" widget="radio" class="o_light_label"/>
+                                <setting string="Card Shadows" help="Shadow intensity on card panels and form containers.">
+                                    <field name="ops_card_shadow" widget="radio" class="o_light_label d-flex gap-3"/>
                                 </setting>
                             </div>
                             <div class="col-lg-6">
-                                <setting string="Corner Radius"
-                                         help="Border roundness on buttons, cards, and input fields.">
-                                    <field name="ops_border_radius" widget="radio" class="o_light_label"/>
+                                <setting string="Corner Radius" help="Border roundness on buttons, cards, and inputs.">
+                                    <field name="ops_border_radius" widget="radio" class="o_light_label d-flex gap-3"/>
                                 </setting>
                             </div>
                         </div>
 
                         <!-- Sub-divider: New User Defaults -->
-                        <h4 class="mt-4 mb-2 ops-settings-sub-header">New User Defaults</h4>
-                        <div class="text-muted mb-3" style="font-size: 0.85em;">
-                            These preferences are applied when new users are created. Existing users can change their own from the user menu.
+                        <h4 class="ops-settings-sub-header">New User Defaults</h4>
+                        <div class="text-muted mb-3 ms-1" style="font-size: 0.85em;">
+                            Applied when new users are created. Existing users change their own from the user menu.
                         </div>
 
-                        <div class="row">
+                        <div class="row g-0">
                             <div class="col-lg-6">
-                                <setting string="Default Color Mode"
-                                         help="Light or dark interface theme for new user accounts.">
-                                    <field name="ops_default_color_mode" widget="radio" class="o_light_label"/>
+                                <setting string="Default Color Mode" help="Light or dark interface theme for new users.">
+                                    <field name="ops_default_color_mode" widget="radio" class="o_light_label d-flex gap-4"/>
                                 </setting>
                             </div>
                             <div class="col-lg-6">
-                                <setting string="Default Chatter Position"
-                                         help="Discussion panel placement: bottom of the form or as a side panel.">
-                                    <field name="ops_default_chatter_position" widget="radio" class="o_light_label"/>
+                                <setting string="Default Chatter Position" help="Discussion panel placement for new users.">
+                                    <field name="ops_default_chatter_position" widget="radio" class="o_light_label d-flex gap-4"/>
                                 </setting>
                             </div>
                         </div>
@@ -169,79 +159,80 @@
 
                     <!-- ============================================================ -->
                     <!-- SECTION 4: REPORTS & DOCUMENTS                               -->
-                    <!-- Appearance + Document details + Signatures + Terms            -->
                     <!-- ============================================================ -->
                     <block title="Reports &amp; Documents" name="ops_report_settings">
-                        <div class="text-muted mb-3">
+                        <div class="text-muted mb-4 ms-1">
                             Control the appearance of printed PDF reports, invoices, and official documents.
                         </div>
 
                         <!-- Sub-group: Report Appearance -->
                         <h4 class="ops-settings-sub-header">Report Appearance</h4>
 
-                        <setting string="Logo Position"
-                                 help="Company logo placement in the header of printed PDF reports.">
-                            <field name="ops_report_logo_position" widget="radio" class="o_light_label"/>
+                        <!-- Logo Position — horizontal radio -->
+                        <setting string="Logo Position" help="Company logo placement in the header of printed PDF reports.">
+                            <field name="ops_report_logo_position" widget="radio" class="o_light_label d-flex gap-4"/>
                         </setting>
 
-                        <div class="row">
+                        <!-- Badge + Amount Language — side by side -->
+                        <div class="row g-0">
                             <div class="col-lg-6">
-                                <setting string="OPS Framework Badge"
-                                         help="Show the Powered by OPS Framework badge in the footer of printed reports.">
+                                <setting string="OPS Framework Badge" help="Show 'Powered by OPS Framework' in report footer.">
                                     <field name="ops_show_external_badge"/>
                                 </setting>
                             </div>
                             <div class="col-lg-6">
-                                <setting string="Amount in Words Language"
-                                         help="Language used when spelling out monetary amounts on invoices.">
-                                    <field name="ops_amount_words_lang" widget="radio" class="o_light_label"/>
+                                <setting string="Amount in Words" help="Language for spelling out monetary amounts.">
+                                    <field name="ops_amount_words_lang" widget="radio" class="o_light_label d-flex gap-3"/>
                                 </setting>
                             </div>
                         </div>
 
                         <!-- Sub-group: Document Details -->
-                        <h4 class="mt-4 ops-settings-sub-header">Document Details</h4>
+                        <h4 class="ops-settings-sub-header mt-4">Document Details</h4>
 
-                        <div class="row">
+                        <!-- Bank Details + Amount Words — side by side -->
+                        <div class="row g-0">
                             <div class="col-lg-6">
-                                <setting string="Bank Details on Invoices"
-                                         help="Show company bank account information on invoices and payment documents.">
+                                <setting string="Bank Details on Invoices" help="Show company bank account on invoices and payment documents.">
                                     <field name="ops_show_bank_details"/>
                                 </setting>
                             </div>
                             <div class="col-lg-6">
-                                <setting string="Print Amount in Words"
-                                         help="Print the total amount spelled out in words on invoices and quotations.">
+                                <setting string="Print Amount in Words" help="Print the total spelled out in words on invoices and quotations.">
                                     <field name="ops_show_amount_words"/>
                                 </setting>
                             </div>
                         </div>
 
-                        <!-- Signatures -->
-                        <setting string="Signature Block"
-                                 help="Show up to three authorized signatory slots at the bottom of official documents.">
+                        <!-- Signatures — full width with conditional labels -->
+                        <setting string="Signature Block" help="Show up to three authorized signatory slots at the bottom of official documents.">
                             <field name="ops_show_signature_block"/>
-                            <div invisible="not ops_show_signature_block" class="row mt-3">
-                                <div class="col-lg-4">
-                                    <label for="ops_signature_label_1" string="Signature 1"/>
-                                    <field name="ops_signature_label_1" placeholder="e.g. Prepared By"/>
-                                </div>
-                                <div class="col-lg-4">
-                                    <label for="ops_signature_label_2" string="Signature 2"/>
-                                    <field name="ops_signature_label_2" placeholder="e.g. Approved By"/>
-                                </div>
-                                <div class="col-lg-4">
-                                    <label for="ops_signature_label_3" string="Signature 3"/>
-                                    <field name="ops_signature_label_3" placeholder="e.g. Authorized By"/>
+                            <div invisible="not ops_show_signature_block" class="mt-3">
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <label for="ops_signature_label_1" string="Signature 1"/>
+                                        <field name="ops_signature_label_1" placeholder="e.g. Prepared By"
+                                               class="o_setting_field_input"/>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label for="ops_signature_label_2" string="Signature 2"/>
+                                        <field name="ops_signature_label_2" placeholder="e.g. Approved By"
+                                               class="o_setting_field_input"/>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label for="ops_signature_label_3" string="Signature 3"/>
+                                        <field name="ops_signature_label_3" placeholder="e.g. Authorized By"
+                                               class="o_setting_field_input"/>
+                                    </div>
                                 </div>
                             </div>
                         </setting>
 
-                        <!-- Terms & Conditions -->
-                        <setting string="Default Terms &amp; Conditions"
-                                 help="Printed at the bottom of invoices and quotations when no document-specific terms exist.">
+                        <!-- Terms & Conditions — full width, tall editor -->
+                        <setting string="Default Terms &amp; Conditions" help="Printed at the bottom of invoices and quotations when no document-specific terms exist.">
                             <field name="ops_report_terms" widget="html"
                                    placeholder="Enter your default terms and conditions..."
+                                   class="ops-terms-editor"
                                    options="{'collaborative': false, 'resizable': true}"/>
                         </setting>
                     </block>

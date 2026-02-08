@@ -1,111 +1,152 @@
 /* =============================================================================
    OPS Theme — Settings Page Styles
    Scoped to app[name="ops_theme"] inside Odoo Settings
-   Minimal overrides — native <setting> and <block> handle layout
    ============================================================================= */
 
-/* --- Section sub-headers (h4 dividers within blocks) --- */
 app[name="ops_theme"] {
 
+    /* --- Section sub-headers (h4 dividers within blocks) --- */
     .ops-settings-sub-header {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.4px;
-        color: var(--o-color-500, #64748b);
-        padding-bottom: 6px;
+        letter-spacing: 0.5px;
+        color: #64748b;
+        padding: 8px 0 6px 12px;
         margin-bottom: 12px;
-        border-bottom: 1px solid var(--o-color-200, #e2e8f0);
+        border-left: 3px solid #3b82f6;
+        background: linear-gradient(90deg, rgba(59, 130, 246, 0.04), transparent);
     }
 
-    /* --- Color picker fields: enlarge swatch for visual clarity --- */
+    /* --- Color picker fields: enlarge swatch --- */
     .o_field_color input[type="color"],
-    .o_color_picker input[type="color"] {
-        width: 40px !important;
-        height: 40px !important;
+    .o_color_picker input[type="color"],
+    input.o_color_pick {
+        width: 48px !important;
+        height: 48px !important;
         padding: 2px !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         border: 2px solid rgba(0, 0, 0, 0.08) !important;
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
 
         &:hover {
-            transform: scale(1.08);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            transform: scale(1.06);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
         }
     }
 
-    /* --- Color grid: tighten vertical spacing --- */
-    .ops-color-grid .o_setting_box {
-        padding-top: 8px;
-        padding-bottom: 8px;
-    }
+    /* --- Horizontal radio groups: proper inline flow --- */
+    .o_field_radio.d-flex {
+        flex-wrap: wrap;
 
-    /* --- Preset radio: horizontal card-like appearance --- */
-    .o_field_radio.o_light_label {
         .o_radio_item {
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+            white-space: nowrap;
         }
     }
 
-    /* --- Signature columns: equal height --- */
-    .col-lg-4 .o_field_widget {
+    /* --- Setting rows: subtle hover and breathing room --- */
+    .o_setting_box {
+        border-radius: 6px;
+        transition: background-color 0.12s ease;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.012);
+        }
+    }
+
+    /* --- Login preview image: constrain height --- */
+    .ops-login-preview {
+        max-height: 120px;
+        border-radius: 6px;
+        object-fit: cover;
+    }
+
+    /* --- Terms & Conditions editor: proper min-height --- */
+    .ops-terms-editor,
+    .ops-terms-editor .o_field_html,
+    .ops-terms-editor .odoo-editor-editable,
+    .ops-terms-editor .note-editable,
+    .ops-terms-editor textarea {
+        min-height: 140px !important;
         width: 100%;
     }
 
-    /* --- Setting rows: subtle hover feedback --- */
-    .o_setting_box {
-        border-radius: 6px;
-        transition: background-color 0.15s ease;
+    /* --- Signature label inputs: fill column width --- */
+    .col-md-4 .o_setting_field_input,
+    .col-md-4 .o_field_widget input {
+        width: 100% !important;
+    }
+
+    /* --- Reset button: muted until hover --- */
+    .btn-outline-secondary {
+        opacity: 0.7;
+        transition: opacity 0.15s ease;
 
         &:hover {
-            background-color: rgba(0, 0, 0, 0.015);
+            opacity: 1;
         }
     }
 
-    /* --- Action buttons row --- */
-    .d-flex.gap-2 .btn-link.text-danger {
-        font-weight: 500;
-        text-decoration: none;
-
-        &:hover {
-            text-decoration: underline;
+    /* --- Preset radio: wider items for readability --- */
+    .ops-preset-grid .o_field_radio {
+        .o_radio_item {
+            min-width: 140px;
+            padding: 4px 0;
         }
     }
 
-    /* --- Image widgets: constrained preview size --- */
-    .o_field_image.oe_avatar {
-        max-width: 64px;
-        max-height: 64px;
-        border-radius: 8px;
+    /* --- Color rows: tighter vertical spacing in grid --- */
+    .row.g-0 > [class*="col-"] > .o_setting_box {
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 
-    /* --- HTML field (terms): minimum height --- */
-    .o_field_html {
-        min-height: 120px;
+    /* --- Setting field inputs (tagline etc): proper width --- */
+    .o_setting_field_input {
+        max-width: 100% !important;
+    }
+
+    /* --- Block description text: consistent sizing --- */
+    > .o_app_settings_block > .text-muted {
+        font-size: 0.88em;
+        margin-left: 4px;
     }
 }
 
-/* --- Dark mode adjustments --- */
+/* === Dark mode adjustments === */
 html[data-bs-theme="dark"] {
     app[name="ops_theme"] {
 
         .ops-settings-sub-header {
             color: #94a3b8;
-            border-bottom-color: #334155;
+            border-left-color: #60a5fa;
+            background: linear-gradient(90deg, rgba(96, 165, 250, 0.06), transparent);
         }
 
         .o_field_color input[type="color"],
-        .o_color_picker input[type="color"] {
+        .o_color_picker input[type="color"],
+        input.o_color_pick {
             border-color: rgba(255, 255, 255, 0.1) !important;
 
             &:hover {
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
             }
         }
 
         .o_setting_box:hover {
-            background-color: rgba(255, 255, 255, 0.03);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .btn-outline-secondary {
+            color: #94a3b8;
+            border-color: #475569;
+
+            &:hover {
+                color: #f1f5f9;
+                border-color: #64748b;
+            }
         }
     }
 }

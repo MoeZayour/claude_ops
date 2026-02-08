@@ -69,28 +69,28 @@ html[data-ops-navbar="light"] {
     }
 }
 
-// Primary color navbar
+// Primary color navbar — uses company's primary color (NOT secondary)
 html[data-ops-navbar="primary"] {
     .o_main_navbar,
     nav.o_main_navbar {
-        background: var(--ops-secondary) !important;
+        background: var(--ops-navbar-bg, var(--ops-primary)) !important;
 
         .o_menu_sections .o_nav_entry,
         .o_menu_sections .dropdown-toggle {
-            background: var(--ops-secondary) !important;
+            background: var(--ops-navbar-bg, var(--ops-primary)) !important;
         }
 
         .o_menu_toggle,
         .o_menu_sections button,
         .o_menu_sections a,
         .o_menu_systray .dropdown-toggle {
-            color: #ffffff !important;
+            color: var(--ops-navbar-text, #ffffff) !important;
         }
     }
 
     .o_web_client:where(:has(.o-mail-Discuss)) {
         .o_main_navbar {
-            background-color: var(--ops-secondary) !important;
+            background-color: var(--ops-navbar-bg, var(--ops-primary)) !important;
         }
     }
 }
