@@ -2,16 +2,16 @@
 /// OPS Dark Mode — Core Layout + OPS Component Overrides
 /// =====================================================
 ///
+/// BUNDLE: web.assets_web_dark (only loaded when dark mode active)
+///
 /// WHY THIS FILE EXISTS:
 /// Odoo 19 CE compiles SCSS variables ($o-webclient-background-color,
 /// $o-view-background-color) into hardcoded light-mode values in the CSS.
 /// Even with $enable-dark-mode: true, these fixed values override
 /// Bootstrap 5.3's dark CSS variables.
 ///
-/// This file follows Odoo's own *.dark.scss pattern — runtime CSS overrides
-/// under html[data-bs-theme="dark"] for elements that cannot be fixed at
-/// SCSS compile time (the variables are used in mix()/color-contrast()
-/// functions that need real color values).
+/// This file provides runtime CSS overrides under html[data-bs-theme="dark"]
+/// for elements that cannot be fixed at SCSS compile time.
 ///
 /// IMPORTANT: Odoo 19 sets $variable-prefix: '' so CSS custom properties
 /// are --body-bg (NOT --bs-body-bg), --body-color (NOT --bs-body-color), etc.
@@ -39,9 +39,6 @@ html[data-bs-theme="dark"] {
 // =============================================================================
 // 1. CORE LAYOUT — Fix hardcoded SCSS compile-time backgrounds
 // =============================================================================
-// The #1 blocker: .o_web_client compiles to { background-color: #f8f9fa; }
-// from $o-webclient-background-color. Cannot replace the SCSS var with CSS
-// var() because mail/im_livechat use it in mix() at compile time.
 
 html[data-bs-theme="dark"] {
 
@@ -72,8 +69,13 @@ html[data-bs-theme="dark"] {
 
     .o_form_sheet {
         background-color: var(--tertiary-bg, #2b3035) !important;
-        border-color: var(--border-color, #495057);
+        border-color: var(--border-color, #495057) !important;
         color: var(--body-color, #dee2e6);
+    }
+
+    // Form nosheet (no card wrapper, e.g. settings)
+    .o_form_nosheet {
+        background-color: var(--body-bg, #212529) !important;
     }
 
     // ---- Control panel (breadcrumb / search bar area) ----
@@ -96,6 +98,7 @@ html[data-bs-theme="dark"] {
     // ---- List view ----
     .o_list_view {
         --ListRenderer-thead-bg-color: var(--tertiary-bg, #2b3035);
+        --ListRenderer-tfoot-bg-color: var(--tertiary-bg, #2b3035);
 
         .o_list_table {
             --table-bg: var(--body-bg, #212529);
@@ -240,34 +243,105 @@ html[data-bs-theme="dark"] {
         color: var(--body-color, #dee2e6);
     }
 
-    // ---- Settings page ----
-    .o_base_settings {
-        .o_setting_container,
-        .o_settings_container {
-            background-color: var(--body-bg, #212529);
-        }
+    // ==========================================================================
+    // FIX 1: SETTINGS PAGE — Correct selectors matching Odoo 19 DOM
+    // ==========================================================================
+    // Odoo selectors: .o_base_settings_view .o_form_renderer
+    //   .o_setting_container > .settings_tab (sidebar)
+    //   .o_setting_container > .settings (main content, bg: $o-view-background-color)
+    //   .settings h2 (section headers, bg: --settings__title-bg)
+    //   .settingSearchHeader (bg: grays-200)
 
+    .o_base_settings_view .o_form_renderer {
+        // Override the CSS custom properties for dark mode
+        --settings__tab-bg: var(--tertiary-bg, #2b3035);
+        --settings__tab-bg--active: rgba(255, 255, 255, 0.08);
+        --settings__tab-color: var(--body-color, #dee2e6);
+        --settings__title-bg: var(--secondary-bg, #343a40);
+    }
+
+    .o_setting_container {
         .settings_tab {
-            background-color: var(--body-bg, #212529);
+            background: var(--tertiary-bg, #2b3035) !important;
             border-color: var(--border-color, #495057);
 
+            .tab {
+                color: var(--body-color, #dee2e6);
+
+                &:hover,
+                &.selected {
+                    color: #fff;
+                }
+            }
+
             .selected {
-                background-color: var(--tertiary-bg, #2b3035);
+                background-color: rgba(255, 255, 255, 0.08) !important;
             }
         }
 
-        .app_settings_block {
-            background-color: var(--body-bg, #212529);
+        .settings {
+            background-color: var(--body-bg, #212529) !important;
             color: var(--body-color, #dee2e6);
-        }
 
-        .o_form_label,
-        label {
+            > .app_settings_block {
+                h2 {
+                    background-color: var(--secondary-bg, #343a40) !important;
+                    color: var(--body-color, #dee2e6);
+                }
+            }
+
+            .settingSearchHeader {
+                background-color: var(--secondary-bg, #343a40) !important;
+                color: var(--body-color, #dee2e6);
+            }
+
+            .o_form_label,
+            label {
+                color: var(--body-color, #dee2e6);
+            }
+
+            .highlighter {
+                background: #854d0e;
+                color: #fef3c7;
+            }
+        }
+    }
+
+    // ==========================================================================
+    // FIX 2: DISCUSS / MESSAGING — Full page dark background
+    // ==========================================================================
+    // Odoo's mail .dark.scss files handle sidebar/content via CSS custom properties
+    // but the surface color computation uses mix() with light $o-webclient-bg-color.
+    // Override the CSS variable directly for proper dark surface.
+
+    .o_web_client:where(:has(.o-mail-Discuss)) {
+        --mail-Discuss-surface-dark: var(--tertiary-bg, #2b3035);
+    }
+
+    .o-mail-Discuss {
+        background-color: var(--body-bg, #212529) !important;
+        color: var(--body-color, #dee2e6);
+    }
+
+    .o-mail-DiscussSidebar {
+        background-color: var(--tertiary-bg, #2b3035) !important;
+        border-right-color: var(--border-color, #495057) !important;
+
+        .o-mail-DiscussSidebarCategory-header {
             color: var(--body-color, #dee2e6);
         }
     }
 
-    // ---- Chatter ----
+    .o-mail-DiscussContent-header {
+        background-color: var(--tertiary-bg, #2b3035) !important;
+        border-bottom-color: var(--border-color, #495057) !important;
+    }
+
+    .o-mail-Thread {
+        background-color: var(--body-bg, #212529);
+    }
+
+    // Chatter (right side panel on forms)
     .o-mail-Form-chatter,
     .o-mail-Chatter {
         background-color: var(--body-bg, #212529);
@@ -276,6 +350,48 @@ html[data-bs-theme="dark"] {
     .o-mail-Message {
         background-color: var(--body-bg, #212529);
         color: var(--body-color, #dee2e6);
+    }
+
+    // Composer (message input area)
+    .o-mail-Composer {
+        background-color: var(--tertiary-bg, #2b3035);
+        border-color: var(--border-color, #495057);
+    }
+
+    // ==========================================================================
+    // FIX 3: SPREADSHEET DASHBOARD — Override hardcoded white
+    // ==========================================================================
+    // Odoo's dashboard_action.scss has: background-color: white (hardcoded).
+    // Odoo intentionally forces o-spreadsheet to light mode (no dark support yet).
+    // We darken the dashboard wrapper; the spreadsheet canvas stays light.
+
+    .o_spreadsheet_dashboard_action {
+        background-color: var(--body-bg, #212529) !important;
+    }
+
+    // Dashboard sidebar (search panel)
+    .o_spreadsheet_dashboard_search_panel {
+        background-color: var(--tertiary-bg, #2b3035) !important;
+        border-right-color: var(--border-color, #495057) !important;
+
+        li:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .active {
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+    }
+
+    // The spreadsheet itself stays light (Odoo forces color-scheme: light)
+    // but we ensure the control panel above it is dark
+    .o_spreadsheet_dashboard_action .o_control_panel {
+        background-color: var(--body-bg, #212529) !important;
+    }
+
+    // ---- Generic spreadsheet wrapper ----
+    .o_spreadsheet:not(.o_spreadsheet_dashboard_action .o-spreadsheet) {
+        background-color: var(--body-bg, #212529);
     }
 
     // ---- Statusbar ----
@@ -300,11 +416,6 @@ html[data-bs-theme="dark"] {
         }
     }
 
-    // ---- Spreadsheet / Pivot cell ----
-    .o_spreadsheet {
-        background-color: var(--body-bg, #212529);
-    }
-
     // ---- Home menu (app switcher grid) ----
     .o_home_menu {
         background-color: var(--body-bg, #212529);
@@ -323,21 +434,16 @@ html[data-bs-theme="dark"] {
 // =============================================================================
 // 2. DARK MODE CSS VARIABLE ADAPTATIONS
 // =============================================================================
-// Ensure OPS CSS variables produce sensible values in dark context.
 
 html[data-bs-theme="dark"] {
-    // Soften box shadows for dark backgrounds
     --ops-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 }
 
 // =============================================================================
 // 3. BRANDED NAVBAR — DROPDOWN MENUS IN DARK MODE
 // =============================================================================
-// The navbar stays branded (company color) in both modes.
-// Dropdown menus opened from it need dark backgrounds, not white.
 
 html[data-bs-theme="dark"] {
-    // Navbar dropdown menus (app switcher, systray, user menu)
     .o_main_navbar {
         .dropdown-menu,
         .o-dropdown--menu {
@@ -365,13 +471,11 @@ html[data-bs-theme="dark"] {
             }
         }
 
-        // App switcher panel
         .o_navbar_apps_menu .dropdown-menu {
             background-color: var(--body-bg, #212529);
         }
     }
 
-    // Sub-menu dropdowns under top menu items
     .o_menu_sections {
         .dropdown-menu,
         .o-dropdown--menu {
@@ -398,7 +502,6 @@ html[data-bs-theme="dark"] {
 // =============================================================================
 
 html[data-bs-theme="dark"] {
-    // Notification toasts
     .o_notification {
         &.border-info,
         &.border-success,
@@ -409,7 +512,6 @@ html[data-bs-theme="dark"] {
         }
     }
 
-    // Many2one dropdown autocomplete
     .o-autocomplete--dropdown-menu {
         background-color: var(--body-bg, #212529);
         border-color: var(--border-color, #495057);
@@ -424,7 +526,6 @@ html[data-bs-theme="dark"] {
         }
     }
 
-    // Command palette (Ctrl+K)
     .o_command_palette {
         .o_command_palette_search input {
             background-color: var(--body-bg, #212529);
@@ -442,7 +543,6 @@ html[data-bs-theme="dark"] {
         }
     }
 
-    // Tooltips
     .o_popover,
     .popover {
         --popover-bg: var(--tertiary-bg, #2b3035);
@@ -497,8 +597,6 @@ html[data-bs-theme="dark"] {
 // =============================================================================
 // 6. BUTTONS & BADGES — Branded colors in dark mode
 // =============================================================================
-// BS5 dark mode auto-adjusts btn-primary but the result is muted.
-// Override with OPS branded colors for visibility.
 
 html[data-bs-theme="dark"] {
     .btn-primary {
@@ -534,7 +632,7 @@ html[data-bs-theme="dark"] {
 }
 
 // =============================================================================
-// 7. APP GRID (OPS CUSTOM — FUTURE)
+// 7. APP GRID (OPS CUSTOM)
 // =============================================================================
 
 html[data-bs-theme="dark"] {

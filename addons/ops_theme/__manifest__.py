@@ -67,10 +67,9 @@ Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy
         # BACKEND ASSETS - Minimal theme styling
         # =================================================================
         'web.assets_backend': [
-            # 1. Core styling (debranding, chatter, dark mode for OPS components only)
+            # 1. Core styling (debranding, chatter)
             'ops_theme/static/src/scss/_debranding.scss',
             'ops_theme/static/src/scss/_chatter_position.scss',
-            'ops_theme/static/src/scss/_ops_dark_mode.scss',
             'ops_theme/static/src/scss/_dynamic_overrides.scss',
             'ops_theme/static/src/scss/_settings_theme_page.scss',
 
@@ -83,6 +82,15 @@ Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy
 
             # 3. XML templates - User menu with theme toggles
             'ops_theme/static/src/xml/user_menu.xml',
+        ],
+
+        # =================================================================
+        # DARK MODE OVERRIDES - Only loaded when dark mode is active
+        # =================================================================
+        # web.assets_web_dark = include(web.assets_web) + *.dark.scss files
+        # Our file loads AFTER all native dark.scss, giving highest cascade priority
+        'web.assets_web_dark': [
+            'ops_theme/static/src/scss/_ops_dark_mode.scss',
         ],
     },
     'installable': True,
