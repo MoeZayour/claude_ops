@@ -169,8 +169,8 @@
         color: #64748b;
         padding: 8px 0 6px 12px;
         margin: 16px 0 12px 0;
-        border-left: 3px solid #3b82f6;
-        background: linear-gradient(90deg, rgba(59, 130, 246, 0.04), transparent);
+        border-left: 3px solid var(--ops-secondary, #3b82f6);
+        background: linear-gradient(90deg, rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.04), transparent);
     }
 
 

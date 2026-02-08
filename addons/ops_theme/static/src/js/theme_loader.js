@@ -6,7 +6,6 @@
  * Handles initial theme setup on page load:
  * - Syncs the color_scheme cookie when server served dark from DB preference
  *   (so subsequent requests get the correct CSS bundle)
- * - Ensures data-color-mode mirrors data-bs-theme (OPS uses both attributes)
  * - Favicon and title debranding
  *
  * IMPORTANT: Does NOT override data-bs-theme from server rendering.
@@ -20,11 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Read the server-rendered theme (this is the source of truth)
     const serverScheme = html.getAttribute('data-bs-theme') || 'light';
-
-    // Ensure data-color-mode mirrors data-bs-theme (OPS custom components use this)
-    if (html.getAttribute('data-color-mode') !== serverScheme) {
-        html.setAttribute('data-color-mode', serverScheme);
-    }
 
     // If server rendered dark (from DB preference) but no cookie exists yet,
     // set the cookie so subsequent requests also get the dark CSS bundle.

@@ -108,6 +108,26 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.ops_show_signature_block',
         readonly=False,
     )
+    ops_signature_label_1 = fields.Char(
+        related='company_id.ops_signature_label_1',
+        readonly=False,
+    )
+    ops_signature_label_2 = fields.Char(
+        related='company_id.ops_signature_label_2',
+        readonly=False,
+    )
+    ops_signature_label_3 = fields.Char(
+        related='company_id.ops_signature_label_3',
+        readonly=False,
+    )
+    ops_show_amount_words = fields.Boolean(
+        related='company_id.ops_show_amount_words',
+        readonly=False,
+    )
+    ops_report_terms = fields.Html(
+        related='company_id.ops_report_terms',
+        readonly=False,
+    )
 
     # =========================================================================
     # USER DEFAULTS

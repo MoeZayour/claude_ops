@@ -460,7 +460,7 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">ops_matrix_accounting.report_ops_financial_minimal</field>
         <field name="report_file">ops_matrix_accounting.report_ops_financial_minimal</field>
-        <field name="binding_model_id" ref="model_ops_general_ledger_wizard_enhanced"/>
+        <!-- binding_model_id removed: superseded by corporate templates -->
         <field name="print_report_name">'Financial_Report_Minimal_%s_%s_%s' % (object.report_type, object.date_from, object.date_to)</field>
     </record>
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Budget vs Actual Report Wizard Form View -->
+    <record id="view_ops_budget_vs_actual_wizard_form" model="ir.ui.view">
+        <field name="name">ops.budget.vs.actual.wizard.form</field>
+        <field name="model">ops.budget.vs.actual.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Budget vs Actual Report">
+                <group>
+                    <group string="Period">
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group string="Filters">
+                        <field name="ops_branch_ids" widget="many2many_tags"/>
+                        <field name="ops_business_unit_ids" widget="many2many_tags"/>
+                        <field name="budget_ids" widget="many2many_tags"
+                               domain="[('state', 'in', ['confirmed', 'done'])]"/>
+                        <field name="include_draft"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print" string="Print Report"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open the wizard -->
+    <record id="action_budget_vs_actual_wizard" model="ir.actions.act_window">
+        <field name="name">Budget vs Actual Report</field>
+        <field name="res_model">ops.budget.vs.actual.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

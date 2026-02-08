@@ -1777,7 +1777,7 @@ class OpsGeneralLedgerWizardEnhanced(models.TransientModel):
             'bs': 'ops_matrix_accounting.action_report_balance_sheet_v2',
             'cf': 'ops_matrix_accounting.action_report_cash_flow_v2',
             'aged': 'ops_matrix_accounting.action_report_aged_partner_v2',
-            'partner': 'ops_matrix_accounting.action_report_general_ledger_corporate',  # Partner ledger uses GL template
+            'partner': 'ops_matrix_accounting.action_report_partner_ledger_corporate',
             'soa': 'ops_matrix_accounting.action_report_general_ledger_corporate',  # Statement of Account uses GL template
         }
 

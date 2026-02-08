@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        ================================================================
+        OPS CORPORATE PARTNER LEDGER — Wave 7
+        ================================================================
+        Landscape A4, 8 columns, grouped by partner.
+        wkhtmltopdf-compatible: NO flexbox, tables for layout.
+    -->
+
+    <template id="report_partner_ledger_corporate">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+
+                <t t-set="pc" t-value="primary_color"/>
+                <t t-set="tc" t-value="text_on_primary"/>
+                <t t-set="pl" t-value="primary_light"/>
+                <t t-set="pd" t-value="primary_dark"/>
+
+                <t t-call="ops_matrix_accounting.ops_corporate_pdf_layout">
+
+                    <style>
+                        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                        @page { size: A4 landscape; margin: 15mm 12mm 25mm 12mm; }
+                        .num { text-align: right; font-family: Consolas, Monaco, 'Courier New', monospace; }
+                        .val-positive { color: #16a34a; }
+                        .val-negative { color: #dc2626; }
+                        .val-zero { color: #bbbbbb; }
+                        .page-footer-fixed {
+                            position: fixed;
+                            bottom: 0;
+                            left: 0;
+                            right: 0;
+                            padding: 6px 0 0 0;
+                            border-top: 1px solid #e2e8f0;
+                        }
+                    </style>
+
+                    <div class="page ops-report" t-attf-style="color: {{body_text_color}}; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, Helvetica, sans-serif; font-size: 8pt; line-height: 1.4;">
+
+                        <!-- ================================================
+                             HEADER
+                             ================================================ -->
+                        <table width="100%" style="border-collapse: collapse; margin-bottom: 15px;" t-attf-style="border-bottom: 2px solid {{pc}}; padding-bottom: 10px;">
+                            <tr>
+                                <td style="vertical-align: middle; width: 60%;">
+                                    <table style="border-collapse: collapse;">
+                                        <tr>
+                                            <t t-if="company.logo">
+                                                <td style="vertical-align: middle; padding-right: 12px;">
+                                                    <img t-att-src="image_data_uri(company.logo)"
+                                                         style="max-height: 45px; max-width: 100px; border-radius: 6px; object-fit: contain;"
+                                                         alt="Company Logo"/>
+                                                </td>
+                                            </t>
+                                            <t t-else="">
+                                                <td style="vertical-align: middle; padding-right: 12px;">
+                                                    <div t-attf-style="width: 45px; height: 45px; border-radius: 6px; background: {{pc}}; color: {{tc}}; font-weight: 700; font-size: 14pt; text-align: center; line-height: 45px;">
+                                                        <t t-esc="(company.name or 'CO')[:2].upper()"/>
+                                                    </div>
+                                                </td>
+                                            </t>
+                                            <td style="vertical-align: middle;">
+                                                <div style="font-size: 13pt; font-weight: 700; color: #1e293b; line-height: 1.2;">
+                                                    <t t-esc="company.name"/>
+                                                </div>
+                                                <div style="font-size: 8pt; color: #666666; margin-top: 1px;">
+                                                    <t t-if="company.city"><t t-esc="company.city"/></t>
+                                                    <t t-if="company.city and company.country_id">, </t>
+                                                    <t t-esc="company.country_id.name or ''"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="vertical-align: top; width: 40%; text-align: right;">
+                                    <div style="font-size: 7.5pt; color: #666666; line-height: 1.6;">
+                                        Printed: <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %b %Y %H:%M')"/><br/>
+                                        Generated by: <t t-esc="user.name"/>
+                                    </div>
+                                    <div style="font-family: 'Courier New', monospace; font-size: 7pt; color: #94a3b8; letter-spacing: 0.3px; margin-top: 2px;">
+                                        Report ID: <t t-esc="report_run_id"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ================================================
+                             TITLE BLOCK
+                             ================================================ -->
+                        <div style="margin: 8px 0 4px 0;">
+                            <div t-attf-style="font-size: 16pt; font-weight: 800; color: {{pc}}; letter-spacing: -0.3px;">
+                                Partner Ledger
+                            </div>
+                            <div style="font-size: 8.5pt; color: #64748b; margin-top: 2px;">
+                                <t t-esc="date_from"/> &#x2014; <t t-esc="date_to"/>
+                                <t t-if="branch_names != 'All'">
+                                    &#x2022; Branches: <t t-esc="branch_names"/>
+                                </t>
+                                <t t-if="partner_filter != 'all'">
+                                    &#x2022; Filter: <t t-esc="partner_filter"/>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- ================================================
+                             SUMMARY ROW (3 KPI cards)
+                             ================================================ -->
+                        <table style="width: 100%; border-collapse: collapse; margin: 10px 0 15px 0;">
+                            <tr>
+                                <td style="width: 33%; padding: 10px 14px; vertical-align: top;" t-attf-style="background: {{pl}}; border-left: 3px solid {{pc}};">
+                                    <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 600;">Total Debit</div>
+                                    <div style="font-size: 12pt; font-weight: 700; color: #1e293b; margin-top: 3px;">
+                                        <t t-esc="'{:,.2f}'.format(grand_total_debit)"/>
+                                        <span style="font-size: 8pt; color: #64748b; margin-left: 3px;"><t t-esc="currency_name"/></span>
+                                    </div>
+                                </td>
+                                <td style="width: 1%;"></td>
+                                <td style="width: 33%; padding: 10px 14px; vertical-align: top;" t-attf-style="background: {{pl}}; border-left: 3px solid {{pc}};">
+                                    <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 600;">Total Credit</div>
+                                    <div style="font-size: 12pt; font-weight: 700; color: #1e293b; margin-top: 3px;">
+                                        <t t-esc="'{:,.2f}'.format(grand_total_credit)"/>
+                                        <span style="font-size: 8pt; color: #64748b; margin-left: 3px;"><t t-esc="currency_name"/></span>
+                                    </div>
+                                </td>
+                                <td style="width: 1%;"></td>
+                                <td style="width: 33%; padding: 10px 14px; vertical-align: top;" t-attf-style="background: {{pl}}; border-left: 3px solid {{pc}};">
+                                    <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 600;">Net Balance</div>
+                                    <div style="font-size: 12pt; font-weight: 700; margin-top: 3px;">
+                                        <t t-if="grand_total_balance &gt;= 0">
+                                            <span class="val-positive"><t t-esc="'{:,.2f}'.format(grand_total_balance)"/></span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="val-negative">(<t t-esc="'{:,.2f}'.format(abs(grand_total_balance))"/>)</span>
+                                        </t>
+                                        <span style="font-size: 8pt; color: #64748b; margin-left: 3px;"><t t-esc="currency_name"/></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ================================================
+                             PARTNER SECTIONS
+                             ================================================ -->
+                        <t t-foreach="partners" t-as="partner">
+
+                            <!-- Partner Header -->
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 14px; margin-bottom: 4px;">
+                                <tr>
+                                    <td style="vertical-align: middle;">
+                                        <span style="font-size: 9.5pt; font-weight: 700; color: #1e293b;">
+                                            <t t-esc="partner['name']"/>
+                                        </span>
+                                        <t t-if="partner['partner_type'] == 'receivable'">
+                                            <span style="display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 6.5pt; font-weight: 600; letter-spacing: 0.3px; border-radius: 3px; background: #dbeafe; color: #1e40af;">CUSTOMER</span>
+                                        </t>
+                                        <t t-if="partner['partner_type'] == 'payable'">
+                                            <span style="display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 6.5pt; font-weight: 600; letter-spacing: 0.3px; border-radius: 3px; background: #fef3c7; color: #92400e;">VENDOR</span>
+                                        </t>
+                                        <t t-if="partner['partner_type'] == 'both'">
+                                            <span style="display: inline-block; margin-left: 8px; padding: 1px 8px; font-size: 6.5pt; font-weight: 600; letter-spacing: 0.3px; border-radius: 3px; background: #e9d5ff; color: #6b21a8;">CUSTOMER / VENDOR</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Data Table -->
+                            <table style="width: 100%; border-collapse: collapse; font-size: 7.5pt;">
+                                <!-- Column Headers -->
+                                <tr t-attf-style="background: {{pc}}; color: {{tc}};">
+                                    <th style="width: 8%; padding: 5px 6px; text-align: left; font-weight: 600; font-size: 7pt;">Date</th>
+                                    <th style="width: 7%; padding: 5px 6px; text-align: left; font-weight: 600; font-size: 7pt;">Journal</th>
+                                    <th style="width: 12%; padding: 5px 6px; text-align: left; font-weight: 600; font-size: 7pt;">Account</th>
+                                    <th style="width: 13%; padding: 5px 6px; text-align: left; font-weight: 600; font-size: 7pt;">Reference</th>
+                                    <th style="width: 24%; padding: 5px 6px; text-align: left; font-weight: 600; font-size: 7pt;">Description</th>
+                                    <th style="width: 12%; padding: 5px 6px; text-align: right; font-weight: 600; font-size: 7pt;">Debit</th>
+                                    <th style="width: 12%; padding: 5px 6px; text-align: right; font-weight: 600; font-size: 7pt;">Credit</th>
+                                    <th style="width: 12%; padding: 5px 6px; text-align: right; font-weight: 600; font-size: 7pt;">Balance</th>
+                                </tr>
+
+                                <!-- Opening Balance Row -->
+                                <t t-if="partner['opening_balance'] != 0">
+                                    <tr style="background: #f8fafc;">
+                                        <td colspan="5" style="padding: 4px 6px; text-align: right; font-style: italic; color: #64748b; font-size: 7.5pt;">
+                                            Opening Balance
+                                        </td>
+                                        <td style="padding: 4px 6px;"></td>
+                                        <td style="padding: 4px 6px;"></td>
+                                        <td class="num" style="padding: 4px 6px; font-weight: 600;">
+                                            <t t-if="partner['opening_balance'] &gt;= 0">
+                                                <t t-esc="'{:,.2f}'.format(partner['opening_balance'])"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="val-negative">(<t t-esc="'{:,.2f}'.format(abs(partner['opening_balance']))"/>)</span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+
+                                <!-- Data Rows -->
+                                <t t-foreach="partner['lines']" t-as="line">
+                                    <tr t-attf-style="border-bottom: 1px solid #f1f5f9; #{line_index % 2 and 'background: #fafbfc;' or ''}">
+                                        <td style="padding: 3px 6px; font-size: 7pt;"><t t-esc="line['date']"/></td>
+                                        <td style="padding: 3px 6px; font-size: 7pt;"><t t-esc="line['journal']"/></td>
+                                        <td style="padding: 3px 6px; font-size: 7pt;"><t t-esc="line['account']"/></td>
+                                        <td style="padding: 3px 6px; font-size: 7pt; overflow: hidden; white-space: nowrap; max-width: 120px; text-overflow: ellipsis;"><t t-esc="line['reference']"/></td>
+                                        <td style="padding: 3px 6px; font-size: 7pt; overflow: hidden; white-space: nowrap; max-width: 200px; text-overflow: ellipsis;"><t t-esc="line['description']"/></td>
+                                        <td class="num" style="padding: 3px 6px;">
+                                            <t t-if="line['debit']">
+                                                <t t-esc="'{:,.2f}'.format(line['debit'])"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span style="color: #cbd5e1;">&#x2014;</span>
+                                            </t>
+                                        </td>
+                                        <td class="num" style="padding: 3px 6px;">
+                                            <t t-if="line['credit']">
+                                                <t t-esc="'{:,.2f}'.format(line['credit'])"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span style="color: #cbd5e1;">&#x2014;</span>
+                                            </t>
+                                        </td>
+                                        <td class="num" style="padding: 3px 6px; font-weight: 600;">
+                                            <t t-if="line['balance'] &gt;= 0">
+                                                <t t-esc="'{:,.2f}'.format(line['balance'])"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="val-negative">(<t t-esc="'{:,.2f}'.format(abs(line['balance']))"/>)</span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+
+                                <!-- Partner Total -->
+                                <tr t-attf-style="border-top: 2px solid {{pc}}; font-weight: 700; background: {{pl}};">
+                                    <td colspan="5" style="padding: 5px 6px; font-size: 7.5pt;">
+                                        Closing Balance &#x2014; <t t-esc="partner['name']"/>
+                                    </td>
+                                    <td class="num" style="padding: 5px 6px;">
+                                        <t t-if="partner['total_debit']">
+                                            <t t-esc="'{:,.2f}'.format(partner['total_debit'])"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="val-zero">0.00</span>
+                                        </t>
+                                    </td>
+                                    <td class="num" style="padding: 5px 6px;">
+                                        <t t-if="partner['total_credit']">
+                                            <t t-esc="'{:,.2f}'.format(partner['total_credit'])"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="val-zero">0.00</span>
+                                        </t>
+                                    </td>
+                                    <td class="num" style="padding: 5px 6px;">
+                                        <t t-if="partner['closing_balance'] &gt;= 0">
+                                            <t t-esc="'{:,.2f}'.format(partner['closing_balance'])"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="val-negative">(<t t-esc="'{:,.2f}'.format(abs(partner['closing_balance']))"/>)</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </t>
+
+                        <!-- ================================================
+                             GRAND TOTAL
+                             ================================================ -->
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 8pt;">
+                            <tr t-attf-style="background: {{pc}}; color: {{tc}}; font-weight: 700;">
+                                <td style="width: 64%; padding: 7px 8px; font-size: 9pt;">
+                                    GRAND TOTAL (<t t-esc="partner_count"/> partners)
+                                </td>
+                                <td class="num" style="width: 12%; padding: 7px 8px;">
+                                    <t t-esc="'{:,.2f}'.format(grand_total_debit)"/>
+                                </td>
+                                <td class="num" style="width: 12%; padding: 7px 8px;">
+                                    <t t-esc="'{:,.2f}'.format(grand_total_credit)"/>
+                                </td>
+                                <td class="num" style="width: 12%; padding: 7px 8px;">
+                                    <t t-if="grand_total_balance &gt;= 0">
+                                        <t t-esc="'{:,.2f}'.format(grand_total_balance)"/>
+                                    </t>
+                                    <t t-else="">
+                                        (<t t-esc="'{:,.2f}'.format(abs(grand_total_balance))"/>)
+                                    </t>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ================================================
+                             SIGNATURE BLOCK
+                             ================================================ -->
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 35px;">
+                            <tr>
+                                <td style="width: 32%; padding: 0 15px 0 0; vertical-align: top;">
+                                    <div style="text-transform: uppercase; font-size: 7pt; font-weight: 600; color: #64748b;">Prepared By</div>
+                                    <div style="border-bottom: 1px solid #cbd5e1; margin: 40px 0 6px;"></div>
+                                    <div style="font-size: 6.5pt; color: #94a3b8;">Name / Date</div>
+                                </td>
+                                <td style="width: 2%; border-left: 1px solid #e2e8f0;"></td>
+                                <td style="width: 32%; padding: 0 15px; vertical-align: top;">
+                                    <div style="text-transform: uppercase; font-size: 7pt; font-weight: 600; color: #64748b;">Reviewed By</div>
+                                    <div style="border-bottom: 1px solid #cbd5e1; margin: 40px 0 6px;"></div>
+                                    <div style="font-size: 6.5pt; color: #94a3b8;">Name / Date</div>
+                                </td>
+                                <td style="width: 2%; border-left: 1px solid #e2e8f0;"></td>
+                                <td style="width: 32%; padding: 0 0 0 15px; vertical-align: top;">
+                                    <div style="text-transform: uppercase; font-size: 7pt; font-weight: 600; color: #64748b;">Approved By</div>
+                                    <div style="border-bottom: 1px solid #cbd5e1; margin: 40px 0 6px;"></div>
+                                    <div style="font-size: 6.5pt; color: #94a3b8;">Name / Date</div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ================================================
+                             FIXED FOOTER
+                             ================================================ -->
+                        <div class="page-footer-fixed" style="padding: 6px 0;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;">
+                                        <span style="font-size: 8pt; color: #666666;">Powered by</span>
+                                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png"
+                                             style="height: 16px; vertical-align: middle; margin-left: 4px;"
+                                             alt="OPS Framework"/>
+                                    </td>
+                                    <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;">
+                                        <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Confidential &#x2014; For authorized personnel only
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Report Action -->
+    <record id="action_report_partner_ledger_corporate" model="ir.actions.report">
+        <field name="name">Partner Ledger</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_partner_ledger_corporate</field>
+        <field name="report_file">ops_matrix_accounting.report_partner_ledger_corporate</field>
+        <field name="paperformat_id" ref="paperformat_ops_corporate_landscape"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

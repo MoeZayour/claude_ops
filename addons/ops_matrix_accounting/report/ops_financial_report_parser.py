@@ -1479,12 +1479,40 @@ class OpsFinancialMinimalReportParser(models.AbstractModel):
 # PARSER ALIASES — Odoo matches report_name to AbstractModel
 # named 'report.<report_name>'. Without these, docs is empty
 # and the QWeb template renders a blank page.
+#
+# Each alias injects corporate color variables (primary_color,
+# text_on_primary, body_text_color, primary_light, primary_dark)
+# and report_run_id for the GL gold-standard template pattern.
 # ============================================================
+
+def _inject_corporate_vars(parser, values, prefix='FIN'):
+    """Inject corporate color variables and report_run_id into report values."""
+    from .ops_corporate_report_parsers import get_report_colors, generate_report_id
+    company = parser.env.company
+    docs = values.get('docs')
+    if docs:
+        if hasattr(docs, 'company_id') and docs.company_id:
+            company = docs.company_id
+        elif isinstance(docs, list) and docs and hasattr(docs[0], 'company_id'):
+            company = docs[0].company_id or company
+    colors = get_report_colors(company)
+    values.update(colors)
+    values['report_run_id'] = generate_report_id(prefix)
+    values['currency_name'] = company.currency_id.name or ''
+    values['currency_symbol'] = company.currency_id.symbol or ''
+    values['company'] = company
+    return values
+
 
 class OpsBalanceSheetCorporateParser(models.AbstractModel):
     _name = 'report.ops_matrix_accounting.report_balance_sheet_corporate'
     _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Balance Sheet Corporate Parser'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        values = super()._get_report_values(docids, data)
+        return _inject_corporate_vars(self, values, 'BS')
 
 
 class OpsTrialBalanceCorporateParser(models.AbstractModel):
@@ -1492,11 +1520,21 @@ class OpsTrialBalanceCorporateParser(models.AbstractModel):
     _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Trial Balance Corporate Parser'
 
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        values = super()._get_report_values(docids, data)
+        return _inject_corporate_vars(self, values, 'TB')
+
 
 class OpsProfitLossCorporateParser(models.AbstractModel):
     _name = 'report.ops_matrix_accounting.report_profit_loss_corporate'
     _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Profit & Loss Corporate Parser'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        values = super()._get_report_values(docids, data)
+        return _inject_corporate_vars(self, values, 'PL')
 
 
 class OpsCashFlowCorporateParser(models.AbstractModel):
@@ -1504,11 +1542,21 @@ class OpsCashFlowCorporateParser(models.AbstractModel):
     _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Cash Flow Corporate Parser'
 
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        values = super()._get_report_values(docids, data)
+        return _inject_corporate_vars(self, values, 'CF')
+
 
 class OpsAgedPartnerCorporateParser(models.AbstractModel):
     _name = 'report.ops_matrix_accounting.report_aged_partner_corporate'
     _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
     _description = 'Aged Partner Corporate Parser'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        values = super()._get_report_values(docids, data)
+        return _inject_corporate_vars(self, values, 'AP')
 
 
 class OpsGeneralLedgerCorporateParser(models.AbstractModel):

@@ -165,6 +165,30 @@ class ResCompanyBranding(models.Model):
         default=True,
         help='Display signature lines on printed documents.',
     )
+    ops_signature_label_1 = fields.Char(
+        string='Signature Label 1',
+        default='Prepared By',
+        help='First signature line label on printed documents.',
+    )
+    ops_signature_label_2 = fields.Char(
+        string='Signature Label 2',
+        default='Authorized Signatory',
+        help='Second signature line label on printed documents.',
+    )
+    ops_signature_label_3 = fields.Char(
+        string='Signature Label 3',
+        default='Customer Acceptance',
+        help='Third signature line label on printed documents.',
+    )
+    ops_show_amount_words = fields.Boolean(
+        string='Show Amount in Words',
+        default=True,
+        help='Display amount in words on quotations and invoices.',
+    )
+    ops_report_terms = fields.Html(
+        string='Default Report Terms',
+        help='Default terms and conditions printed on external documents when no document-specific terms exist.',
+    )
 
     # =========================================================================
     # USER DEFAULTS
@@ -290,6 +314,42 @@ class ResCompanyBranding(models.Model):
                     company.ops_favicon_mimetype = 'image/x-icon'
             else:
                 company.ops_favicon_mimetype = False
+
+    def get_ops_report_settings(self):
+        """Return OPS report settings as a plain dict for QWeb templates.
+
+        Neither hasattr() nor getattr() are available in Odoo 19 QWeb sandbox.
+        This method wraps all OPS-specific field access in try/except so
+        templates never crash during module upgrades or with stale registries.
+
+        Usage in QWeb:
+            <t t-set="_ops" t-value="company.get_ops_report_settings()"/>
+            <t t-if="_ops['show_words']">...</t>
+        """
+        self.ensure_one()
+        defaults = {
+            'show_words': False,
+            'show_bank': False,
+            'show_sig': False,
+            'words_lang': 'en',
+            'sig1': 'Prepared By',
+            'sig2': 'Authorized Signatory',
+            'sig3': 'Customer Acceptance',
+            'report_terms': False,
+        }
+        try:
+            return {
+                'show_words': self.ops_show_amount_words,
+                'show_bank': self.ops_show_bank_details,
+                'show_sig': self.ops_show_signature_block,
+                'words_lang': self.ops_amount_words_lang or 'en',
+                'sig1': self.ops_signature_label_1 or 'Prepared By',
+                'sig2': self.ops_signature_label_2 or 'Authorized Signatory',
+                'sig3': self.ops_signature_label_3 or 'Customer Acceptance',
+                'report_terms': self.ops_report_terms,
+            }
+        except (AttributeError, KeyError):
+            return defaults
 
     def get_favicon(self):
         """Return favicon data or False."""

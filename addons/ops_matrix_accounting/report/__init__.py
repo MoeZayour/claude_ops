@@ -5,6 +5,7 @@ from . import ops_financial_report_parser
 from . import ops_financial_matrix_report
 from . import ops_general_ledger_report
 from . import ops_asset_register_report
+from . import ops_corporate_report_parsers
 
 # Excel infrastructure (Phase 5 - Corporate Design System)
 from . import excel_styles

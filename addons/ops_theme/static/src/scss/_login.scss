@@ -191,8 +191,8 @@
 }
 
 // Dark mode support for form panel
-[data-color-mode="dark"] .ops-login-form-panel {
-    background-color: var(--ops-bg-card, #1e293b);
+html[data-bs-theme="dark"] .ops-login-form-panel {
+    background-color: var(--bs-body-bg, #212529);
 }
 
 .ops-login-form-container {
@@ -232,9 +232,9 @@
     }
 }
 
-[data-color-mode="dark"] .ops-login-header {
-    h2 { color: var(--ops-text-primary, #f1f5f9); }
-    p { color: var(--ops-text-secondary, #94a3b8); }
+html[data-bs-theme="dark"] .ops-login-header {
+    h2 { color: var(--bs-body-color, #dee2e6); }
+    p { color: var(--bs-secondary-color, #94a3b8); }
 }
 
 // Form title (legacy)
@@ -246,8 +246,8 @@
     text-align: center;
 }
 
-[data-color-mode="dark"] .ops-login-title {
-    color: var(--ops-text-primary, #f1f5f9);
+html[data-bs-theme="dark"] .ops-login-title {
+    color: var(--bs-body-color, #dee2e6);
 }
 
 // =============================================================================
@@ -269,9 +269,9 @@
         margin-bottom: 0.5rem;
     }
 
-    [data-color-mode="dark"] & label,
-    [data-color-mode="dark"] & .form-label {
-        color: var(--ops-text-primary, #f1f5f9);
+    html[data-bs-theme="dark"] & label,
+    html[data-bs-theme="dark"] & .form-label {
+        color: var(--bs-body-color, #dee2e6);
     }
 
     // Input fields
@@ -303,13 +303,13 @@
         }
     }
 
-    [data-color-mode="dark"] & input[type="text"],
-    [data-color-mode="dark"] & input[type="password"],
-    [data-color-mode="dark"] & input[type="email"],
-    [data-color-mode="dark"] & .form-control {
-        background-color: var(--ops-bg-input, #334155);
-        border-color: var(--ops-border, #475569);
-        color: var(--ops-text-primary, #f1f5f9);
+    html[data-bs-theme="dark"] & input[type="text"],
+    html[data-bs-theme="dark"] & input[type="password"],
+    html[data-bs-theme="dark"] & input[type="email"],
+    html[data-bs-theme="dark"] & .form-control {
+        background-color: var(--bs-tertiary-bg, #2b3035);
+        border-color: var(--bs-border-color, #495057);
+        color: var(--bs-body-color, #dee2e6);
     }
 
     // Submit button with ripple effect

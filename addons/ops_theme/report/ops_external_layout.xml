@@ -111,6 +111,9 @@
 
             <!-- Document content -->
             <t t-out="0"/>
+
+            <!-- OPS Document Extras: bank details, signatures, amount words, terms -->
+            <t t-call="ops_theme.ops_document_extras"/>
         </div>
 
         <!-- ========== FOOTER ========== -->

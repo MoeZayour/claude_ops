@@ -141,40 +141,40 @@ html[data-bs-theme="dark"] {
 // 4. LOGIN PAGE (OPS CUSTOM COMPONENT)
 // =============================================================================
 
-[data-color-mode="dark"] {
+html[data-bs-theme="dark"] {
     .ops-login-container {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        background: linear-gradient(135deg, var(--bs-body-bg, #212529) 0%, var(--ops-primary, #1e293b) 100%);
     }
 
     .ops-login-panel {
-        background: #1e293b;
-        border-color: #334155;
+        background: var(--ops-primary, #1e293b);
+        border-color: var(--bs-border-color, #495057);
     }
 
     .ops-login-brand {
-        color: #f1f5f9;
+        color: var(--bs-body-color, #dee2e6);
     }
 
     .ops-login-form-panel {
-        background-color: #0f172a !important;
-        color: #f1f5f9;
+        background-color: var(--bs-body-bg, #212529) !important;
+        color: var(--bs-body-color, #dee2e6);
     }
 
     .ops-login-header h2,
     .ops-login-header p {
-        color: #f1f5f9;
+        color: var(--bs-body-color, #dee2e6);
     }
 
     .ops-login-form-panel input[type="text"],
     .ops-login-form-panel input[type="password"],
     .ops-login-form-panel input[type="email"] {
-        background-color: #1e293b;
-        border-color: #334155;
-        color: #f1f5f9;
+        background-color: var(--bs-tertiary-bg, #2b3035);
+        border-color: var(--bs-border-color, #495057);
+        color: var(--bs-body-color, #dee2e6);
 
         &:focus {
-            background-color: #1e293b;
-            border-color: #3b82f6;
+            background-color: var(--bs-tertiary-bg, #2b3035);
+            border-color: var(--ops-secondary, #3b82f6);
         }
     }
 }
@@ -183,17 +183,17 @@ html[data-bs-theme="dark"] {
 // 5. APP GRID (OPS CUSTOM — FUTURE)
 // =============================================================================
 
-[data-color-mode="dark"] {
+html[data-bs-theme="dark"] {
     .ops-app-grid {
-        background: #0f172a;
+        background: var(--bs-body-bg, #212529);
     }
 
     .ops-app-tile {
-        background: #1e293b;
-        border-color: #334155;
+        background: var(--bs-tertiary-bg, #2b3035);
+        border-color: var(--bs-border-color, #495057);
 
         &:hover {
-            background: #334155;
+            background: var(--bs-secondary-bg, #343a40);
         }
     }
 }

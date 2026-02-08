@@ -198,13 +198,13 @@ class OpsAssetReportWizard(models.TransientModel):
         self.ensure_one()
 
         template_mapping = {
-            'register': 'ops_matrix_accounting.report_asset_register_document_corporate',
-            'forecast': 'ops_matrix_accounting.report_depreciation_schedule_document_corporate',
-            'disposal': 'ops_matrix_accounting.report_asset_register_document_corporate',
-            'movement': 'ops_matrix_accounting.report_asset_register_document_corporate',
+            'register': 'ops_matrix_accounting.report_asset_register_corp',
+            'forecast': 'ops_matrix_accounting.report_depreciation_sched_corp',
+            'disposal': 'ops_matrix_accounting.report_asset_register_corp',
+            'movement': 'ops_matrix_accounting.report_asset_register_corp',
         }
 
-        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_asset_register_document_corporate')
+        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_asset_register_corp')
 
     def _add_filter_summary_parts(self, parts):
         """Add asset-specific filter descriptions."""

@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        ================================================================
+        OPS CORPORATE BUDGET VS ACTUAL — Wave 7
+        ================================================================
+        Landscape A4, 8 columns, grouped by account type.
+        Progress bars + status badges for utilization.
+        wkhtmltopdf-compatible: NO flexbox, tables for layout.
+    -->
+
+    <template id="report_budget_vs_actual_corporate">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+
+                <t t-set="pc" t-value="primary_color"/>
+                <t t-set="tc" t-value="text_on_primary"/>
+                <t t-set="pl" t-value="primary_light"/>
+                <t t-set="pd" t-value="primary_dark"/>
+
+                <t t-call="ops_matrix_accounting.ops_corporate_pdf_layout">
+
+                    <style>
+                        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                        @page { size: A4 landscape; margin: 15mm 12mm 25mm 12mm; }
+                        .num { text-align: right; font-family: Consolas, Monaco, 'Courier New', monospace; }
+                        .val-positive { color: #16a34a; }
+                        .val-negative { color: #dc2626; }
+                        .val-zero { color: #bbbbbb; }
+                        .page-footer-fixed {
+                            position: fixed;
+                            bottom: 0;
+                            left: 0;
+                            right: 0;
+                            padding: 6px 0 0 0;
+                            border-top: 1px solid #e2e8f0;
+                        }
+                    </style>
+
+                    <div class="page ops-report" t-attf-style="color: {{body_text_color}}; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, Helvetica, sans-serif; font-size: 8pt; line-height: 1.4;">
+
+                        <!-- ================================================
+                             HEADER
+                             ================================================ -->
+                        <table width="100%" style="border-collapse: collapse; margin-bottom: 15px;" t-attf-style="border-bottom: 2px solid {{pc}}; padding-bottom: 10px;">
+                            <tr>
+                                <td style="vertical-align: middle; width: 60%;">
+                                    <table style="border-collapse: collapse;">
+                                        <tr>
+                                            <t t-if="company.logo">
+                                                <td style="vertical-align: middle; padding-right: 12px;">
+                                                    <img t-att-src="image_data_uri(company.logo)"
+                                                         style="max-height: 45px; max-width: 100px; border-radius: 6px; object-fit: contain;"
+                                                         alt="Company Logo"/>
+                                                </td>
+                                            </t>
+                                            <t t-else="">
+                                                <td style="vertical-align: middle; padding-right: 12px;">
+                                                    <div t-attf-style="width: 45px; height: 45px; border-radius: 6px; background: {{pc}}; color: {{tc}}; font-weight: 700; font-size: 14pt; text-align: center; line-height: 45px;">
+                                                        <t t-esc="(company.name or 'CO')[:2].upper()"/>
+                                                    </div>
+                                                </td>
+                                            </t>
+                                            <td style="vertical-align: middle;">
+                                                <div style="font-size: 13pt; font-weight: 700; color: #1e293b; line-height: 1.2;">
+                                                    <t t-esc="company.name"/>
+                                                </div>
+                                                <div style="font-size: 8pt; color: #666666; margin-top: 1px;">
+                                                    <t t-if="company.city"><t t-esc="company.city"/></t>
+                                                    <t t-if="company.city and company.country_id">, </t>
+                                                    <t t-esc="company.country_id.name or ''"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="vertical-align: top; width: 40%; text-align: right;">
+                                    <div style="font-size: 7.5pt; color: #666666; line-height: 1.6;">
+                                        Printed: <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %b %Y %H:%M')"/><br/>
+                                        Generated by: <t t-esc="user.name"/>
+                                    </div>
+                                    <div style="font-family: 'Courier New', monospace; font-size: 7pt; color: #94a3b8; letter-spacing: 0.3px; margin-top: 2px;">
+                                        Report ID: <t t-esc="report_run_id"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ================================================
+                             TITLE BLOCK
+                             ================================================ -->
+                        <div style="margin: 8px 0 4px 0;">
+                            <div t-attf-style="font-size: 16pt; font-weight: 800; color: {{pc}}; letter-spacing: -0.3px;">
+                                Budget vs Actual
+                            </div>
+                            <div style="font-size: 8.5pt; color: #64748b; margin-top: 2px;">
+                                <t t-esc="date_from"/> &#x2014; <t t-esc="date_to"/>
+                                &#x2022; <t t-esc="budget_count"/> budget(s)
+                                <t t-if="branch_names != 'All'">
+                                    &#x2022; Branches: <t t-esc="branch_names"/>
+                                </t>
+                                <t t-if="bu_names != 'All'">
+                                    &#x2022; BU: <t t-esc="bu_names"/>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- ================================================
+                             SUMMARY ROW (4 KPI cards)
+                             ================================================ -->
+                        <table style="width: 100%; border-collapse: collapse; margin: 10px 0 15px 0;">
+                            <tr>
+                                <td style="width: 24%; padding: 10px 12px; vertical-align: top;" t-attf-style="background: {{pl}}; border-left: 3px solid {{pc}};">
+                                    <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 600;">Total Budget</div>
+                                    <div style="font-size: 11pt; font-weight: 700; color: #1e293b; margin-top: 3px;">
+                                        <t t-esc="'{:,.0f}'.format(grand_budget)"/>
+                                        <span style="font-size: 7.5pt; color: #64748b; margin-left: 3px;"><t t-esc="currency_name"/></span>
+                                    </div>
+                                </td>
+                                <td style="width: 1%;"></td>
+                                <td style="width: 24%; padding: 10px 12px; vertical-align: top;" t-attf-style="background: {{pl}}; border-left: 3px solid {{pc}};">
+                                    <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 600;">Total Actual</div>
+                                    <div style="font-size: 11pt; font-weight: 700; color: #1e293b; margin-top: 3px;">
+                                        <t t-esc="'{:,.0f}'.format(grand_actual)"/>
+                                        <span style="font-size: 7.5pt; color: #64748b; margin-left: 3px;"><t t-esc="currency_name"/></span>
+                                    </div>
+                                </td>
+                                <td style="width: 1%;"></td>
+                                <td style="width: 24%; padding: 10px 12px; vertical-align: top;" t-attf-style="background: {{pl}}; border-left: 3px solid {{pc}};">
+                                    <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 600;">Total Available</div>
+                                    <div style="font-size: 11pt; font-weight: 700; margin-top: 3px;">
+                                        <t t-if="grand_available &gt;= 0">
+                                            <span class="val-positive"><t t-esc="'{:,.0f}'.format(grand_available)"/></span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="val-negative">(<t t-esc="'{:,.0f}'.format(abs(grand_available))"/>)</span>
+                                        </t>
+                                        <span style="font-size: 7.5pt; color: #64748b; margin-left: 3px;"><t t-esc="currency_name"/></span>
+                                    </div>
+                                </td>
+                                <td style="width: 1%;"></td>
+                                <td style="width: 24%; padding: 10px 12px; vertical-align: top;" t-attf-style="background: {{pl}}; border-left: 3px solid {{pc}};">
+                                    <div style="font-size: 7pt; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 600;">Overall Utilization</div>
+                                    <div style="font-size: 11pt; font-weight: 700; margin-top: 3px;">
+                                        <t t-esc="'{:.1f}'.format(grand_used_pct)"/>%
+                                        <t t-if="grand_used_pct &lt;= 50">
+                                            <span style="display: inline-block; margin-left: 6px; padding: 1px 6px; font-size: 6pt; font-weight: 600; border-radius: 3px; background: #dcfce7; color: #166534;">ON TRACK</span>
+                                        </t>
+                                        <t t-elif="grand_used_pct &lt;= 80">
+                                            <span style="display: inline-block; margin-left: 6px; padding: 1px 6px; font-size: 6pt; font-weight: 600; border-radius: 3px; background: #dbeafe; color: #1e40af;">MODERATE</span>
+                                        </t>
+                                        <t t-elif="grand_used_pct &lt;= 100">
+                                            <span style="display: inline-block; margin-left: 6px; padding: 1px 6px; font-size: 6pt; font-weight: 600; border-radius: 3px; background: #fef3c7; color: #92400e;">CAUTION</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span style="display: inline-block; margin-left: 6px; padding: 1px 6px; font-size: 6pt; font-weight: 600; border-radius: 3px; background: #fecaca; color: #991b1b;">OVER BUDGET</span>
+                                        </t>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ================================================
+                             NO DATA MESSAGE
+                             ================================================ -->
+                        <t t-if="not groups">
+                            <div style="text-align: center; padding: 40px 0; color: #94a3b8; font-size: 10pt;">
+                                No budget data found for the selected period and filters.
+                            </div>
+                        </t>
+
+                        <!-- ================================================
+                             ACCOUNT TYPE GROUPS
+                             ================================================ -->
+                        <t t-foreach="groups" t-as="group">
+
+                            <!-- Group Header -->
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 14px; margin-bottom: 4px;">
+                                <tr>
+                                    <td t-attf-style="padding: 6px 10px; font-size: 9pt; font-weight: 700; color: {{pd}}; background: {{pl}}; border-left: 4px solid {{pc}};">
+                                        <t t-esc="group['name']"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Data Table -->
+                            <table style="width: 100%; border-collapse: collapse; font-size: 7.5pt;">
+                                <!-- Column Headers -->
+                                <tr t-attf-style="background: {{pc}}; color: {{tc}};">
+                                    <th style="width: 7%; padding: 5px 6px; text-align: left; font-weight: 600; font-size: 7pt;">Code</th>
+                                    <th style="width: 21%; padding: 5px 6px; text-align: left; font-weight: 600; font-size: 7pt;">Account</th>
+                                    <th style="width: 12%; padding: 5px 6px; text-align: right; font-weight: 600; font-size: 7pt;">Budget</th>
+                                    <th style="width: 12%; padding: 5px 6px; text-align: right; font-weight: 600; font-size: 7pt;">Actual</th>
+                                    <th style="width: 12%; padding: 5px 6px; text-align: right; font-weight: 600; font-size: 7pt;">Committed</th>
+                                    <th style="width: 12%; padding: 5px 6px; text-align: right; font-weight: 600; font-size: 7pt;">Available</th>
+                                    <th style="width: 10%; padding: 5px 6px; text-align: right; font-weight: 600; font-size: 7pt;">Used %</th>
+                                    <th style="width: 14%; padding: 5px 6px; text-align: center; font-weight: 600; font-size: 7pt;">Status</th>
+                                </tr>
+
+                                <!-- Data Rows -->
+                                <t t-foreach="group['lines']" t-as="line">
+                                    <tr t-attf-style="border-bottom: 1px solid #f1f5f9; #{line_index % 2 and 'background: #fafbfc;' or ''}">
+                                        <td style="padding: 4px 6px; font-size: 7pt; font-weight: 600;"><t t-esc="line['code']"/></td>
+                                        <td style="padding: 4px 6px; font-size: 7pt;"><t t-esc="line['name']"/></td>
+                                        <td class="num" style="padding: 4px 6px;">
+                                            <t t-if="line['budget']">
+                                                <t t-esc="'{:,.2f}'.format(line['budget'])"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span style="color: #cbd5e1;">&#x2014;</span>
+                                            </t>
+                                        </td>
+                                        <td class="num" style="padding: 4px 6px;">
+                                            <t t-if="line['actual']">
+                                                <t t-esc="'{:,.2f}'.format(line['actual'])"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span style="color: #cbd5e1;">&#x2014;</span>
+                                            </t>
+                                        </td>
+                                        <td class="num" style="padding: 4px 6px;">
+                                            <t t-if="line['committed']">
+                                                <t t-esc="'{:,.2f}'.format(line['committed'])"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span style="color: #cbd5e1;">&#x2014;</span>
+                                            </t>
+                                        </td>
+                                        <td class="num" style="padding: 4px 6px;">
+                                            <t t-if="line['available'] &gt;= 0">
+                                                <t t-esc="'{:,.2f}'.format(line['available'])"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="val-negative">(<t t-esc="'{:,.2f}'.format(abs(line['available']))"/>)</span>
+                                            </t>
+                                        </td>
+                                        <td class="num" style="padding: 4px 6px;">
+                                            <t t-if="line['budget']">
+                                                <t t-esc="'{:.1f}'.format(line['used_pct'])"/>%
+                                            </t>
+                                            <t t-else="">
+                                                <span style="color: #94a3b8;">N/A</span>
+                                            </t>
+                                        </td>
+                                        <td style="padding: 4px 6px; text-align: center;">
+                                            <t t-if="line['budget']">
+                                                <!-- Progress Bar -->
+                                                <t t-set="bar_pct" t-value="min(line['used_pct'], 100)"/>
+                                                <t t-if="line['used_pct'] &lt;= 50">
+                                                    <t t-set="bar_color" t-value="'#22c55e'"/>
+                                                    <t t-set="badge_bg" t-value="'#dcfce7'"/>
+                                                    <t t-set="badge_fg" t-value="'#166534'"/>
+                                                    <t t-set="badge_text" t-value="'ON TRACK'"/>
+                                                </t>
+                                                <t t-elif="line['used_pct'] &lt;= 80">
+                                                    <t t-set="bar_color" t-value="'#3b82f6'"/>
+                                                    <t t-set="badge_bg" t-value="'#dbeafe'"/>
+                                                    <t t-set="badge_fg" t-value="'#1e40af'"/>
+                                                    <t t-set="badge_text" t-value="'MODERATE'"/>
+                                                </t>
+                                                <t t-elif="line['used_pct'] &lt;= 100">
+                                                    <t t-set="bar_color" t-value="'#f59e0b'"/>
+                                                    <t t-set="badge_bg" t-value="'#fef3c7'"/>
+                                                    <t t-set="badge_fg" t-value="'#92400e'"/>
+                                                    <t t-set="badge_text" t-value="'CAUTION'"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-set="bar_color" t-value="'#ef4444'"/>
+                                                    <t t-set="badge_bg" t-value="'#fecaca'"/>
+                                                    <t t-set="badge_fg" t-value="'#991b1b'"/>
+                                                    <t t-set="badge_text" t-value="'OVER BUDGET'"/>
+                                                </t>
+                                                <div t-attf-style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-bottom: 3px;">
+                                                    <div t-attf-style="width: {{bar_pct}}%; height: 100%; background: {{bar_color}}; border-radius: 3px;"></div>
+                                                </div>
+                                                <span t-attf-style="display: inline-block; padding: 1px 6px; font-size: 6pt; font-weight: 600; letter-spacing: 0.3px; border-radius: 3px; background: {{badge_bg}}; color: {{badge_fg}};">
+                                                    <t t-esc="badge_text"/>
+                                                </span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+
+                                <!-- Group Total -->
+                                <tr t-attf-style="border-top: 2px solid {{pc}}; font-weight: 700; background: {{pl}};">
+                                    <td colspan="2" style="padding: 5px 6px; font-size: 7.5pt;">
+                                        Subtotal &#x2014; <t t-esc="group['name']"/>
+                                    </td>
+                                    <td class="num" style="padding: 5px 6px;">
+                                        <t t-esc="'{:,.2f}'.format(group['total_budget'])"/>
+                                    </td>
+                                    <td class="num" style="padding: 5px 6px;">
+                                        <t t-esc="'{:,.2f}'.format(group['total_actual'])"/>
+                                    </td>
+                                    <td class="num" style="padding: 5px 6px;">
+                                        <t t-esc="'{:,.2f}'.format(group['total_committed'])"/>
+                                    </td>
+                                    <td class="num" style="padding: 5px 6px;">
+                                        <t t-if="group['total_available'] &gt;= 0">
+                                            <t t-esc="'{:,.2f}'.format(group['total_available'])"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="val-negative">(<t t-esc="'{:,.2f}'.format(abs(group['total_available']))"/>)</span>
+                                        </t>
+                                    </td>
+                                    <td class="num" style="padding: 5px 6px;">
+                                        <t t-esc="'{:.1f}'.format(group['total_used_pct'])"/>%
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </t>
+
+                        <!-- ================================================
+                             GRAND TOTAL
+                             ================================================ -->
+                        <t t-if="groups">
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 8pt;">
+                                <tr t-attf-style="background: {{pc}}; color: {{tc}}; font-weight: 700;">
+                                    <td style="width: 28%; padding: 7px 8px; font-size: 9pt;">
+                                        GRAND TOTAL
+                                    </td>
+                                    <td class="num" style="width: 12%; padding: 7px 8px;">
+                                        <t t-esc="'{:,.2f}'.format(grand_budget)"/>
+                                    </td>
+                                    <td class="num" style="width: 12%; padding: 7px 8px;">
+                                        <t t-esc="'{:,.2f}'.format(grand_actual)"/>
+                                    </td>
+                                    <td class="num" style="width: 12%; padding: 7px 8px;">
+                                        <t t-esc="'{:,.2f}'.format(grand_committed)"/>
+                                    </td>
+                                    <td class="num" style="width: 12%; padding: 7px 8px;">
+                                        <t t-if="grand_available &gt;= 0">
+                                            <t t-esc="'{:,.2f}'.format(grand_available)"/>
+                                        </t>
+                                        <t t-else="">
+                                            (<t t-esc="'{:,.2f}'.format(abs(grand_available))"/>)
+                                        </t>
+                                    </td>
+                                    <td class="num" style="width: 10%; padding: 7px 8px;">
+                                        <t t-esc="'{:.1f}'.format(grand_used_pct)"/>%
+                                    </td>
+                                    <td style="width: 14%;"></td>
+                                </tr>
+                            </table>
+                        </t>
+
+                        <!-- ================================================
+                             SIGNATURE BLOCK
+                             ================================================ -->
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 35px;">
+                            <tr>
+                                <td style="width: 32%; padding: 0 15px 0 0; vertical-align: top;">
+                                    <div style="text-transform: uppercase; font-size: 7pt; font-weight: 600; color: #64748b;">Prepared By</div>
+                                    <div style="border-bottom: 1px solid #cbd5e1; margin: 40px 0 6px;"></div>
+                                    <div style="font-size: 6.5pt; color: #94a3b8;">Name / Date</div>
+                                </td>
+                                <td style="width: 2%; border-left: 1px solid #e2e8f0;"></td>
+                                <td style="width: 32%; padding: 0 15px; vertical-align: top;">
+                                    <div style="text-transform: uppercase; font-size: 7pt; font-weight: 600; color: #64748b;">Reviewed By</div>
+                                    <div style="border-bottom: 1px solid #cbd5e1; margin: 40px 0 6px;"></div>
+                                    <div style="font-size: 6.5pt; color: #94a3b8;">Name / Date</div>
+                                </td>
+                                <td style="width: 2%; border-left: 1px solid #e2e8f0;"></td>
+                                <td style="width: 32%; padding: 0 0 0 15px; vertical-align: top;">
+                                    <div style="text-transform: uppercase; font-size: 7pt; font-weight: 600; color: #64748b;">Approved By</div>
+                                    <div style="border-bottom: 1px solid #cbd5e1; margin: 40px 0 6px;"></div>
+                                    <div style="font-size: 6.5pt; color: #94a3b8;">Name / Date</div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- ================================================
+                             FIXED FOOTER
+                             ================================================ -->
+                        <div class="page-footer-fixed" style="padding: 6px 0;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="width: 50%; text-align: left; vertical-align: middle; padding: 4px 0;">
+                                        <span style="font-size: 8pt; color: #666666;">Powered by</span>
+                                        <img src="/ops_matrix_accounting/static/src/img/ops_badge_footer.png"
+                                             style="height: 16px; vertical-align: middle; margin-left: 4px;"
+                                             alt="OPS Framework"/>
+                                    </td>
+                                    <td style="width: 50%; text-align: right; vertical-align: middle; padding: 4px 0;">
+                                        <span style="font-size: 6.5pt; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Confidential &#x2014; For authorized personnel only
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Report Action -->
+    <record id="action_report_budget_vs_actual_corporate" model="ir.actions.report">
+        <field name="name">Budget vs Actual</field>
+        <field name="model">ops.budget.vs.actual.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_budget_vs_actual_corporate</field>
+        <field name="report_file">ops_matrix_accounting.report_budget_vs_actual_corporate</field>
+        <field name="paperformat_id" ref="paperformat_ops_corporate_landscape"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

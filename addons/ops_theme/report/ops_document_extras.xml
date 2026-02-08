@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         OPS DOCUMENT EXTRAS — Bank Details, Signatures, Amount Words, Terms
+         ================================================================
+         Called from ops_external_layout after document content renders.
+
+         Available in scope (set by layout template):
+           company    — res.company record
+           o          — the document record (sale.order, account.move, etc.)
+           ops_primary — hex color string
+           ops_rgb     — RGB triplet string
+
+         CRITICAL: Neither hasattr() nor getattr() work in Odoo 19 QWeb.
+         All OPS-specific field access goes through the Python helper
+         get_report_settings() which wraps everything in try/except.
+    ================================================================ -->
+
+    <template id="ops_document_extras">
+
+        <!-- Guard: only render if we have a document record and company -->
+        <t t-if="o and company">
+
+            <!-- Load all OPS settings via Python helper on res.company (crash-proof) -->
+            <t t-set="_ops" t-value="company.get_ops_report_settings()"/>
+
+            <!-- ============================================================
+                 AMOUNT IN WORDS
+                 Only for models that have amount_total + currency_id
+            ============================================================ -->
+            <t t-if="_ops['show_words'] and o._name in ('sale.order', 'account.move', 'purchase.order')">
+                <t t-set="_words" t-value="env['ops.report.helpers'].amount_to_words(o.amount_total, o.currency_id, _ops['words_lang'])"/>
+                <t t-if="_words">
+                    <div class="ops-amount-words">
+                        <div class="aw-label">Amount in Words</div>
+                        <t t-if="_words.get('en')">
+                            <div class="aw-text"><t t-esc="_words['en']"/></div>
+                        </t>
+                        <t t-if="_words.get('ar')">
+                            <div class="aw-arabic aw-text"><t t-esc="_words['ar']"/></div>
+                        </t>
+                    </div>
+                </t>
+            </t>
+
+            <!-- ============================================================
+                 BANK DETAILS
+                 Show on quotations and invoices when enabled
+            ============================================================ -->
+            <t t-if="_ops['show_bank'] and o._name in ('sale.order', 'account.move', 'purchase.order')">
+                <t t-set="_bank" t-value="company.partner_id.bank_ids[:1]"/>
+                <t t-if="_bank">
+                    <div class="ops-bank-details">
+                        <h4>Bank Details</h4>
+                        <div class="ops-bank-grid">
+                            <div class="ops-bank-item">
+                                <span class="b-label">Bank</span>
+                                <span class="b-value"><t t-esc="_bank.bank_id.name or ''"/></span>
+                            </div>
+                            <div class="ops-bank-item">
+                                <span class="b-label">Account</span>
+                                <span class="b-value"><t t-esc="_bank.acc_number"/></span>
+                            </div>
+                            <t t-if="_bank.bank_id.bic">
+                                <div class="ops-bank-item">
+                                    <span class="b-label">SWIFT</span>
+                                    <span class="b-value"><t t-esc="_bank.bank_id.bic"/></span>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </t>
+
+            <!-- ============================================================
+                 SIGNATURE BLOCK
+                 Works for all document types
+            ============================================================ -->
+            <t t-if="_ops['show_sig']">
+                <!-- Resolve prepared-by name from the document's user -->
+                <t t-set="_prepared_by" t-value="''"/>
+                <t t-if="o._name in ('sale.order', 'purchase.order', 'stock.picking') and o.user_id">
+                    <t t-set="_prepared_by" t-value="o.user_id.name"/>
+                </t>
+                <t t-if="o._name == 'account.move' and o.invoice_user_id">
+                    <t t-set="_prepared_by" t-value="o.invoice_user_id.name"/>
+                </t>
+
+                <div class="ops-signature-row">
+                    <div class="ops-signature-block">
+                        <div class="ops-signature-line">
+                            <div class="ops-sig-label"><t t-esc="_ops['sig1']"/></div>
+                            <t t-if="_prepared_by">
+                                <div class="ops-sig-sub"><t t-esc="_prepared_by"/></div>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="ops-signature-block">
+                        <div class="ops-signature-line">
+                            <div class="ops-sig-label"><t t-esc="_ops['sig2']"/></div>
+                            <div class="ops-sig-sub">Company Stamp</div>
+                        </div>
+                    </div>
+                    <div class="ops-signature-block">
+                        <div class="ops-signature-line">
+                            <div class="ops-sig-label"><t t-esc="_ops['sig3']"/></div>
+                            <div class="ops-sig-sub">Sign &amp; Stamp</div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <!-- ============================================================
+                 DEFAULT TERMS & CONDITIONS
+                 Only if document has no document-specific notes/terms
+            ============================================================ -->
+            <t t-if="_ops['report_terms']">
+                <t t-set="_has_notes" t-value="False"/>
+                <!-- Check for document-specific notes by model type -->
+                <t t-if="o._name == 'sale.order' and o.note">
+                    <t t-set="_has_notes" t-value="True"/>
+                </t>
+                <t t-if="o._name == 'account.move' and o.narration">
+                    <t t-set="_has_notes" t-value="True"/>
+                </t>
+                <t t-if="o._name == 'purchase.order' and o.note">
+                    <t t-set="_has_notes" t-value="True"/>
+                </t>
+                <t t-if="not _has_notes">
+                    <div class="ops-terms">
+                        <h4>Terms &amp; Conditions</h4>
+                        <t t-out="_ops['report_terms']"/>
+                    </div>
+                </t>
+            </t>
+
+        </t>
+    </template>
+
+</odoo>

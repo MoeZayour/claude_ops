@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.18.0.0",  # Report Harmonization - 16 Official Corporate Reports
+    "version": "19.0.19.0.0",  # Wave 7 — Partner Ledger + Budget vs Actual + old report cleanup
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -88,6 +88,7 @@
         "wizard/ops_asset_report_wizard_views.xml",
         "wizard/ops_three_way_match_override_wizard_views.xml",
         "wizard/ops_consolidation_intelligence_wizard_views.xml",
+        "wizard/ops_budget_vs_actual_wizard_views.xml",
         # "wizard/ops_asset_report_wizard.xml",  # Disabled - references AbstractModel
 
         # Menus - must load AFTER all views/wizards that define actions
@@ -107,6 +108,8 @@
         "report/ops_inventory_report_templates.xml",  # Inventory Intelligence Reports
         "report/ops_treasury_report_templates.xml",   # Treasury Intelligence Reports
         "report/ops_daily_report_templates.xml",        # Daily Cash/Bank/Day Book Reports
+        "report/ops_partner_ledger_corporate.xml",       # Partner Ledger (Corporate)
+        "report/ops_budget_vs_actual_corporate.xml",     # Budget vs Actual (Corporate)
         "report/ops_report_invoice.xml",                 # OPS Branded Invoice / Credit Note
         "report/ops_report_payment.xml",                 # OPS Branded Payment Receipt / Voucher
 
