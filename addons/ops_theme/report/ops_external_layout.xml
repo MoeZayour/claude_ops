@@ -133,7 +133,7 @@
                     <td style="text-align: right; vertical-align: middle; white-space: nowrap;">
                         <t t-if="company.ops_show_external_badge">
                             <span style="font-size: 6.5pt; color: #94a3b8; margin-right: 3px;">Powered by</span>
-                            <span style="background: linear-gradient(135deg, #3b82f6, #1e40af); color: white; padding: 2px 7px; border-radius: 3px; font-weight: 600; font-size: 6pt; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block;">OPS Framework</span>
+                            <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #1e40af); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;">OPS Framework</span>
                             <span style="margin-left: 8px;"/>
                         </t>
                         <t t-if="report_type == 'pdf'">
