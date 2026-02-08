@@ -15,67 +15,90 @@
                     <!-- ============================================================ -->
                     <block title="Brand Identity" name="ops_brand_identity_settings">
                         <div class="text-muted mb-4 ms-1">
-                            Theme preset, favicon, and brand colors that define your company's visual identity across the platform.
+                            Theme preset, favicon, and brand colors for your company's visual identity.
                         </div>
 
-                        <!-- Theme Preset — radio with Reset button inline -->
-                        <setting help="Select a color scheme to instantly apply. Choose Custom to define your own colors below.">
-                            <div class="d-flex align-items-start">
-                                <div class="flex-grow-1">
-                                    <b class="mb-2 d-block">Theme Preset</b>
-                                    <field name="ops_theme_preset" widget="radio" class="o_light_label w-100 mt-2"/>
-                                </div>
-                                <div class="ms-4 flex-shrink-0">
-                                    <button name="action_reset_theme_defaults" type="object"
-                                            string="Reset to Defaults" class="btn btn-sm btn-outline-secondary"
-                                            icon="fa-refresh"
-                                            confirm="This will reset all theme colors to Corporate Blue defaults. Continue?"/>
-                                </div>
-                            </div>
-                        </setting>
-
-                        <!-- Favicon -->
-                        <setting help="Icon shown in browser tabs. Upload a square image, recommended 64x64 pixels.">
-                            <div class="d-flex align-items-center gap-3">
-                                <field name="ops_favicon" widget="image" class="oe_avatar"
-                                       options="{'size': [64, 64]}"/>
-                                <div>
-                                    <b>Browser Favicon</b>
-                                    <div class="text-muted" style="font-size: 0.85em;">Square image, 64x64px recommended</div>
+                        <!-- Row 1: Preset + Favicon -->
+                        <div class="row mt-2 o_settings_container">
+                            <!-- Preset -->
+                            <div class="col-lg-7">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <div class="d-flex align-items-center gap-3 mb-2">
+                                            <span class="o_form_label fw-bold">Theme Preset</span>
+                                            <button name="action_reset_theme_defaults" type="object"
+                                                    string="Reset to Defaults"
+                                                    class="btn btn-outline-secondary btn-sm"
+                                                    icon="fa-refresh"
+                                                    confirm="This will reset all theme colors to Corporate Blue defaults. Continue?"/>
+                                        </div>
+                                        <div class="text-muted small mb-2">Color scheme foundation. Choose Custom for full control.</div>
+                                        <field name="ops_theme_preset" widget="radio"/>
+                                    </div>
                                 </div>
                             </div>
-                        </setting>
-
-                        <!-- Primary + Secondary Colors — side by side -->
-                        <div class="row g-0">
-                            <div class="col-lg-6">
-                                <setting string="Primary Color" help="Navbar, headers, and strong interface elements.">
-                                    <field name="ops_primary_color" widget="color"/>
-                                </setting>
-                            </div>
-                            <div class="col-lg-6">
-                                <setting string="Secondary Color" help="Buttons, links, active states, and accents.">
-                                    <field name="ops_secondary_color" widget="color"/>
-                                </setting>
+                            <!-- Favicon -->
+                            <div class="col-lg-5">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Browser Favicon</span>
+                                        <div class="text-muted small mb-2">64×64px square image.</div>
+                                        <field name="ops_favicon" widget="image" options="{'size': [80, 80]}"/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Status Colors — 3-across -->
-                        <div class="row g-0">
+                        <!-- Row 2: Primary + Secondary Colors -->
+                        <div class="row mt-3 o_settings_container">
+                            <div class="col-lg-6">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Primary Color</span>
+                                        <div class="text-muted small mb-2">Navbar, headers, strong elements.</div>
+                                        <field name="ops_primary_color" widget="color"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Secondary Color</span>
+                                        <div class="text-muted small mb-2">Buttons, links, and accents.</div>
+                                        <field name="ops_secondary_color" widget="color"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Status Colors -->
+                        <div class="row mt-2 o_settings_container">
                             <div class="col-lg-4">
-                                <setting string="Success Color" help="Confirmations and positive values.">
-                                    <field name="ops_success_color" widget="color"/>
-                                </setting>
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Success Color</span>
+                                        <div class="text-muted small mb-2">Positive values.</div>
+                                        <field name="ops_success_color" widget="color"/>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-lg-4">
-                                <setting string="Warning Color" help="Pending states and caution items.">
-                                    <field name="ops_warning_color" widget="color"/>
-                                </setting>
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Warning Color</span>
+                                        <div class="text-muted small mb-2">Caution items.</div>
+                                        <field name="ops_warning_color" widget="color"/>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-lg-4">
-                                <setting string="Danger Color" help="Errors, rejections, and negatives.">
-                                    <field name="ops_danger_color" widget="color"/>
-                                </setting>
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Danger Color</span>
+                                        <div class="text-muted small mb-2">Errors and negatives.</div>
+                                        <field name="ops_danger_color" widget="color"/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </block>
