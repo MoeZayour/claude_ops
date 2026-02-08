@@ -284,7 +284,7 @@
  name="Inventory Intelligence"
  parent="stock.menu_stock_root"
  sequence="50"
- groups="stock.group_stock_manager"/>
+ groups="ops_matrix_core.group_ops_inventory_manager,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_executive"/>
 
  <!-- Main Wizard Entry -->
  <menuitem

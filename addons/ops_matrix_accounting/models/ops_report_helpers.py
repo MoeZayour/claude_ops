@@ -23,10 +23,13 @@ _logger = logging.getLogger(__name__)
 
 
 class OpsReportHelpers(models.AbstractModel):
-    """Abstract model providing helper functions for OPS corporate reports"""
+    """Extends ops.report.helpers (defined in ops_theme) with corporate report utilities.
 
-    _name = 'ops.report.helpers'
-    _description = 'OPS Report Helper Functions'
+    Adds color generation, formatting, classification, and context helpers
+    to the base amount-to-words model from ops_theme.
+    """
+
+    _inherit = 'ops.report.helpers'
 
     # =========================================================================
     # AMOUNT TO WORDS

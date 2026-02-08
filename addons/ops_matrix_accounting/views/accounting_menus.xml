@@ -324,6 +324,14 @@
               sequence="30"
               groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive"/>
 
+    <!-- Budget vs Actual -->
+    <menuitem id="menu_reporting_budget_vs_actual"
+              name="Budget vs Actual"
+              parent="menu_ops_acct_reports_financial"
+              action="action_budget_vs_actual_wizard"
+              sequence="35"
+              groups="ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+
     <!-- 5.2 Analysis -->
     <menuitem id="menu_ops_acct_reports_analysis"
               name="Analysis"

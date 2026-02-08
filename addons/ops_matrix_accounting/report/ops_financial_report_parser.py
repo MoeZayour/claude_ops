@@ -13,103 +13,48 @@ class OpsFinancialReportParser(models.AbstractModel):
     _description = 'Financial Report Parser'
 
     # ============================================
-    # MERIDIAN DESIGN SYSTEM COLOR TOKENS
+    # SEMANTIC COLOR TOKENS
     # ============================================
-    # The "Meridian Standard" - Management Consulting aesthetic
-    # High contrast, executive-grade color palette
-    MERIDIAN_COLORS = {
-        # Primary Colors
-        'gold': '#C9A962',          # Executive Gold - Brand accent
-        'black': '#1A1A1A',         # Primary Black - Text & headers
-        'red': '#DA291C',           # Corporate Red - Negatives & alerts
-
-        # Semantic Colors
+    # Semantic colors for financial report elements.
+    # Primary/secondary branding colors come from company settings.
+    SEMANTIC_COLORS = {
         'success': '#059669',       # Emerald green - Positive values
-        'danger': '#DA291C',        # Red - Negative values
+        'danger': '#dc2626',        # Red - Negative values
         'warning': '#d97706',       # Amber - Warnings
         'info': '#2563eb',          # Blue - Information
-
-        # Neutral Palette
-        'muted': '#FAFAFA',         # Muted Grey - Backgrounds
-        'zero': '#cccccc',          # Light Grey - Zero values
+        'zero': '#94a3b8',          # Slate gray - Zero values
         'border': '#e5e7eb',        # Border color
-        'text': '#1A1A1A',          # Primary text
+        'text': '#1a1a1a',          # Primary text
         'text_secondary': '#6b7280', # Secondary text
-
-        # Section Colors (Balance Sheet/P&L)
+        'background': '#fafafa',    # Light background
+        # Section colors (Balance Sheet/P&L)
         'asset': '#2563eb',         # Blue - Assets
         'liability': '#d97706',     # Orange - Liabilities
         'equity': '#059669',        # Green - Equity
         'revenue': '#059669',       # Green - Revenue
-        'expense': '#DA291C',       # Red - Expenses
+        'expense': '#dc2626',       # Red - Expenses
     }
 
     def _get_company_colors(self, company):
-        """
-        Get company branding colors with intelligent fallbacks.
+        """Get company branding colors from OPS report settings.
 
-        MERIDIAN STANDARD: If no company color is set, defaults to
-        Executive Gold (#C9A962) as the primary brand accent.
+        Uses company.ops_report_primary_color (matching the corporate
+        parsers in ops_corporate_report_parsers.py) with safe fallbacks.
 
-        Returns a dict with:
-        - primary: Main brand color (used for headers, titles)
-        - secondary: Accent color (used for highlights)
-        - success: Green for positive values
-        - danger: Red for negative values
-        - muted: Gray for zero/neutral values
-        - text: Primary text color
-        - text_secondary: Secondary text color
-        - border: Border color
-        - background: Background color
+        Returns a dict with branding + semantic colors.
         """
-        # MERIDIAN STANDARD - Professional color palette
-        # Default to Executive Gold (#C9A962) for brand accent
+        from .ops_corporate_report_parsers import get_report_colors
+        corp_colors = get_report_colors(company) if company else {}
+
+        primary = corp_colors.get('primary_color', '#5B6BBB')
         colors = {
-            'primary': '#C9A962',        # MERIDIAN GOLD - Executive accent
-            'secondary': '#1A1A1A',      # Primary Black - Headers
-            'success': '#059669',        # Emerald green - Positive values
-            'danger': '#DA291C',         # Corporate Red - Negatives
-            'warning': '#d97706',        # Amber - Warning
-            'muted': '#cccccc',          # Light Grey - Zero values
-            'zero': '#cccccc',           # Light Grey - Zero values (explicit)
-            'text': '#1A1A1A',           # Primary Black - Text
-            'text_secondary': '#6b7280', # Secondary text
-            'border': '#e5e7eb',         # Border color
-            'background': '#FAFAFA',     # Muted Grey - Backgrounds
+            'primary': primary,
+            'secondary': corp_colors.get('body_text_color', '#1a1a1a'),
+            'primary_dark': corp_colors.get('primary_dark', self._darken_color(primary, 0.25)),
+            'primary_light': corp_colors.get('primary_light', self._lighten_color(primary, 0.85)),
             'white': '#ffffff',
-            # Section colors for financial reports
-            'asset': '#2563eb',          # Blue - Assets
-            'liability': '#d97706',      # Orange - Liabilities
-            'equity': '#059669',         # Green - Equity
-            'revenue': '#059669',        # Green - Revenue
-            'expense': '#DA291C',        # Red - Expenses
+            **self.SEMANTIC_COLORS,
         }
-
-        if company:
-            # Get company primary/secondary colors (optional branding override)
-            primary = company.primary_color
-            secondary = company.secondary_color
-
-            if primary:
-                # Company has custom branding - use it
-                colors['primary'] = primary
-                colors['primary_dark'] = self._darken_color(primary, 0.2)
-            else:
-                # MERIDIAN DEFAULT: Executive Gold with dark variant
-                colors['primary_dark'] = '#9A7A42'  # Darker gold
-
-            if secondary:
-                colors['secondary'] = secondary
-            # Else keep Meridian Black as secondary
-        else:
-            # No company - use full Meridian defaults
-            colors['primary_dark'] = '#9A7A42'  # Darker gold
-
-        # Always include Meridian constants for template access
-        colors['meridian_gold'] = '#C9A962'
-        colors['meridian_black'] = '#1A1A1A'
-        colors['meridian_red'] = '#DA291C'
-
         return colors
 
     def _darken_color(self, hex_color, factor=0.2):
@@ -141,20 +86,14 @@ class OpsFinancialReportParser(models.AbstractModel):
             return '#f8fafc'  # Fallback to light gray
 
     def _format_value(self, value, include_sign=True, decimals=2):
-        """
-        Format a numeric value according to the Meridian Standard.
-
-        MERIDIAN VALUE DISPLAY RULES:
-        - Zeros: Display as "0.00" with color class 'zero'
-        - Negatives: Red (#DA291C) with parentheses, e.g., "(1,234.56)"
-        - Positives: Black (#1A1A1A), e.g., "1,234.56"
+        """Format a numeric value with sign convention and CSS class.
 
         Returns a dict with:
         - formatted: The formatted string
         - css_class: CSS class to apply (zero, negative, positive)
+        - color: Semantic color from SEMANTIC_COLORS
         - raw: Original numeric value (passed through, never filtered)
         """
-        # CRITICAL: Never filter out zero values - pass them through
         if value is None:
             value = 0.0
 
@@ -164,7 +103,7 @@ class OpsFinancialReportParser(models.AbstractModel):
             return {
                 'formatted': format_str.format(0),
                 'css_class': 'ops-value-zero',
-                'color': '#cccccc',
+                'color': self.SEMANTIC_COLORS['zero'],
                 'raw': 0.0,
                 'is_zero': True,
             }
@@ -176,7 +115,7 @@ class OpsFinancialReportParser(models.AbstractModel):
             return {
                 'formatted': formatted,
                 'css_class': 'ops-value-negative',
-                'color': '#DA291C',
+                'color': self.SEMANTIC_COLORS['danger'],
                 'raw': value,
                 'is_zero': False,
             }
@@ -184,7 +123,7 @@ class OpsFinancialReportParser(models.AbstractModel):
             return {
                 'formatted': format_str.format(value),
                 'css_class': 'ops-value-positive',
-                'color': '#000000',
+                'color': self.SEMANTIC_COLORS['text'],
                 'raw': value,
                 'is_zero': False,
             }
@@ -311,60 +250,45 @@ class OpsFinancialReportParser(models.AbstractModel):
             return {'bucket': 'over120', 'label': '120+ Days', 'css_class': 'ops-aging-over'}
 
     def _get_margin_status(self, margin_pct):
-        """
-        Get margin status classification for display.
+        """Get margin status classification for display.
 
-        MERIDIAN MARGIN THRESHOLDS:
+        Thresholds:
         - >= 20%: Excellent (Green)
         - >= 10%: Healthy (Blue)
         - >= 5%: Acceptable (Grey)
         - >= 0%: Low (Warning)
         - < 0%: Loss (Red)
         """
+        sc = self.SEMANTIC_COLORS
         if margin_pct >= 20:
             return {
-                'status': 'excellent',
-                'label': 'Excellent',
+                'status': 'excellent', 'label': 'Excellent',
                 'css_class': 'ops-status-pill excellent',
-                'color': '#059669',
-                'bg_color': '#d1fae5',
-                'border_color': '#059669',
+                'color': sc['success'], 'bg_color': '#d1fae5', 'border_color': sc['success'],
             }
         elif margin_pct >= 10:
             return {
-                'status': 'healthy',
-                'label': 'Healthy',
+                'status': 'healthy', 'label': 'Healthy',
                 'css_class': 'ops-status-pill healthy',
-                'color': '#2563eb',
-                'bg_color': '#dbeafe',
-                'border_color': '#2563eb',
+                'color': sc['info'], 'bg_color': '#dbeafe', 'border_color': sc['info'],
             }
         elif margin_pct >= 5:
             return {
-                'status': 'acceptable',
-                'label': 'Acceptable',
+                'status': 'acceptable', 'label': 'Acceptable',
                 'css_class': 'ops-status-pill acceptable',
-                'color': '#4b5563',
-                'bg_color': '#f3f4f6',
-                'border_color': '#6b7280',
+                'color': sc['text_secondary'], 'bg_color': '#f3f4f6', 'border_color': sc['text_secondary'],
             }
         elif margin_pct >= 0:
             return {
-                'status': 'low',
-                'label': 'Low',
+                'status': 'low', 'label': 'Low',
                 'css_class': 'ops-status-pill warning',
-                'color': '#d97706',
-                'bg_color': '#fef3c7',
-                'border_color': '#d97706',
+                'color': sc['warning'], 'bg_color': '#fef3c7', 'border_color': sc['warning'],
             }
         else:
             return {
-                'status': 'loss',
-                'label': 'Loss',
+                'status': 'loss', 'label': 'Loss',
                 'css_class': 'ops-status-pill loss',
-                'color': '#DA291C',
-                'bg_color': '#fee2e2',
-                'border_color': '#DA291C',
+                'color': sc['danger'], 'bg_color': '#fee2e2', 'border_color': sc['danger'],
             }
 
     def _get_balance_sheet_equation(self, assets, liabilities, equity):
@@ -1404,77 +1328,6 @@ class OpsFinancialReportParser(models.AbstractModel):
         }
 
 
-class OpsFinancialMinimalReportParser(models.AbstractModel):
-    """
-    Report parser for the MINIMAL Financial Reports template.
-
-    This parser provides the `report_data` variable to the
-    `ops_matrix_accounting.report_ops_financial_minimal` QWeb template.
-
-    v19.0.1.0: Created to fix white page issue - template needs parser
-    """
-    _name = 'report.ops_matrix_accounting.report_ops_financial_minimal'
-    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
-    _description = 'Financial Report (Minimal) Parser'
-
-    @api.model
-    def _get_report_values(self, docids, data=None):
-        """
-        Get report values for the Minimal Financial Report template.
-
-        Delegates to the parent parser but ensures proper data structure
-        for the minimal template which expects `report_data` with specific keys.
-        """
-        # Get base values from parent parser
-        values = super()._get_report_values(docids, data)
-
-        # Ensure the minimal template has what it needs
-        report_data = values.get('report_data', {})
-
-        # The minimal template expects these specific keys at root level
-        if not report_data:
-            # Try to generate from wizard if no data
-            wizard = None
-            if docids:
-                wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(docids)
-            if not wizard or not wizard.exists():
-                active_id = self.env.context.get('active_id')
-                if active_id:
-                    wizard = self.env['ops.general.ledger.wizard.enhanced'].browse(active_id)
-
-            if wizard and wizard.exists():
-                raw_data = wizard._get_report_data()
-                report_data = self._transform_enhanced_data(wizard, raw_data)
-
-        # Ensure all required keys exist for minimal template
-        company = self.env.company
-        if values.get('docs') and hasattr(values['docs'], 'company_id'):
-            company = values['docs'].company_id or self.env.company
-
-        # Add company colors if not present
-        if 'colors' not in report_data:
-            report_data['colors'] = self._get_company_colors(company)
-
-        # Ensure date fields exist
-        if 'date_from' not in report_data:
-            report_data['date_from'] = ''
-        if 'date_to' not in report_data:
-            report_data['date_to'] = ''
-
-        # Ensure company/title exist
-        if 'company' not in report_data:
-            report_data['company'] = company.name if company else ''
-        if 'title' not in report_data:
-            report_data['title'] = 'Financial Report'
-        if 'currency_symbol' not in report_data:
-            report_data['currency_symbol'] = company.currency_id.symbol if company else ''
-        if 'target_move' not in report_data:
-            report_data['target_move'] = 'Posted'
-
-        values['report_data'] = report_data
-        return values
-
-
 # ============================================================
 # PARSER ALIASES — Odoo matches report_name to AbstractModel
 # named 'report.<report_name>'. Without these, docs is empty
@@ -1565,58 +1418,3 @@ class OpsGeneralLedgerCorporateParser(models.AbstractModel):
     _description = 'General Ledger Corporate Parser'
 
 
-# V2 Report Parsers (wkhtmltopdf-compatible layout)
-
-class OpsBalanceSheetV2Parser(models.AbstractModel):
-    _name = 'report.ops_matrix_accounting.report_balance_sheet_v2'
-    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
-    _description = 'Balance Sheet V2 Parser'
-
-    @api.model
-    def _get_report_values(self, docids, data=None):
-        values = super()._get_report_values(docids, data)
-        return _inject_corporate_vars(self, values, 'BS')
-
-
-class OpsTrialBalanceV2Parser(models.AbstractModel):
-    _name = 'report.ops_matrix_accounting.report_trial_balance_v2'
-    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
-    _description = 'Trial Balance V2 Parser'
-
-    @api.model
-    def _get_report_values(self, docids, data=None):
-        values = super()._get_report_values(docids, data)
-        return _inject_corporate_vars(self, values, 'TB')
-
-
-class OpsProfitLossV2Parser(models.AbstractModel):
-    _name = 'report.ops_matrix_accounting.report_profit_loss_v2'
-    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
-    _description = 'Profit & Loss V2 Parser'
-
-    @api.model
-    def _get_report_values(self, docids, data=None):
-        values = super()._get_report_values(docids, data)
-        return _inject_corporate_vars(self, values, 'PL')
-
-
-class OpsCashFlowV2Parser(models.AbstractModel):
-    _name = 'report.ops_matrix_accounting.report_cash_flow_v2'
-    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
-    _description = 'Cash Flow V2 Parser'
-
-    @api.model
-    def _get_report_values(self, docids, data=None):
-        values = super()._get_report_values(docids, data)
-        return _inject_corporate_vars(self, values, 'CF')
-
-
-class OpsAgedPartnerV2Parser(models.AbstractModel):
-    _name = 'report.ops_matrix_accounting.report_aged_partner_v2'
-    _inherit = 'report.ops_matrix_accounting.report_ops_financial_document'
-    _description = 'Aged Partner V2 Parser'
-
-    @api.model
-    def _get_report_values(self, docids, data=None):
-        values = super()._get_report_values(docids, data)
-        return _inject_corporate_vars(self, values, 'AP')

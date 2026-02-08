@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.19.0.0",  # Wave 7 — Partner Ledger + Budget vs Actual + old report cleanup
+    "version": "19.0.20.0.0",  # Wave 8 — Report restructuring: single-generation architecture
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -97,10 +97,6 @@
         # Reports - Shared Components
         "report/ops_corporate_report_layout.xml",  # Corporate PDF layout (footer + page numbers)
         "report/components/ops_corporate_report_components.xml",  # Corporate report components (16 official reports)
-        "report/ops_report_layout.xml",  # Corporate branding & shared styles
-        "report/ops_report_minimal_styles.xml",  # Minimal report styling system
-        "report/ops_general_ledger_minimal.xml",  # Minimal General Ledger
-        "report/ops_financial_report_minimal.xml",  # Minimal Financial Reports
         "report/ops_asset_report_templates.xml",
         "report/ops_consolidated_report_templates.xml",
         "report/ops_financial_report_template.xml",
@@ -113,10 +109,6 @@
         "report/ops_report_invoice.xml",                 # OPS Branded Invoice / Credit Note
         "report/ops_report_payment.xml",                 # OPS Branded Payment Receipt / Voucher
 
-        # V2 Layout & Reports (Phase: Report Architecture Refactor)
-        "report/ops_internal_layout_v2.xml",             # V2 internal layout (wkhtmltopdf-compatible)
-        "report/ops_balance_sheet_v2.xml",               # Balance Sheet V2 (uses V2 layout)
-        "report/ops_financial_reports_v2.xml",            # TB, P&L, CF, Aged V2 (uses V2 layout)
 
         # Menus
         # "views/ops_report_menu.xml",  # Disabled - references missing model
