@@ -54,6 +54,11 @@ $o-navbar-inverse: white;
 // We re-enable it so Bootstrap generates [data-bs-theme="dark"] CSS rules.
 $enable-dark-mode: true;
 
+// Tell the browser this page supports both light AND dark color schemes.
+// Odoo defaults to "bright" which locks the page to light-only (scrollbars,
+// form controls, etc. ignore dark mode).
+$o-webclient-color-scheme: light dark;
+
 // =============================================================================
 // FONT — Inter as Primary
 // =============================================================================

@@ -1,16 +1,219 @@
 ///
-/// OPS Dark Mode — OPS-branded dark mode enhancements
-/// ====================================================
-/// Native Odoo components handle their own dark mode via Bootstrap 5.3.
-/// This file ONLY styles:
-///   1. Branded navbar integration (dropdowns under a branded navbar)
-///   2. OPS-custom components (login page, app grid)
-///   3. CSS variable adaptations for dark context
+/// OPS Dark Mode — Core Layout + OPS Component Overrides
+/// =====================================================
 ///
-/// RULE: Never override .o_form_view, .o_list_view, .o_kanban_view,
-///       .o_control_panel, .modal-content, or any native Odoo component.
-///       Odoo 19 + Bootstrap dark bundle handles those.
+/// WHY THIS FILE EXISTS:
+/// Odoo 19 CE compiles SCSS variables ($o-webclient-background-color,
+/// $o-view-background-color) into hardcoded light-mode values in the CSS.
+/// Even with $enable-dark-mode: true, these fixed values override
+/// Bootstrap 5.3's dark CSS variables.
 ///
+/// This file follows Odoo's own *.dark.scss pattern — runtime CSS overrides
+/// under html[data-bs-theme="dark"] for elements that cannot be fixed at
+/// SCSS compile time (the variables are used in mix()/color-contrast()
+/// functions that need real color values).
+///
+/// IMPORTANT: Odoo 19 sets $variable-prefix: '' so CSS custom properties
+/// are --body-bg (NOT --bs-body-bg), --body-color (NOT --bs-body-color), etc.
+///
+
+// =============================================================================
+// 0. CORE LAYOUT — Fix hardcoded SCSS compile-time backgrounds
+// =============================================================================
+// The #1 blocker: .o_web_client compiles to { background-color: #f8f9fa; }
+// from $o-webclient-background-color. Cannot replace the SCSS var with CSS
+// var() because mail/im_livechat use it in mix() at compile time.
+
+html[data-bs-theme="dark"] {
+
+    // ---- Page wrapper (on <body>) ----
+    .o_web_client {
+        background-color: var(--body-bg, #212529) !important;
+        color-scheme: dark;
+        color: var(--body-color, #dee2e6);
+    }
+
+    // ---- Content areas ----
+    .o_action_manager {
+        background-color: var(--body-bg, #212529);
+    }
+
+    .o_content {
+        background-color: var(--body-bg, #212529);
+    }
+
+    .o_view_controller {
+        background-color: var(--body-bg, #212529);
+    }
+
+    // ---- Form view ----
+    .o_form_sheet_bg {
+        background-color: var(--body-bg, #212529) !important;
+    }
+
+    .o_form_sheet {
+        background-color: var(--tertiary-bg, #2b3035) !important;
+        border-color: var(--border-color, #495057);
+        color: var(--body-color, #dee2e6);
+    }
+
+    // ---- Control panel (breadcrumb / search bar area) ----
+    .o_control_panel,
+    .o_control_panel_main {
+        background-color: var(--body-bg, #212529);
+        color: var(--body-color, #dee2e6);
+    }
+
+    // ---- List view ----
+    .o_list_view {
+        --ListRenderer-thead-bg-color: var(--tertiary-bg, #2b3035);
+
+        .o_list_table {
+            --table-bg: var(--body-bg, #212529);
+            --table-color: var(--body-color, #dee2e6);
+            --table-border-color: var(--border-color, #495057);
+            --table-striped-bg: var(--tertiary-bg, #2b3035);
+            --table-hover-bg: rgba(255, 255, 255, 0.05);
+            color: var(--body-color, #dee2e6);
+        }
+    }
+
+    // ---- Kanban view ----
+    .o_kanban_view {
+        background-color: var(--body-bg, #212529);
+    }
+
+    .o_kanban_record {
+        background-color: var(--tertiary-bg, #2b3035);
+        border-color: var(--border-color, #495057);
+        color: var(--body-color, #dee2e6);
+    }
+
+    .o_kanban_group_header {
+        background-color: var(--body-bg, #212529);
+    }
+
+    // ---- Cards (Odoo overrides $card-bg with $o-view-background-color) ----
+    .card {
+        --card-bg: var(--tertiary-bg, #2b3035);
+        --card-border-color: var(--border-color, #495057);
+        --card-color: var(--body-color, #dee2e6);
+        --card-cap-bg: var(--secondary-bg, #343a40);
+    }
+
+    // ---- Modals (Odoo overrides $modal-content-bg) ----
+    .modal-content {
+        background-color: var(--tertiary-bg, #2b3035);
+        border-color: var(--border-color, #495057);
+        color: var(--body-color, #dee2e6);
+    }
+
+    .modal-header,
+    .modal-footer {
+        border-color: var(--border-color, #495057);
+    }
+
+    // ---- Form controls ----
+    .form-control,
+    .form-select {
+        background-color: var(--tertiary-bg, #2b3035);
+        border-color: var(--border-color, #495057);
+        color: var(--body-color, #dee2e6);
+
+        &:focus {
+            background-color: var(--tertiary-bg, #2b3035);
+        }
+
+        &:disabled,
+        &[readonly] {
+            background-color: var(--secondary-bg, #343a40);
+        }
+    }
+
+    // ---- Notebook tabs (form view) ----
+    .o_notebook .nav-link {
+        color: var(--body-color, #dee2e6);
+
+        &.active {
+            background-color: var(--tertiary-bg, #2b3035);
+            border-color: var(--border-color, #495057);
+            border-bottom-color: var(--tertiary-bg, #2b3035);
+        }
+    }
+
+    // ---- Dropdown menus (global) ----
+    .dropdown-menu {
+        --dropdown-bg: var(--tertiary-bg, #2b3035);
+        --dropdown-color: var(--body-color, #dee2e6);
+        --dropdown-border-color: var(--border-color, #495057);
+        --dropdown-link-color: var(--body-color, #dee2e6);
+        --dropdown-link-hover-bg: rgba(255, 255, 255, 0.08);
+        --dropdown-link-hover-color: #fff;
+        --dropdown-divider-bg: var(--border-color, #495057);
+    }
+
+    // ---- List group (Odoo overrides $list-group-bg) ----
+    .list-group-item {
+        background-color: var(--tertiary-bg, #2b3035);
+        border-color: var(--border-color, #495057);
+        color: var(--body-color, #dee2e6);
+    }
+
+    // ---- Settings page ----
+    .o_base_settings {
+        .o_setting_container,
+        .o_settings_container {
+            background-color: var(--body-bg, #212529);
+        }
+
+        .settings_tab {
+            background-color: var(--body-bg, #212529);
+            border-color: var(--border-color, #495057);
+
+            .selected {
+                background-color: var(--tertiary-bg, #2b3035);
+            }
+        }
+
+        .app_settings_block {
+            background-color: var(--body-bg, #212529);
+            color: var(--body-color, #dee2e6);
+        }
+
+        .o_form_label,
+        label {
+            color: var(--body-color, #dee2e6);
+        }
+    }
+
+    // ---- Chatter ----
+    .o-mail-Form-chatter,
+    .o-mail-Chatter {
+        background-color: var(--body-bg, #212529);
+    }
+
+    .o-mail-Message {
+        background-color: var(--body-bg, #212529);
+        color: var(--body-color, #dee2e6);
+    }
+
+    // ---- Statusbar ----
+    .o_statusbar_status .o_arrow_button {
+        background-color: var(--secondary-bg, #343a40);
+        color: var(--body-color, #dee2e6);
+        border-color: var(--border-color, #495057);
+    }
+
+    // ---- Breadcrumb ----
+    .o_breadcrumb .active {
+        color: var(--body-color, #dee2e6);
+    }
+
+    // ---- Scrollbar theming ----
+    * {
+        scrollbar-color: var(--secondary-bg, #343a40) var(--body-bg, #212529);
+    }
+}
 
 // =============================================================================
 // 1. DARK MODE CSS VARIABLE ADAPTATIONS
@@ -33,12 +236,12 @@ html[data-bs-theme="dark"] {
     .o_main_navbar {
         .dropdown-menu,
         .o-dropdown--menu {
-            background-color: var(--bs-body-bg, #212529);
-            border-color: var(--bs-border-color, #495057);
-            color: var(--bs-body-color, #dee2e6);
+            background-color: var(--body-bg, #212529);
+            border-color: var(--border-color, #495057);
+            color: var(--body-color, #dee2e6);
 
             .dropdown-item {
-                color: var(--bs-body-color, #dee2e6);
+                color: var(--body-color, #dee2e6);
 
                 &:hover,
                 &:focus {
@@ -53,13 +256,13 @@ html[data-bs-theme="dark"] {
             }
 
             .dropdown-divider {
-                border-color: var(--bs-border-color, #495057);
+                border-color: var(--border-color, #495057);
             }
         }
 
         // App switcher panel
         .o_navbar_apps_menu .dropdown-menu {
-            background-color: var(--bs-body-bg, #212529);
+            background-color: var(--body-bg, #212529);
         }
     }
 
@@ -67,13 +270,13 @@ html[data-bs-theme="dark"] {
     .o_menu_sections {
         .dropdown-menu,
         .o-dropdown--menu {
-            background-color: var(--bs-body-bg, #212529);
-            border-color: var(--bs-border-color, #495057);
+            background-color: var(--body-bg, #212529);
+            border-color: var(--border-color, #495057);
 
             .dropdown-item,
             a,
             button {
-                color: var(--bs-body-color, #dee2e6);
+                color: var(--body-color, #dee2e6);
 
                 &:hover,
                 &:focus {
@@ -88,8 +291,6 @@ html[data-bs-theme="dark"] {
 // =============================================================================
 // 3. POPUPS / TOASTS / AUTOCOMPLETE IN DARK MODE
 // =============================================================================
-// Ensure OPS-relevant popup surfaces use dark backgrounds.
-// Native modals are handled by Bootstrap — do NOT override .modal-content.
 
 html[data-bs-theme="dark"] {
     // Notification toasts
@@ -98,18 +299,18 @@ html[data-bs-theme="dark"] {
         &.border-success,
         &.border-warning,
         &.border-danger {
-            background-color: var(--bs-body-bg, #212529);
-            color: var(--bs-body-color, #dee2e6);
+            background-color: var(--body-bg, #212529);
+            color: var(--body-color, #dee2e6);
         }
     }
 
     // Many2one dropdown autocomplete
     .o-autocomplete--dropdown-menu {
-        background-color: var(--bs-body-bg, #212529);
-        border-color: var(--bs-border-color, #495057);
+        background-color: var(--body-bg, #212529);
+        border-color: var(--border-color, #495057);
 
         .o-autocomplete--dropdown-item {
-            color: var(--bs-body-color, #dee2e6);
+            color: var(--body-color, #dee2e6);
 
             &:hover,
             &.focus {
@@ -121,13 +322,13 @@ html[data-bs-theme="dark"] {
     // Command palette (Ctrl+K)
     .o_command_palette {
         .o_command_palette_search input {
-            background-color: var(--bs-body-bg, #212529);
-            color: var(--bs-body-color, #dee2e6);
-            border-color: var(--bs-border-color, #495057);
+            background-color: var(--body-bg, #212529);
+            color: var(--body-color, #dee2e6);
+            border-color: var(--border-color, #495057);
         }
 
         .o_command {
-            color: var(--bs-body-color, #dee2e6);
+            color: var(--body-color, #dee2e6);
 
             &:hover,
             &.focused {
@@ -143,37 +344,37 @@ html[data-bs-theme="dark"] {
 
 html[data-bs-theme="dark"] {
     .ops-login-container {
-        background: linear-gradient(135deg, var(--bs-body-bg, #212529) 0%, var(--ops-primary, #1e293b) 100%);
+        background: linear-gradient(135deg, var(--body-bg, #212529) 0%, var(--ops-primary, #1e293b) 100%);
     }
 
     .ops-login-panel {
         background: var(--ops-primary, #1e293b);
-        border-color: var(--bs-border-color, #495057);
+        border-color: var(--border-color, #495057);
     }
 
     .ops-login-brand {
-        color: var(--bs-body-color, #dee2e6);
+        color: var(--body-color, #dee2e6);
     }
 
     .ops-login-form-panel {
-        background-color: var(--bs-body-bg, #212529) !important;
-        color: var(--bs-body-color, #dee2e6);
+        background-color: var(--body-bg, #212529) !important;
+        color: var(--body-color, #dee2e6);
     }
 
     .ops-login-header h2,
     .ops-login-header p {
-        color: var(--bs-body-color, #dee2e6);
+        color: var(--body-color, #dee2e6);
     }
 
     .ops-login-form-panel input[type="text"],
     .ops-login-form-panel input[type="password"],
     .ops-login-form-panel input[type="email"] {
-        background-color: var(--bs-tertiary-bg, #2b3035);
-        border-color: var(--bs-border-color, #495057);
-        color: var(--bs-body-color, #dee2e6);
+        background-color: var(--tertiary-bg, #2b3035);
+        border-color: var(--border-color, #495057);
+        color: var(--body-color, #dee2e6);
 
         &:focus {
-            background-color: var(--bs-tertiary-bg, #2b3035);
+            background-color: var(--tertiary-bg, #2b3035);
             border-color: var(--ops-secondary, #3b82f6);
         }
     }
@@ -185,26 +386,15 @@ html[data-bs-theme="dark"] {
 
 html[data-bs-theme="dark"] {
     .ops-app-grid {
-        background: var(--bs-body-bg, #212529);
+        background: var(--body-bg, #212529);
     }
 
     .ops-app-tile {
-        background: var(--bs-tertiary-bg, #2b3035);
-        border-color: var(--bs-border-color, #495057);
+        background: var(--tertiary-bg, #2b3035);
+        border-color: var(--border-color, #495057);
 
         &:hover {
-            background: var(--bs-secondary-bg, #343a40);
+            background: var(--secondary-bg, #343a40);
         }
     }
 }
-
-// =============================================================================
-// DO NOT ADD OVERRIDES FOR NATIVE ODOO COMPONENTS:
-// - .o_form_view, .o_list_view, .o_kanban_view
-// - .modal, .modal-content (Bootstrap dark bundle handles these)
-// - .o_settings_container
-// - .o_control_panel
-// - Any other native Odoo class
-//
-// Odoo 19 + Bootstrap dark bundle handles these components!
-// =============================================================================
