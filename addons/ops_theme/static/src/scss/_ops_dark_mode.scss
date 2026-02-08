@@ -18,7 +18,26 @@
 ///
 
 // =============================================================================
-// 0. CORE LAYOUT — Fix hardcoded SCSS compile-time backgrounds
+// 0. FIX BS5 DARK COLOR VARIABLES
+// =============================================================================
+// BS5 derives dark-mode --link-color from --primary (#1e293b → #787f89 muted gray).
+// Our primary is dark navy which becomes invisible. Override with OPS branded blue.
+
+html[data-bs-theme="dark"] {
+    // Fix link colors — use OPS secondary (blue) instead of BS5 auto-derived gray
+    --link-color: var(--ops-secondary, #3b82f6);
+    --link-hover-color: #60a5fa;
+    --link-color-rgb: 59, 130, 246;
+    --link-hover-color-rgb: 96, 165, 250;
+
+    // Fix primary text emphasis — BS5 auto-derives #0c1018 (nearly black)
+    --primary-text-emphasis: #60a5fa;
+    --primary-bg-subtle: #1a2744;
+    --primary-border-subtle: #2d4a7a;
+}
+
+// =============================================================================
+// 1. CORE LAYOUT — Fix hardcoded SCSS compile-time backgrounds
 // =============================================================================
 // The #1 blocker: .o_web_client compiles to { background-color: #f8f9fa; }
 // from $o-webclient-background-color. Cannot replace the SCSS var with CSS
@@ -64,6 +83,16 @@ html[data-bs-theme="dark"] {
         color: var(--body-color, #dee2e6);
     }
 
+    .o_searchview {
+        background-color: var(--tertiary-bg, #2b3035);
+        border-color: var(--border-color, #495057);
+        color: var(--body-color, #dee2e6);
+
+        .o_searchview_input {
+            color: var(--body-color, #dee2e6);
+        }
+    }
+
     // ---- List view ----
     .o_list_view {
         --ListRenderer-thead-bg-color: var(--tertiary-bg, #2b3035);
@@ -75,6 +104,10 @@ html[data-bs-theme="dark"] {
             --table-striped-bg: var(--tertiary-bg, #2b3035);
             --table-hover-bg: rgba(255, 255, 255, 0.05);
             color: var(--body-color, #dee2e6);
+
+            th {
+                color: var(--body-color, #dee2e6);
+            }
         }
     }
 
@@ -90,6 +123,52 @@ html[data-bs-theme="dark"] {
     }
 
     .o_kanban_group_header {
+        background-color: var(--body-bg, #212529);
+    }
+
+    // ---- Calendar view ----
+    .o_calendar_renderer {
+        background-color: var(--body-bg, #212529);
+    }
+
+    .fc {
+        .fc-scrollgrid {
+            border-color: var(--border-color, #495057);
+        }
+
+        .fc-col-header-cell,
+        .fc-daygrid-day,
+        .fc-timegrid-slot {
+            background-color: var(--body-bg, #212529);
+            border-color: var(--border-color, #495057);
+        }
+
+        .fc-day-today {
+            background-color: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.1) !important;
+        }
+    }
+
+    // ---- Pivot view ----
+    .o_pivot {
+        background-color: var(--body-bg, #212529);
+        color: var(--body-color, #dee2e6);
+
+        table {
+            --table-bg: var(--body-bg, #212529);
+            --table-color: var(--body-color, #dee2e6);
+            --table-border-color: var(--border-color, #495057);
+            color: var(--body-color, #dee2e6);
+        }
+
+        .o_pivot_header_cell_closed,
+        .o_pivot_header_cell_opened {
+            background-color: var(--tertiary-bg, #2b3035);
+            color: var(--body-color, #dee2e6);
+        }
+    }
+
+    // ---- Graph view ----
+    .o_graph_renderer {
         background-color: var(--body-bg, #212529);
     }
 
@@ -122,6 +201,8 @@ html[data-bs-theme="dark"] {
 
         &:focus {
             background-color: var(--tertiary-bg, #2b3035);
+            border-color: var(--ops-secondary, #3b82f6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
         &:disabled,
@@ -209,6 +290,30 @@ html[data-bs-theme="dark"] {
         color: var(--body-color, #dee2e6);
     }
 
+    // ---- Stat buttons (form view KPI blocks) ----
+    .oe_stat_button {
+        border-color: var(--border-color, #495057);
+        color: var(--body-color, #dee2e6);
+
+        .o_stat_value {
+            color: var(--body-color, #dee2e6);
+        }
+    }
+
+    // ---- Spreadsheet / Pivot cell ----
+    .o_spreadsheet {
+        background-color: var(--body-bg, #212529);
+    }
+
+    // ---- Home menu (app switcher grid) ----
+    .o_home_menu {
+        background-color: var(--body-bg, #212529);
+    }
+
+    .o_app {
+        color: var(--body-color, #dee2e6);
+    }
+
     // ---- Scrollbar theming ----
     * {
         scrollbar-color: var(--secondary-bg, #343a40) var(--body-bg, #212529);
@@ -216,7 +321,7 @@ html[data-bs-theme="dark"] {
 }
 
 // =============================================================================
-// 1. DARK MODE CSS VARIABLE ADAPTATIONS
+// 2. DARK MODE CSS VARIABLE ADAPTATIONS
 // =============================================================================
 // Ensure OPS CSS variables produce sensible values in dark context.
 
@@ -226,7 +331,7 @@ html[data-bs-theme="dark"] {
 }
 
 // =============================================================================
-// 2. BRANDED NAVBAR — DROPDOWN MENUS IN DARK MODE
+// 3. BRANDED NAVBAR — DROPDOWN MENUS IN DARK MODE
 // =============================================================================
 // The navbar stays branded (company color) in both modes.
 // Dropdown menus opened from it need dark backgrounds, not white.
@@ -289,7 +394,7 @@ html[data-bs-theme="dark"] {
 }
 
 // =============================================================================
-// 3. POPUPS / TOASTS / AUTOCOMPLETE IN DARK MODE
+// 4. POPUPS / TOASTS / AUTOCOMPLETE IN DARK MODE
 // =============================================================================
 
 html[data-bs-theme="dark"] {
@@ -336,10 +441,19 @@ html[data-bs-theme="dark"] {
             }
         }
     }
+
+    // Tooltips
+    .o_popover,
+    .popover {
+        --popover-bg: var(--tertiary-bg, #2b3035);
+        --popover-border-color: var(--border-color, #495057);
+        --popover-body-color: var(--body-color, #dee2e6);
+        --popover-header-bg: var(--secondary-bg, #343a40);
+    }
 }
 
 // =============================================================================
-// 4. LOGIN PAGE (OPS CUSTOM COMPONENT)
+// 5. LOGIN PAGE (OPS CUSTOM COMPONENT)
 // =============================================================================
 
 html[data-bs-theme="dark"] {
@@ -381,7 +495,46 @@ html[data-bs-theme="dark"] {
 }
 
 // =============================================================================
-// 5. APP GRID (OPS CUSTOM — FUTURE)
+// 6. BUTTONS & BADGES — Branded colors in dark mode
+// =============================================================================
+// BS5 dark mode auto-adjusts btn-primary but the result is muted.
+// Override with OPS branded colors for visibility.
+
+html[data-bs-theme="dark"] {
+    .btn-primary {
+        --btn-bg: var(--ops-secondary, #3b82f6);
+        --btn-border-color: var(--ops-secondary, #3b82f6);
+        --btn-hover-bg: #2563eb;
+        --btn-hover-border-color: #2563eb;
+        --btn-active-bg: #1d4ed8;
+        --btn-active-border-color: #1d4ed8;
+        --btn-color: #fff;
+    }
+
+    .btn-success {
+        --btn-bg: var(--ops-success, #10b981);
+        --btn-border-color: var(--ops-success, #10b981);
+    }
+
+    .btn-warning {
+        --btn-bg: var(--ops-warning, #f59e0b);
+        --btn-border-color: var(--ops-warning, #f59e0b);
+    }
+
+    .btn-danger {
+        --btn-bg: var(--ops-danger, #ef4444);
+        --btn-border-color: var(--ops-danger, #ef4444);
+    }
+
+    .badge.text-bg-primary,
+    .badge.bg-primary {
+        background-color: var(--ops-secondary, #3b82f6) !important;
+        color: #fff !important;
+    }
+}
+
+// =============================================================================
+// 7. APP GRID (OPS CUSTOM — FUTURE)
 // =============================================================================
 
 html[data-bs-theme="dark"] {

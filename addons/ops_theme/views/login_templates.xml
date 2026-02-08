@@ -83,15 +83,6 @@
     </template>
 
     <!-- ===================================================================== -->
-    <!-- Add color mode support to login page HTML element                     -->
-    <!-- ===================================================================== -->
-    <template id="login_html_attrs" inherit_id="web.frontend_layout" name="OPS Login HTML Attrs" priority="99">
-        <xpath expr="//html" position="attributes">
-            <attribute name="data-color-mode">light</attribute>
-        </xpath>
-    </template>
-
-    <!-- ===================================================================== -->
     <!-- Inject critical inline styles for login (before SCSS loads)          -->
     <!-- ===================================================================== -->
     <template id="login_inline_styles" inherit_id="web.frontend_layout" name="OPS Login Inline Styles" priority="101">
@@ -148,6 +139,13 @@
                     justify-content: center;
                     padding: 3rem 2rem;
                     background-color: #ffffff;
+                }
+                html[data-bs-theme="dark"] .ops-login-form-panel {
+                    background-color: #212529;
+                }
+                html[data-bs-theme="dark"] .ops-login-header h2,
+                html[data-bs-theme="dark"] .ops-login-header p {
+                    color: #dee2e6;
                 }
                 /* Hide default Odoo card styling */
                 .ops-login-form-panel .card {

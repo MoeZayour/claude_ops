@@ -13,7 +13,7 @@ Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy
 **What This Theme Does (6 Things):**
 1. Debranding - Replace Odoo purple with OPS Navy at Bootstrap compile time
 2. Login Screen - Split-screen branded login page
-3. Dark/Light Mode - Toggle using native Odoo data-color-mode
+3. Dark/Light Mode - Toggle using native Odoo data-bs-theme + CSS bundle switching
 4. Chatter Position - Toggle between side/bottom via user preference
 5. Clean UI - Remove odoo.com links and branding
 6. User Preferences - Save theme settings per user
