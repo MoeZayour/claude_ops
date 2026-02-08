@@ -18,10 +18,9 @@
                             Theme preset, favicon, and brand colors for your company's visual identity.
                         </div>
 
-                        <!-- Row 1: Preset + Favicon -->
+                        <!-- Preset Selector — Full Width -->
                         <div class="row mt-2 o_settings_container">
-                            <!-- Preset -->
-                            <div class="col-lg-7">
+                            <div class="col-12">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
                                         <div class="d-flex align-items-center gap-3 mb-2">
@@ -32,61 +31,115 @@
                                                     icon="fa-refresh"
                                                     confirm="This will reset all theme colors to Corporate Blue defaults. Continue?"/>
                                         </div>
-                                        <div class="text-muted small mb-2">Color scheme foundation. Choose Custom for full control.</div>
-                                        <field name="ops_theme_preset" widget="radio"/>
+                                        <div class="text-muted small mb-3">Select a palette. Choose Custom for full manual control.</div>
+                                        <field name="ops_theme_preset" widget="ops_theme_selector"/>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Favicon -->
-                            <div class="col-lg-5">
+                        </div>
+
+                        <!-- Row: Favicon -->
+                        <div class="row mt-3 o_settings_container">
+                            <div class="col-lg-4">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
                                         <span class="o_form_label fw-bold">Browser Favicon</span>
-                                        <div class="text-muted small mb-2">64×64px square image.</div>
+                                        <div class="text-muted small mb-2">64x64px square image.</div>
                                         <field name="ops_favicon" widget="image" options="{'size': [80, 80]}"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Row 2: Primary + Secondary Colors -->
-                        <div class="row mt-3 o_settings_container">
-                            <div class="col-lg-6">
+                        <!-- Custom Color Fields — only visible when Custom preset selected -->
+                        <div class="row mt-3 o_settings_container" invisible="ops_theme_preset != 'custom'">
+                            <div class="col-12">
+                                <h4 class="ops-settings-sub-header">Custom Palette Colors</h4>
+                            </div>
+
+                            <!-- Row: Base Colors -->
+                            <div class="col-lg-4">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Background</span>
+                                        <field name="ops_bg_color" widget="color"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Surface</span>
+                                        <field name="ops_surface_color" widget="color"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Text</span>
+                                        <field name="ops_text_color" widget="color"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row: Border + Accents -->
+                            <div class="col-lg-4">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Border</span>
+                                        <field name="ops_border_color" widget="color"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
                                         <span class="o_form_label fw-bold">Primary Color</span>
-                                        <div class="text-muted small mb-2">Navbar, headers, strong elements.</div>
                                         <field name="ops_primary_color" widget="color"/>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
-                                        <span class="o_form_label fw-bold">Secondary Color</span>
-                                        <div class="text-muted small mb-2">Buttons, links, and accents.</div>
+                                        <span class="o_form_label fw-bold">Secondary / Accent</span>
                                         <field name="ops_secondary_color" widget="color"/>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Row 3: Status Colors -->
-                        <div class="row mt-2 o_settings_container">
+                            <!-- Row: Accent2 + Button + Success -->
                             <div class="col-lg-4">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
-                                        <span class="o_form_label fw-bold">Success Color</span>
-                                        <div class="text-muted small mb-2">Positive values.</div>
-                                        <field name="ops_success_color" widget="color"/>
+                                        <span class="o_form_label fw-bold">Accent 2</span>
+                                        <field name="ops_accent2_color" widget="color"/>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
-                                        <span class="o_form_label fw-bold">Warning Color</span>
-                                        <div class="text-muted small mb-2">Caution items.</div>
+                                        <span class="o_form_label fw-bold">Button</span>
+                                        <field name="ops_btn_color" widget="color"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Success</span>
+                                        <field name="ops_success_color" widget="color"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row: Warning + Danger -->
+                            <div class="col-lg-4">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Warning</span>
                                         <field name="ops_warning_color" widget="color"/>
                                     </div>
                                 </div>
@@ -94,8 +147,7 @@
                             <div class="col-lg-4">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
-                                        <span class="o_form_label fw-bold">Danger Color</span>
-                                        <div class="text-muted small mb-2">Errors and negatives.</div>
+                                        <span class="o_form_label fw-bold">Danger</span>
                                         <field name="ops_danger_color" widget="color"/>
                                     </div>
                                 </div>

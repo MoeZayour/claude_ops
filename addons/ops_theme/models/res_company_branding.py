@@ -28,6 +28,12 @@ class ResCompanyBranding(models.Model):
             ('clean_light', 'Clean Light'),
             ('enterprise_navy', 'Enterprise Navy'),
             ('warm_professional', 'Warm Professional'),
+            ('mono_minimal', 'Monochromatic Minimalism'),
+            ('neon_highlights', 'Neon Highlights'),
+            ('warm_tones', 'Warm Tones'),
+            ('muted_pastels', 'Muted Pastels'),
+            ('deep_jewel', 'Deep Jewel Tones'),
+            ('contrast_vibrant', 'Contrasting Vibrancy'),
             ('custom', 'Custom'),
         ],
         string='Theme Preset',
@@ -61,6 +67,40 @@ class ResCompanyBranding(models.Model):
         string='Danger Color',
         default='#ef4444',
         help='Color for error messages and destructive actions.',
+    )
+
+    # =========================================================================
+    # EXTENDED PALETTE COLORS
+    # =========================================================================
+    ops_bg_color = fields.Char(
+        string='Background Color',
+        default='#f1f5f9',
+        help='Page/body background color.',
+    )
+    ops_surface_color = fields.Char(
+        string='Surface Color',
+        default='#ffffff',
+        help='Card, panel, and sidebar background color.',
+    )
+    ops_text_color = fields.Char(
+        string='Text Color',
+        default='#1e293b',
+        help='Primary text color.',
+    )
+    ops_border_color = fields.Char(
+        string='Border Color',
+        default='#e2e8f0',
+        help='Default border and divider color.',
+    )
+    ops_accent2_color = fields.Char(
+        string='Accent 2 Color',
+        default='#60a5fa',
+        help='Secondary accent for badges, tags, and alternate highlights.',
+    )
+    ops_btn_color = fields.Char(
+        string='Button Color',
+        default='#3b82f6',
+        help='Primary call-to-action button background color.',
     )
 
     # =========================================================================
@@ -220,6 +260,12 @@ class ResCompanyBranding(models.Model):
             'ops_success_color': '#10b981',
             'ops_warning_color': '#f59e0b',
             'ops_danger_color': '#ef4444',
+            'ops_bg_color': '#f1f5f9',
+            'ops_surface_color': '#ffffff',
+            'ops_text_color': '#1e293b',
+            'ops_border_color': '#e2e8f0',
+            'ops_accent2_color': '#60a5fa',
+            'ops_btn_color': '#3b82f6',
             'ops_navbar_style': 'dark',
         },
         'modern_dark': {
@@ -228,6 +274,12 @@ class ResCompanyBranding(models.Model):
             'ops_success_color': '#22c55e',
             'ops_warning_color': '#eab308',
             'ops_danger_color': '#f43f5e',
+            'ops_bg_color': '#0f172a',
+            'ops_surface_color': '#1e293b',
+            'ops_text_color': '#f1f5f9',
+            'ops_border_color': '#334155',
+            'ops_accent2_color': '#818cf8',
+            'ops_btn_color': '#6366f1',
             'ops_navbar_style': 'dark',
         },
         'clean_light': {
@@ -236,6 +288,12 @@ class ResCompanyBranding(models.Model):
             'ops_success_color': '#14b8a6',
             'ops_warning_color': '#f97316',
             'ops_danger_color': '#dc2626',
+            'ops_bg_color': '#ffffff',
+            'ops_surface_color': '#f8fafc',
+            'ops_text_color': '#0f172a',
+            'ops_border_color': '#e2e8f0',
+            'ops_accent2_color': '#38bdf8',
+            'ops_btn_color': '#0ea5e9',
             'ops_navbar_style': 'light',
         },
         'enterprise_navy': {
@@ -244,6 +302,12 @@ class ResCompanyBranding(models.Model):
             'ops_success_color': '#059669',
             'ops_warning_color': '#d97706',
             'ops_danger_color': '#b91c1c',
+            'ops_bg_color': '#f8fafc',
+            'ops_surface_color': '#ffffff',
+            'ops_text_color': '#0f172a',
+            'ops_border_color': '#e2e8f0',
+            'ops_accent2_color': '#3b82f6',
+            'ops_btn_color': '#2563eb',
             'ops_navbar_style': 'dark',
         },
         'warm_professional': {
@@ -252,6 +316,96 @@ class ResCompanyBranding(models.Model):
             'ops_success_color': '#65a30d',
             'ops_warning_color': '#ea580c',
             'ops_danger_color': '#dc2626',
+            'ops_bg_color': '#fafaf9',
+            'ops_surface_color': '#ffffff',
+            'ops_text_color': '#292524',
+            'ops_border_color': '#e7e5e4',
+            'ops_accent2_color': '#ea580c',
+            'ops_btn_color': '#d97706',
+            'ops_navbar_style': 'dark',
+        },
+        'mono_minimal': {
+            'ops_primary_color': '#1E1E1E',
+            'ops_secondary_color': '#888888',
+            'ops_success_color': '#10b981',
+            'ops_warning_color': '#f59e0b',
+            'ops_danger_color': '#ef4444',
+            'ops_bg_color': '#121212',
+            'ops_surface_color': '#1E1E1E',
+            'ops_text_color': '#E0E0E0',
+            'ops_border_color': '#444444',
+            'ops_accent2_color': '#AAAAAA',
+            'ops_btn_color': '#888888',
+            'ops_navbar_style': 'dark',
+        },
+        'neon_highlights': {
+            'ops_primary_color': '#1A1A1A',
+            'ops_secondary_color': '#00FF85',
+            'ops_success_color': '#10b981',
+            'ops_warning_color': '#f59e0b',
+            'ops_danger_color': '#ef4444',
+            'ops_bg_color': '#0D0D0D',
+            'ops_surface_color': '#1A1A1A',
+            'ops_text_color': '#FFFFFF',
+            'ops_border_color': '#333333',
+            'ops_accent2_color': '#1E90FF',
+            'ops_btn_color': '#00FF85',
+            'ops_navbar_style': 'dark',
+        },
+        'warm_tones': {
+            'ops_primary_color': '#2A2420',
+            'ops_secondary_color': '#FF6F61',
+            'ops_success_color': '#10b981',
+            'ops_warning_color': '#DAA520',
+            'ops_danger_color': '#ef4444',
+            'ops_bg_color': '#1C1C1C',
+            'ops_surface_color': '#2A2420',
+            'ops_text_color': '#F5E8D8',
+            'ops_border_color': '#4A4038',
+            'ops_accent2_color': '#DAA520',
+            'ops_btn_color': '#FF6F61',
+            'ops_navbar_style': 'dark',
+        },
+        'muted_pastels': {
+            'ops_primary_color': '#363636',
+            'ops_secondary_color': '#A8DADC',
+            'ops_success_color': '#10b981',
+            'ops_warning_color': '#f59e0b',
+            'ops_danger_color': '#ef4444',
+            'ops_bg_color': '#2C2C2C',
+            'ops_surface_color': '#363636',
+            'ops_text_color': '#E4E4E4',
+            'ops_border_color': '#505050',
+            'ops_accent2_color': '#FFC1CC',
+            'ops_btn_color': '#B39CD0',
+            'ops_navbar_style': 'dark',
+        },
+        'deep_jewel': {
+            'ops_primary_color': '#242424',
+            'ops_secondary_color': '#006B7F',
+            'ops_success_color': '#10b981',
+            'ops_warning_color': '#f59e0b',
+            'ops_danger_color': '#ef4444',
+            'ops_bg_color': '#1A1A1A',
+            'ops_surface_color': '#242424',
+            'ops_text_color': '#F0F0F0',
+            'ops_border_color': '#404040',
+            'ops_accent2_color': '#822659',
+            'ops_btn_color': '#3E5641',
+            'ops_navbar_style': 'dark',
+        },
+        'contrast_vibrant': {
+            'ops_primary_color': '#222222',
+            'ops_secondary_color': '#FF5722',
+            'ops_success_color': '#10b981',
+            'ops_warning_color': '#f59e0b',
+            'ops_danger_color': '#ef4444',
+            'ops_bg_color': '#181818',
+            'ops_surface_color': '#222222',
+            'ops_text_color': '#F7F7F7',
+            'ops_border_color': '#404040',
+            'ops_accent2_color': '#673AB7',
+            'ops_btn_color': '#FF5722',
             'ops_navbar_style': 'dark',
         },
     }
@@ -263,6 +417,8 @@ class ResCompanyBranding(models.Model):
         'ops_primary_color', 'ops_secondary_color', 'ops_success_color',
         'ops_warning_color', 'ops_danger_color', 'ops_theme_preset',
         'ops_navbar_style', 'ops_card_shadow', 'ops_border_radius',
+        'ops_bg_color', 'ops_surface_color', 'ops_text_color',
+        'ops_border_color', 'ops_accent2_color', 'ops_btn_color',
     }
 
     def write(self, vals):
@@ -311,6 +467,7 @@ class ResCompanyBranding(models.Model):
                     else:
                         company.ops_favicon_mimetype = 'image/x-icon'
                 except Exception:
+                    _logger.debug('Failed to detect favicon MIME type', exc_info=True)
                     company.ops_favicon_mimetype = 'image/x-icon'
             else:
                 company.ops_favicon_mimetype = False

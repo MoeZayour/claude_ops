@@ -46,6 +46,34 @@ class ResConfigSettings(models.TransientModel):
     )
 
     # =========================================================================
+    # EXTENDED PALETTE COLORS
+    # =========================================================================
+    ops_bg_color = fields.Char(
+        related='company_id.ops_bg_color',
+        readonly=False,
+    )
+    ops_surface_color = fields.Char(
+        related='company_id.ops_surface_color',
+        readonly=False,
+    )
+    ops_text_color = fields.Char(
+        related='company_id.ops_text_color',
+        readonly=False,
+    )
+    ops_border_color = fields.Char(
+        related='company_id.ops_border_color',
+        readonly=False,
+    )
+    ops_accent2_color = fields.Char(
+        related='company_id.ops_accent2_color',
+        readonly=False,
+    )
+    ops_btn_color = fields.Char(
+        related='company_id.ops_btn_color',
+        readonly=False,
+    )
+
+    # =========================================================================
     # FAVICON
     # =========================================================================
     ops_favicon = fields.Binary(
@@ -183,6 +211,12 @@ class ResConfigSettings(models.TransientModel):
             'ops_show_external_badge': True,
             'ops_default_color_mode': 'light',
             'ops_default_chatter_position': 'bottom',
+            'ops_bg_color': '#f1f5f9',
+            'ops_surface_color': '#ffffff',
+            'ops_text_color': '#1e293b',
+            'ops_border_color': '#e2e8f0',
+            'ops_accent2_color': '#60a5fa',
+            'ops_btn_color': '#3b82f6',
         })
         return {
             'type': 'ir.actions.client',
