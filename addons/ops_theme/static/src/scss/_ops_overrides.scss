@@ -1,0 +1,261 @@
+// =============================================================================
+// OPS THEME — OVERRIDES
+// =============================================================================
+// Theme-level overrides that respond to HTML data attributes and CSS variables.
+// Uses var(--ops-*) from /ops_theme/variables.css for runtime customization.
+// =============================================================================
+
+// =============================================================================
+// NAVBAR — RESPECTS data-ops-navbar ATTRIBUTE
+// =============================================================================
+
+// Dark navbar (default)
+html[data-ops-navbar="dark"] {
+    .o_main_navbar,
+    nav.o_main_navbar {
+        background: var(--ops-navbar-bg, var(--ops-primary)) !important;
+
+        .o_menu_sections .o_nav_entry,
+        .o_menu_sections .dropdown-toggle {
+            background: var(--ops-navbar-bg, var(--ops-primary)) !important;
+        }
+
+        .o_menu_toggle,
+        .o_menu_sections button,
+        .o_menu_sections a,
+        .o_menu_systray .dropdown-toggle {
+            color: var(--ops-navbar-text, #ffffff) !important;
+        }
+    }
+
+    .o_web_client:where(:has(.o-mail-Discuss)) {
+        .o_main_navbar {
+            background-color: var(--ops-navbar-bg, var(--ops-primary)) !important;
+        }
+    }
+}
+
+// Light navbar
+html[data-ops-navbar="light"] {
+    .o_main_navbar,
+    nav.o_main_navbar {
+        background: #f8fafc !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+
+        .o_menu_sections .o_nav_entry,
+        .o_menu_sections .dropdown-toggle {
+            background: #f8fafc !important;
+        }
+
+        .o_menu_toggle,
+        .o_menu_sections button,
+        .o_menu_sections a,
+        .o_menu_systray .dropdown-toggle {
+            color: #1e293b !important;
+        }
+
+        .o_menu_sections button:hover,
+        .o_menu_sections a:hover {
+            background: rgba(0, 0, 0, 0.05) !important;
+        }
+    }
+
+    .o_web_client:where(:has(.o-mail-Discuss)) {
+        .o_main_navbar {
+            background-color: #f8fafc !important;
+        }
+    }
+}
+
+// Primary color navbar
+html[data-ops-navbar="primary"] {
+    .o_main_navbar,
+    nav.o_main_navbar {
+        background: var(--ops-navbar-bg, var(--ops-primary)) !important;
+
+        .o_menu_sections .o_nav_entry,
+        .o_menu_sections .dropdown-toggle {
+            background: var(--ops-navbar-bg, var(--ops-primary)) !important;
+        }
+
+        .o_menu_toggle,
+        .o_menu_sections button,
+        .o_menu_sections a,
+        .o_menu_systray .dropdown-toggle {
+            color: var(--ops-navbar-text, #ffffff) !important;
+        }
+    }
+
+    .o_web_client:where(:has(.o-mail-Discuss)) {
+        .o_main_navbar {
+            background-color: var(--ops-navbar-bg, var(--ops-primary)) !important;
+        }
+    }
+}
+
+// =============================================================================
+// BORDER RADIUS — RESPECTS data-ops-radius ATTRIBUTE
+// =============================================================================
+
+html[data-ops-radius="sharp"] {
+    --ops-radius-md: 0px;
+    --ops-border-radius: 0px;
+
+    .btn, .form-control, .form-select, .card,
+    .o_kanban_record, .modal-content, .dropdown-menu {
+        border-radius: 0px !important;
+    }
+}
+
+html[data-ops-radius="rounded"] {
+    --ops-radius-md: 8px;
+    --ops-border-radius: 8px;
+
+    .btn, .form-control, .form-select, .card,
+    .o_kanban_record, .modal-content, .dropdown-menu {
+        border-radius: 8px !important;
+    }
+}
+
+html[data-ops-radius="pill"] {
+    --ops-radius-md: 16px;
+    --ops-border-radius: 16px;
+
+    .btn { border-radius: 9999px !important; }
+
+    .form-control, .form-select { border-radius: 16px !important; }
+
+    .card, .o_kanban_record, .modal-content, .dropdown-menu {
+        border-radius: 16px !important;
+    }
+}
+
+// =============================================================================
+// CARD SHADOW — RESPECTS data-ops-shadow ATTRIBUTE
+// =============================================================================
+
+html[data-ops-shadow="none"] {
+    .o_form_sheet, .o_kanban_record, .card { box-shadow: none !important; }
+}
+
+html[data-ops-shadow="light"] {
+    .o_form_sheet, .o_kanban_record, .card {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    }
+}
+
+html[data-ops-shadow="medium"] {
+    .o_form_sheet, .o_kanban_record, .card {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    }
+}
+
+html[data-ops-shadow="heavy"] {
+    .o_form_sheet, .o_kanban_record, .card {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    }
+}
+
+// =============================================================================
+// BUTTON COLORS — LIGHT MODE ONLY
+// =============================================================================
+
+html:not([data-bs-theme="dark"]) {
+    .btn-primary {
+        background-color: var(--ops-btn, var(--ops-secondary)) !important;
+        border-color: var(--ops-btn, var(--ops-secondary)) !important;
+        color: #ffffff !important;
+
+        &:hover, &:focus {
+            background-color: var(--ops-btn-hover, var(--ops-secondary-hover, #2563eb)) !important;
+            border-color: var(--ops-btn-hover, var(--ops-secondary-hover, #2563eb)) !important;
+        }
+    }
+
+    .btn-success { background-color: var(--ops-success) !important; border-color: var(--ops-success) !important; }
+    .btn-warning { background-color: var(--ops-warning) !important; border-color: var(--ops-warning) !important; }
+    .btn-danger  { background-color: var(--ops-danger) !important; border-color: var(--ops-danger) !important; }
+
+    a:not(.btn):not(.nav-link):not(.dropdown-item) {
+        color: var(--ops-accent2, var(--ops-secondary));
+        &:hover { color: var(--ops-secondary-hover, #2563eb); }
+    }
+
+    .badge.text-bg-primary, .badge.bg-primary { background-color: var(--ops-btn, var(--ops-secondary)) !important; }
+    .badge.text-bg-success, .badge.bg-success { background-color: var(--ops-success) !important; }
+    .badge.text-bg-warning, .badge.bg-warning { background-color: var(--ops-warning) !important; }
+    .badge.text-bg-danger, .badge.bg-danger   { background-color: var(--ops-danger) !important; }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--ops-btn, var(--ops-secondary)) !important;
+        box-shadow: 0 0 0 3px rgba(var(--ops-btn-rgb, var(--ops-secondary-rgb)), 0.15) !important;
+    }
+
+    .o_statusbar_status .o_arrow_button.btn-primary,
+    .o_statusbar_status .o_arrow_button.o_active {
+        background-color: var(--ops-btn, var(--ops-secondary)) !important;
+        color: #ffffff !important;
+    }
+}
+
+// =============================================================================
+// SETTINGS PAGE — Visual Enhancement (colors only, no layout changes)
+// =============================================================================
+
+.o_base_settings_view .o_setting_container .settings_tab .tab {
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover:not(.selected) { background-color: rgba(var(--ops-secondary-rgb), 0.06); }
+    &.selected { box-shadow: inset 3px 0 0 var(--ops-secondary, #3b82f6); font-weight: 600; }
+}
+
+.o_base_settings_view .settings > .app_settings_block h2 {
+    border-left: 3px solid var(--ops-secondary, #3b82f6);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.o-settings-form-view .o_searchview {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    &:focus-within {
+        border-color: var(--ops-secondary, #3b82f6) !important;
+        box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb), 0.12) !important;
+    }
+}
+
+.o_settings_container .o_searchable_setting {
+    transition: background-color 0.15s ease;
+    border-radius: var(--ops-border-radius, 8px);
+
+    &:hover { background-color: rgba(var(--ops-secondary-rgb), 0.03); }
+    &.o_setting_highlight {
+        --SearchableSetting__highlight-border: var(--ops-secondary, #3b82f6);
+        --SearchableSetting__highlight-background: rgba(var(--ops-secondary-rgb), 0.08);
+    }
+}
+
+.o_settings_container .o_setting_right_pane .o_form_label { font-weight: 600; }
+.o_base_settings_view .o_setting_container .settings { scroll-behavior: smooth; }
+
+// =============================================================================
+// NOTIFICATION ACCENTS — Severity-coded side stripe
+// =============================================================================
+
+.o_notification {
+    border-left: 4px solid transparent !important;
+
+    &.border-success, &.o_notification_success { border-left-color: var(--ops-success, #10b981) !important; }
+    &.border-warning, &.o_notification_warning { border-left-color: var(--ops-warning, #f59e0b) !important; }
+    &.border-danger, &.o_notification_danger   { border-left-color: var(--ops-danger, #ef4444) !important; }
+    &.border-info, &.o_notification_info       { border-left-color: var(--ops-secondary, #3b82f6) !important; }
+}
+
+// =============================================================================
+// SOFT BADGE VARIANTS
+// =============================================================================
+
+.badge-soft-primary { background: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.12) !important; color: var(--ops-secondary, #3b82f6) !important; }
+.badge-soft-success { background: rgba(16, 185, 129, 0.12) !important; color: var(--ops-success, #10b981) !important; }
+.badge-soft-warning { background: rgba(245, 158, 11, 0.12) !important; color: var(--ops-warning, #f59e0b) !important; }
+.badge-soft-danger  { background: rgba(239, 68, 68, 0.12) !important; color: var(--ops-danger, #ef4444) !important; }
+.badge-soft-info    { background: rgba(6, 182, 212, 0.12) !important; color: #06b6d4 !important; }

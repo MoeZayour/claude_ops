@@ -1,32 +1,30 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.10.0.0',
+    'version': '19.0.11.0.0',
     'category': 'Themes/Backend',
-    'summary': 'Minimal OPS Framework theme with clean debranding',
+    'summary': 'Minimal OPS Framework theme — Odoo owns the layout, OPS owns the colors',
     'description': """
-OPS Theme v7.0 - Minimal Override Philosophy
-============================================
+OPS Theme v11.0 — Architecture Rebuild
+=======================================
 
-Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy:
+Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
 
 **What This Theme Does (6 Things):**
-1. Debranding - Replace Odoo purple with OPS Navy at Bootstrap compile time
-2. Login Screen - Split-screen branded login page
-3. Dark/Light Mode - Toggle using native Odoo data-bs-theme + CSS bundle switching
-4. Chatter Position - Toggle between side/bottom via user preference
-5. Clean UI - Remove odoo.com links and branding
-6. User Preferences - Save theme settings per user
+1. Debranding — Replace Odoo purple with OPS Navy at Bootstrap compile time
+2. Login Screen — Split-screen branded login page
+3. Dark/Light Mode — Toggle using native Odoo data-bs-theme + CSS bundle switching
+4. Chatter Position — Toggle between side/bottom via user preference
+5. Clean UI — Remove odoo.com links and branding via CSS + registry cleanup
+6. User Preferences — Save theme settings per user
 
-**What This Theme Does NOT Do:**
-- Override form view layouts (rides Odoo native)
-- Rewrite list view renderers (rides Odoo native)
-- Modify wizard/modal structure (rides Odoo native)
-- Fight OWL component rendering (uses Odoo's dark mode)
-- Inject CSS that breaks two-column forms (minimal overrides only)
+**Architecture:**
+- Layer 1 (compile-time): _primary_variables.scss overrides $o-community-color
+- Layer 2 (runtime): /variables.css serves CSS custom properties from Settings
+- Dark mode: Rides Odoo's native 62+ .dark.scss files, OPS adds essential overrides only
+- Debranding: CSS patterns + OWL registry cleanup (no MutationObserver)
 
-**Total SCSS**: ~400 lines (vs 3800+ in v6)
-**Philosophy**: Let Odoo handle component styling, we just brand the colors
+**SCSS:** ~800 lines core + ~150 lines components (vs 2,821 in v10)
     """,
     'author': 'OPS Framework',
     'website': 'https://github.com/MoeZayour/claude_ops',
@@ -48,9 +46,8 @@ Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy
     ],
     'assets': {
         # =================================================================
-        # PRIMARY VARIABLES - Loaded BEFORE Bootstrap compilation
+        # PRIMARY VARIABLES — Loaded BEFORE Bootstrap compilation
         # =================================================================
-        # This is the KEY to proper debranding - override colors at source
         'web._assets_primary_variables': [
             ('prepend', 'ops_theme/static/src/scss/_primary_variables.scss'),
         ],
@@ -60,21 +57,20 @@ Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy
         # =================================================================
         'web.assets_frontend': [
             'ops_theme/static/src/scss/_login.scss',
-            'ops_theme/static/src/js/theme_loader.js',
         ],
 
         # =================================================================
-        # BACKEND ASSETS - Minimal theme styling
+        # BACKEND ASSETS — Theme overrides + UI components
         # =================================================================
         'web.assets_backend': [
-            # 1. Core styling (debranding, chatter)
+            # SCSS
             'ops_theme/static/src/scss/_debranding.scss',
             'ops_theme/static/src/scss/_chatter_position.scss',
-            'ops_theme/static/src/scss/_dynamic_overrides.scss',
+            'ops_theme/static/src/scss/_ops_overrides.scss',
+            'ops_theme/static/src/scss/_ops_components.scss',
             'ops_theme/static/src/scss/_settings_theme_page.scss',
 
-            # 2. JavaScript - Theme initialization and toggles
-            'ops_theme/static/src/js/theme_loader.js',
+            # JavaScript
             'ops_theme/static/src/js/debranding.js',
             'ops_theme/static/src/js/ops_theme_toggles.js',
             'ops_theme/static/src/js/chatter_position_patch.js',
@@ -82,17 +78,17 @@ Clean, minimal theme following the "Color + Enhance, Never Fight OWL" philosophy
             'ops_theme/static/src/xml/ops_theme_selector.xml',
             'ops_theme/static/src/js/theme_preview.js',
 
-            # 3. XML templates - User menu with theme toggles
+            # XML templates
             'ops_theme/static/src/xml/user_menu.xml',
         ],
 
         # =================================================================
-        # DARK MODE OVERRIDES - Only loaded when dark mode is active
+        # DARK MODE — Essential OPS overrides only
         # =================================================================
-        # web.assets_web_dark = include(web.assets_web) + *.dark.scss files
-        # Our file loads AFTER all native dark.scss, giving highest cascade priority
+        # Odoo's 62+ native .dark.scss files handle standard components.
+        # This file adds design tokens + OPS-specific dark fixes.
         'web.assets_web_dark': [
-            'ops_theme/static/src/scss/_ops_dark_mode.scss',
+            'ops_theme/static/src/scss/_ops_dark.dark.scss',
         ],
     },
     'installable': True,
