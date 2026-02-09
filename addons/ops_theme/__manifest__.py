@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.12.0.0',
+    'version': '19.0.13.0.0',
     'category': 'Themes/Backend',
     'summary': 'Minimal OPS Framework theme — Odoo owns the layout, OPS owns the colors',
     'description': """
-OPS Theme v12.0 — Complete Architectural Rebuild
-=================================================
+OPS Theme v13.0 — Full Skin Presets
+====================================
 
 Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
 
@@ -18,14 +18,12 @@ Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
 5. Clean UI — Remove odoo.com links and branding via CSS + registry cleanup
 6. User Preferences — Save theme settings per user
 
-**Architecture:**
-- Layer 1 (compile-time): _primary_variables.scss overrides $o-community-color
-- Layer 2 (runtime): /variables.css serves CSS custom properties from Settings
-- Dark mode: Rides Odoo's native 62+ .dark.scss files, OPS adds essential overrides only
-- Debranding: CSS patterns + OWL registry cleanup (no MutationObserver)
-- Dark presets auto-enable dark mode via write() and onchange
-
-**SCSS:** ~550 lines theme (components moved to ops_matrix_core)
+**v13 Changes:**
+- Wire --ops-bg/surface/text/border to Odoo layout elements (full skin)
+- Dark presets feed into dark mode design tokens via var() + color-mix()
+- Add ops_info_color field + per-preset values
+- Fix Clean Light, Mono Minimal, Muted Pastels presets
+- Brighten success/warning/danger for dark presets
     """,
     'author': 'OPS Framework',
     'website': 'https://github.com/MoeZayour/claude_ops',

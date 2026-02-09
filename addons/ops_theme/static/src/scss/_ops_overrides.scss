@@ -6,6 +6,70 @@
 // =============================================================================
 
 // =============================================================================
+// FULL SKIN — Wire --ops-* runtime vars to Bootstrap/Odoo CSS properties
+// =============================================================================
+// These :root overrides connect preset colors from /variables.css to the
+// actual Bootstrap properties that control page layout. Without this section,
+// --ops-bg/surface/text/border are orphan variables that nothing reads.
+//
+// LIGHT MODE ONLY — dark mode wiring is handled in _ops_dark.dark.scss
+// =============================================================================
+
+html:not([data-bs-theme="dark"]) {
+    // Page-level colors
+    --body-bg: var(--ops-bg, #f1f5f9);
+    --body-color: var(--ops-text, #1e293b);
+    --border-color: var(--ops-border, #e2e8f0);
+    --emphasis-color: var(--ops-text, #1e293b);
+
+    // Link colors
+    --link-color: var(--ops-accent2, var(--ops-secondary, #3b82f6));
+    --link-hover-color: var(--ops-secondary-hover, #2563eb);
+
+    // Secondary/tertiary backgrounds (sidebars, grouped sections)
+    --secondary-bg: var(--ops-surface, #ffffff);
+    --tertiary-bg: var(--ops-bg, #f1f5f9);
+}
+
+// Web client root background
+html:not([data-bs-theme="dark"]) .o_web_client {
+    background-color: var(--ops-bg, #f1f5f9) !important;
+}
+
+// Surface elements — cards, sheets, kanban, list backgrounds
+html:not([data-bs-theme="dark"]) {
+    .o_form_sheet {
+        background-color: var(--ops-surface, #ffffff) !important;
+    }
+
+    .o_kanban_record, .card:not(.bg-primary):not(.bg-success):not(.bg-warning):not(.bg-danger):not(.bg-info) {
+        background-color: var(--ops-surface, #ffffff) !important;
+    }
+
+    .o_list_view .o_list_table {
+        --table-bg: var(--ops-surface, #ffffff);
+    }
+
+    .o_control_panel {
+        background-color: var(--ops-bg, #f1f5f9) !important;
+    }
+
+    .o_base_settings_view .o_setting_container .settings_tab {
+        background-color: var(--ops-surface, #ffffff) !important;
+    }
+
+    .dropdown-menu {
+        background-color: var(--ops-surface, #ffffff) !important;
+        border-color: var(--ops-border, #e2e8f0) !important;
+    }
+
+    .modal-content {
+        background-color: var(--ops-surface, #ffffff) !important;
+        border-color: var(--ops-border, #e2e8f0) !important;
+    }
+}
+
+// =============================================================================
 // NAVBAR — data-ops-navbar ATTRIBUTE
 // =============================================================================
 
@@ -142,4 +206,10 @@ html:not([data-bs-theme="dark"]) {
 .badge-soft-success { background: rgba(16, 185, 129, 0.12) !important; color: var(--ops-success) !important; }
 .badge-soft-warning { background: rgba(245, 158, 11, 0.12) !important; color: var(--ops-warning) !important; }
 .badge-soft-danger  { background: rgba(239, 68, 68, 0.12) !important; color: var(--ops-danger) !important; }
-.badge-soft-info    { background: rgba(6, 182, 212, 0.12) !important; color: #06b6d4 !important; }
+.badge-soft-info    { background: rgba(6, 182, 212, 0.12) !important; color: var(--ops-info, #06b6d4) !important; }
+
+// Info button/badge overrides
+html:not([data-bs-theme="dark"]) {
+    .btn-info { background-color: var(--ops-info, #06b6d4) !important; border-color: var(--ops-info, #06b6d4) !important; }
+    .badge.text-bg-info, .badge.bg-info { background-color: var(--ops-info, #06b6d4) !important; }
+}

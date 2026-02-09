@@ -1,7 +1,7 @@
 ///
 /// OPS Dark Mode — Essential Overrides
 /// ====================================
-/// Design tokens + Bootstrap variable fixes + OPS-specific dark overrides.
+/// Design tokens derived from --ops-* preset vars + Bootstrap variable fixes.
 /// Odoo's 62+ native .dark.scss files handle mail, editor, spreadsheet etc.
 /// BS5 auto-inverts most standard components via [data-bs-theme="dark"].
 ///
@@ -10,43 +10,43 @@
 ///
 
 // =============================================================================
-// DESIGN TOKENS + BOOTSTRAP VARIABLE OVERRIDES
+// 0. DESIGN TOKENS — Derived from preset --ops-* runtime vars
 // =============================================================================
 
 html[data-bs-theme="dark"] {
-    // OPS surface layers
-    --ops-dm-bg-deep:      #0f172a;
-    --ops-dm-bg-surface:   #1e293b;
-    --ops-dm-bg-elevated:  #263548;
-    --ops-dm-bg-hover:     #334155;
+    // Surface layers — derived from preset
+    --ops-dm-bg-deep:      var(--ops-bg, #0f172a);
+    --ops-dm-bg-surface:   var(--ops-surface, #1e293b);
+    --ops-dm-bg-elevated:  color-mix(in srgb, var(--ops-surface, #1e293b), white 8%);
+    --ops-dm-bg-hover:     color-mix(in srgb, var(--ops-surface, #1e293b), white 15%);
 
-    // Borders
-    --ops-dm-border:       #475569;
-    --ops-dm-border-subtle:#334155;
+    // Borders — derived from preset
+    --ops-dm-border:       var(--ops-border, #475569);
+    --ops-dm-border-subtle: color-mix(in srgb, var(--ops-border, #475569), black 20%);
 
-    // Text
-    --ops-dm-text:         #f1f5f9;
-    --ops-dm-text-body:    #cbd5e1;
-    --ops-dm-text-muted:   #94a3b8;
+    // Text — derived from preset
+    --ops-dm-text:         var(--ops-text, #f1f5f9);
+    --ops-dm-text-body:    color-mix(in srgb, var(--ops-text, #f1f5f9), transparent 10%);
+    --ops-dm-text-muted:   color-mix(in srgb, var(--ops-text, #f1f5f9), transparent 35%);
 
-    // Accent
-    --ops-dm-accent:       #3b82f6;
-    --ops-dm-accent-hover: #60a5fa;
-    --ops-dm-accent-subtle:rgba(59,130,246,0.15);
+    // Accent — from secondary
+    --ops-dm-accent:       var(--ops-secondary, #3b82f6);
+    --ops-dm-accent-hover: var(--ops-accent2, #60a5fa);
+    --ops-dm-accent-subtle: color-mix(in srgb, var(--ops-secondary, #3b82f6), transparent 85%);
 
-    // Fix BS5 dark derivations from #1e293b primary (CRITICAL)
-    --body-bg:        var(--ops-dm-bg-deep);
-    --body-color:     var(--ops-dm-text-body);
-    --secondary-bg:   var(--ops-dm-bg-surface);
-    --tertiary-bg:    var(--ops-dm-bg-elevated);
-    --border-color:   var(--ops-dm-border);
-    --link-color:     var(--ops-dm-accent);
-    --link-hover-color: var(--ops-dm-accent-hover);
-    --link-color-rgb: 59, 130, 246;
-    --link-hover-color-rgb: 96, 165, 250;
-    --primary-text-emphasis: #60a5fa;
-    --primary-bg-subtle: #1a2744;
-    --primary-border-subtle: #2d4a7a;
+    // Override Bootstrap dark vars
+    --body-bg:           var(--ops-dm-bg-deep);
+    --body-color:        var(--ops-dm-text-body);
+    --secondary-bg:      var(--ops-dm-bg-surface);
+    --tertiary-bg:       var(--ops-dm-bg-elevated);
+    --border-color:      var(--ops-dm-border);
+    --link-color:        var(--ops-dm-accent);
+    --link-hover-color:  var(--ops-dm-accent-hover);
+    --emphasis-color:    var(--ops-dm-text);
+
+    // Primary color emphasis
+    --primary-text-emphasis: var(--ops-dm-accent-hover);
+    --primary-bg-subtle: var(--ops-dm-accent-subtle);
 }
 
 // =============================================================================

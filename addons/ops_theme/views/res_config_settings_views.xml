@@ -135,7 +135,7 @@
                                 </div>
                             </div>
 
-                            <!-- Row: Warning + Danger -->
+                            <!-- Row: Warning + Danger + Info -->
                             <div class="col-lg-4">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
@@ -149,6 +149,14 @@
                                     <div class="o_setting_right_pane">
                                         <span class="o_form_label fw-bold">Danger</span>
                                         <field name="ops_danger_color" widget="color"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="o_setting_box">
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label fw-bold">Info</span>
+                                        <field name="ops_info_color" widget="color"/>
                                     </div>
                                 </div>
                             </div>

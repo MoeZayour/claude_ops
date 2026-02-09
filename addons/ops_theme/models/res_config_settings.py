@@ -44,6 +44,10 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.ops_danger_color',
         readonly=False,
     )
+    ops_info_color = fields.Char(
+        related='company_id.ops_info_color',
+        readonly=False,
+    )
 
     # =========================================================================
     # EXTENDED PALETTE COLORS
@@ -222,6 +226,7 @@ class ResConfigSettings(models.TransientModel):
             'ops_border_color': '#e2e8f0',
             'ops_accent2_color': '#60a5fa',
             'ops_btn_color': '#3b82f6',
+            'ops_info_color': '#06b6d4',
         })
         return {
             'type': 'ir.actions.client',

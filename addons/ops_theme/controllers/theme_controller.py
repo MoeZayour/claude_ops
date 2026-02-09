@@ -63,6 +63,7 @@ class OPSThemeController(http.Controller):
         success = company.ops_success_color or '#10b981'
         warning = company.ops_warning_color or '#f59e0b'
         danger = company.ops_danger_color or '#ef4444'
+        info = company.ops_info_color or '#06b6d4'
         bg = company.ops_bg_color or '#f1f5f9'
         surface = company.ops_surface_color or '#ffffff'
         text = company.ops_text_color or '#1e293b'
@@ -113,6 +114,8 @@ class OPSThemeController(http.Controller):
     --ops-warning-rgb: {hex_to_rgb(warning)};
     --ops-danger: {danger};
     --ops-danger-rgb: {hex_to_rgb(danger)};
+    --ops-info: {info};
+    --ops-info-rgb: {hex_to_rgb(info)};
     --ops-bg: {bg};
     --ops-bg-rgb: {hex_to_rgb(bg)};
     --ops-surface: {surface};
@@ -168,6 +171,7 @@ class OPSThemeController(http.Controller):
             'success_color': company.ops_success_color or '#10b981',
             'warning_color': company.ops_warning_color or '#f59e0b',
             'danger_color': company.ops_danger_color or '#ef4444',
+            'info_color': company.ops_info_color or '#06b6d4',
             'bg_color': company.ops_bg_color or '#f1f5f9',
             'surface_color': company.ops_surface_color or '#ffffff',
             'text_color': company.ops_text_color or '#1e293b',
