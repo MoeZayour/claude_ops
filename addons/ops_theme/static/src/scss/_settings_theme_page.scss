@@ -1,63 +1,17 @@
 /* =============================================================================
    OPS Theme — Settings Page Styles
-   Verified against Odoo 19 DOM structure (2026-02-08)
-
-   Radio widget DOM (Odoo 19):
-     .o_field_widget.o_field_radio
-       div[role="radiogroup"].o_horizontal|.o_vertical
-         .form-check.o_radio_item
-           input.form-check-input.o_radio_input
-           label.form-check-label.o_form_label
-
-   Color widget DOM:
-     .o_field_widget.o_field_color.d-flex  (background = selected color)
-       input[type="color"].w-100.h-100.opacity-0
-
-   Settings page DOM:
-     .app_settings_block[data-key="ops_theme"]
-       .o_setting_box
-         .o_setting_left_pane
-         .o_setting_right_pane
+   Scoped to .app_settings_block[data-key="ops_theme"] only.
    ============================================================================= */
 
-/* --- Scope: OPS Theme settings app block only --- */
 .app_settings_block[data-key="ops_theme"] {
 
-    /* =================================================================
-       1. HORIZONTAL RADIO FINE-TUNING
-       Using options="{'horizontal': True}" in XML generates .o_horizontal
-       which Odoo natively makes inline-flex + wrap. We just add gap.
-       ================================================================= */
-
-    .o_field_radio {
-        /* Horizontal radios: add gap between items */
-        .o_horizontal {
-            gap: 6px 20px;
-
-            .o_radio_item {
-                margin-right: 0 !important; /* gap handles spacing */
-            }
-        }
-
-        /* Vertical radios (theme preset): tighter spacing */
-        .o_vertical .o_radio_item {
-            padding: 2px 0;
-        }
-
-        /* Radio items: no extra margin */
-        .o_radio_item,
-        .form-check {
-            white-space: nowrap;
-        }
+    /* --- Horizontal radio gap --- */
+    .o_field_radio .o_horizontal {
+        gap: 6px 20px;
+        .o_radio_item { margin-right: 0 !important; }
     }
 
-
-    /* =================================================================
-       2. COLOR SWATCHES — Enlarge from default ~24px to 48px
-       .o_field_color is the visible colored div (shows background color).
-       The input[type=color] inside is opacity-0, just a click target.
-       ================================================================= */
-
+    /* --- Color swatches — enlarge to 48px --- */
     .o_field_color {
         width: 48px !important;
         height: 48px !important;
@@ -66,101 +20,37 @@
         border-radius: 10px !important;
         border: 2px solid rgba(0, 0, 0, 0.08) !important;
         cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
         flex-shrink: 0;
-
-        &:hover {
-            transform: scale(1.06);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
-        }
-
-        input[type="color"] {
-            border-radius: 10px !important;
-        }
+        input[type="color"] { border-radius: 10px !important; }
     }
 
-
-    /* =================================================================
-       3. TERMS & CONDITIONS EDITOR — Minimum height for HTML widget
-       Field: fields.Html with widget="html", class="ops-terms-editor"
-       ================================================================= */
-
+    /* --- Terms editor min-height --- */
     .ops-terms-editor {
         width: 100% !important;
-
-        .o_field_html,
-        .odoo-editor-editable,
-        .note-editable,
-        .oe_form_field_html_text,
-        iframe,
-        .o_readonly,
-        textarea {
+        .o_field_html, .odoo-editor-editable, .note-editable,
+        iframe, .o_readonly, textarea {
             min-height: 140px !important;
             width: 100% !important;
         }
     }
+    .o_field_widget[name="ops_report_terms"] { width: 100% !important; }
 
-    /* Backup selector by field name */
-    .o_field_widget[name="ops_report_terms"] {
-        width: 100% !important;
+    /* --- Login preview image constraint --- */
+    .ops-login-preview img {
+        max-height: 120px !important;
+        width: auto !important;
+        object-fit: cover;
+        border-radius: 6px;
     }
 
-
-    /* =================================================================
-       4. LOGIN BACKGROUND IMAGE — Constrain preview height
-       ================================================================= */
-
-    .ops-login-preview {
-        img {
-            max-height: 120px !important;
-            width: auto !important;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-
-        .o_field_image,
-        .o_image,
-        .o_image_preview {
-            max-height: 140px !important;
-            overflow: hidden;
-        }
-    }
-
-
-    /* =================================================================
-       5. SIGNATURE LABELS — Prevent truncation, full-width inputs
-       ================================================================= */
-
-    .ops-signature-row {
-        .o_field_widget {
-            width: 100% !important;
-        }
-
-        label,
-        .o_form_label {
-            white-space: nowrap;
-            overflow: visible !important;
-            text-overflow: unset !important;
-            font-size: 0.82rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-            display: block;
-        }
-    }
-
+    /* --- Signature labels full-width --- */
+    .ops-signature-row .o_field_widget { width: 100% !important; }
     .o_field_widget[name*="ops_signature_label"] {
         width: 100% !important;
-
-        input {
-            width: 100% !important;
-        }
+        input { width: 100% !important; }
     }
 
-
-    /* =================================================================
-       6. SECTION SUB-HEADERS (blue left border accent)
-       ================================================================= */
-
+    /* --- Section sub-headers (blue left border) --- */
     .ops-settings-sub-header {
         font-size: 0.8rem;
         font-weight: 700;
@@ -173,39 +63,7 @@
         background: linear-gradient(90deg, rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.04), transparent);
     }
 
-
-    /* =================================================================
-       7. GENERAL POLISH
-       ================================================================= */
-
-    .o_setting_box {
-        border-radius: 6px;
-        transition: background-color 0.12s ease;
-
-        &:hover {
-            background-color: rgba(0, 0, 0, 0.012);
-        }
-    }
-
-    .o_setting_right_pane {
-        .o_field_radio {
-            width: auto !important;
-        }
-
-        .o_setting_field_input,
-        .o_field_widget input.o_input {
-            max-width: 100% !important;
-        }
-    }
-
-    /* =================================================================
-       8. THEME PALETTE SELECTOR WIDGET
-       ================================================================= */
-
-    .ops-theme-selector {
-        width: 100%;
-    }
-
+    /* --- Theme palette selector --- */
     .ops-ts-section-label {
         font-size: 0.72rem;
         font-weight: 700;
@@ -213,21 +71,14 @@
         letter-spacing: 0.6px;
         color: #94a3b8;
         margin-bottom: 8px;
-        padding-left: 2px;
     }
-
     .ops-ts-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
         margin-bottom: 4px;
     }
-
-    @media (max-width: 992px) {
-        .ops-ts-grid {
-            grid-template-columns: 1fr;
-        }
-    }
+    @media (max-width: 992px) { .ops-ts-grid { grid-template-columns: 1fr; } }
 
     .ops-ts-card {
         background: #ffffff;
@@ -235,206 +86,34 @@
         border-radius: 10px;
         padding: 10px 14px;
         cursor: pointer;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
-
-        &:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transform: translateY(-1px);
-        }
-
-        &.ops-ts-selected {
-            border-width: 2px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
-        }
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        &:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+        &.ops-ts-selected { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12); }
     }
-
-    .ops-ts-card-dark {
-        background: #111318;
-        border-color: #1e293b;
-    }
-
-    .ops-ts-card-custom {
-        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-        border-style: dashed;
-    }
-
-    .ops-ts-card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 8px;
-    }
-
-    .ops-ts-name-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .ops-ts-accent-dot {
-        width: 16px;
-        height: 16px;
-        border-radius: 5px;
-        flex-shrink: 0;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-    }
-
-    .ops-ts-name {
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: #1e293b;
-    }
-
-    .ops-ts-card-dark .ops-ts-name {
-        color: #f1f5f9;
-    }
-
-    .ops-ts-tag {
-        font-size: 0.62rem;
-        font-weight: 600;
-        padding: 2px 8px;
-        border-radius: 10px;
-        white-space: nowrap;
-    }
-
-    .ops-ts-swatches {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-
-    .ops-ts-swatch {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2px;
-    }
-
-    .ops-ts-swatch-circle {
-        width: 28px;
-        height: 28px;
-        border-radius: 7px;
-        border: 1px solid rgba(128, 128, 128, 0.2);
-        flex-shrink: 0;
-    }
-
-    .ops-ts-swatch-label {
-        font-size: 0.6rem;
-        color: #94a3b8;
-        line-height: 1;
-    }
-
-    .ops-ts-swatch-hex {
-        font-size: 0.52rem;
-        color: #64748b;
-        font-family: monospace;
-        line-height: 1;
-    }
-
-    .ops-ts-card-dark .ops-ts-swatch-label {
-        color: #64748b;
-    }
-
-    .ops-ts-card-dark .ops-ts-swatch-hex {
-        color: #475569;
-    }
-
-    .ops-ts-custom-hint {
-        font-size: 0.78rem;
-        color: #94a3b8;
-        font-style: italic;
-        padding: 4px 0;
-    }
-
-
-    /* Reset button: muted until hover */
-    .btn-outline-secondary {
-        opacity: 0.7;
-        transition: opacity 0.15s ease;
-
-        &:hover {
-            opacity: 1;
-        }
-    }
-
-    /* Color rows: tighter vertical spacing */
-    .row.g-0 > [class*="col-"] > .o_setting_box {
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
-    /* Section description text */
-    > .text-muted:first-child,
-    > div > .text-muted:first-child {
-        font-size: 0.88em;
-    }
+    .ops-ts-card-dark { background: #111318; border-color: #1e293b; }
+    .ops-ts-card-custom { background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-style: dashed; }
+    .ops-ts-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .ops-ts-name-row { display: flex; align-items: center; gap: 8px; }
+    .ops-ts-accent-dot { width: 16px; height: 16px; border-radius: 5px; flex-shrink: 0; border: 1px solid rgba(0, 0, 0, 0.08); }
+    .ops-ts-name { font-size: 0.82rem; font-weight: 600; color: #1e293b; }
+    .ops-ts-card-dark .ops-ts-name { color: #f1f5f9; }
+    .ops-ts-tag { font-size: 0.62rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+    .ops-ts-swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ops-ts-swatch { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .ops-ts-swatch-circle { width: 28px; height: 28px; border-radius: 7px; border: 1px solid rgba(128, 128, 128, 0.2); flex-shrink: 0; }
+    .ops-ts-swatch-label { font-size: 0.6rem; color: #94a3b8; line-height: 1; }
+    .ops-ts-swatch-hex { font-size: 0.52rem; color: #64748b; font-family: monospace; line-height: 1; }
+    .ops-ts-card-dark .ops-ts-swatch-label { color: #64748b; }
+    .ops-ts-card-dark .ops-ts-swatch-hex { color: #475569; }
+    .ops-ts-custom-hint { font-size: 0.78rem; color: #94a3b8; font-style: italic; padding: 4px 0; }
 }
 
-
-/* =================================================================
-   DARK MODE
-   ================================================================= */
-
-html[data-bs-theme="dark"] {
-    .app_settings_block[data-key="ops_theme"] {
-
-        .ops-settings-sub-header {
-            color: #94a3b8;
-            border-left-color: #60a5fa;
-            background: linear-gradient(90deg, rgba(96, 165, 250, 0.06), transparent);
-        }
-
-        .o_field_color {
-            border-color: rgba(255, 255, 255, 0.1) !important;
-
-            &:hover {
-                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
-            }
-        }
-
-        .o_setting_box:hover {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        .btn-outline-secondary {
-            color: #94a3b8;
-            border-color: #475569;
-
-            &:hover {
-                color: #f1f5f9;
-                border-color: #64748b;
-            }
-        }
-
-        /* Theme selector in dark mode */
-        .ops-ts-card {
-            background: #1e293b;
-            border-color: #334155;
-
-            &:hover {
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            }
-        }
-
-        .ops-ts-card-dark {
-            background: #111318;
-            border-color: #1e293b;
-        }
-
-        .ops-ts-card-custom {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-        }
-
-        .ops-ts-name {
-            color: #f1f5f9;
-        }
-
-        .ops-ts-section-label {
-            color: #64748b;
-        }
-
-        .ops-ts-custom-hint {
-            color: #64748b;
-        }
-    }
+/* --- Dark mode --- */
+html[data-bs-theme="dark"] .app_settings_block[data-key="ops_theme"] {
+    .ops-settings-sub-header { color: #94a3b8; border-left-color: #60a5fa; }
+    .o_field_color { border-color: rgba(255, 255, 255, 0.1) !important; }
+    .ops-ts-card { background: #1e293b; border-color: #334155; }
+    .ops-ts-card-dark { background: #111318; border-color: #1e293b; }
+    .ops-ts-card-custom { background: linear-gradient(135deg, #1e293b, #0f172a); }
+    .ops-ts-name, .ops-ts-section-label { color: #f1f5f9; }
 }

@@ -253,6 +253,11 @@ class ResCompanyBranding(models.Model):
     # =========================================================================
     # PRESET DEFINITIONS
     # =========================================================================
+    DARK_PRESETS = {
+        'modern_dark', 'mono_minimal', 'neon_highlights',
+        'warm_tones', 'muted_pastels', 'deep_jewel', 'contrast_vibrant',
+    }
+
     THEME_PRESETS = {
         'corporate_blue': {
             'ops_primary_color': '#1e293b',
@@ -422,7 +427,7 @@ class ResCompanyBranding(models.Model):
     }
 
     def write(self, vals):
-        """Override write to log theme changes.
+        """Override write to log theme changes and auto-set color mode.
 
         SCSS variables are hardcoded at compile time — they do NOT read from
         the database.  All dynamic theming is handled at runtime by the
@@ -431,6 +436,13 @@ class ResCompanyBranding(models.Model):
         settings save.  Doing so would force a full SCSS recompilation
         (~30 s) that produces identical output and causes an unstyled flash.
         """
+        # Auto-set color mode when preset changes
+        preset = vals.get('ops_theme_preset')
+        if preset and preset != 'custom' and 'ops_default_color_mode' not in vals:
+            vals['ops_default_color_mode'] = (
+                'dark' if preset in self.DARK_PRESETS else 'light'
+            )
+
         res = super().write(vals)
         if self._THEME_FIELDS & set(vals.keys()):
             _logger.info(

@@ -1,19 +1,20 @@
 ///
 /// OPS Dark Mode — Essential Overrides
 /// ====================================
-/// Handles OPS-specific elements and Bootstrap variable remapping.
-/// Odoo 19's 62+ native .dark.scss files handle standard components.
+/// Design tokens + Bootstrap variable fixes + OPS-specific dark overrides.
+/// Odoo's 62+ native .dark.scss files handle mail, editor, spreadsheet etc.
+/// BS5 auto-inverts most standard components via [data-bs-theme="dark"].
 ///
-/// ARCHITECTURE: This file is loaded in web.assets_web_dark AFTER all
-/// native .dark.scss files, giving highest cascade priority.
+/// This file fills gaps: bg-view hatching, form sheet surfaces, settings page,
+/// and the #1e293b primary color derivation issue (muted link colors).
 ///
 
 // =============================================================================
-// 0. DESIGN TOKENS — Single Source of Truth
+// DESIGN TOKENS + BOOTSTRAP VARIABLE OVERRIDES
 // =============================================================================
 
 html[data-bs-theme="dark"] {
-    // Surface layers
+    // OPS surface layers
     --ops-dm-bg-deep:      #0f172a;
     --ops-dm-bg-surface:   #1e293b;
     --ops-dm-bg-elevated:  #263548;
@@ -23,18 +24,17 @@ html[data-bs-theme="dark"] {
     --ops-dm-border:       #475569;
     --ops-dm-border-subtle:#334155;
 
-    // Text hierarchy
+    // Text
     --ops-dm-text:         #f1f5f9;
     --ops-dm-text-body:    #cbd5e1;
     --ops-dm-text-muted:   #94a3b8;
-    --ops-dm-text-faint:   #64748b;
 
     // Accent
     --ops-dm-accent:       #3b82f6;
     --ops-dm-accent-hover: #60a5fa;
     --ops-dm-accent-subtle:rgba(59,130,246,0.15);
 
-    // Override Bootstrap dark vars (CRITICAL — fixes #1e293b derivation issues)
+    // Fix BS5 dark derivations from #1e293b primary (CRITICAL)
     --body-bg:        var(--ops-dm-bg-deep);
     --body-color:     var(--ops-dm-text-body);
     --secondary-bg:   var(--ops-dm-bg-surface);
@@ -50,96 +50,26 @@ html[data-bs-theme="dark"] {
 }
 
 // =============================================================================
-// 1. CORE LAYOUT — Fix purple hatched bg-view pattern
+// CORE LAYOUT — Fix bg-view hatched pattern + form surfaces
 // =============================================================================
 
 html[data-bs-theme="dark"] {
     .o_web_client {
         background-color: var(--ops-dm-bg-deep) !important;
         color-scheme: dark;
-        color: var(--ops-dm-text-body);
     }
-    .o_action_manager,
-    .o_content,
-    .o_view_controller {
+    .o_action_manager, .o_content, .o_view_controller, .o_form_sheet_bg, .o_form_nosheet, .bg-view {
         background-color: var(--ops-dm-bg-deep) !important;
         background-image: none !important;
-    }
-    .o_form_sheet_bg {
-        background-color: var(--ops-dm-bg-deep) !important;
     }
     .o_form_sheet {
         background-color: var(--ops-dm-bg-surface) !important;
         border-color: var(--ops-dm-border) !important;
-        color: var(--ops-dm-text-body);
-    }
-    .o_form_nosheet {
-        background-color: var(--ops-dm-bg-deep) !important;
-    }
-    .bg-view {
-        background-color: var(--ops-dm-bg-deep) !important;
-        background-image: none !important;
     }
 }
 
 // =============================================================================
-// 2. BUTTONS — Ensure primary stays white text
-// =============================================================================
-
-html[data-bs-theme="dark"] {
-    .btn-primary { color: #fff !important; }
-    .btn-secondary {
-        background-color: var(--ops-dm-bg-elevated) !important;
-        border-color: var(--ops-dm-border) !important;
-        color: var(--ops-dm-text-body) !important;
-        &:hover, &:focus {
-            background-color: var(--ops-dm-bg-hover) !important;
-            color: var(--ops-dm-text) !important;
-        }
-    }
-    .btn-light {
-        background-color: var(--ops-dm-bg-elevated) !important;
-        border-color: var(--ops-dm-border) !important;
-        color: var(--ops-dm-text-body) !important;
-        &:hover { background-color: var(--ops-dm-bg-hover) !important; }
-    }
-}
-
-// =============================================================================
-// 3. DROPDOWNS — Ensure readable menus
-// =============================================================================
-
-html[data-bs-theme="dark"] {
-    .dropdown-menu, .o_popover {
-        background-color: var(--ops-dm-bg-surface) !important;
-        border-color: var(--ops-dm-border) !important;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
-    }
-    .dropdown-item, .o_popover .list-group-item {
-        color: var(--ops-dm-text-body) !important;
-        &:hover, &:focus, &.focus {
-            background-color: rgba(59,130,246,0.2) !important;
-            color: var(--ops-dm-text) !important;
-        }
-        &.active, &.selected {
-            background-color: var(--ops-dm-accent) !important;
-            color: #fff !important;
-        }
-    }
-    .dropdown-divider { border-color: var(--ops-dm-border-subtle) !important; }
-    .o_select_menu_menu, .o-autocomplete--dropdown-menu {
-        background-color: var(--ops-dm-bg-surface) !important;
-        border-color: var(--ops-dm-border) !important;
-    }
-    .o_select_menu_item:hover,
-    .o-autocomplete--dropdown-item:hover,
-    .o-autocomplete--dropdown-item.focus {
-        background-color: rgba(59,130,246,0.2) !important;
-    }
-}
-
-// =============================================================================
-// 4. SETTINGS — OPS-specific compile-time variable overrides
+// SETTINGS — OPS compile-time variable overrides
 // =============================================================================
 
 html[data-bs-theme="dark"] {
@@ -149,11 +79,8 @@ html[data-bs-theme="dark"] {
         --settings__tab-color: var(--ops-dm-text-body);
         --settings__title-bg: var(--ops-dm-bg-surface);
     }
-    .o_setting_container .settings {
-        background-color: var(--ops-dm-bg-deep) !important;
-    }
-    .o_settings_container,
-    .o_base_settings,
+    .o_setting_container .settings,
+    .o_settings_container, .o_base_settings,
     .app_settings_block {
         background-color: var(--ops-dm-bg-deep) !important;
         background-image: none !important;
@@ -162,66 +89,12 @@ html[data-bs-theme="dark"] {
         background-color: var(--ops-dm-bg-surface) !important;
         color: var(--ops-dm-text) !important;
     }
-    .o_setting_container .settings_tab {
-        background-color: var(--ops-dm-bg-surface) !important;
-        .tab {
-            color: var(--ops-dm-text-body) !important;
-            &:hover { color: var(--ops-dm-text) !important; }
-            &.selected {
-                color: var(--ops-dm-text) !important;
-                background-color: var(--ops-dm-accent-subtle) !important;
-            }
-        }
-    }
-    .o_base_settings_view .form-check-input {
-        background-color: var(--ops-dm-bg-elevated) !important;
-        border-color: var(--ops-dm-border) !important;
-        &:checked {
-            background-color: var(--ops-dm-accent) !important;
-            border-color: var(--ops-dm-accent) !important;
-        }
-    }
 }
 
 // =============================================================================
-// 5. NAVBAR — Branded bar stays branded in dark mode
+// NAVBAR — Branded bar border in dark mode
 // =============================================================================
 
-html[data-bs-theme="dark"] {
-    .o_main_navbar {
-        border-bottom: 1px solid var(--ops-dm-border) !important;
-    }
-}
-
-// =============================================================================
-// 6. MISC — Scrollbar, selection, cards
-// =============================================================================
-
-html[data-bs-theme="dark"] {
-    * { scrollbar-color: var(--ops-dm-bg-hover) var(--ops-dm-bg-deep); }
-
-    .o_data_row.o_data_row_selected > .o_data_cell,
-    .o_data_row.o_row_selected > td {
-        background-color: var(--ops-dm-accent-subtle) !important;
-    }
-
-    .card {
-        background-color: var(--ops-dm-bg-surface) !important;
-        border-color: var(--ops-dm-border) !important;
-    }
-
-    .text-muted { color: var(--ops-dm-text-muted) !important; }
-
-    .o_loading_indicator { background-color: var(--ops-dm-accent) !important; }
-
-    .o_searchview {
-        background-color: var(--ops-dm-bg-elevated) !important;
-        border-color: var(--ops-dm-border) !important;
-    }
-
-    .o_input::placeholder,
-    input::placeholder,
-    textarea::placeholder {
-        color: var(--ops-dm-text-faint) !important;
-    }
+html[data-bs-theme="dark"] .o_main_navbar {
+    border-bottom: 1px solid var(--ops-dm-border) !important;
 }

@@ -185,6 +185,11 @@ class ResConfigSettings(models.TransientModel):
             preset = ResCompanyBranding.THEME_PRESETS.get(self.ops_theme_preset, {})
             for field_name, value in preset.items():
                 setattr(self, field_name, value)
+            # Auto-set color mode based on preset darkness
+            self.ops_default_color_mode = (
+                'dark' if self.ops_theme_preset in ResCompanyBranding.DARK_PRESETS
+                else 'light'
+            )
 
     # =========================================================================
     # ACTIONS

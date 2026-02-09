@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.11.0.0',
+    'version': '19.0.12.0.0',
     'category': 'Themes/Backend',
     'summary': 'Minimal OPS Framework theme — Odoo owns the layout, OPS owns the colors',
     'description': """
-OPS Theme v11.0 — Architecture Rebuild
-=======================================
+OPS Theme v12.0 — Complete Architectural Rebuild
+=================================================
 
 Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
 
@@ -23,8 +23,9 @@ Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
 - Layer 2 (runtime): /variables.css serves CSS custom properties from Settings
 - Dark mode: Rides Odoo's native 62+ .dark.scss files, OPS adds essential overrides only
 - Debranding: CSS patterns + OWL registry cleanup (no MutationObserver)
+- Dark presets auto-enable dark mode via write() and onchange
 
-**SCSS:** ~800 lines core + ~150 lines components (vs 2,821 in v10)
+**SCSS:** ~550 lines theme (components moved to ops_matrix_core)
     """,
     'author': 'OPS Framework',
     'website': 'https://github.com/MoeZayour/claude_ops',
@@ -60,14 +61,13 @@ Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
         ],
 
         # =================================================================
-        # BACKEND ASSETS — Theme overrides + UI components
+        # BACKEND ASSETS — Theme overrides
         # =================================================================
         'web.assets_backend': [
             # SCSS
             'ops_theme/static/src/scss/_debranding.scss',
             'ops_theme/static/src/scss/_chatter_position.scss',
             'ops_theme/static/src/scss/_ops_overrides.scss',
-            'ops_theme/static/src/scss/_ops_components.scss',
             'ops_theme/static/src/scss/_settings_theme_page.scss',
 
             # JavaScript

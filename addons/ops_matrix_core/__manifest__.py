@@ -146,6 +146,7 @@
     'assets': {
         'web.assets_backend': [
             'ops_matrix_core/static/src/css/ops_theme.css',
+            'ops_matrix_core/static/src/css/ops_components.scss',
             'ops_matrix_core/static/src/js/storage_guard.js',
             'ops_matrix_core/static/src/js/report_action_override.js',
         ],
