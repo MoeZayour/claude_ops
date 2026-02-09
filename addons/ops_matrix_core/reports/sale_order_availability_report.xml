@@ -56,7 +56,7 @@
                         .ops-footer-company strong { color: #64748b; }
                         .ops-external-badge { display: flex; align-items: center; gap: 4px; }
                         .ops-external-badge .powered-by { font-size: 6.5pt; color: #94a3b8; }
-                        .ops-external-badge .badge { background: linear-gradient(135deg, #3b82f6, #1e40af); color: white; padding: 2px 6px; border-radius: 3px; font-weight: 600; font-size: 6pt; text-transform: uppercase; letter-spacing: 0.4px; }
+                        .ops-external-badge .badge { background: #1e40af; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color: white; padding: 2px 6px; border-radius: 3px; font-weight: 600; font-size: 6pt; text-transform: uppercase; letter-spacing: 0.4px; }
                         .ops-page-number { font-size: 7pt; color: #94a3b8; margin-left: 10px; }
                     </style>
 

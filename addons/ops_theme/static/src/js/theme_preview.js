@@ -15,6 +15,12 @@ const OPS_COLOR_FIELDS = [
     { field: 'ops_success_color',   varName: '--ops-success' },
     { field: 'ops_warning_color',   varName: '--ops-warning' },
     { field: 'ops_danger_color',    varName: '--ops-danger' },
+    { field: 'ops_bg_color',        varName: '--ops-bg' },
+    { field: 'ops_surface_color',   varName: '--ops-surface' },
+    { field: 'ops_text_color',      varName: '--ops-text' },
+    { field: 'ops_border_color',    varName: '--ops-border' },
+    { field: 'ops_accent2_color',   varName: '--ops-accent2' },
+    { field: 'ops_btn_color',       varName: '--ops-btn' },
 ];
 
 /**
@@ -92,6 +98,22 @@ window.opsPreviewTheme = function () {
         root.style.setProperty('--ops-report-header-bg', primary);
     }
 
+    // Surface aliases (used by OPS utility components)
+    const surface = readColorField('ops_surface_color');
+    if (surface) {
+        root.style.setProperty('--ops-bg-card', surface);
+    }
+    const text = readColorField('ops_text_color');
+    if (text) {
+        root.style.setProperty('--ops-text-primary', text);
+    }
+
+    // Button hover
+    const btnColor = readColorField('ops_btn_color');
+    if (btnColor) {
+        root.style.setProperty('--ops-btn-hover', darkenColor(btnColor));
+    }
+
     // Visual feedback
     if (applied > 0) {
         // Add a subtle indicator bar
@@ -127,6 +149,9 @@ window.opsResetPreview = function () {
     root.style.removeProperty('--ops-navbar-bg');
     root.style.removeProperty('--ops-bg-navbar');
     root.style.removeProperty('--ops-report-header-bg');
+    root.style.removeProperty('--ops-bg-card');
+    root.style.removeProperty('--ops-text-primary');
+    root.style.removeProperty('--ops-btn-hover');
 
     // Remove indicator
     const indicator = document.getElementById('ops-preview-indicator');

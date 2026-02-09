@@ -394,6 +394,7 @@ class OpsBaseReportWizard(models.AbstractModel):
             try:
                 parameters = self.read()[0] if self else {}
             except Exception:
+                _logger.debug('Failed to read wizard parameters for audit', exc_info=True)
                 parameters = {}
 
             # Determine export format from context or defaults

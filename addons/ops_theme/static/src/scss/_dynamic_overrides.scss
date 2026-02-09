@@ -194,14 +194,14 @@ html[data-ops-shadow="heavy"] {
 
 html:not([data-bs-theme="dark"]) {
     .btn-primary {
-        background-color: var(--ops-secondary) !important;
-        border-color: var(--ops-secondary) !important;
+        background-color: var(--ops-btn, var(--ops-secondary)) !important;
+        border-color: var(--ops-btn, var(--ops-secondary)) !important;
         color: #ffffff !important;
 
         &:hover,
         &:focus {
-            background-color: var(--ops-secondary-hover, #2563eb) !important;
-            border-color: var(--ops-secondary-hover, #2563eb) !important;
+            background-color: var(--ops-btn-hover, var(--ops-secondary-hover, #2563eb)) !important;
+            border-color: var(--ops-btn-hover, var(--ops-secondary-hover, #2563eb)) !important;
         }
     }
 
@@ -222,7 +222,7 @@ html:not([data-bs-theme="dark"]) {
 
     // Links
     a:not(.btn):not(.nav-link):not(.dropdown-item) {
-        color: var(--ops-secondary);
+        color: var(--ops-accent2, var(--ops-secondary));
 
         &:hover {
             color: var(--ops-secondary-hover, #2563eb);
@@ -232,7 +232,7 @@ html:not([data-bs-theme="dark"]) {
     // Badges
     .badge.text-bg-primary,
     .badge.bg-primary {
-        background-color: var(--ops-secondary) !important;
+        background-color: var(--ops-btn, var(--ops-secondary)) !important;
     }
 
     .badge.text-bg-success,
@@ -253,14 +253,14 @@ html:not([data-bs-theme="dark"]) {
     // Form focus states
     .form-control:focus,
     .form-select:focus {
-        border-color: var(--ops-secondary) !important;
-        box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb), 0.15) !important;
+        border-color: var(--ops-btn, var(--ops-secondary)) !important;
+        box-shadow: 0 0 0 3px rgba(var(--ops-btn-rgb, var(--ops-secondary-rgb)), 0.15) !important;
     }
 
     // Statusbar
     .o_statusbar_status .o_arrow_button.btn-primary,
     .o_statusbar_status .o_arrow_button.o_active {
-        background-color: var(--ops-secondary) !important;
+        background-color: var(--ops-btn, var(--ops-secondary)) !important;
         color: #ffffff !important;
     }
 }

@@ -74,7 +74,8 @@ function colorModeToggleItem(env) {
             const newMode = isDark ? 'light' : 'dark';
 
             // 1. Set cookie immediately (Odoo reads this for CSS bundle)
-            cookie.set("color_scheme", newMode);
+            // TTL = 1 year in seconds — matches Odoo's native cookie lifetime
+            cookie.set("color_scheme", newMode, 365 * 24 * 60 * 60);
 
             // 2. Persist to database via controller
             try {

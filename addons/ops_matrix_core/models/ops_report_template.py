@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import models, fields, api, _
+
+_logger = logging.getLogger(__name__)
 
 class OpsReportTemplate(models.Model):
     _name = 'ops.report.template'
@@ -42,6 +46,7 @@ class OpsReportTemplate(models.Model):
             if not report.exists():
                 return False
         except Exception:
+            _logger.debug('Failed to browse report %s for template application', report_id, exc_info=True)
             return False
         
         # Logic to populate report lines based on template

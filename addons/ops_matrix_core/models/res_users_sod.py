@@ -58,6 +58,7 @@ class ResUsersSoD(models.Model):
                         if group1 in user_groups and group2 in user_groups:
                             conflicts.append(conflict_desc)
                 except Exception:
+                    _logger.debug('Failed to check SoD conflict pair %s / %s', group1_ref, group2_ref, exc_info=True)
                     # Skip if groups don't exist (module not installed)
                     pass
 

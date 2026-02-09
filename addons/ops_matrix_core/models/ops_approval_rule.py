@@ -237,6 +237,7 @@ class OpsApprovalRule(models.Model):
                         group_users = self.env['res.users'].browse(user_ids).filtered(lambda u: u.active)
                         approvers |= group_users
                 except Exception:
+                    _logger.debug('Failed to resolve approvers from group %s', group.id, exc_info=True)
                     pass  # Skip this group if there's an issue
 
         return approvers

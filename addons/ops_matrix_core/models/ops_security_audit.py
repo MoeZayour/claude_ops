@@ -365,11 +365,11 @@ class OpsSecurityAudit(models.Model):
             from odoo.http import request
             if request and hasattr(request, 'httprequest'):
                 ip = request.httprequest.environ.get('REMOTE_ADDR', ip)
-        except:
+        except (ImportError, RuntimeError, AttributeError):
             pass
-        
+
         return ip
-    
+
     @api.model
     def _get_session_id(self):
         """Get session ID from context or request."""
@@ -378,7 +378,7 @@ class OpsSecurityAudit(models.Model):
             from odoo.http import request
             if request and hasattr(request, 'session'):
                 return request.session.sid
-        except:
+        except (ImportError, RuntimeError, AttributeError):
             pass
         
         return 'CLI'

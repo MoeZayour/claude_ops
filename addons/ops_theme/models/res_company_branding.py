@@ -422,34 +422,22 @@ class ResCompanyBranding(models.Model):
     }
 
     def write(self, vals):
-        """Override write to clear compiled assets when theme settings change."""
+        """Override write to log theme changes.
+
+        SCSS variables are hardcoded at compile time — they do NOT read from
+        the database.  All dynamic theming is handled at runtime by the
+        /ops_theme/variables.css controller (served with no-cache headers).
+        Therefore we do NOT need to delete compiled asset bundles on every
+        settings save.  Doing so would force a full SCSS recompilation
+        (~30 s) that produces identical output and causes an unstyled flash.
+        """
         res = super().write(vals)
         if self._THEME_FIELDS & set(vals.keys()):
-            self._clear_theme_assets()
+            _logger.info(
+                "OPS Theme: Theme fields updated — changes will appear on "
+                "next page load via /ops_theme/variables.css"
+            )
         return res
-
-    def _clear_theme_assets(self):
-        """Clear compiled asset bundles to force SCSS recompilation."""
-        try:
-            self.env['ir.attachment'].sudo().search([
-                ('name', 'like', 'assets%'),
-                ('res_model', '=', 'ir.ui.view'),
-            ]).unlink()
-            # Clear QWeb caches if the method exists (varies by Odoo version)
-            qweb = self.env.get('ir.qweb')
-            if qweb and hasattr(qweb, 'clear_caches'):
-                qweb.clear_caches()
-            _logger.info("OPS Theme: Cleared asset cache for theme recompilation")
-        except Exception as e:
-            _logger.warning("OPS Theme: Failed to clear asset cache: %s", e)
-
-    @api.onchange('ops_theme_preset')
-    def _onchange_theme_preset(self):
-        """Apply preset colors when theme preset changes."""
-        if self.ops_theme_preset and self.ops_theme_preset != 'custom':
-            preset = self.THEME_PRESETS.get(self.ops_theme_preset, {})
-            for field_name, value in preset.items():
-                setattr(self, field_name, value)
 
     @api.depends('ops_favicon')
     def _compute_favicon_mimetype(self):

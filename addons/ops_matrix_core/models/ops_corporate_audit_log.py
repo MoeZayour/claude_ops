@@ -310,6 +310,7 @@ class OpsCorporateAuditLog(models.Model):
                 
                 record.change_summary = '\n'.join(lines) if lines else False
             except Exception:
+                _logger.debug('Failed to compute change summary for audit log %s', record.id, exc_info=True)
                 record.change_summary = record.changed_fields
     
     # =========================================================================
@@ -402,6 +403,7 @@ class OpsCorporateAuditLog(models.Model):
                     if hasattr(request, 'session') and request.session:
                         session_id = request.session.sid
             except Exception:
+                _logger.debug('Failed to retrieve HTTP request context for audit log', exc_info=True)
                 pass  # Not in HTTP context
             
             # Get branch/persona if available
@@ -423,6 +425,7 @@ class OpsCorporateAuditLog(models.Model):
                     if model_obj:
                         res_model_name = model_obj.name
                 except Exception:
+                    _logger.debug('Failed to look up model description for %s', res_model, exc_info=True)
                     res_model_name = res_model
             
             # Serialize values

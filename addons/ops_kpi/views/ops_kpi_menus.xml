@@ -1,33 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Main Menu -->
+    <!--
+    ============================================================
+    OPS KPI Menu Structure v2.1.0
+    ============================================================
+
+    Access Model:
+      ROOT MENU (KPI Center):
+        - ALL internal users via base.group_user (everyone sees KPI Center)
+        Note: Board-level access is enforced by Python (_check_user_dashboard_access)
+              Users who reach the client action but have no boards see an empty state.
+
+      ANALYTICS → My KPI Boards:
+        - ALL internal users (filtered by persona at runtime)
+
+      CONFIGURATION (admin only):
+        - group_ops_admin_power (OPS admins)
+        - group_ops_it_admin (IT admins — can configure but blind to data)
+    ============================================================
+    -->
+
+    <!-- ===== ROOT MENU ===== -->
     <menuitem id="menu_ops_kpi_root"
               name="KPI Center"
               sequence="5"
               web_icon="ops_kpi,static/description/icon.png"
-                  groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+              groups="base.group_user"/>
 
-    <!-- OPS Analytics Submenu -->
+    <!-- ===== ANALYTICS SECTION ===== -->
     <menuitem id="menu_ops_kpi_analytics"
-              name="OPS Analytics"
+              name="Analytics"
               parent="menu_ops_kpi_root"
               sequence="10"
-                  groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+              groups="base.group_user"/>
 
-    <!-- My KPI Boards - Client Action -->
+    <!-- My KPI Boards — Client Action (persona filtering at runtime) -->
     <menuitem id="menu_ops_kpi_center_client"
               name="My KPI Boards"
               parent="menu_ops_kpi_analytics"
               action="action_ops_kpi_center_client"
               sequence="10"
-                  groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+              groups="base.group_user"/>
 
-    <!-- KPI Board Management Submenu -->
+    <!-- ===== CONFIGURATION SECTION (Admins Only) ===== -->
     <menuitem id="menu_ops_kpi_config"
               name="Configuration"
               parent="menu_ops_kpi_root"
-              groups="ops_kpi.group_kpi_manager"
-              sequence="90"/>
+              sequence="90"
+              groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_it_admin"/>
 
     <!-- KPI Boards List -->
     <menuitem id="menu_ops_kpi_board_list"
@@ -35,15 +55,15 @@
               parent="menu_ops_kpi_config"
               action="action_ops_kpi_board"
               sequence="10"
-                  groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_bu_leader,ops_matrix_core.group_ops_branch_manager"/>
+              groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_it_admin"/>
 
-    <!-- Widgets List -->
+    <!-- KPI Widgets -->
     <menuitem id="menu_ops_kpi_widgets"
               name="KPI Widgets"
               parent="menu_ops_kpi_config"
               action="action_ops_kpi_widget"
               sequence="20"
-                  groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_manager"/>
+              groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_it_admin"/>
 
     <!-- KPI Definitions -->
     <menuitem id="menu_ops_kpi_definitions"
@@ -51,5 +71,6 @@
               parent="menu_ops_kpi_config"
               action="action_ops_kpi"
               sequence="30"
-                  groups="ops_matrix_core.group_ops_manager,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_finance_manager"/>
+              groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_it_admin"/>
+
 </odoo>

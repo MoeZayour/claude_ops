@@ -708,8 +708,9 @@ class OpsGovernanceRule(models.Model):
                     if applicable_limit > 0:
                         max_discount = max(max_discount, applicable_limit)
             except Exception:
+                _logger.debug('Failed to check governance limit rule for user %s', user.id, exc_info=True)
                 pass
-        
+
         return max_discount
     
     def _calculate_line_margin(self, order_line):
@@ -930,6 +931,7 @@ class OpsGovernanceRule(models.Model):
                     message_type='notification'
                 )
             except Exception:
+                _logger.debug('Failed to post governance warning on record %s', record, exc_info=True)
                 pass
             return False
         
@@ -958,6 +960,7 @@ class OpsGovernanceRule(models.Model):
                     try:
                         record.write({'active': False})
                     except Exception:
+                        _logger.debug('Failed to lock record %s on approval request', record, exc_info=True)
                         pass
                 
                 return True

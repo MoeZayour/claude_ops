@@ -8,7 +8,7 @@
         <field name="priority">55</field>
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
-                <app data-string="KPI Center" string="KPI Center" name="ops_kpi" groups="ops_kpi.group_kpi_manager">
+                <app data-string="KPI Center" string="KPI Center" name="ops_kpi" groups="ops_matrix_core.group_ops_admin_power,ops_matrix_core.group_ops_it_admin">
 
                     <!-- ============================================================ -->
                     <!-- SECTION 1: KPI CARDS                                         -->

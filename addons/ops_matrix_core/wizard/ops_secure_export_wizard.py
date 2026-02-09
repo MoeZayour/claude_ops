@@ -160,7 +160,7 @@ class OpsSecureExportWizard(models.TransientModel):
 
         try:
             domain = json.loads(self.domain or '[]')
-        except:
+        except (ValueError, TypeError):
             domain = []
 
         log_data = {
@@ -279,6 +279,7 @@ class OpsSecureExportWizard(models.TransientModel):
 
             return str(value) if value else ''
         except Exception:
+            _logger.debug('Failed to format field value for export', exc_info=True)
             return ''
 
     def _export_xlsx(self, records, field_list):

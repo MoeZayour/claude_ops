@@ -1,29 +1,37 @@
 /** @odoo-module **/
 /**
- * OPS Theme - Chatter Position Patch (v7.5.0 - ALIGNED WITH ODOO 19)
- * ===================================================================
+ * OPS Theme - Chatter Position Patch (v8.0.0 - COMPLETE FIX)
+ * ============================================================
  * Integrates WITH Odoo 19's native chatter layout system.
  * 
  * Odoo 19 Architecture:
- * - FormRenderer has mailLayout() method that determines chatter position
- * - Automatic based on screen size (uiService.size >= SIZES.XXL)
- * - FormCompiler reads mailLayout() at compile time
- * - Returns: SIDE_CHATTER, BOTTOM_CHATTER, COMBO, etc.
+ * - FormRenderer.mailLayout() determines chatter position string
+ * - FormCompiler uses mailLayout() to set isChatterAside / CSS classes
+ * - FormController.className adds o_xxl_form_view on XXL screens
+ *   which sets flex-flow: row nowrap (designed for side chatter)
  * 
- * OPS Integration:
- * - Patches FormRenderer.mailLayout() to check user preference FIRST
- * - Falls back to Odoo's automatic screen size logic
- * - Respects all of Odoo's layout modes (COMBO, EXTERNAL, etc.)
+ * The Bug (pre-v8.0):
+ * - mailLayout() was patched to return BOTTOM_CHATTER correctly
+ * - But o_xxl_form_view still forced row layout on the parent
+ * - Chatter expanded horizontally instead of moving below
+ * 
+ * The Fix (v8.0.0):
+ * - Patch BOTH mailLayout() AND FormController.className
+ * - When user wants bottom: skip o_xxl_form_view -> column layout
+ * - When user wants side: keep o_xxl_form_view -> row layout (native)
  */
 
 import { patch } from "@web/core/utils/patch";
 import { FormRenderer } from "@web/views/form/form_renderer";
+import { FormController } from "@web/views/form/form_controller";
 import { SIZES } from "@web/core/ui/ui_service";
 import { session } from "@web/session";
 
+// =========================================================================
+// PATCH 1: FormRenderer.mailLayout() - Control chatter position string
+// =========================================================================
 patch(FormRenderer.prototype, {
     mailLayout(hasAttachmentContainer) {
-        // First check if user has an explicit preference
         const userPreference = session.ops_chatter_position;
         
         if (userPreference) {
@@ -32,39 +40,53 @@ patch(FormRenderer.prototype, {
             const hasChatter = !!this.mailStore;
             const hasExternalWindow = !!this.mailPopoutService.externalWindow;
             
-            // Handle external window cases (these are automatic)
+            // External window cases - always automatic
             if (hasExternalWindow && hasFile && hasAttachmentContainer) {
-                if (xxl) {
-                    return "EXTERNAL_COMBO_XXL";
-                }
-                return "EXTERNAL_COMBO";
+                return xxl ? "EXTERNAL_COMBO_XXL" : "EXTERNAL_COMBO";
             }
             
             if (hasChatter) {
-                // User wants chatter on the RIGHT (side)
                 if (userPreference === 'right' || userPreference === 'side') {
                     if (xxl) {
                         if (hasAttachmentContainer && hasFile) {
-                            return "COMBO"; // chatter bottom, attachment side
+                            return "COMBO";
                         }
-                        return "SIDE_CHATTER"; // chatter on side
+                        return "SIDE_CHATTER";
                     }
-                    // On smaller screens, force bottom (can't fit on side)
                     return "BOTTOM_CHATTER";
                 }
                 
-                // User wants chatter at BOTTOM (or default)
                 if (userPreference === 'bottom') {
-                    return "BOTTOM_CHATTER"; // always bottom
+                    return "BOTTOM_CHATTER";
                 }
             }
             
             return "NONE";
         }
         
-        // No user preference - fall back to Odoo's automatic logic
+        // No preference - Odoo's automatic logic
         return super.mailLayout(hasAttachmentContainer);
     },
 });
 
-console.log('[OPS Theme] Chatter position patch loaded (v7.5.0 - Odoo 19 compatible)');
+// =========================================================================
+// PATCH 2: FormController.className - Control form layout direction
+// =========================================================================
+// o_xxl_form_view sets flex-flow: row nowrap on XXL screens.
+// When user wants bottom chatter, we must skip this class so the form
+// uses default column layout, placing chatter below naturally.
+patch(FormController.prototype, {
+    get className() {
+        const result = super.className;
+        
+        const userPreference = session.ops_chatter_position;
+        if (userPreference === 'bottom' && result["o_xxl_form_view h-100"]) {
+            delete result["o_xxl_form_view h-100"];
+            result["h-100"] = true;
+        }
+        
+        return result;
+    },
+});
+
+console.log('[OPS Theme] Chatter position patch loaded (v8.0.0 - dual patch)');

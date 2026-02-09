@@ -166,7 +166,7 @@ class StockPicking(models.Model):
                 if user_ids:
                     approvers = self.env['res.users'].browse(user_ids).filtered(lambda u: u.active)[:5]
         except Exception:
-            pass
+            _logger.debug('Failed to resolve approvers from Finance Manager group', exc_info=True)
 
         # Fallback to CFO group
         if not approvers:
@@ -178,7 +178,7 @@ class StockPicking(models.Model):
                     if user_ids:
                         approvers = self.env['res.users'].browse(user_ids).filtered(lambda u: u.active)[:5]
             except Exception:
-                pass
+                _logger.debug('Failed to resolve approvers from CFO group', exc_info=True)
 
         # Final fallback to admin
         if not approvers:

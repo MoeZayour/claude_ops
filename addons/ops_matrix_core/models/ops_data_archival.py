@@ -579,7 +579,7 @@ class OpsArchivedRecord(models.Model):
         try:
             data = json.loads(self.record_data)
             formatted = json.dumps(data, indent=2)
-        except:
+        except (ValueError, TypeError):
             formatted = self.record_data
 
         return {

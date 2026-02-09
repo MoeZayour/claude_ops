@@ -5,7 +5,11 @@ OPS Theme - Amount to Words
 Convert monetary amounts to words in multiple languages.
 """
 
+import logging
+
 from odoo import models
+
+_logger = logging.getLogger(__name__)
 
 ONES = {
     'en': ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
@@ -46,6 +50,7 @@ class ResCompanyAmountWords(models.Model):
         try:
             return self._convert_number(int(amount), lang)
         except Exception:
+            _logger.debug('Failed to convert amount %s to words', amount, exc_info=True)
             return str(amount)
 
     def _convert_number(self, n, lang):

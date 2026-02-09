@@ -632,7 +632,7 @@ class OpsPartnerLedgerCorporateParser(models.AbstractModel):
                     lambda l: (l.ops_branch_id.id, l.ops_business_unit_id.id) in exact_combinations
                 )
             except Exception:
-                pass
+                _logger.debug('Failed to apply exact matrix combination filter', exc_info=True)
 
         # Get opening balances per partner (before date_from)
         opening_domain = [
@@ -646,7 +646,7 @@ class OpsPartnerLedgerCorporateParser(models.AbstractModel):
             if matrix_domain:
                 opening_domain += matrix_domain
         except Exception:
-            pass
+            _logger.debug('Failed to build matrix domain for opening balances', exc_info=True)
 
         opening_data = MoveLine._read_group(
             domain=opening_domain,

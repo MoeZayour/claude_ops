@@ -99,7 +99,7 @@ class SaleOrderApproval(models.Model):
                             lambda u: u.active and self.company_id.id in u.company_ids.ids
                         )[:5]
             except Exception:
-                pass
+                _logger.debug('Failed to resolve approvers from OPS Manager group', exc_info=True)
 
             # Fallback to admin user
             if not approvers:

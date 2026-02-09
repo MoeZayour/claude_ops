@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- KPI Security Groups -->
-    <record id="group_kpi_user" model="res.groups">
-        <field name="name">KPI User</field>
-        <field name="comment">Can view KPI boards and KPIs</field>
-    </record>
+    <!--
+    ============================================================
+    OPS KPI Security v2.1.0
+    ============================================================
+    REMOVED: group_kpi_user, group_kpi_manager (orphaned, not in OPS hierarchy)
+    REPLACED WITH: OPS admin groups (group_ops_admin_power, group_ops_it_admin)
 
-    <record id="group_kpi_manager" model="res.groups">
-        <field name="name">KPI Manager</field>
-        <field name="implied_ids" eval="[(4, ref('group_kpi_user'))]"/>
-        <field name="comment">Can create and configure KPI boards</field>
-    </record>
+    Access Model:
+      - ALL internal users: READ on ops.kpi, ops.kpi.board, ops.kpi.widget, ops.kpi.value
+      - OPS Admin Power:    FULL CRUD on ops.kpi, ops.kpi.board, ops.kpi.widget, ops.kpi.value
+      - IT Admin:           FULL CRUD on ops.kpi, ops.kpi.board, ops.kpi.widget
+                            BLIND on ops.kpi.value (sees nothing)
+    ============================================================
+    -->
 
-    <!-- Record Rules for ops.kpi.board -->
+    <!-- ===== RECORD RULES: ops.kpi.board ===== -->
+
+    <!-- Board: Company filter for all users -->
     <record id="rule_kpi_board_company" model="ir.rule">
         <field name="name">KPI Board: Company Filter</field>
         <field name="model_id" ref="model_ops_kpi_board"/>
@@ -20,9 +25,27 @@
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
-    <!-- Record Rules for ops.kpi -->
+    <!-- Board: OPS Admin full access -->
+    <record id="rule_kpi_board_admin" model="ir.rule">
+        <field name="name">KPI Board: OPS Admin Full Access</field>
+        <field name="model_id" ref="model_ops_kpi_board"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin_power'))]"/>
+    </record>
+
+    <!-- Board: IT Admin full access (admin task, not data) -->
+    <record id="rule_kpi_board_it_admin" model="ir.rule">
+        <field name="name">KPI Board: IT Admin Full Access</field>
+        <field name="model_id" ref="model_ops_kpi_board"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+    </record>
+
+    <!-- ===== RECORD RULES: ops.kpi ===== -->
+
+    <!-- KPI: All users can read definitions -->
     <record id="rule_kpi_all" model="ir.rule">
-        <field name="name">KPI: All Users Can Read</field>
+        <field name="name">KPI: All Users Read</field>
         <field name="model_id" ref="model_ops_kpi"/>
         <field name="domain_force">[(1, '=', 1)]</field>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
@@ -32,18 +55,25 @@
         <field name="perm_unlink" eval="False"/>
     </record>
 
-    <record id="rule_kpi_manager_full" model="ir.rule">
-        <field name="name">KPI: Managers Full Access</field>
+    <!-- KPI: OPS Admin full CRUD -->
+    <record id="rule_kpi_admin_full" model="ir.rule">
+        <field name="name">KPI: OPS Admin Full Access</field>
         <field name="model_id" ref="model_ops_kpi"/>
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('group_kpi_manager'))]"/>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_write" eval="True"/>
-        <field name="perm_create" eval="True"/>
-        <field name="perm_unlink" eval="True"/>
+        <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin_power'))]"/>
     </record>
 
-    <!-- Record Rules for ops.kpi.value -->
+    <!-- KPI: IT Admin full CRUD (definitions are admin tasks, not data) -->
+    <record id="rule_kpi_it_admin_full" model="ir.rule">
+        <field name="name">KPI: IT Admin Full Access</field>
+        <field name="model_id" ref="model_ops_kpi"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+    </record>
+
+    <!-- ===== RECORD RULES: ops.kpi.value ===== -->
+
+    <!-- Value: Company filter for all users -->
     <record id="rule_kpi_value_company" model="ir.rule">
         <field name="name">KPI Value: Company Filter</field>
         <field name="model_id" ref="model_ops_kpi_value"/>
@@ -51,7 +81,7 @@
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
-    <!-- IT Admin Blindness for KPI Values -->
+    <!-- Value: IT Admin Blindness — CRITICAL: sees NOTHING -->
     <record id="rule_kpi_value_it_admin_blind" model="ir.rule">
         <field name="name">KPI Value: IT Admin Blindness</field>
         <field name="model_id" ref="model_ops_kpi_value"/>
@@ -63,9 +93,11 @@
         <field name="perm_unlink" eval="True"/>
     </record>
 
-    <!-- Record Rules for ops.kpi.widget -->
+    <!-- ===== RECORD RULES: ops.kpi.widget ===== -->
+
+    <!-- Widget: All users can read -->
     <record id="rule_kpi_widget_user" model="ir.rule">
-        <field name="name">KPI Widget: Users Can Read</field>
+        <field name="name">KPI Widget: Users Read</field>
         <field name="model_id" ref="model_ops_kpi_widget"/>
         <field name="domain_force">[(1, '=', 1)]</field>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
@@ -75,14 +107,20 @@
         <field name="perm_unlink" eval="False"/>
     </record>
 
-    <record id="rule_kpi_widget_manager" model="ir.rule">
-        <field name="name">KPI Widget: Managers Full Access</field>
+    <!-- Widget: OPS Admin full CRUD -->
+    <record id="rule_kpi_widget_admin" model="ir.rule">
+        <field name="name">KPI Widget: OPS Admin Full Access</field>
         <field name="model_id" ref="model_ops_kpi_widget"/>
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('group_kpi_manager'))]"/>
-        <field name="perm_read" eval="True"/>
-        <field name="perm_write" eval="True"/>
-        <field name="perm_create" eval="True"/>
-        <field name="perm_unlink" eval="True"/>
+        <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_admin_power'))]"/>
     </record>
+
+    <!-- Widget: IT Admin full CRUD (admin task) -->
+    <record id="rule_kpi_widget_it_admin" model="ir.rule">
+        <field name="name">KPI Widget: IT Admin Full Access</field>
+        <field name="model_id" ref="model_ops_kpi_widget"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+    </record>
+
 </odoo>

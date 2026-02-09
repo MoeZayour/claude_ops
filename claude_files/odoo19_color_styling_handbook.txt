@@ -1,0 +1,1061 @@
+================================================================================
+  ODOO 19 COLOR STYLING HANDBOOK
+  A Complete Reference for the Color System
+================================================================================
+  Generated: 2026-02-09
+  Source: Odoo 19 CE native codebase + OPS Framework
+  Scope: SCSS variables, CSS custom properties, dark mode, asset bundles
+================================================================================
+
+
+TABLE OF CONTENTS
+-----------------
+  1. Architecture Overview
+  2. Asset Bundle Structure & Compilation Pipeline
+  3. Bootstrap 5 Core Color Variables
+  4. Odoo $o- SCSS Variable Namespace
+  5. Bootstrap-to-Odoo Bridging Layer
+  6. CSS Custom Properties (Runtime Variables)
+  7. Component-Level Color Variables
+  8. Dark Mode System
+  9. Color Utility Classes & Mixins
+  10. OPS Framework Color Override System
+  11. Quick Reference Tables
+
+
+================================================================================
+ 1. ARCHITECTURE OVERVIEW
+================================================================================
+
+Odoo 19 uses a TWO-LAYER color system:
+
+  Layer 1: SCSS Compile-Time
+  --------------------------
+  SCSS variables ($primary, $o-brand-primary, etc.) are resolved during
+  asset compilation. These produce HARDCODED CSS values that cannot change
+  without recompilation.
+
+  Layer 2: CSS Custom Properties (Runtime)
+  -----------------------------------------
+  CSS variables (--body-bg, --primary, --ops-secondary, etc.) are resolved
+  by the browser at runtime. They CAN change without recompilation (e.g.,
+  dynamic theme switching, dark mode).
+
+  The pipeline flows:
+
+    _primary_variables.scss  (OPS overrides, prepended FIRST)
+           |
+    primary_variables.scss   (Odoo defaults, !default)
+           |
+    secondary_variables.scss (Background, list, kanban vars)
+           |
+    pre_variables.scss       (Bootstrap defaults before BS loads)
+           |
+    Bootstrap _variables.scss (Bootstrap 5 compile)
+           |
+    Bootstrap _variables-dark.scss (Dark mode vars)
+           |
+    Bootstrap _maps.scss     (Color maps: $theme-colors, $grays)
+           |
+    import_bootstrap.scss    (COMPILATION HAPPENS HERE)
+           |
+    Component SCSS files     (Use compiled vars)
+           |
+    *.dark.scss files        (Only in web.assets_web_dark bundle)
+
+
+================================================================================
+ 2. ASSET BUNDLE STRUCTURE & COMPILATION PIPELINE
+================================================================================
+
+2.1 MAIN BUNDLES
+----------------
+
+  web.assets_web           Main backend entry point (includes web.assets_backend)
+  web.assets_backend       66 entries - all backend UI styles/JS
+  web.assets_frontend      67 entries - login, portal, public pages
+  web.assets_web_dark      = web.assets_web + ALL *.dark.scss files
+  web.report_assets_common 52 entries - PDF report styles
+
+2.2 HELPER SUB-BUNDLES
+----------------------
+
+  web._assets_helpers              Functions + mixins + primary/secondary vars
+  web._assets_primary_variables    primary_variables.scss + *.variables.scss
+  web._assets_secondary_variables  secondary_variables.scss
+  web._assets_bootstrap_backend    Bootstrap compile for backend
+  web._assets_bootstrap_frontend   Bootstrap compile for frontend
+  web._assets_core                 Module loader, OWL, luxon, session
+
+2.3 COMPILATION ORDER (web.assets_backend)
+------------------------------------------
+
+  STAGE 1: HELPERS (no CSS output)
+    bootstrap/_functions.scss
+    bootstrap/_mixins.scss
+    web/functions.scss
+    web/mixins_forwardport.scss
+    web/bs_mixins_overrides.scss
+    web/utils.scss
+
+  STAGE 2: PRIMARY VARIABLES
+    [OPS: _primary_variables.scss PREPENDED HERE]
+    web/primary_variables.scss
+    web/**/*.variables.scss
+
+  STAGE 3: BOOTSTRAP PRE-VARIABLES
+    web/pre_variables.scss (Bootstrap defaults)
+    web/secondary_variables.scss
+
+  STAGE 4: BOOTSTRAP VARIABLES
+    bootstrap/_variables.scss
+    bootstrap/_variables-dark.scss
+    bootstrap/_maps.scss
+
+  STAGE 5: BOOTSTRAP COMPILATION
+    web/import_bootstrap.scss  <-- @import bootstrap/scss/bootstrap
+    web/utilities_custom.scss
+    bootstrap/utilities/_api.scss
+    web/bootstrap_review.scss
+    web/utilities_custom_backend.scss
+    web/bootstrap_review_backend.scss
+
+  STAGE 6: APPLICATION STYLES
+    Core components, FontAwesome, navbar, views, webclient
+
+  STAGE 7: REMOVAL
+    ('remove', 'web/static/src/**/*.dark.scss')  <-- light bundle only
+
+2.4 DARK BUNDLE (web.assets_web_dark)
+-------------------------------------
+
+  Definition (web __manifest__.py):
+    "web.assets_web_dark": [
+        ('include', 'web.assets_web'),       # All of light bundle
+        'web/static/src/**/*.dark.scss',     # Plus ALL .dark.scss files
+    ]
+
+  Template selection (webclient_templates.xml):
+    <t t-if="color_scheme == 'dark'">
+        <t t-call-assets="web.assets_web_dark" .../>
+    </t>
+    <t t-else="">
+        <t t-call-assets="web.assets_web" .../>
+    </t>
+
+2.5 HOW ADDONS EXTEND BUNDLES
+------------------------------
+
+  Via __manifest__.py 'assets' dictionary:
+
+    'assets': {
+        'web._assets_primary_variables': [
+            ('prepend', 'my_module/static/src/scss/_primary_variables.scss'),
+        ],
+        'web.assets_backend': [
+            'my_module/static/src/scss/styles.scss',
+        ],
+        'web.assets_web_dark': [
+            'my_module/static/src/scss/_dark.scss',
+        ],
+    }
+
+  Operators:
+    ('include', 'bundle_name')        Include another bundle
+    ('prepend', 'file')               Add to front of bundle
+    ('after', 'target', 'new_file')   Insert after specific file
+    ('remove', 'pattern')             Remove files (glob support)
+
+
+================================================================================
+ 3. BOOTSTRAP 5 CORE COLOR VARIABLES
+================================================================================
+
+3.1 BASE COLORS (pre_variables.scss)
+-------------------------------------
+
+  $blue:    #0d6efd    $indigo:  #6610f2
+  $purple:  #6f42c1    $pink:    #d63384
+  $red:     #dc3545    $orange:  #fd7e14
+  $yellow:  #ffc107    $green:   #198754
+  $teal:    #20c997    $cyan:    #0dcaf0
+  $white:   #fff       $black:   #000
+
+3.2 GRAYSCALE (pre_variables.scss)
+-----------------------------------
+
+  $gray-100: #f8f9fa    $gray-200: #e9ecef
+  $gray-300: #dee2e6    $gray-400: #ced4da
+  $gray-500: #adb5bd    $gray-600: #6c757d
+  $gray-700: #495057    $gray-800: #343a40
+  $gray-900: #212529
+
+3.3 SEMANTIC COLORS (pre_variables.scss, then overridden)
+----------------------------------------------------------
+
+  Bootstrap defaults:
+    $primary:   $blue (#0d6efd)
+    $secondary: $gray-600 (#6c757d)
+    $success:   $green (#198754)
+    $info:      $cyan (#0dcaf0)
+    $warning:   $yellow (#ffc107)
+    $danger:    $red (#dc3545)
+    $light:     $gray-100 (#f8f9fa)
+    $dark:      $gray-900 (#212529)
+
+  Odoo overrides (bootstrap_overridden.scss):
+    $primary:   $o-brand-primary     <-- Odoo purple #71639e
+    $secondary: $gray-300            <-- Light gray (not blue)
+    $success:   $o-success           <-- #28a745
+    $info:      $o-info              <-- #17a2b8
+    $warning:   $o-warning           <-- #ffac00
+    $danger:    $o-danger            <-- #dc3545
+    $dark:      $o-gray-900          <-- #212529
+
+3.4 THE $theme-colors MAP
+--------------------------
+
+  $theme-colors: (
+      "primary":    $primary,
+      "secondary":  $secondary,
+      "success":    $success,
+      "info":       $info,
+      "warning":    $warning,
+      "danger":     $danger,
+      "light":      $light,
+      "dark":       $dark,
+  );
+
+  This map generates:
+    .btn-primary, .btn-secondary, .btn-success, etc.
+    .bg-primary, .bg-secondary, .bg-success, etc.
+    .text-primary, .text-secondary, .text-success, etc.
+    .border-primary, .border-secondary, etc.
+    .badge.text-bg-primary, .badge.text-bg-success, etc.
+
+3.5 CRITICAL: $variable-prefix
+-------------------------------
+
+  File: bootstrap_overridden.scss, Line 51
+    $variable-prefix: '' !default;
+
+  Impact: Odoo removes Bootstrap's "bs-" prefix from CSS variables.
+
+    Standard Bootstrap:  var(--bs-body-bg)
+    Odoo 19:             var(--body-bg)
+
+  This applies to ALL Bootstrap-generated CSS custom properties.
+
+
+================================================================================
+ 4. ODOO $o- SCSS VARIABLE NAMESPACE
+================================================================================
+
+4.1 BRAND COLORS (primary_variables.scss)
+------------------------------------------
+
+  Variable                     Default              Purpose
+  -------------------------    ------------------   ----------------------------
+  $o-community-color           #71639e              MASTER color for Odoo CE
+  $o-enterprise-color          #714B67              Enterprise variant
+  $o-enterprise-action-color   #017e84              Enterprise action buttons
+  $o-brand-odoo                = $o-community-color Navbar background
+  $o-brand-primary             = $o-community-color Primary UI elements
+  $o-brand-secondary           #8f8f8f              Gray secondary
+  $o-brand-lightsecondary      = $o-gray-100        Light secondary
+
+  KEY INSIGHT: Override $o-community-color and ALL purple changes everywhere.
+
+4.2 SEMANTIC COLORS (primary_variables.scss)
+---------------------------------------------
+
+  $o-action      = $o-brand-primary    Buttons, links, active states
+  $o-success     #28a745               Success messages, checkmarks
+  $o-info        #17a2b8               Info notifications
+  $o-warning     #ffac00               Warnings, alerts
+  $o-danger      #dc3545               Errors, destructive actions
+
+4.3 TEXT COLORS (primary_variables.scss)
+-----------------------------------------
+
+  $o-main-text-color        = $o-gray-900              Body text
+  $o-main-color-muted       rgba($o-gray-700, 0.76)    Muted/secondary text
+  $o-main-headings-color    = $o-black                  Heading text
+  $o-main-link-color        darken($o-brand-primary, 5%)  Link color
+  $o-main-favorite-color    #f3cc00                     Star/favorite color
+  $o-main-code-color        #d2317b                     Code syntax
+
+  Fine-tuned text colors for semantic classes:
+    $o-theme-text-colors: (
+        "success": #008818,
+        "info":    #0180a5,
+        "warning": #9a6b01,
+        "danger":  #d23f3a,
+    );
+
+4.4 GRAYSCALE ($o- prefixed)
+------------------------------
+
+  $o-white:    #FFFFFF    $o-black:    #000000
+  $o-gray-100: #f8f9fa    $o-gray-200: #e9ecef
+  $o-gray-300: #dee2e6    $o-gray-400: #ced4da
+  $o-gray-500: #adb5bd    $o-gray-600: #6c757d
+  $o-gray-700: #495057    $o-gray-800: #343a40
+  $o-gray-900: #212529
+
+4.5 BACKGROUND & SURFACE COLORS
+---------------------------------
+
+  $o-view-background-color         white              Form/modal/card backgrounds
+  $o-webclient-background-color    $o-gray-100        App background (#f8f9fa)
+  $o-shadow-color                  #303030            Drop shadows
+  $o-form-lightsecondary           #ccc               Light form backgrounds
+
+4.6 COMPONENT ACTIVE STATE
+----------------------------
+
+  $o-component-active-color    = $o-black
+  $o-component-active-bg       mix($o-action, $o-gray-100, 20%)  (20% action, 80% light)
+  $o-component-active-border   = $o-action
+
+4.7 INPUT & FORM CONTROLS
+---------------------------
+
+  $o-input-padding-y           2px
+  $o-input-padding-x           4px
+  $o-input-bg                  transparent
+  $o-input-invalid-bg          mix($o-danger, $o-input-bg, 10%)
+  $o-input-border-required     $o-brand-primary
+
+4.8 OPACITY
+-------------
+
+  $o-opacity-disabled    0.5     Disabled elements
+  $o-opacity-muted       0.76    Muted text
+
+4.9 CUSTOM COLOR PALETTES (secondary_variables.scss)
+------------------------------------------------------
+
+  Primary palette (12 colors for tags/kanban):
+    $o-colors: #a2a2a2, #ee2d2d, #dc8534, #e8bb1d, #5794dd, #9f628f,
+               #db8865, #41a9a2, #304be0, #ee2f8a, #61c36e, #9872e6
+
+  Secondary palette (32 additional colors):
+    $o-colors-secondary: #aa4b6b, #30C381, #97743a, #F7CD1F, #4285F4, ...
+
+  Combined:
+    $o-colors-complete: join($o-colors, $o-colors-secondary)
+
+  Used via SCSS loops to generate:
+    .o-tag-color-0, .o-tag-color-1, ... .o-tag-color-11
+    Kanban color bars, priority stars, etc.
+
+4.10 BUTTON OVERRIDE MAPS (primary_variables.scss)
+----------------------------------------------------
+
+  $o-btns-bs-override: (
+      "primary": (
+          background:        $o-brand-primary,
+          border:            $o-brand-primary,
+          color:             $o-white,
+          hover-background:  darken($o-brand-primary, 10%),
+          hover-border:      darken($o-brand-primary, 20%),
+          hover-color:       $o-white,
+          active-background: mix($o-brand-primary, $o-white, 10%),
+          active-border:     $o-brand-primary,
+          active-color:      darken($o-brand-primary, 20%),
+      ),
+      "secondary": (
+          background: $o-gray-300,
+          border:     $o-gray-300,
+          color:      $o-gray-900,
+          ...
+      ),
+  );
+
+  $o-btn-custom: (
+      "favourite": $o-main-favorite-color,
+  );
+
+4.11 MEDIA & COLOR SCHEME
+---------------------------
+
+  $o-webclient-media:          screen     ("screen" for web, "print" for PDF)
+  $o-webclient-color-scheme:   bright     ("bright" = light only)
+  $enable-dark-mode:           false      (Odoo disables dark mode by default)
+
+4.12 FONT VARIABLES
+---------------------
+
+  $o-font-size-base:           14px (via o-to-rem)
+  $o-font-size-base-touch:     16px
+  $o-font-size-base-small:     13px
+  $o-font-size-base-smaller:   12px
+  $o-line-height-base:         1.5
+  $o-font-weight-normal:       400
+  $o-font-weight-medium:       500
+  $o-font-weight-bold:         700
+  $o-system-fonts:             (-apple-system, BlinkMacSystemFont, "Segoe UI",
+                                Roboto, "Helvetica Neue", Ubuntu, ...)
+
+4.13 LAYOUT & SPACING
+-----------------------
+
+  $o-spacer:                   16px (= 1rem base unit)
+  $o-form-spacing-unit:        5px
+  $o-horizontal-padding:       $o-spacer (16px)
+  $o-dropdown-hpadding:        20px
+  $o-dropdown-max-height:      70vh
+  $o-statbutton-height:        44px
+  $o-modal-lg:                 980px
+  $o-modal-md:                 650px
+  $o-statusbar-height:         33px
+
+4.14 BORDER RADIUS
+-------------------
+
+  $o-border-radius:            4px (via o-to-rem)
+  $o-border-radius-sm:         3px
+  $o-border-radius-lg:         6px
+
+4.15 ANIMATION EASING
+-----------------------
+
+  $o-easing-enter:  cubic-bezier(0.05, 0.7, 0.1, 1.0)
+  $o-easing-exit:   cubic-bezier(0.3, 0.0, 0.8, 0.15)
+
+
+================================================================================
+ 5. BOOTSTRAP-TO-ODOO BRIDGING LAYER
+================================================================================
+
+File: bootstrap_overridden.scss
+
+This file maps $o- variables into Bootstrap's $ namespace:
+
+  // Semantic colors
+  $primary:    $o-brand-primary        (Odoo purple/OPS navy)
+  $secondary:  $gray-300               (Light gray)
+  $success:    $o-success
+  $info:       $o-info
+  $warning:    $o-warning
+  $danger:     $o-danger
+  $light:      $gray-100
+  $dark:       $o-gray-900
+
+  // Body
+  $body-bg:    $o-webclient-background-color
+  $body-color: $o-main-text-color
+
+  // Links
+  $link-color: $o-main-link-color
+  $link-hover-decoration: none
+
+  // Components
+  $border-color:           $o-gray-300
+  $border-radius:          $o-border-radius
+  $component-active-bg:    $o-component-active-bg
+  $component-active-color: $o-component-active-color
+
+  // Buttons
+  $btn-font-weight:       $font-weight-bold
+  $btn-disabled-opacity:  $o-opacity-disabled
+
+  // Forms
+  $input-bg:              $o-input-bg
+  $input-focus-border-color: $o-brand-primary
+
+  // Modals
+  $modal-content-bg:      $o-view-background-color
+
+  // Nav Pills
+  $nav-pills-link-active-bg: $o-brand-primary
+
+  // Critical: Variable prefix
+  $variable-prefix: ''    (NO "bs-" prefix on CSS vars)
+
+
+================================================================================
+ 6. CSS CUSTOM PROPERTIES (RUNTIME VARIABLES)
+================================================================================
+
+6.1 BOOTSTRAP-GENERATED CSS VARS (in :root)
+---------------------------------------------
+
+  When Bootstrap compiles with $variable-prefix: '', it generates:
+
+    :root {
+        --body-bg: #f8f9fa;          (from $body-bg)
+        --body-color: #212529;        (from $body-color)
+        --primary: #71639e;           (from $primary, or OPS #1e293b)
+        --secondary: #dee2e6;         (from $secondary)
+        --success: #28a745;           (from $success)
+        --info: #17a2b8;              (from $info)
+        --warning: #ffac00;           (from $warning)
+        --danger: #dc3545;            (from $danger)
+        --light: #f8f9fa;
+        --dark: #212529;
+        --primary-rgb: 113, 99, 158;  (RGB decomposition)
+        --link-color: ...;
+        --link-hover-color: ...;
+        --border-color: #dee2e6;
+    }
+
+  IMPORTANT: Use var(--body-bg), NOT var(--bs-body-bg) in Odoo 19.
+
+6.2 NAVBAR CSS VARS (navbar.variables.scss)
+--------------------------------------------
+
+  Odoo defines component-level CSS vars with fallbacks:
+
+    height: calc(var(--o-navbar-height) - #{...});
+    color: var(--NavBar-entry-color, #{$o-navbar-entry-color});
+    padding-left: var(--NavBar-entry-padding-left, #{$o-navbar-entry-padding-h});
+
+  Navbar CSS vars:
+    --NavBar-entry-color
+    --NavBar-entry-color--hover
+    --NavBar-entry-margin-left
+    --NavBar-entry-margin-right
+    --NavBar-entry-padding-left
+    --NavBar-entry-padding-right
+    --o-navbar-height
+
+6.3 SETTINGS PAGE CSS VARS
+----------------------------
+
+    --settings__tab-bg
+    --settings__tab-bg--active
+    --settings__title-bg
+    --SearchableSetting__highlight-border
+    --SearchableSetting__highlight-background
+
+6.4 STATUS BAR CSS VARS
+-------------------------
+
+    --StatusBar-arrow-bg    (background color of status arrow buttons)
+
+  Usage:
+    .o_statusbar_status .o_arrow_button[data-value="done"] {
+        --StatusBar-arrow-bg: var(--ops-success, #10b981) !important;
+    }
+
+6.5 MAIL/DISCUSS CSS VARS
+---------------------------
+
+    --mail-Discuss-surface-dark
+    --mail-Discuss-threadNeedaction-bg
+    --mail-Thread-bubble-bg
+
+
+================================================================================
+ 7. COMPONENT-LEVEL COLOR VARIABLES
+================================================================================
+
+7.1 NAVBAR (navbar.variables.scss)
+-----------------------------------
+
+  $o-navbar-height:                 46px
+  $o-navbar-background:             $o-brand-odoo          (purple/navy)
+  $o-navbar-border-bottom:          1px solid darken($o-brand-odoo, 10%)
+  $o-navbar-entry-color:            rgba($o-white, 0.9)    (nearly white)
+  $o-navbar-entry-color--hover:     $o-white
+  $o-navbar-entry-bg--hover:        rgba($o-black, 0.08)
+  $o-navbar-brand-font-size:        1.2em
+  $o-navbar-badge-bg:               $o-success
+  $o-navbar-badge-text-shadow:      1px 1px 0 rgba($o-black, 0.3)
+
+7.2 BURGER MENU (Mobile Sidebar)
+----------------------------------
+
+  $o-burger-base-bg:                $o-white
+  $o-burger-base-color:             $o-gray-800
+  $o-burger-topbar-bg:              $o-gray-100
+  $o-burger-topbar-color:           $o-black
+
+7.3 CONTROL PANEL (Search/Filter Bar)
+---------------------------------------
+
+  $o-control-panel-background-color: $o-view-background-color  (white)
+  $o-control-panel-border-bottom:    1px solid $o-gray-300
+
+7.4 KANBAN VIEW (kanban.variables.scss)
+----------------------------------------
+
+  $o-kanban-background:              $o-gray-100
+  $o-kanban-default-record-width:    320px
+  $o-kanban-color-border-width:      3px
+  $o-kanban-progressbar-height:      20px
+
+7.5 FORM VIEW (form.variables.scss)
+-------------------------------------
+
+  $o-sheet-vpadding:                 $o-spacer * 1.5
+  $o-form-renderer-max-width:        2600px
+  $o-form-view-sheet-max-width:      1400px
+  $o-form-picture-size:              90px
+
+7.6 LIST VIEW
+--------------
+
+  $o-list-footer-bg-color:           transparent
+  $o-list-footer-font-weight:        bold
+  $o-list-group-header-color:        lighten($o-brand-lightsecondary, 10%)
+  $o-list-group-active-bg:           lighten(saturate(adjust-hue($o-info, 15), 1.8), 50)
+  $o-list-group-active-color:        $o-black
+
+7.7 SEARCH PANEL
+-----------------
+
+  $o-search-panel-width:             220px
+  $o-search-panel-font-size:         1em
+
+7.8 NOTIFICATION (notification.variables.scss)
+-----------------------------------------------
+
+  $o-notification-margin:            1rem
+  $o-notification-max-width-sm:      400px
+  $o-notification-bar-width:         0.5rem    (left border indicator)
+  $o-notification-zindex:            1055
+
+7.9 AVATAR
+-----------
+
+  $o-avatar-size:                    1.7145em
+
+7.10 COLOR PICKER / EDITOR
+----------------------------
+
+  $o-we-toolbar-bg:                  #FFF
+  $o-we-toolbar-color-text:          #2b2b33
+  $o-we-color-success:               #00ff9e
+
+
+================================================================================
+ 8. DARK MODE SYSTEM
+================================================================================
+
+8.1 HOW DARK MODE WORKS
+-------------------------
+
+  Flow: Cookie -> ir_http.color_scheme() -> Template -> Bundle Selection
+
+  1. User toggles dark mode -> cookie "color_scheme" set to "dark"
+  2. Server reads cookie via ir_http.color_scheme()
+  3. webclient_rendering_context() passes color_scheme to template
+  4. Template selects web.assets_web_dark bundle (instead of web.assets_web)
+  5. HTML gets data-bs-theme="dark" attribute
+  6. Bootstrap 5 + .dark.scss files activate
+
+8.2 HTML ATTRIBUTE
+-------------------
+
+  CORRECT:   html[data-bs-theme="dark"]
+  WRONG:     [data-color-mode="dark"]       (removed, not standard BS5)
+  WRONG:     html.dark-mode                  (custom, not BS5)
+  WRONG:     @media (prefers-color-scheme: dark)  (not how Odoo triggers it)
+
+8.3 ENABLING DARK MODE (disabled by default in Odoo 19 CE)
+------------------------------------------------------------
+
+  In _primary_variables.scss:
+    $enable-dark-mode: true;
+    $o-webclient-color-scheme: light dark;
+
+  This makes Bootstrap generate [data-bs-theme="dark"] CSS rules.
+
+8.4 .dark.scss FILES IN ODOO 19
+---------------------------------
+
+  Odoo 19 CE has 62+ .dark.scss files across modules:
+    mail:          31 files  (most extensive)
+    html_editor:   7 files
+    web:           3 files
+    spreadsheet:   multiple files
+    point_of_sale: several files
+
+  These are automatically included in web.assets_web_dark bundle.
+
+8.5 DARK BUNDLE LOAD ORDER
+----------------------------
+
+  1. All of web.assets_web (light mode CSS, hardcoded colors)
+  2. web/static/src/**/*.dark.scss (Odoo native dark overrides)
+  3. [Addon *.dark.scss files]
+  4. ops_theme/_ops_dark_mode.scss (OPS dark overrides - LAST = highest cascade)
+
+8.6 OPS DARK MODE VARIABLES (_ops_dark_mode.scss)
+---------------------------------------------------
+
+  html[data-bs-theme="dark"] {
+      // Surface layers (light to dark = higher to lower)
+      --ops-dm-bg-deep:       #0f172a;   // Page body, bg-view
+      --ops-dm-bg-surface:    #1e293b;   // Cards, form sheets, panels
+      --ops-dm-bg-elevated:   #263548;   // Inputs, search bars, dropdowns
+      --ops-dm-bg-hover:      #334155;   // Row hover, active states
+
+      // Borders
+      --ops-dm-border:        #475569;   // Primary borders
+      --ops-dm-border-subtle: #334155;   // Inner dividers
+      --ops-dm-border-strong: #64748b;   // Emphasized borders (facets, badges)
+
+      // Text hierarchy
+      --ops-dm-text:          #f1f5f9;   // Primary text, headings
+      --ops-dm-text-body:     #cbd5e1;   // Standard body text
+      --ops-dm-text-muted:    #94a3b8;   // Labels, hints
+
+      // Accent
+      --ops-dm-accent:        #3b82f6;   // Links, active elements
+      --ops-dm-accent-hover:  #60a5fa;   // Hover state
+
+      // Bootstrap overrides
+      --body-bg:              var(--ops-dm-bg-deep);
+      --body-color:           var(--ops-dm-text-body);
+      --border-color:         var(--ops-dm-border);
+      --link-color:           #3b82f6;
+      --primary-text-emphasis: #60a5fa;
+  }
+
+8.7 BS5 DARK MODE GOTCHA: Link Color
+--------------------------------------
+
+  Problem: When primary = #1e293b (dark navy), Bootstrap derives:
+    --link-color: #787f89  (muted gray, invisible on dark backgrounds)
+
+  Fix: Explicitly override in dark mode:
+    html[data-bs-theme="dark"] {
+        --link-color: #3b82f6;                 // OPS blue
+        --primary-text-emphasis: #60a5fa;      // Lighter blue
+    }
+
+
+================================================================================
+ 9. COLOR UTILITY CLASSES & MIXINS
+================================================================================
+
+9.1 BOOTSTRAP COLOR UTILITIES (from $theme-colors loop)
+---------------------------------------------------------
+
+  Background:   .bg-primary, .bg-secondary, .bg-success, .bg-info,
+                .bg-warning, .bg-danger, .bg-light, .bg-dark
+
+  Text:         .text-primary, .text-secondary, .text-success, .text-info,
+                .text-warning, .text-danger, .text-light, .text-dark
+
+  Border:       .border-primary, .border-secondary, .border-success, etc.
+
+  Badges:       .badge.text-bg-primary, .badge.text-bg-success, etc.
+                .badge.bg-primary, .badge.bg-success, etc.
+
+  Buttons:      .btn-primary, .btn-secondary, .btn-success, etc.
+                .btn-outline-primary, .btn-outline-secondary, etc.
+
+9.2 ODOO CUSTOM UTILITY CLASSES
+---------------------------------
+
+  Text (from $o-text-colors-custom):
+    .text-action    { color: $o-action; }
+    .text-favourite { color: $o-main-favorite-color; }
+
+  Background (from $o-bg-colors-custom):
+    .bg-action      { background-color: $o-action; }
+    .bg-view        { background-color: $o-view-background-color; }
+    .bg-favourite   { background-color: $o-main-favorite-color; }
+
+  Opacity (from $o-opacities):
+    .opacity-0, .opacity-25, .opacity-50, .opacity-75, .opacity-100
+    .opacity-disabled (0.5), .opacity-muted (0.76)
+
+9.3 ODOO TAG/KANBAN COLOR CLASSES
+-----------------------------------
+
+  Generated from $o-colors loop (12 primary + 32 secondary):
+    .o-tag-color-0  { border-left-color: #a2a2a2; }
+    .o-tag-color-1  { border-left-color: #ee2d2d; }
+    .o-tag-color-2  { border-left-color: #dc8534; }
+    ...
+    .o-tag-color-11 { border-left-color: #9872e6; }
+
+  Kanban color bars (oe_kanban_color_*):
+    .oe_kanban_color_0 through .oe_kanban_color_11
+
+9.4 KEY SCSS MIXINS
+---------------------
+
+  Bootstrap mixins:
+    @include button-variant($bg, $border, $color, ...)
+    @include alert-variant($bg, $border, $color)
+    @include color-mode(dark) { ... }           (Bootstrap 5.3)
+
+  Odoo mixins (utils.scss):
+    @include o-hover-text-color($default, $hover)
+    @include o-bg-color($color, $important)
+    @include o-field-pointer()
+    @include o-position-absolute($top, $right, $bottom, $left)
+
+  Odoo color functions:
+    o-to-rem($px)          Convert px to rem using $o-root-font-size
+    color-contrast($color) Returns black or white for accessibility
+
+9.5 BOOTSTRAP COLOR FUNCTIONS (used in Odoo SCSS)
+---------------------------------------------------
+
+  shade-color($color, $weight)      Darken by mixing with black
+  tint-color($color, $weight)       Lighten by mixing with white
+  color-contrast($bg)               Returns black/white for text contrast
+  mix($color1, $color2, $weight)    Blend two colors
+  darken($color, $amount)           Decrease lightness
+  lighten($color, $amount)          Increase lightness
+  saturate($color, $amount)         Increase saturation
+  adjust-hue($color, $degrees)      Shift hue on color wheel
+
+
+================================================================================
+ 10. OPS FRAMEWORK COLOR OVERRIDE SYSTEM
+================================================================================
+
+10.1 SCSS COMPILE-TIME OVERRIDES (_primary_variables.scss)
+-----------------------------------------------------------
+
+  Loaded via: ('prepend', ...) in web._assets_primary_variables
+  Loaded BEFORE: Bootstrap compilation
+
+  // Master brand override
+  $o-community-color: #1e293b;       // Navy (replaces Odoo purple)
+  $o-enterprise-color: #1e293b;
+  $o-brand-odoo: #1e293b;
+  $o-brand-primary: #1e293b;
+
+  // Accent color
+  $o-action: #3b82f6;                // OPS Blue
+
+  // Semantic overrides
+  $o-success: #10b981;               // Teal green
+  $o-info: #06b6d4;                  // Cyan
+  $o-warning: #f59e0b;               // Amber
+  $o-danger: #ef4444;                // Red
+
+  // Links
+  $o-main-link-color: #3b82f6;       // OPS Blue
+
+  // Dark mode enable
+  $enable-dark-mode: true;
+  $o-webclient-color-scheme: light dark;
+
+  // Font
+  $o-system-fonts: ('Inter', -apple-system, BlinkMacSystemFont, ...);
+
+10.2 RUNTIME CSS VARIABLES (/ops_theme/variables.css controller)
+-----------------------------------------------------------------
+
+  Route: /ops_theme/variables.css (served on every page load)
+  Cache: no-cache, no-store (always fresh)
+
+  Generated CSS:
+    :root {
+        --ops-primary: {company.ops_primary_color};
+        --ops-primary-rgb: {r}, {g}, {b};
+        --ops-primary-hover: {darkened};
+        --ops-secondary: {company.ops_secondary_color};
+        --ops-secondary-rgb: {r}, {g}, {b};
+        --ops-secondary-hover: {darkened};
+        --ops-success: {company.ops_success_color};
+        --ops-warning: {company.ops_warning_color};
+        --ops-danger: {company.ops_danger_color};
+        --ops-bg: {company.ops_bg_color};
+        --ops-surface: {company.ops_surface_color};
+        --ops-bg-card: {surface};
+        --ops-text: {company.ops_text_color};
+        --ops-text-primary: {text};
+        --ops-border: {company.ops_border_color};
+        --ops-accent2: {company.ops_accent2_color};
+        --ops-btn: {company.ops_btn_color};
+        --ops-btn-rgb: {r}, {g}, {b};
+        --ops-btn-hover: {darkened};
+        --ops-navbar-bg: {navbar_bg};
+        --ops-navbar-text: {navbar_text};
+        --ops-card-shadow: {shadow_value};
+        --ops-border-radius: {radius_value};
+        --ops-report-header-bg: {primary};
+    }
+
+10.3 COMPANY SETTINGS FIELDS (res.company)
+--------------------------------------------
+
+  Field                    Default      Purpose
+  ---------------------    ----------   ---------------------------
+  ops_primary_color        #1e293b      Navbar, headers, primary UI
+  ops_secondary_color      #3b82f6      Buttons, links, accents
+  ops_success_color        #10b981      Success states
+  ops_warning_color        #f59e0b      Warning states
+  ops_danger_color         #ef4444      Error states
+  ops_bg_color             #f1f5f9      Page background
+  ops_surface_color        #ffffff      Card/panel backgrounds
+  ops_text_color           #1e293b      Body text
+  ops_border_color         #e2e8f0      Borders
+  ops_accent2_color        #60a5fa      Secondary accent
+  ops_btn_color            #3b82f6      Button color (separate from secondary)
+  ops_navbar_style         dark         dark | light | primary
+  ops_card_shadow          medium       none | light | medium | heavy
+  ops_border_radius        rounded      sharp (0px) | rounded (8px) | pill (16px)
+
+10.4 DYNAMIC OVERRIDES (_dynamic_overrides.scss)
+--------------------------------------------------
+
+  Light mode button branding:
+    html:not([data-bs-theme="dark"]) {
+        .btn-primary {
+            background-color: var(--ops-btn, var(--ops-secondary)) !important;
+            border-color: var(--ops-btn, var(--ops-secondary)) !important;
+            color: #ffffff !important;
+
+            &:hover, &:focus {
+                background-color: var(--ops-btn-hover, ...) !important;
+            }
+        }
+    }
+
+  Fallback chain pattern:
+    var(--ops-btn) -> var(--ops-secondary) -> hardcoded fallback
+
+  Badges:
+    .badge.text-bg-primary  { background-color: var(--ops-btn, ...) !important; }
+    .badge.text-bg-success  { background-color: var(--ops-success) !important; }
+
+  Form focus:
+    .form-control:focus { border-color: var(--ops-btn, ...) !important; }
+
+  Status bar:
+    .o_statusbar_status .o_arrow_button.btn-primary {
+        background-color: var(--ops-btn, ...) !important;
+    }
+
+10.5 TWO-LAYER SYSTEM SUMMARY
+-------------------------------
+
+  Layer 1 (SCSS, Build-Time):
+    _primary_variables.scss overrides $o-community-color, $o-action, etc.
+    Bootstrap compiles with OPS colors hardcoded into CSS.
+    Result: .btn-primary { background: #1e293b; }
+
+  Layer 2 (CSS Variables, Runtime):
+    /ops_theme/variables.css serves dynamic --ops-* vars from company settings.
+    _dynamic_overrides.scss applies var() overrides on top of hardcoded colors.
+    Result: .btn-primary { background: var(--ops-btn) !important; }
+
+  Why both layers?
+    - Layer 1 ensures correct colors even if CSS vars fail to load
+    - Layer 2 allows per-company customization without recompilation
+    - Dark mode uses Layer 2 exclusively (CSS var overrides)
+
+
+================================================================================
+ 11. QUICK REFERENCE TABLES
+================================================================================
+
+11.1 COLOR FLOW: How $o-community-color reaches .btn-primary
+--------------------------------------------------------------
+
+  $o-community-color: #71639e           (Odoo default)
+       |
+  OPS overrides to #1e293b              (_primary_variables.scss)
+       |
+  $o-brand-primary = $o-community-color (primary_variables.scss)
+       |
+  $primary = $o-brand-primary           (bootstrap_overridden.scss)
+       |
+  $theme-colors("primary") = $primary   (pre_variables.scss)
+       |
+  .btn-primary { background: #1e293b }  (Bootstrap compile)
+       |
+  :root { --primary: #1e293b; }         (Bootstrap root.scss)
+       |
+  var(--ops-btn) overrides at runtime   (_dynamic_overrides.scss)
+
+11.2 ALL OPS CSS VARIABLE NAMES
+---------------------------------
+
+  Brand:      --ops-primary, --ops-primary-rgb, --ops-primary-hover
+              --ops-secondary, --ops-secondary-rgb, --ops-secondary-hover
+  Semantic:   --ops-success, --ops-success-rgb
+              --ops-warning, --ops-warning-rgb
+              --ops-danger, --ops-danger-rgb
+  Extended:   --ops-bg, --ops-bg-rgb
+              --ops-surface, --ops-surface-rgb, --ops-bg-card
+              --ops-text, --ops-text-rgb, --ops-text-primary
+              --ops-border, --ops-border-rgb
+              --ops-accent2, --ops-accent2-rgb
+              --ops-btn, --ops-btn-rgb, --ops-btn-hover
+  Navbar:     --ops-navbar-bg, --ops-navbar-text, --ops-navbar-hover
+              --ops-bg-navbar
+  Layout:     --ops-card-shadow, --ops-border-radius, --ops-radius-md
+              --ops-btn-radius
+  Reports:    --ops-report-header-bg
+
+  Dark mode:  --ops-dm-bg-deep, --ops-dm-bg-surface, --ops-dm-bg-elevated
+              --ops-dm-bg-hover
+              --ops-dm-border, --ops-dm-border-subtle, --ops-dm-border-strong
+              --ops-dm-text, --ops-dm-text-body, --ops-dm-text-muted
+              --ops-dm-accent, --ops-dm-accent-hover
+
+11.3 KEY FILES REFERENCE
+--------------------------
+
+  Native Odoo:
+    primary_variables.scss         All $o- color/font/spacing variables
+    secondary_variables.scss       Background, list, kanban, color palettes
+    pre_variables.scss             Bootstrap defaults before BS loads
+    bootstrap_overridden.scss      $o- -> Bootstrap $ bridging + $variable-prefix
+    import_bootstrap.scss          Bootstrap compilation trigger
+    bootstrap_review.scss          Bootstrap fixes/extensions
+    bootstrap_review_backend.scss  Backend-specific button generation
+    navbar.variables.scss          Navbar $o-navbar-* variables
+    kanban.variables.scss          Kanban view variables
+    form.variables.scss            Form view variables
+    control_panel.variables.scss   Search bar variables
+
+  OPS Theme:
+    _primary_variables.scss        SCSS overrides (prepended to bundle)
+    _dynamic_overrides.scss        Runtime CSS var overrides + micro-interactions
+    _ops_dark_mode.scss            Dark mode CSS vars and overrides
+    _login.scss                    Login page styling
+    _debranding.scss               Remove Odoo branding
+    _settings_theme_page.scss      Theme settings page styles
+    theme_controller.py            Dynamic CSS generation endpoint
+
+  OPS Matrix Core:
+    ops_theme.css                  Status bar colors, kanban colors, alerts
+
+  OPS Matrix Accounting:
+    ops_accounting.css             Accounting-specific badges and cards
+
+11.4 STATUS BAR COLOR MAP
+---------------------------
+
+  State            Color Variable              Hex Fallback
+  --------         -------------------------   ------------
+  draft, new       --ops-text-secondary        #64748b (gray)
+  confirmed, open  --ops-secondary             #3b82f6 (blue)
+  approved         --ops-info                  #06b6d4 (cyan)
+  done, posted     --ops-success               #10b981 (green)
+  cancelled        --ops-danger                #ef4444 (red)
+  pending, hold    --ops-warning               #f59e0b (amber)
+
+11.5 KANBAN CARD COLOR MAP
+----------------------------
+
+  Color Index    Color Variable              Hex Fallback    Meaning
+  -----------    -------------------------   ------------    -------
+  0              --ops-text-secondary        #64748b         Draft
+  1              --ops-secondary             #3b82f6         Confirmed
+  2              --ops-success               #10b981         Done
+  3              --ops-danger                #ef4444         Cancelled
+  4              --ops-warning               #f59e0b         Warning
+
+
+================================================================================
+ END OF HANDBOOK
+================================================================================
+
+  For questions or updates, regenerate using Claude Code agents.
+  All file paths are relative to /opt/gemini_odoo19/ unless noted otherwise.

@@ -276,7 +276,7 @@ class OpsMatrixAPI(http.Controller):
     # UTILITY ENDPOINTS
     # ========================================================================
     
-    @http.route('/api/v1/ops_matrix/health', type='json', auth='none', 
+    @http.route('/api/v1/ops_matrix/health', type='json', auth='public',
                 methods=['GET', 'POST'], csrf=False)
     @handle_exceptions
     def health_check(self):
@@ -301,7 +301,7 @@ class OpsMatrixAPI(http.Controller):
             'server_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
     
-    @http.route('/api/v1/ops_matrix/me', type='json', auth='none', 
+    @http.route('/api/v1/ops_matrix/me', type='json', auth='public',
                 methods=['GET', 'POST'], csrf=False)
     @validate_api_key
     @handle_exceptions
@@ -361,7 +361,7 @@ class OpsMatrixAPI(http.Controller):
     # BRANCH ENDPOINTS
     # ========================================================================
     
-    @http.route('/api/v1/ops_matrix/branches', type='json', auth='none', 
+    @http.route('/api/v1/ops_matrix/branches', type='json', auth='public',
                 methods=['POST'], csrf=False)
     @validate_api_key
     @rate_limit(max_calls=1000, period=3600)
@@ -411,8 +411,8 @@ class OpsMatrixAPI(http.Controller):
             'offset': offset
         }
     
-    @http.route('/api/v1/ops_matrix/branches/<int:branch_id>', type='json', 
-                auth='none', methods=['GET', 'POST'], csrf=False)
+    @http.route('/api/v1/ops_matrix/branches/<int:branch_id>', type='json',
+                auth='public', methods=['GET', 'POST'], csrf=False)
     @validate_api_key
     @rate_limit(max_calls=1000, period=3600)
     @handle_exceptions
@@ -486,7 +486,7 @@ class OpsMatrixAPI(http.Controller):
     # BUSINESS UNIT ENDPOINTS
     # ========================================================================
     
-    @http.route('/api/v1/ops_matrix/business_units', type='json', auth='none', 
+    @http.route('/api/v1/ops_matrix/business_units', type='json', auth='public',
                 methods=['POST'], csrf=False)
     @validate_api_key
     @rate_limit(max_calls=1000, period=3600)
@@ -532,8 +532,8 @@ class OpsMatrixAPI(http.Controller):
             'total': total_count
         }
     
-    @http.route('/api/v1/ops_matrix/business_units/<int:bu_id>', type='json', 
-                auth='none', methods=['GET', 'POST'], csrf=False)
+    @http.route('/api/v1/ops_matrix/business_units/<int:bu_id>', type='json',
+                auth='public', methods=['GET', 'POST'], csrf=False)
     @validate_api_key
     @rate_limit(max_calls=1000, period=3600)
     @handle_exceptions
@@ -554,6 +554,7 @@ class OpsMatrixAPI(http.Controller):
             bu.check_access_rights('read')
             bu.check_access_rule('read')
         except Exception:
+            _logger.debug('Access denied to business unit %s', bu_id, exc_info=True)
             return {
                 'success': False,
                 'error': _('Access denied to this business unit'),
@@ -579,7 +580,7 @@ class OpsMatrixAPI(http.Controller):
     # SALES ANALYSIS ENDPOINTS
     # ========================================================================
     
-    @http.route('/api/v1/ops_matrix/sales_analysis', type='json', auth='none', 
+    @http.route('/api/v1/ops_matrix/sales_analysis', type='json', auth='public',
                 methods=['POST'], csrf=False)
     @validate_api_key
     @rate_limit(max_calls=500, period=3600)
@@ -679,7 +680,7 @@ class OpsMatrixAPI(http.Controller):
     # APPROVAL REQUEST ENDPOINTS
     # ========================================================================
     
-    @http.route('/api/v1/ops_matrix/approval_requests', type='json', auth='none', 
+    @http.route('/api/v1/ops_matrix/approval_requests', type='json', auth='public',
                 methods=['POST'], csrf=False)
     @validate_api_key
     @rate_limit(max_calls=500, period=3600)
@@ -726,8 +727,8 @@ class OpsMatrixAPI(http.Controller):
             'count': len(requests_data)
         }
     
-    @http.route('/api/v1/ops_matrix/approval_requests/<int:approval_id>', 
-                type='json', auth='none', methods=['GET', 'POST'], csrf=False)
+    @http.route('/api/v1/ops_matrix/approval_requests/<int:approval_id>',
+                type='json', auth='public', methods=['GET', 'POST'], csrf=False)
     @validate_api_key
     @rate_limit(max_calls=1000, period=3600)
     @handle_exceptions
@@ -750,6 +751,7 @@ class OpsMatrixAPI(http.Controller):
             approval.check_access_rights('read')
             approval.check_access_rule('read')
         except Exception:
+            _logger.debug('Access denied to approval request %s', approval_id, exc_info=True)
             return {
                 'success': False,
                 'error': _('Access denied'),
@@ -778,8 +780,8 @@ class OpsMatrixAPI(http.Controller):
             'data': data
         }
     
-    @http.route('/api/v1/ops_matrix/approval_requests/<int:approval_id>/approve', 
-                type='json', auth='none', methods=['POST'], csrf=False)
+    @http.route('/api/v1/ops_matrix/approval_requests/<int:approval_id>/approve',
+                type='json', auth='public', methods=['POST'], csrf=False)
     @validate_api_key
     @rate_limit(max_calls=500, period=3600)
     @handle_exceptions
@@ -842,8 +844,8 @@ class OpsMatrixAPI(http.Controller):
                 'code': 400
             }
     
-    @http.route('/api/v1/ops_matrix/approval_requests/<int:approval_id>/reject', 
-                type='json', auth='none', methods=['POST'], csrf=False)
+    @http.route('/api/v1/ops_matrix/approval_requests/<int:approval_id>/reject',
+                type='json', auth='public', methods=['POST'], csrf=False)
     @validate_api_key
     @rate_limit(max_calls=500, period=3600)
     @handle_exceptions
@@ -906,7 +908,7 @@ class OpsMatrixAPI(http.Controller):
     # INVENTORY/STOCK ENDPOINTS
     # ========================================================================
     
-    @http.route('/api/v1/ops_matrix/stock_levels', type='json', auth='none', 
+    @http.route('/api/v1/ops_matrix/stock_levels', type='json', auth='public',
                 methods=['POST'], csrf=False)
     @validate_api_key
     @rate_limit(max_calls=500, period=3600)

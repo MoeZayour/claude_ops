@@ -9,8 +9,12 @@ Key overrides:
 - session_info(): Adds user prefs + company defaults for JS consumption
 """
 
+import logging
+
 from odoo import models
 from odoo.http import request
+
+_logger = logging.getLogger(__name__)
 
 
 class IrHttp(models.AbstractModel):
@@ -44,7 +48,7 @@ class IrHttp(models.AbstractModel):
                     if company.ops_default_color_mode in ('dark', 'light'):
                         return company.ops_default_color_mode
                 except Exception:
-                    pass
+                    _logger.debug('Failed to resolve color scheme from user/company preferences', exc_info=True)
 
         return super().color_scheme()
 
@@ -65,6 +69,7 @@ class IrHttp(models.AbstractModel):
                     result['ops_default_color_mode'] = company.ops_default_color_mode or 'light'
                     result['ops_default_chatter_position'] = company.ops_default_chatter_position or 'bottom'
             except Exception:
+                _logger.debug('Failed to load OPS theme preferences for session_info', exc_info=True)
                 result['ops_color_mode'] = 'light'
                 result['ops_chatter_position'] = 'bottom'
                 result['ops_default_color_mode'] = 'light'

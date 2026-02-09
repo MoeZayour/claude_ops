@@ -1,7 +1,11 @@
+import logging
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.tools.safe_eval import safe_eval
 from dateutil.relativedelta import relativedelta
+
+_logger = logging.getLogger(__name__)
 
 class OpsArchivePolicy(models.Model):
     _name = 'ops.archive.policy'
@@ -37,6 +41,7 @@ class OpsArchivePolicy(models.Model):
                 if not isinstance(domain, list):
                     domain = []
             except Exception:
+                _logger.debug('Failed to evaluate archive policy domain for %s', policy.name, exc_info=True)
                 domain = []
             
             domain += [('create_date', '<', cutoff_date)]

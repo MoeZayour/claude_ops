@@ -96,6 +96,7 @@ class OpsApprovalRequest(models.Model):
                     else:
                         request.res_name = f"{request.model_name}#{request.res_id} (Deleted)"
                 except Exception:
+                    _logger.debug('Failed to compute display name for %s#%s', request.model_name, request.res_id, exc_info=True)
                     request.res_name = f"{request.model_name}#{request.res_id}"
             else:
                 request.res_name = False
@@ -544,6 +545,7 @@ class OpsApprovalRequest(models.Model):
                     if delegation_info:
                         return delegation_info
                 except Exception:
+                    _logger.debug('Failed to get delegation info for authority %s', authority_field, exc_info=True)
                     continue
 
         # Fallback: Check if user has any active delegations

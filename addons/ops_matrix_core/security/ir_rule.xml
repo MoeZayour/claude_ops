@@ -850,20 +850,9 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
-        <!-- 10. Stock Valuation Layer - BLOCKED (Requires stock_account module)
-        <record id="rule_it_admin_blind_stock_valuation" model="ir.rule">
-            <field name="name">IT Admin Blindness: Stock Valuation</field>
-            <field name="model_id" ref="stock.model_stock_valuation_layer"/>
-            <field name="domain_force">[('id', '=', 0)]</field>
-            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
-        </record>
-        -->
+        <!-- 10. (Moved to #22 below with correct model ref) -->
 
-        <!-- 11. Stock Picking - BLOCKED -->
+        <!-- 11. Stock Picking -->
         <record id="rule_it_admin_blind_stock_picking" model="ir.rule">
             <field name="name">IT Admin Blindness: Stock Transfers</field>
             <field name="model_id" ref="stock.model_stock_picking"/>
@@ -954,6 +943,30 @@
         <!-- 18. PDC Receivable - MOVED TO ops_matrix_accounting -->
         <!-- 19. PDC Payable - MOVED TO ops_matrix_accounting -->
         <!-- 20. Budget - MOVED TO ops_matrix_accounting -->
+
+        <!-- 21. Stock Quant (inventory quantities) -->
+        <record id="rule_it_admin_blind_stock_quant" model="ir.rule">
+            <field name="name">IT Admin Blindness: Stock Quants</field>
+            <field name="model_id" ref="stock.model_stock_quant"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 22. Stock Valuation Report (inventory valuation) -->
+        <record id="rule_it_admin_blind_stock_valuation_report" model="ir.rule">
+            <field name="name">IT Admin Blindness: Stock Valuation</field>
+            <field name="model_id" ref="stock_account.model_stock_account_stock_valuation_report"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+            <field name="groups" eval="[(4, ref('ops_matrix_core.group_ops_it_admin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
 
         <!-- =========================================================== -->
         <!-- END OF IT ADMIN BLINDNESS RULES                             -->

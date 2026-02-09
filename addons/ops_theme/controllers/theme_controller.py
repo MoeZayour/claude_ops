@@ -17,7 +17,7 @@ class OPSThemeController(http.Controller):
     # FAVICON
     # =========================================================================
 
-    @http.route('/ops_theme/favicon', type='http', auth='public', cors='*')
+    @http.route('/ops_theme/favicon', type='http', auth='public')
     def favicon(self, **kwargs):
         """Serve company favicon or redirect to default."""
         company_id = request.env.company.id if request.env.company else 1
@@ -48,7 +48,7 @@ class OPSThemeController(http.Controller):
     # DYNAMIC CSS VARIABLES
     # =========================================================================
 
-    @http.route('/ops_theme/variables.css', type='http', auth='public', cors='*')
+    @http.route('/ops_theme/variables.css', type='http', auth='public')
     def theme_variables(self, **kwargs):
         """
         Generate dynamic CSS variables from company settings.
@@ -65,6 +65,14 @@ class OPSThemeController(http.Controller):
         success = company.ops_success_color or '#10b981'
         warning = company.ops_warning_color or '#f59e0b'
         danger = company.ops_danger_color or '#ef4444'
+
+        # Extended palette
+        bg = company.ops_bg_color or '#f1f5f9'
+        surface = company.ops_surface_color or '#ffffff'
+        text = company.ops_text_color or '#1e293b'
+        border = company.ops_border_color or '#e2e8f0'
+        accent2 = company.ops_accent2_color or '#60a5fa'
+        btn = company.ops_btn_color or secondary
 
         # Layout settings
         card_shadow = company.ops_card_shadow or 'medium'
@@ -109,6 +117,9 @@ class OPSThemeController(http.Controller):
         secondary_hover = self._darken_color(secondary)
         primary_hover = self._darken_color(primary)
 
+        # Button hover
+        btn_hover = self._darken_color(btn)
+
         css = f"""/* OPS Theme Dynamic Variables - Generated from Settings */
 
 :root {{
@@ -125,6 +136,23 @@ class OPSThemeController(http.Controller):
     --ops-warning-rgb: {hex_to_rgb(warning)};
     --ops-danger: {danger};
     --ops-danger-rgb: {hex_to_rgb(danger)};
+
+    /* Extended Palette */
+    --ops-bg: {bg};
+    --ops-bg-rgb: {hex_to_rgb(bg)};
+    --ops-surface: {surface};
+    --ops-surface-rgb: {hex_to_rgb(surface)};
+    --ops-bg-card: {surface};
+    --ops-text: {text};
+    --ops-text-rgb: {hex_to_rgb(text)};
+    --ops-text-primary: {text};
+    --ops-border: {border};
+    --ops-border-rgb: {hex_to_rgb(border)};
+    --ops-accent2: {accent2};
+    --ops-accent2-rgb: {hex_to_rgb(accent2)};
+    --ops-btn: {btn};
+    --ops-btn-rgb: {hex_to_rgb(btn)};
+    --ops-btn-hover: {btn_hover};
 
     /* Navbar */
     --ops-navbar-bg: {navbar['bg']};
@@ -231,6 +259,12 @@ header.o_navbar {{
             'success_color': company.ops_success_color or '#10b981',
             'warning_color': company.ops_warning_color or '#f59e0b',
             'danger_color': company.ops_danger_color or '#ef4444',
+            'bg_color': company.ops_bg_color or '#f1f5f9',
+            'surface_color': company.ops_surface_color or '#ffffff',
+            'text_color': company.ops_text_color or '#1e293b',
+            'border_color': company.ops_border_color or '#e2e8f0',
+            'accent2_color': company.ops_accent2_color or '#60a5fa',
+            'btn_color': company.ops_btn_color or company.ops_secondary_color or '#3b82f6',
             'navbar_style': company.ops_navbar_style or 'dark',
             'card_shadow': company.ops_card_shadow or 'medium',
             'border_radius': company.ops_border_radius or 'rounded',

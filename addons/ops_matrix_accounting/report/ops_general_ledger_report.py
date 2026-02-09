@@ -169,7 +169,7 @@ class OpsGeneralLedgerReportMinimal(models.AbstractModel):
                     doc_model = 'ops.general.ledger.wizard.enhanced'
                     wizard = wizard[0] if len(wizard) > 1 else wizard
             except Exception:
-                pass
+                _logger.debug('Failed to browse enhanced GL wizard', exc_info=True)
             # Fall back to original wizard
             if not wizard or not wizard.exists():
                 try:
@@ -178,6 +178,7 @@ class OpsGeneralLedgerReportMinimal(models.AbstractModel):
                         doc_model = 'ops.general.ledger.wizard'
                         wizard = wizard[0] if len(wizard) > 1 else wizard
                 except Exception:
+                    _logger.debug('Failed to browse standard GL wizard', exc_info=True)
                     wizard = None
 
         # =====================================================================

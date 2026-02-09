@@ -185,7 +185,8 @@ class OpsReportAudit(models.Model):
                     if ip_address and ',' in ip_address:
                         ip_address = ip_address.split(',')[0].strip()
             except Exception:
-                pass  # Request context not available (cron, shell, etc.)
+                _logger.debug('Failed to resolve client IP address', exc_info=True)
+                # Request context not available (cron, shell, etc.)
 
             # Serialize parameters safely
             params_json = False
