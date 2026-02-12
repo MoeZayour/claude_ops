@@ -1,0 +1,30 @@
+// =============================================================================
+// OPS SIDEBAR — Dark Mode Overrides
+// =============================================================================
+// Loaded ONLY via web.assets_web_dark bundle.
+//
+// MOST dark styling is handled automatically:
+// _colors_dark.scss sets $ops_sidebar_* to elevated surface values,
+// and _ops_sidebar.scss compiles with those values in the dark bundle.
+//
+// This file only handles CSS RULE overrides that can't be expressed
+// as variable changes (e.g., backdrop opacity, scrollbar colors).
+// =============================================================================
+
+// Scrollbar: lighter for dark surface
+.ops-sidebar-apps {
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+// Active app: near-white text for maximum contrast
+.ops-sidebar-app-active {
+    color: #f1f5f9;
+}
+
+// Backdrop: heavier in dark mode
+.ops-sidebar-backdrop {
+    background: rgba(0, 0, 0, 0.7);
+}

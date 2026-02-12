@@ -1,0 +1,190 @@
+///
+/// OPS Theme — Dark Mode Color Definitions
+/// ==========================================
+/// This file is the SOURCE OF TRUTH for dark mode colors.
+/// It is loaded via web.assets_web_dark (prepend, before Bootstrap compiles).
+///
+/// The dark bundle includes web.assets_web which includes web.assets_backend.
+/// This file's variables override the light values BEFORE compilation,
+/// so Bootstrap outputs dark-appropriate CSS.
+///
+/// IMPORTANT: Do NOT use !default here. Dark loads after light,
+/// so !default would keep the light values.
+///
+
+// =============================================================================
+// BASE COLOR PALETTE — Dark Mode (From Skin Model)
+// =============================================================================
+
+// Semantic colors (bright variants for dark backgrounds)
+$ops_color_brand: #818cf8;
+$ops_color_primary: #818cf8;
+$ops_color_success: #34d399;
+$ops_color_info: #22d3ee;
+$ops_color_warning: #fbbf24;
+$ops_color_danger: #f87171;
+
+// Layout colors (dark backgrounds, light text)
+$ops_color_bg: #0f172a;
+$ops_color_surface: #1e293b;
+$ops_color_text: #cbd5e1;
+$ops_color_border: #334155;
+
+// =============================================================================
+// GRAY SCALE — Same formula as light, different anchors
+// =============================================================================
+
+$o-gray-100: $ops_color_surface;
+$o-gray-200: $ops_color_border;
+$o-gray-300: mix($ops_color_border, $ops_color_text, 65%);
+$o-gray-400: mix($ops_color_border, $ops_color_text, 35%);
+$o-gray-500: mix($ops_color_text, $ops_color_surface, 20%);
+$o-gray-600: $ops_color_text;
+$o-gray-700: mix($ops_color_text, #ffffff, 75%);
+$o-gray-800: mix($ops_color_text, #ffffff, 50%);
+$o-gray-900: mix($ops_color_text, #ffffff, 20%);
+
+// =============================================================================
+// DERIVED COLORS
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// 1. TEXT HIERARCHY
+// ---------------------------------------------------------------------------
+$ops_text_muted: mix($ops_color_text, #ffffff, 70%);
+$ops_headings_color: #f1f5f9;
+
+// ---------------------------------------------------------------------------
+// 2. ELEVATION & SHADOWS (Higher opacity for dark mode)
+// ---------------------------------------------------------------------------
+$ops_box_shadow_sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+$ops_box_shadow_md: 0 4px 6px rgba(0, 0, 0, 0.4);
+$ops_box_shadow_lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+$ops_box_shadow_xl: 0 20px 35px rgba(0, 0, 0, 0.6);
+
+// ---------------------------------------------------------------------------
+// 3. STATE VARIATIONS (Lighten in dark mode, not darken)
+// ---------------------------------------------------------------------------
+$ops_color_primary_hover: scale-color($ops_color_primary, $lightness: 8%);
+$ops_color_primary_active: scale-color($ops_color_primary, $lightness: 12%);
+$ops_surface_hover: mix($ops_color_surface, #ffffff, 90%);
+$ops_border_hover: mix($ops_color_border, #ffffff, 70%);
+$ops_color_success_hover: scale-color($ops_color_success, $lightness: 8%);
+$ops_color_warning_hover: scale-color($ops_color_warning, $lightness: 8%);
+$ops_color_danger_hover: scale-color($ops_color_danger, $lightness: 8%);
+
+// ---------------------------------------------------------------------------
+// 4. FORM SPECIFICS (Darker than surface for "inset" effect)
+// ---------------------------------------------------------------------------
+$ops_input_bg: $ops_color_bg;
+$ops_input_disabled_bg: mix($ops_color_surface, $ops_color_border, 50%);
+$ops_input_border: $ops_color_border;
+$ops_input_border_hover: $ops_border_hover;
+$ops_input_border_focus: $ops_color_primary;
+$ops_input_placeholder: $ops_text_muted;
+
+// ---------------------------------------------------------------------------
+// 5. SIDEBAR — Elevated surface (must be LIGHTER than page bg)
+// ---------------------------------------------------------------------------
+// In dark mode the sidebar must be visually distinct from the page.
+// Page bg = #0f172a, sidebar = surface (#1e293b) + slight lift.
+$ops_sidebar_bg: $ops_color_surface;
+$ops_sidebar_text: $ops_color_text;
+$ops_sidebar_hover: $ops_surface_hover;
+$ops_sidebar_active: mix($ops_color_primary, $ops_color_surface, 15%);
+$ops_sidebar_border: $ops_color_border;
+
+// =============================================================================
+// COLOR SCHEME — Tell Odoo this is dark
+// =============================================================================
+
+$o-webclient-color-scheme: dark;
+
+// =============================================================================
+// MAP → ODOO PRIMARY VARIABLES (override light values)
+// =============================================================================
+
+// Brand identity
+$o-community-color: $ops_color_brand;
+$o-enterprise-color: $ops_color_brand;
+$o-enterprise-action-color: $ops_color_primary;
+$o-brand-odoo: $ops_color_brand;
+$o-brand-primary: $ops_color_primary;
+$o-brand-secondary: $o-gray-300;
+$o-brand-lightsecondary: $o-gray-100;
+
+// Action & semantic colors
+$o-action: $ops_color_primary;
+$o-success: $ops_color_success;
+$o-info: $ops_color_info;
+$o-warning: $ops_color_warning;
+$o-danger: $ops_color_danger;
+
+// Layout
+$o-webclient-background-color: $ops_color_bg;
+$o-view-background-color: $ops_color_surface;
+
+// Typography
+$o-main-text-color: $ops_color_text;
+$o-main-headings-color: $ops_headings_color;
+$o-main-link-color: $ops_color_primary;
+$text-muted: $ops_text_muted;
+
+// Navbar — brand-colored (uses bright brand in dark mode)
+$o-navbar-background: $ops_color_surface;
+
+// Form controls
+$input-bg: $ops_input_bg;
+$input-disabled-bg: $ops_input_disabled_bg;
+$input-border-color: $ops_input_border;
+$input-focus-border-color: $ops_input_border_focus;
+$input-placeholder-color: $ops_input_placeholder;
+
+// Shadows
+$box-shadow-sm: $ops_box_shadow_sm;
+$box-shadow: $ops_box_shadow_md;
+$box-shadow-lg: $ops_box_shadow_lg;
+
+// Theme text colors
+$o-theme-text-colors: (
+    "primary": $ops_color_brand,
+    "success": $ops_color_success,
+    "info": $ops_color_info,
+    "warning": $ops_color_warning,
+    "danger": $ops_color_danger,
+    "muted": $ops_text_muted,
+);
+
+// =============================================================================
+// BOOTSTRAP COMPONENT OVERRIDES FOR DARK MODE
+// =============================================================================
+// Bootstrap components use variables that aren't in Odoo's $o-* namespace.
+// We must override them here so Bootstrap compiles dark-appropriate values.
+
+// Cards
+$card-bg: $ops_color_surface;
+$card-border-color: $ops_color_border;
+$card-cap-bg: mix($ops_color_surface, $ops_color_bg, 50%);
+
+// Modals
+$modal-content-bg: $ops_color_surface;
+$modal-content-border-color: $ops_color_border;
+$modal-backdrop-bg: #000000;
+$modal-backdrop-opacity: 0.7;
+
+// Dropdowns
+$dropdown-bg: $ops_color_surface;
+$dropdown-border-color: $ops_color_border;
+$dropdown-link-hover-bg: $ops_surface_hover;
+$dropdown-link-active-bg: mix($ops_color_primary, $ops_color_surface, 15%);
+
+// Tables
+$table-bg: transparent;
+$table-hover-bg: $ops_surface_hover;
+$table-border-color: $ops_color_border;
+
+// List groups
+$list-group-bg: $ops_color_surface;
+$list-group-border-color: $ops_color_border;
+$list-group-hover-bg: $ops_surface_hover;
+$list-group-action-hover-bg: $ops_surface_hover;

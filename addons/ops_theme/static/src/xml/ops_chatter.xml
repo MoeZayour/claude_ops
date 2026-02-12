@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <!--
+        OPS Theme - Enhanced Chatter Template (v1.0.0)
+        ==============================================
+        Extends the mail.Chatter template with:
+        1. Message type quick-selector buttons (Note / Comment / Email)
+        2. Resize drag handle for side chatter
+        3. Enhanced visual hierarchy
+    -->
+
+    <t t-name="mail.Chatter" t-inherit="mail.Chatter" t-inherit-mode="extension">
+
+        <!-- ============================================================
+             INSERT: Message Type Selector — above the composer area
+             Placed right after the topbar div, before the composer block.
+             We hook into the named slot 'chatter-topbar-left-buttons'.
+             ============================================================ -->
+        <xpath expr="//div[hasclass('o-mail-Chatter-topbar')]" position="after">
+            <div t-if="state.composerType and _opsChatterEnabled"
+                 class="ops-chatter-controls d-flex align-items-center gap-2 d-print-none">
+                <div class="ops-message-type-selector btn-group btn-group-sm" role="group"
+                     aria-label="Message type selector">
+                    <!-- Note button -->
+                    <button type="button"
+                            class="btn ops-type-btn"
+                            t-att-class="{
+                                'btn-primary active': opsChatterState.messageType === 'note',
+                                'btn-outline-secondary': opsChatterState.messageType !== 'note'
+                            }"
+                            t-on-click="() => this.setMessageType('note')"
+                            title="Internal Note">
+                        <i class="fa fa-sticky-note-o me-1"/>
+                        <span>Note</span>
+                    </button>
+                    <!-- Comment button -->
+                    <button type="button"
+                            class="btn ops-type-btn"
+                            t-att-class="{
+                                'btn-primary active': opsChatterState.messageType === 'comment',
+                                'btn-outline-secondary': opsChatterState.messageType !== 'comment'
+                            }"
+                            t-on-click="() => this.setMessageType('comment')"
+                            title="Internal Comment">
+                        <i class="fa fa-comment-o me-1"/>
+                        <span>Comment</span>
+                    </button>
+                    <!-- Email button -->
+                    <button type="button"
+                            class="btn ops-type-btn"
+                            t-att-class="{
+                                'btn-primary active': opsChatterState.messageType === 'email',
+                                'btn-outline-secondary': opsChatterState.messageType !== 'email'
+                            }"
+                            t-on-click="() => this.setMessageType('email')"
+                            title="Send Email">
+                        <i class="fa fa-envelope-o me-1"/>
+                        <span>Email</span>
+                    </button>
+                </div>
+
+                <!-- Recipients toggle — only visible in email mode -->
+                <button t-if="opsChatterState.messageType === 'email'"
+                        type="button"
+                        class="btn btn-sm ops-recipients-toggle"
+                        t-att-class="{
+                            'btn-info': opsChatterState.showRecipients,
+                            'btn-outline-info': !opsChatterState.showRecipients
+                        }"
+                        t-on-click="() => this.toggleRecipients()"
+                        title="Toggle recipients panel">
+                    <i class="fa fa-users me-1"/>
+                    <span>Recipients</span>
+                </button>
+            </div>
+        </xpath>
+
+        <!-- ============================================================
+             INSERT: Resize Handle for Side Chatter
+             Placed as the first child of the root chatter div.
+             Only visible when chatter is displayed as aside.
+             ============================================================ -->
+        <xpath expr="//div[hasclass('o-mail-Chatter-top')]" position="before">
+            <div t-if="props.isChatterAside and _opsChatterEnabled"
+                 class="ops-chatter-resize-handle d-print-none"
+                 t-att-class="{ 'ops-resizing': opsChatterState.isResizing }"
+                 t-on-mousedown="(ev) => this.onResizeStart(ev)"
+                 title="Drag to resize chatter">
+                <div class="ops-resize-grip">
+                    <i class="fa fa-ellipsis-v"/>
+                </div>
+            </div>
+        </xpath>
+
+    </t>
+
+</templates>

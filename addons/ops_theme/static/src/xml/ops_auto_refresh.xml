@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="ops_theme.OpsAutoRefresh">
+        <div t-if="isEnabled" class="ops-auto-refresh" t-att-class="{ 'ops-auto-refresh-active': state.isActive }">
+            <Dropdown position="'bottom-end'" state="dropdown" menuClass="'ops-refresh-menu'" bottomSheet="false">
+                <button class="ops-auto-refresh-btn" title="Auto-Refresh">
+                    <i class="fa fa-refresh" role="img" aria-label="Auto-Refresh"/>
+                    <span t-if="state.isActive and !state.isPaused"
+                          class="ops-auto-refresh-badge">
+                        <t t-esc="countdownDisplay"/>
+                    </span>
+                    <span t-if="state.isActive and state.isPaused"
+                          class="ops-auto-refresh-badge ops-refresh-paused-badge">
+                        <i class="fa fa-pause" style="font-size: 0.55rem;"/>
+                    </span>
+                </button>
+
+                <t t-set-slot="content">
+                    <div class="ops-refresh-menu-content">
+                        <!-- Header -->
+                        <div class="ops-refresh-header">
+                            Auto-Refresh
+                        </div>
+
+                        <!-- Interval options -->
+                        <t t-foreach="intervalOptions" t-as="opt" t-key="opt.value">
+                            <div class="ops-refresh-option"
+                                 t-att-class="{ 'active': state.interval === opt.value }"
+                                 t-on-click="() => this.onSelectInterval(opt.value)">
+                                <span class="ops-refresh-option-icon">
+                                    <i t-if="state.interval === opt.value"
+                                       class="fa fa-check-circle"/>
+                                    <i t-else="" class="fa fa-circle-o"/>
+                                </span>
+                                <span t-esc="opt.label"/>
+                            </div>
+                        </t>
+
+                        <!-- Active status / controls -->
+                        <t t-if="state.isActive">
+                            <div class="ops-refresh-divider"/>
+                            <div class="ops-refresh-countdown"
+                                 t-att-class="{ 'ops-refresh-paused': state.isPaused }">
+                                <t t-if="state.isPaused">
+                                    Paused
+                                </t>
+                                <t t-else="">
+                                    Refresh in <strong t-esc="countdownDisplay"/>s
+                                </t>
+                            </div>
+                            <div class="ops-refresh-actions">
+                                <button class="ops-refresh-action-btn"
+                                        t-on-click="onTogglePause"
+                                        t-att-title="state.isPaused ? 'Resume' : 'Pause'">
+                                    <i t-att-class="state.isPaused ? 'fa fa-play' : 'fa fa-pause'"/>
+                                    <span t-esc="state.isPaused ? 'Resume' : 'Pause'"/>
+                                </button>
+                                <button class="ops-refresh-action-btn"
+                                        t-on-click="onManualRefresh"
+                                        title="Refresh Now">
+                                    <i class="fa fa-refresh"/>
+                                    <span>Refresh Now</span>
+                                </button>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </Dropdown>
+        </div>
+    </t>
+
+</templates>

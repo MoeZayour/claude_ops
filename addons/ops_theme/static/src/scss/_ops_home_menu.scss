@@ -1,0 +1,468 @@
+// =============================================================================
+// OPS HOME MENU — Light Mode Styles
+// =============================================================================
+// Enhanced app grid with three view modes: grid, list, tiles.
+// Uses CSS custom properties for dark mode compatibility.
+// Loaded via web.assets_backend (light mode bundle).
+// =============================================================================
+
+// =============================================================================
+// CONTAINER
+// =============================================================================
+
+.ops-home-menu {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 46px); // subtract navbar height
+    padding: 2rem;
+    background: var(--body-bg);
+    overflow-y: auto;
+}
+
+// =============================================================================
+// CONTROLS — Search bar + View mode toggle
+// =============================================================================
+
+.ops-home-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 auto 2rem;
+    padding: 0.75rem 1rem;
+    max-width: 900px;
+    width: 100%;
+    background: var(--body-bg);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+// Search bar
+.ops-home-search {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+
+    &__icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--body-color-muted, #94a3b8);
+        font-size: 0.875rem;
+        pointer-events: none;
+    }
+
+    &__input {
+        width: 100%;
+        padding: 0.5rem 2.25rem 0.5rem 2.25rem;
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 8px;
+        background: var(--body-bg);
+        color: var(--body-color, #1e293b);
+        font-size: 0.9375rem;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        &::placeholder {
+            color: var(--body-color-muted, #94a3b8);
+        }
+
+        &:focus {
+            border-color: $o-action;
+            box-shadow: 0 0 0 3px rgba($o-action, 0.12);
+        }
+    }
+
+    &__clear {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--body-color-muted, #94a3b8);
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.06);
+            color: var(--body-color, #1e293b);
+        }
+    }
+}
+
+// View mode toggle buttons
+.ops-home-view-toggle {
+    display: flex;
+    gap: 2px;
+    margin-left: auto;
+}
+
+.ops-home-view-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--body-color-muted, #94a3b8);
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.04);
+        color: var(--body-color, #1e293b);
+    }
+
+    &.active {
+        background: $o-action;
+        border-color: $o-action;
+        color: #ffffff;
+    }
+}
+
+// =============================================================================
+// EMPTY STATE — No results
+// =============================================================================
+
+.ops-home-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    grid-column: 1 / -1; // span full grid
+}
+
+// =============================================================================
+// GRID VIEW
+// =============================================================================
+
+.ops-apps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.ops-app-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+    background: var(--body-bg);
+    border: 1px solid var(--border-color, #e2e8f0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    text-decoration: none;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: $o-action;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $o-action;
+        outline-offset: 2px;
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 1rem;
+        flex-shrink: 0;
+    }
+
+    &__img {
+        width: 64px;
+        height: 64px;
+        object-fit: contain;
+        border-radius: 12px;
+    }
+
+    &__fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    &__name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--body-color, #1e293b);
+        text-align: center;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+}
+
+// =============================================================================
+// LIST VIEW
+// =============================================================================
+
+.ops-apps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 700px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.ops-app-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    background: var(--body-bg);
+    border: 1px solid var(--border-color, #e2e8f0);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    text-decoration: none;
+
+    &:hover {
+        background: rgba($o-action, 0.04);
+        border-color: rgba($o-action, 0.3);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    &:focus-visible {
+        outline: 2px solid $o-action;
+        outline-offset: 2px;
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+    }
+
+    &__img {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    &__fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    &__info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--body-color, #1e293b);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__arrow {
+        flex-shrink: 0;
+        font-size: 0.75rem;
+        opacity: 0;
+        transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    &:hover &__arrow {
+        opacity: 1;
+        transform: translateX(2px);
+    }
+}
+
+// =============================================================================
+// TILES VIEW
+// =============================================================================
+
+.ops-apps-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.ops-app-tile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: var(--body-bg);
+    border: 1px solid var(--border-color, #e2e8f0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    text-decoration: none;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        border-color: $o-action;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $o-action;
+        outline-offset: 2px;
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+    }
+
+    &__img {
+        width: 48px;
+        height: 48px;
+        object-fit: contain;
+        border-radius: 10px;
+    }
+
+    &__fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        color: #ffffff;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    &__info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: 1.0625rem;
+        font-weight: 600;
+        color: var(--body-color, #1e293b);
+        line-height: 1.3;
+        word-break: break-word;
+    }
+}
+
+// =============================================================================
+// RESPONSIVE — Mobile & Tablet Adjustments
+// =============================================================================
+
+@media (max-width: 767.98px) {
+    .ops-home-menu {
+        padding: 1rem;
+    }
+
+    .ops-home-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .ops-home-search {
+        max-width: none;
+    }
+
+    .ops-home-view-toggle {
+        margin-left: 0;
+        justify-content: center;
+    }
+
+    .ops-apps-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+
+    .ops-app-card {
+        padding: 1.25rem 1rem;
+
+        &__icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 0.75rem;
+        }
+
+        &__img {
+            width: 48px;
+            height: 48px;
+        }
+
+        &__fallback {
+            width: 48px;
+            height: 48px;
+            font-size: 1.25rem;
+        }
+
+        &__name {
+            font-size: 0.9375rem;
+        }
+    }
+
+    .ops-apps-tiles {
+        grid-template-columns: 1fr;
+    }
+
+    .ops-app-tile {
+        padding: 1rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+    .ops-apps-grid {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .ops-apps-tiles {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+}

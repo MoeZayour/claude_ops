@@ -1,0 +1,73 @@
+///
+/// OPS Theme - Enhanced Chatter Styles (Dark Mode)
+/// ================================================
+/// Dark mode overrides for chatter enhancements.
+/// Uses html[data-bs-theme="dark"] selector per OPS convention.
+///
+
+html[data-bs-theme="dark"] {
+
+    // =========================================================================
+    // CONTROLS BAR
+    // =========================================================================
+
+    .ops-chatter-controls {
+        border-bottom-color: var(--border-color);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    // =========================================================================
+    // MESSAGE TYPE BUTTONS
+    // =========================================================================
+
+    .ops-message-type-selector {
+        .btn.ops-type-btn {
+            // Outline hover in dark
+            &.btn-outline-secondary {
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.08);
+                    border-color: var(--border-color);
+                }
+            }
+        }
+    }
+
+    // =========================================================================
+    // RECIPIENTS PANEL
+    // =========================================================================
+
+    .ops-recipients-panel {
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom-color: var(--border-color);
+
+        .ops-recipient-tag {
+            background: rgba(255, 255, 255, 0.06);
+        }
+    }
+
+    // =========================================================================
+    // RESIZE HANDLE
+    // =========================================================================
+
+    .ops-chatter-resize-handle {
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        &.ops-resizing {
+            background-color: var(--primary);
+        }
+
+        .ops-resize-grip {
+            color: var(--text-muted);
+        }
+    }
+
+    // =========================================================================
+    // COMPOSER BORDER
+    // =========================================================================
+
+    .o-mail-Chatter .o-mail-Composer.o-extended {
+        border-top-color: rgba(255, 255, 255, 0.06);
+    }
+}

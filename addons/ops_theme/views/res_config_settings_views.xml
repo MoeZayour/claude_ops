@@ -32,7 +32,8 @@
                                                     confirm="This will reset all theme colors to Corporate Blue defaults. Continue?"/>
                                         </div>
                                         <div class="text-muted small mb-3">Select a palette. Choose Custom for full manual control.</div>
-                                        <field name="ops_theme_preset" widget="ops_theme_selector"/>
+                                        <field name="ops_theme_skin_id" widget="ops_theme_selector"/>
+
                                     </div>
                                 </div>
                             </div>
@@ -51,10 +52,13 @@
                             </div>
                         </div>
 
-                        <!-- Custom Color Fields — only visible when Custom preset selected -->
-                        <div class="row mt-3 o_settings_container" invisible="ops_theme_preset != 'custom'">
+                        <!-- Custom Color Fields — visible when NO skin is selected (Custom mode) -->
+                        <div class="row mt-3 o_settings_container" invisible="ops_theme_skin_id">
                             <div class="col-12">
-                                <h4 class="ops-settings-sub-header">Custom Palette Colors</h4>
+                                <h4 class="ops-settings-sub-header">Custom Palette</h4>
+                                <div class="text-muted small mb-3">
+                                    Full manual control over skin colors. These are compiled into the CSS bundle.
+                                </div>
                             </div>
 
                             <!-- Row: Base Colors -->
@@ -83,7 +87,7 @@
                                 </div>
                             </div>
 
-                            <!-- Row: Border + Accents -->
+                            <!-- Row: Border + Identity -->
                             <div class="col-lg-4">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
@@ -95,7 +99,7 @@
                             <div class="col-lg-4">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
-                                        <span class="o_form_label fw-bold">Primary Color</span>
+                                        <span class="o_form_label fw-bold">Primary (Brand)</span>
                                         <field name="ops_primary_color" widget="color"/>
                                     </div>
                                 </div>
@@ -103,30 +107,14 @@
                             <div class="col-lg-4">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
-                                        <span class="o_form_label fw-bold">Secondary / Accent</span>
+                                        <span class="o_form_label fw-bold">Secondary (Action)</span>
                                         <field name="ops_secondary_color" widget="color"/>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Row: Accent2 + Button + Success -->
-                            <div class="col-lg-4">
-                                <div class="o_setting_box">
-                                    <div class="o_setting_right_pane">
-                                        <span class="o_form_label fw-bold">Accent 2</span>
-                                        <field name="ops_accent2_color" widget="color"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="o_setting_box">
-                                    <div class="o_setting_right_pane">
-                                        <span class="o_form_label fw-bold">Button</span>
-                                        <field name="ops_btn_color" widget="color"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
+                            <!-- Row: Semantic Colors -->
+                            <div class="col-lg-3">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
                                         <span class="o_form_label fw-bold">Success</span>
@@ -134,9 +122,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Row: Warning + Danger + Info -->
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
                                         <span class="o_form_label fw-bold">Warning</span>
@@ -144,7 +130,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
                                         <span class="o_form_label fw-bold">Danger</span>
@@ -152,7 +138,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <div class="o_setting_box">
                                     <div class="o_setting_right_pane">
                                         <span class="o_form_label fw-bold">Info</span>
@@ -228,11 +214,6 @@
 
                         <div class="row g-0">
                             <div class="col-lg-6">
-                                <setting string="Default Color Mode" help="Light or dark interface theme for new users.">
-                                    <field name="ops_default_color_mode" widget="radio" class="o_light_label" options="{'horizontal': True}"/>
-                                </setting>
-                            </div>
-                            <div class="col-lg-6">
                                 <setting string="Default Chatter Position" help="Discussion panel placement for new users.">
                                     <field name="ops_default_chatter_position" widget="radio" class="o_light_label" options="{'horizontal': True}"/>
                                 </setting>
@@ -241,7 +222,75 @@
                     </block>
 
                     <!-- ============================================================ -->
-                    <!-- SECTION 4: REPORTS & DOCUMENTS                               -->
+                    <!-- SECTION 4: UI ENHANCEMENTS                                   -->
+                    <!-- ============================================================ -->
+                    <block title="User Interface Enhancements" name="ops_ui_enhancements_settings">
+                        <div class="text-muted mb-4 ms-1">
+                            Toggle advanced UI features. Each feature can be enabled or disabled company-wide.
+                        </div>
+
+                        <!-- Sidebar Settings -->
+                        <h4 class="ops-settings-sub-header">Navigation Sidebar</h4>
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <setting string="Sidebar Navigation" help="Collapsible sidebar with app icons for quick navigation between applications.">
+                                    <field name="ops_sidebar_enabled"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-6">
+                                <setting string="Sidebar Logo" help="Logo displayed at the bottom of the sidebar. Recommended: 120x40px." invisible="not ops_sidebar_enabled">
+                                    <field name="ops_sidebar_logo" widget="image" options="{'size': [120, 40]}"/>
+                                </setting>
+                            </div>
+                        </div>
+
+                        <!-- Home Menu + Dialog -->
+                        <h4 class="ops-settings-sub-header">Views &amp; Dialogs</h4>
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <setting string="Enhanced Home Menu" help="Grid/List/Tile view modes with search for the applications home screen.">
+                                    <field name="ops_home_menu_enhanced"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-6">
+                                <setting string="Dialog Fullscreen Toggle" help="Add expand/compress button to all dialog windows.">
+                                    <field name="ops_dialog_enhancements"/>
+                                </setting>
+                            </div>
+                        </div>
+
+                        <!-- Chatter + Group Controls -->
+                        <h4 class="ops-settings-sub-header">Productivity</h4>
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <setting string="Enhanced Chatter" help="Message type selector (Note/Comment/Email) and recipients panel.">
+                                    <field name="ops_chatter_enhanced"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-6">
+                                <setting string="Group Controls" help="Expand All / Collapse All buttons in grouped list and kanban views.">
+                                    <field name="ops_group_controls_enabled"/>
+                                </setting>
+                            </div>
+                        </div>
+
+                        <!-- Auto-Refresh -->
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <setting string="Auto-Refresh" help="Configurable auto-refresh with countdown timer for list and kanban views.">
+                                    <field name="ops_auto_refresh_enabled"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-6">
+                                <setting string="Default Refresh Interval (seconds)" help="Default auto-refresh interval. Users can override per-view." invisible="not ops_auto_refresh_enabled">
+                                    <field name="ops_auto_refresh_interval" class="o_setting_field_input" style="max-width: 120px;"/>
+                                </setting>
+                            </div>
+                        </div>
+                    </block>
+
+                    <!-- ============================================================ -->
+                    <!-- SECTION 5: REPORTS & DOCUMENTS                               -->
                     <!-- ============================================================ -->
                     <block title="Reports &amp; Documents" name="ops_report_settings">
                         <div class="text-muted mb-4 ms-1">
@@ -251,10 +300,43 @@
                         <!-- Sub-group: Report Appearance -->
                         <h4 class="ops-settings-sub-header">Report Appearance</h4>
 
+                        <!-- Report Colors -->
+                        <div class="row g-0">
+                            <div class="col-lg-4">
+                                <setting string="Report Primary Color" help="Header backgrounds, section accents, and grand total bars in printed reports.">
+                                    <field name="ops_report_primary_color" widget="color"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-4">
+                                <setting string="Text on Primary" help="Text color on primary-colored backgrounds. Use white for dark primaries.">
+                                    <field name="ops_report_text_on_primary" widget="color"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-4">
+                                <setting string="Body Text Color" help="Main text color in report body. Adjust for print clarity.">
+                                    <field name="ops_report_body_text_color" widget="color"/>
+                                </setting>
+                            </div>
+                        </div>
+
                         <!-- Logo Position — horizontal radio -->
                         <setting string="Logo Position" help="Company logo placement in the header of printed PDF reports.">
                             <field name="ops_report_logo_position" widget="radio" class="o_light_label" options="{'horizontal': True}"/>
                         </setting>
+
+                        <!-- Logo Size + Product Code toggle — side by side -->
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <setting string="Logo Max Size" help="Maximum width/height of company logo in report headers (pixels).">
+                                    <field name="ops_logo_max_size" class="o_setting_field_input" style="max-width: 120px;"/>
+                                </setting>
+                            </div>
+                            <div class="col-lg-6">
+                                <setting string="Product Codes in Reports" help="Show [internal reference] as a separate line above product descriptions.">
+                                    <field name="ops_show_product_code"/>
+                                </setting>
+                            </div>
+                        </div>
 
                         <!-- Badge + Amount Language — side by side -->
                         <div class="row g-0">

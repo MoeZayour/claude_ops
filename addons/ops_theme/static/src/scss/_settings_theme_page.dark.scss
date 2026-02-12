@@ -1,0 +1,78 @@
+///
+/// OPS Theme — Dark Mode Overrides for _settings_theme_page.scss
+/// ==============================================================
+/// Loaded ONLY via web.assets_web_dark.
+/// Overrides hardcoded light colors from _settings_theme_page.scss.
+///
+/// Convention: No !default (dark loads after light).
+///
+
+.app_settings_block[data-key="ops_theme"] {
+
+    // --- Color swatch border --- (line 21 in light: rgba(0,0,0,0.08))
+    .o_field_color {
+        border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    // --- Section sub-headers --- (line 59 in light: color #64748b)
+    .ops-settings-sub-header {
+        color: #94a3b8;
+        border-left-color: #60a5fa;
+        background: linear-gradient(90deg, rgba(96, 165, 250, 0.06), transparent);
+    }
+
+    // --- Section label --- (line 72 in light: color #94a3b8)
+    .ops-ts-section-label {
+        color: #cbd5e1;
+    }
+
+    // --- Theme palette cards --- (line 84-85 in light: bg #ffffff, border #e2e8f0)
+    .ops-ts-card {
+        background: #1e293b;
+        border-color: #334155;
+
+        &:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        &.ops-ts-selected {
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+        }
+    }
+
+    // --- Dark card variant --- (line 93 in light: bg #111318, border #1e293b)
+    .ops-ts-card-dark {
+        background: #111318;
+        border-color: #1e293b;
+    }
+
+    // --- Custom card variant --- (line 94 in light: bg gradient light)
+    .ops-ts-card-custom {
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+    }
+
+    // --- Card name text --- (line 98 in light: color #1e293b)
+    .ops-ts-name {
+        color: #f1f5f9;
+    }
+
+    // --- Accent dot border --- (line 97 in light: rgba(0,0,0,0.08))
+    .ops-ts-accent-dot {
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    // --- Swatch label --- (line 104 in light: color #94a3b8)
+    .ops-ts-swatch-label {
+        color: #64748b;
+    }
+
+    // --- Swatch hex --- (line 105 in light: color #64748b)
+    .ops-ts-swatch-hex {
+        color: #475569;
+    }
+
+    // --- Custom hint --- (line 108 in light: color #94a3b8)
+    .ops-ts-custom-hint {
+        color: #64748b;
+    }
+}

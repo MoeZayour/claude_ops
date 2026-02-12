@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <!--
+        OPS Home Menu — Enhanced App Grid Template
+        ===========================================
+        Three view modes: grid, list, tiles.
+        Search bar with real-time filtering.
+        Responsive layout for all screen sizes.
+    -->
+    <t t-name="ops_theme.HomeMenu">
+        <div class="ops-home-menu" t-on-keydown="onKeydown">
+
+            <!-- ============================================================ -->
+            <!-- CONTROLS: Search + View Mode Toggle                          -->
+            <!-- ============================================================ -->
+            <div class="ops-home-controls">
+                <!-- Search Bar -->
+                <div class="ops-home-search">
+                    <i class="fa fa-search ops-home-search__icon" aria-hidden="true"/>
+                    <input
+                        type="text"
+                        class="ops-home-search__input"
+                        placeholder="Search apps..."
+                        t-att-value="state.searchTerm"
+                        t-on-input="onSearchInput"
+                    />
+                    <button
+                        t-if="state.searchTerm"
+                        class="ops-home-search__clear"
+                        t-on-click="onSearchClear"
+                        title="Clear search"
+                        aria-label="Clear search"
+                    >
+                        <i class="fa fa-times" aria-hidden="true"/>
+                    </button>
+                </div>
+
+                <!-- View Mode Toggle -->
+                <div class="ops-home-view-toggle btn-group" role="group" aria-label="View mode">
+                    <button
+                        class="ops-home-view-btn"
+                        t-att-class="{ active: viewMode === 'grid' }"
+                        t-on-click="() => this.setViewMode('grid')"
+                        title="Grid view"
+                        aria-label="Grid view"
+                    >
+                        <i class="fa fa-th-large" aria-hidden="true"/>
+                    </button>
+                    <button
+                        class="ops-home-view-btn"
+                        t-att-class="{ active: viewMode === 'list' }"
+                        t-on-click="() => this.setViewMode('list')"
+                        title="List view"
+                        aria-label="List view"
+                    >
+                        <i class="fa fa-list" aria-hidden="true"/>
+                    </button>
+                    <button
+                        class="ops-home-view-btn"
+                        t-att-class="{ active: viewMode === 'tiles' }"
+                        t-on-click="() => this.setViewMode('tiles')"
+                        title="Tile view"
+                        aria-label="Tile view"
+                    >
+                        <i class="fa fa-th" aria-hidden="true"/>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- APPS CONTAINER                                               -->
+            <!-- ============================================================ -->
+            <div t-att-class="containerClass">
+
+                <!-- No results message -->
+                <div t-if="apps.length === 0" class="ops-home-empty">
+                    <i class="fa fa-search fa-3x mb-3 text-muted" aria-hidden="true"/>
+                    <p class="text-muted fs-5">
+                        No apps found matching "<t t-esc="state.searchTerm"/>"
+                    </p>
+                </div>
+
+                <!-- App cards/items -->
+                <t t-foreach="apps" t-as="app" t-key="app.id">
+
+                    <!-- ===== GRID VIEW CARD ===== -->
+                    <div t-if="viewMode === 'grid'"
+                         class="ops-app-card"
+                         t-on-click="() => this.selectApp(app)"
+                         role="button"
+                         tabindex="0"
+                         t-att-title="app.name">
+                        <div class="ops-app-card__icon">
+                            <img t-if="getAppIcon(app)"
+                                 t-att-src="getAppIcon(app)"
+                                 t-att-alt="app.name"
+                                 class="ops-app-card__img"
+                                 loading="lazy"/>
+                            <div t-else=""
+                                 class="ops-app-card__fallback"
+                                 t-att-style="'background-color:' + getFallbackColor(app)">
+                                <span t-esc="getFallbackLetter(app)"/>
+                            </div>
+                        </div>
+                        <span class="ops-app-card__name" t-esc="app.name"/>
+                    </div>
+
+                    <!-- ===== LIST VIEW ITEM ===== -->
+                    <div t-if="viewMode === 'list'"
+                         class="ops-app-list-item"
+                         t-on-click="() => this.selectApp(app)"
+                         role="button"
+                         tabindex="0"
+                         t-att-title="app.name">
+                        <div class="ops-app-list-item__icon">
+                            <img t-if="getAppIcon(app)"
+                                 t-att-src="getAppIcon(app)"
+                                 t-att-alt="app.name"
+                                 class="ops-app-list-item__img"
+                                 loading="lazy"/>
+                            <div t-else=""
+                                 class="ops-app-list-item__fallback"
+                                 t-att-style="'background-color:' + getFallbackColor(app)">
+                                <span t-esc="getFallbackLetter(app)"/>
+                            </div>
+                        </div>
+                        <div class="ops-app-list-item__info">
+                            <span class="ops-app-list-item__name" t-esc="app.name"/>
+                        </div>
+                        <i class="fa fa-chevron-right ops-app-list-item__arrow text-muted" aria-hidden="true"/>
+                    </div>
+
+                    <!-- ===== TILES VIEW ITEM ===== -->
+                    <div t-if="viewMode === 'tiles'"
+                         class="ops-app-tile"
+                         t-on-click="() => this.selectApp(app)"
+                         role="button"
+                         tabindex="0"
+                         t-att-title="app.name">
+                        <div class="ops-app-tile__icon">
+                            <img t-if="getAppIcon(app)"
+                                 t-att-src="getAppIcon(app)"
+                                 t-att-alt="app.name"
+                                 class="ops-app-tile__img"
+                                 loading="lazy"/>
+                            <div t-else=""
+                                 class="ops-app-tile__fallback"
+                                 t-att-style="'background-color:' + getFallbackColor(app)">
+                                <span t-esc="getFallbackLetter(app)"/>
+                            </div>
+                        </div>
+                        <div class="ops-app-tile__info">
+                            <span class="ops-app-tile__name" t-esc="app.name"/>
+                        </div>
+                    </div>
+
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <!-- Hide the native Odoo apps dropdown — Home button lives in OpsSidebar -->
+    <t t-inherit="web.NavBar.AppsMenu" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('o_navbar_apps_menu')]" position="replace">
+            <div t-if="false"/>
+        </xpath>
+    </t>
+
+</templates>

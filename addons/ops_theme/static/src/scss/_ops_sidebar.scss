@@ -1,0 +1,386 @@
+// =============================================================================
+// OPS SIDEBAR — Navigation Component
+// =============================================================================
+// Fixed-position collapsible sidebar with app navigation.
+// Three modes: large (200px + labels), small (60px icons), invisible (0).
+//
+// COLOR STRATEGY:
+// The sidebar is architecturally "always dark" in light mode (brand navy),
+// and "elevated surface" in dark mode (lighter than page bg).
+// Colors come from $ops_sidebar_* variables defined in:
+//   - _colors_light.scss (dark navy palette)
+//   - _colors_dark.scss  (elevated surface palette)
+// NO runtime CSS custom properties for color — all compiled.
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// CSS Custom Property — Sidebar Width (structural, not color)
+// ---------------------------------------------------------------------------
+:root {
+    --ops-sidebar-width: 0px;
+}
+
+// ---------------------------------------------------------------------------
+// Main Content Shift — Desktop Only
+// ---------------------------------------------------------------------------
+@media screen and (min-width: 768px) {
+    .o_web_client > .o_action_manager {
+        margin-left: var(--ops-sidebar-width, 0px);
+        transition: margin-left 0.3s ease;
+    }
+    .o_main_navbar {
+        margin-left: var(--ops-sidebar-width, 0px);
+        transition: margin-left 0.3s ease;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Sidebar Base
+// ---------------------------------------------------------------------------
+.ops-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    background: $ops_sidebar_bg;
+    color: $ops_sidebar_text;
+    border-right: 1px solid $ops_sidebar_border;
+    overflow: hidden;
+    transition: width 0.3s ease;
+    box-shadow: $ops_box_shadow_md;
+    user-select: none;
+}
+
+// ---------------------------------------------------------------------------
+// Size Variants
+// ---------------------------------------------------------------------------
+.ops-sidebar-large {
+    width: 200px;
+}
+
+.ops-sidebar-small {
+    width: 60px;
+}
+
+.ops-sidebar-invisible {
+    width: 0;
+    box-shadow: none;
+    border-right: none;
+    pointer-events: none;
+}
+
+// ---------------------------------------------------------------------------
+// Header (Toggle Button)
+// ---------------------------------------------------------------------------
+.ops-sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    min-height: 46px;
+    background: rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid $ops_sidebar_border;
+    flex-shrink: 0;
+}
+
+.ops-sidebar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: $ops_sidebar_text;
+    font-size: 1.15rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+
+    &:hover {
+        background: $ops_sidebar_hover;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $ops_color_primary;
+        outline-offset: -2px;
+    }
+}
+
+.ops-sidebar-title {
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+// ---------------------------------------------------------------------------
+// Apps Navigation
+// ---------------------------------------------------------------------------
+.ops-sidebar-apps {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.5rem 0;
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 2px;
+    }
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.ops-sidebar-app {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.65rem;
+    margin: 1px 0.35rem;
+    text-decoration: none;
+    color: $ops_sidebar_text;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    border-left: 3px solid transparent;
+
+    &:hover {
+        background: $ops_sidebar_hover;
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $ops_color_primary;
+        outline-offset: -2px;
+    }
+}
+
+// Active app highlight
+.ops-sidebar-app-active {
+    background: $ops_sidebar_active;
+    color: #ffffff;
+    border-left-color: $ops_color_primary;
+    font-weight: 500;
+
+    &:hover {
+        background: $ops_sidebar_active;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// App Icon
+// ---------------------------------------------------------------------------
+.ops-sidebar-app-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.ops-sidebar-icon-img {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+.ops-sidebar-icon-fallback {
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+// ---------------------------------------------------------------------------
+// App Name (visible in large mode only)
+// ---------------------------------------------------------------------------
+.ops-sidebar-app-name {
+    margin-left: 0.75rem;
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Small mode: hide labels, center icons
+.ops-sidebar-small {
+    .ops-sidebar-app-name,
+    .ops-sidebar-title,
+    .ops-sidebar-footer-text,
+    .ops-sidebar-footer-badge {
+        display: none;
+    }
+
+    .ops-sidebar-app {
+        justify-content: center;
+        padding: 0.6rem 0;
+        margin: 1px 0.25rem;
+        border-left: none;
+        border-bottom: 2px solid transparent;
+    }
+
+    .ops-sidebar-app-active {
+        border-bottom-color: $ops_color_primary;
+        border-left: none;
+    }
+
+    .ops-sidebar-header {
+        justify-content: center;
+        padding: 0.5rem 0;
+    }
+}
+
+// Invisible mode: collapse entirely
+.ops-sidebar-invisible {
+    .ops-sidebar-app-name,
+    .ops-sidebar-title,
+    .ops-sidebar-footer-text,
+    .ops-sidebar-footer-badge,
+    .ops-sidebar-apps,
+    .ops-sidebar-footer {
+        display: none;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Recovery Tab — Shows when sidebar is invisible (desktop only)
+// ---------------------------------------------------------------------------
+.ops-sidebar-recovery-tab {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1050;
+    width: 20px;
+    height: 48px;
+    padding: 0;
+    border: none;
+    border-radius: 0 6px 6px 0;
+    background: $ops_sidebar_bg;
+    color: $ops_sidebar_text;
+    font-size: 0.75rem;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.2s ease, width 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: $ops_box_shadow_sm;
+
+    &:hover {
+        opacity: 1;
+        width: 28px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .ops-sidebar-recovery-tab {
+        display: none;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Footer
+// ---------------------------------------------------------------------------
+.ops-sidebar-footer {
+    flex-shrink: 0;
+    padding: 0.75rem;
+    border-top: 1px solid $ops_sidebar_border;
+    text-align: center;
+}
+
+.ops-sidebar-footer-text {
+    font-size: 0.65rem;
+    color: rgba($ops_sidebar_text, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.ops-sidebar-footer-badge {
+    max-width: 120px;
+    height: auto;
+}
+
+// ---------------------------------------------------------------------------
+// Mobile: Toggle Button
+// ---------------------------------------------------------------------------
+.ops-sidebar-mobile-toggle {
+    position: fixed;
+    top: 6px;
+    left: 6px;
+    z-index: 1060;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: $ops_sidebar_bg;
+    color: #ffffff;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: $ops_box_shadow_md;
+}
+
+// ---------------------------------------------------------------------------
+// Mobile: Overlay Mode
+// ---------------------------------------------------------------------------
+@media screen and (max-width: 767px) {
+    .ops-sidebar-mobile-toggle {
+        display: flex;
+    }
+
+    .ops-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        width: 240px;
+        box-shadow: none;
+    }
+
+    .ops-sidebar-mobile-open {
+        transform: translateX(0);
+        box-shadow: $ops_box_shadow_xl;
+    }
+
+    .ops-sidebar-invisible {
+        width: 240px;
+        pointer-events: auto;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Mobile Backdrop
+// ---------------------------------------------------------------------------
+.ops-sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1045;
+    background: rgba(0, 0, 0, 0.5);
+    animation: ops-sidebar-fade-in 0.2s ease;
+}
+
+@keyframes ops-sidebar-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

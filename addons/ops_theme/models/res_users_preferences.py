@@ -18,14 +18,46 @@ class ResUsersPreferences(models.Model):
         help='Position of the chatter/messaging panel on form views.',
     )
 
-    ops_color_mode = fields.Selection(
+    # =========================================================================
+    # UI ENHANCEMENT PREFERENCES
+    # =========================================================================
+    ops_sidebar_type = fields.Selection(
         selection=[
-            ('light', 'Light'),
-            ('dark', 'Dark'),
+            ('invisible', 'Hidden'),
+            ('small', 'Small Icons'),
+            ('large', 'Large Icons'),
         ],
-        string='Color Mode',
-        default='light',
-        help='Color mode for the user interface.',
+        string='Sidebar Type',
+        default='large',
+        help='Type of sidebar navigation display.',
+    )
+    ops_sidebar_position = fields.Selection(
+        selection=[
+            ('left', 'Left Side'),
+            ('right', 'Right Side'),
+        ],
+        string='Sidebar Position',
+        default='left',
+        help='Position of the sidebar navigation.',
+    )
+    ops_dialog_size = fields.Selection(
+        selection=[
+            ('normal', 'Normal'),
+            ('fullscreen', 'Fullscreen'),
+        ],
+        string='Dialog Size',
+        default='normal',
+        help='Default dialog display mode.',
+    )
+    ops_home_view_mode = fields.Selection(
+        selection=[
+            ('grid', 'Grid View'),
+            ('list', 'List View'),
+            ('tiles', 'Tile View'),
+        ],
+        string='Home View Mode',
+        default='grid',
+        help='Layout mode for the applications home screen.',
     )
 
     @property
@@ -33,7 +65,10 @@ class ResUsersPreferences(models.Model):
         """Add OPS Theme fields to user-readable fields."""
         return super().SELF_READABLE_FIELDS + [
             'ops_chatter_position',
-            'ops_color_mode',
+            'ops_sidebar_type',
+            'ops_sidebar_position',
+            'ops_dialog_size',
+            'ops_home_view_mode',
         ]
 
     @property
@@ -41,5 +76,8 @@ class ResUsersPreferences(models.Model):
         """Add OPS Theme fields to user-writeable fields."""
         return super().SELF_WRITEABLE_FIELDS + [
             'ops_chatter_position',
-            'ops_color_mode',
+            'ops_sidebar_type',
+            'ops_sidebar_position',
+            'ops_dialog_size',
+            'ops_home_view_mode',
         ]

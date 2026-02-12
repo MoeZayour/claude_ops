@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="ops_theme.OpsGroupControls">
+        <DropdownItem
+            class="'ops-group-control-item o_menu_item'"
+            onSelected.bind="onExpandAll"
+            attrs="{ 'aria-label': 'Expand All Groups' }"
+        >
+            <i class="fa fa-fw fa-plus-square-o me-1" t-att-class="{ 'opacity-50': state.busy }"/>
+            <span t-if="state.busy">Expanding...</span>
+            <span t-else="">Expand All Groups</span>
+        </DropdownItem>
+        <DropdownItem
+            class="'ops-group-control-item o_menu_item'"
+            onSelected.bind="onCollapseAll"
+            attrs="{ 'aria-label': 'Collapse All Groups' }"
+        >
+            <i class="fa fa-fw fa-minus-square-o me-1" t-att-class="{ 'opacity-50': state.busy }"/>
+            <span t-if="state.busy">Collapsing...</span>
+            <span t-else="">Collapse All Groups</span>
+        </DropdownItem>
+    </t>
+
+</templates>

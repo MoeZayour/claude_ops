@@ -1,0 +1,35 @@
+// =============================================================================
+// OPS Group Expand/Collapse Controls
+// =============================================================================
+// Styling for the cog-menu items added by ops_group_controls.js.
+// Keeps changes minimal — only cursor, transition, and hover effect.
+
+.ops-group-control-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    i.fa {
+        margin-right: 0.25rem;
+        transition: opacity 0.2s ease;
+    }
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    &:active {
+        background-color: rgba(0, 0, 0, 0.08);
+    }
+}
+
+// Dark mode adjustment
+html[data-bs-theme="dark"] {
+    .ops-group-control-item {
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.06);
+        }
+        &:active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+}

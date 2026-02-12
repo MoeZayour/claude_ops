@@ -1,0 +1,110 @@
+///
+/// OPS Home Menu — Dark Mode Overrides
+/// =====================================
+/// Loaded ONLY via web.assets_web_dark.
+/// Overrides light-mode hardcoded values from _ops_home_menu.scss.
+/// Uses CSS custom properties where available; explicit dark fallbacks elsewhere.
+///
+
+// =============================================================================
+// CONTROLS — Dark border, surface adjustments
+// =============================================================================
+
+.ops-home-controls {
+    background: var(--body-bg, #0f172a);
+    border-color: var(--border-color, #334155);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+// =============================================================================
+// SEARCH — Dark input styling
+// =============================================================================
+
+.ops-home-search {
+    &__input {
+        background: var(--body-bg, #0f172a);
+        border-color: var(--border-color, #334155);
+        color: var(--body-color, #cbd5e1);
+
+        &::placeholder {
+            color: var(--body-color-muted, #64748b);
+        }
+    }
+
+    &__clear:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--body-color, #cbd5e1);
+    }
+}
+
+// =============================================================================
+// VIEW TOGGLE — Dark button styling
+// =============================================================================
+
+.ops-home-view-btn {
+    border-color: var(--border-color, #334155);
+    color: var(--body-color-muted, #64748b);
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--body-color, #cbd5e1);
+    }
+
+    // .active uses $o-action which is recompiled in dark mode — no override needed
+}
+
+// =============================================================================
+// GRID VIEW — Card dark overrides
+// =============================================================================
+
+.ops-app-card {
+    background: var(--body-bg, #0f172a);
+    border-color: var(--border-color, #334155);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+
+    &:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+        // border-color on hover uses $o-action — recompiled for dark, no override
+    }
+
+    &__name {
+        color: var(--body-color, #cbd5e1);
+    }
+}
+
+// =============================================================================
+// LIST VIEW — Item dark overrides
+// =============================================================================
+
+.ops-app-list-item {
+    background: var(--body-bg, #0f172a);
+    border-color: var(--border-color, #334155);
+
+    &:hover {
+        background: rgba($o-action, 0.08);
+        border-color: rgba($o-action, 0.35);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    &__name {
+        color: var(--body-color, #cbd5e1);
+    }
+}
+
+// =============================================================================
+// TILES VIEW — Tile dark overrides
+// =============================================================================
+
+.ops-app-tile {
+    background: var(--body-bg, #0f172a);
+    border-color: var(--border-color, #334155);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+
+    &:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    &__name {
+        color: var(--body-color, #cbd5e1);
+    }
+}

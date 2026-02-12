@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- =================================================================== -->
+    <!-- Patch WebClient template to insert OpsSidebar                       -->
+    <!-- The sidebar renders before the NavBar conditional block.            -->
+    <!-- Uses extension mode to modify the existing template in-place.       -->
+    <!-- =================================================================== -->
+    <t t-inherit="web.WebClient" t-inherit-mode="extension">
+        <xpath expr="//ActionContainer" position="before">
+            <OpsSidebar/>
+        </xpath>
+    </t>
+
+</templates>

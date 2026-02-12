@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!--
+        OPS Theme - Dialog Fullscreen Toggle
+        =====================================
+        Extends web.Dialog to add:
+        1. An ops-dialog-fullscreen CSS class on the .modal when toggled
+        2. A fullscreen toggle button (expand/compress) in the header
+
+        Works with the Dialog patch in ops_dialog_patch.js which adds:
+        - opsFullscreen reactive state (with localStorage persistence)
+        - toggleOpsFullscreen() method
+        - opsFullscreenIcon / opsFullscreenTitle getters
+        - F11 keyboard shortcut handler
+    -->
+
+    <!-- PART 1: Add ops-dialog-fullscreen class to .modal element -->
+    <t t-name="ops_theme.Dialog" t-inherit="web.Dialog" t-inherit-mode="extension">
+        <xpath expr="//div[@role='dialog']" position="attributes">
+            <attribute name="t-att-class">{
+                o_technical_modal: props.technical,
+                o_modal_full: isFullscreen,
+                o_inactive_modal: !data.isActive,
+                'ops-dialog-fullscreen': opsFullscreen.active
+            }</attribute>
+        </xpath>
+    </t>
+
+    <!-- PART 2: Add fullscreen toggle button to dialog header -->
+    <t t-name="ops_theme.Dialog.header" t-inherit="web.Dialog.header" t-inherit-mode="extension">
+        <xpath expr="//button[hasclass('btn-close')]" position="before">
+            <button t-if="opsDialogEnabled" type="button"
+                class="btn btn-sm btn-link ops-dialog-fullscreen-btn"
+                tabindex="-1"
+                t-att-title="opsFullscreenTitle"
+                t-att-aria-label="opsFullscreenTitle"
+                t-on-click="toggleOpsFullscreen">
+                <i class="fa" t-att-class="opsFullscreenIcon"/>
+            </button>
+        </xpath>
+    </t>
+
+</templates>

@@ -1,0 +1,52 @@
+// =============================================================================
+// OPS Auto-Refresh Systray — Dark Mode Overrides
+// =============================================================================
+// Loaded in web.assets_web_dark bundle (only when dark mode is active).
+// Uses html[data-bs-theme="dark"] for specificity.
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+
+    // Badge: slightly cooler bg for dark surfaces
+    .ops-auto-refresh-badge {
+        background: var(--primary, #3b82f6);
+        color: #fff;
+    }
+
+    .ops-refresh-paused-badge {
+        background: var(--text-muted, #9ca3af);
+    }
+
+    // Dropdown menu background inherits from BS5 dark dropdown;
+    // we only need to adjust hover/active states.
+
+    .ops-refresh-option {
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        &.active {
+            background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.15);
+        }
+    }
+
+    .ops-refresh-option-icon {
+        .fa-circle-o {
+            color: var(--text-muted, #9ca3af);
+        }
+    }
+
+    .ops-refresh-divider {
+        background: var(--border-color, #374151);
+    }
+
+    .ops-refresh-action-btn {
+        border-color: var(--border-color, #374151);
+        color: var(--body-color, #e5e7eb);
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.06);
+            border-color: var(--primary, #3b82f6);
+        }
+    }
+}

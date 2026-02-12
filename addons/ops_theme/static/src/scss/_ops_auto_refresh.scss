@@ -1,0 +1,186 @@
+// =============================================================================
+// OPS Auto-Refresh Systray — Light Mode Styles
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Systray container
+// ---------------------------------------------------------------------------
+.ops-auto-refresh {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ops-auto-refresh-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    color: inherit;
+    cursor: pointer;
+
+    .fa-refresh {
+        font-size: 1.1rem;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Countdown badge (top-right of icon)
+// ---------------------------------------------------------------------------
+.ops-auto-refresh-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    line-height: 1;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50rem;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    pointer-events: none;
+}
+
+.ops-refresh-paused-badge {
+    background: var(--text-muted, #6c757d);
+    opacity: 0.7;
+}
+
+// ---------------------------------------------------------------------------
+// Pulse animation on the icon when active
+// ---------------------------------------------------------------------------
+.ops-auto-refresh-active .fa-refresh {
+    animation: ops-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ops-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
+// ---------------------------------------------------------------------------
+// Dropdown menu
+// ---------------------------------------------------------------------------
+.ops-refresh-menu {
+    min-width: 200px !important;
+    padding: 0 !important;
+    overflow: hidden;
+
+    .ops-refresh-menu-content {
+        padding: 0.5rem 0;
+    }
+}
+
+.ops-refresh-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted, #6c757d);
+    padding: 0.5rem 0.75rem 0.25rem;
+}
+
+// ---------------------------------------------------------------------------
+// Interval option rows
+// ---------------------------------------------------------------------------
+.ops-refresh-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    cursor: pointer;
+    border-radius: 0;
+    font-size: 0.875rem;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    &.active {
+        background-color: rgba(var(--primary-rgb, 30, 41, 59), 0.08);
+        font-weight: 600;
+    }
+}
+
+.ops-refresh-option-icon {
+    width: 1rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--primary);
+
+    .fa-circle-o {
+        color: var(--text-muted, #6c757d);
+        opacity: 0.4;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Divider
+// ---------------------------------------------------------------------------
+.ops-refresh-divider {
+    height: 1px;
+    background: var(--border-color, #dee2e6);
+    margin: 0.4rem 0.75rem;
+}
+
+// ---------------------------------------------------------------------------
+// Countdown display area
+// ---------------------------------------------------------------------------
+.ops-refresh-countdown {
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 0.35rem 0.75rem;
+    color: var(--text-muted, #6c757d);
+}
+
+.ops-refresh-paused {
+    opacity: 0.5;
+
+    strong {
+        text-decoration: line-through;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Action buttons (Pause/Resume, Refresh Now)
+// ---------------------------------------------------------------------------
+.ops-refresh-actions {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.ops-refresh-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color, #dee2e6);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--body-color, #212529);
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+        border-color: var(--primary);
+    }
+
+    .fa {
+        font-size: 0.7rem;
+    }
+}

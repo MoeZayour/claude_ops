@@ -1,0 +1,36 @@
+// =============================================================================
+// OPS Theme - Dialog Fullscreen Toggle (Dark Mode Overrides)
+// =============================================================================
+// Minimal dark mode adjustments for the fullscreen toggle feature.
+// Most dialog dark mode styling is handled by Odoo's native dark.scss files;
+// we only override OPS-specific elements here.
+// =============================================================================
+
+html[data-bs-theme="dark"] {
+
+    // Toggle button: ensure visibility against dark header backgrounds
+    .ops-dialog-fullscreen-btn {
+        color: var(--body-color);
+
+        &:hover,
+        &:focus-visible {
+            color: var(--primary);
+        }
+    }
+
+    // Fullscreen dialog: adjust borders/shadows for dark surfaces
+    .modal.ops-dialog-fullscreen {
+        .modal-content {
+            // Remove any residual box-shadow that looks odd edge-to-edge
+            box-shadow: none;
+        }
+
+        .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+
+        .modal-footer {
+            border-top-color: var(--border-color);
+        }
+    }
+}

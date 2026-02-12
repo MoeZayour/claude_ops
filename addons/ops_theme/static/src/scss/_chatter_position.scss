@@ -1,20 +1,82 @@
 ///
-/// OPS Framework - Chatter Position Toggle
-/// ========================================
-/// Allows users to toggle chatter between side and bottom positions
+/// OPS Framework — Chatter Position Toggle (v9.1.0)
+/// ==================================================
+/// CSS-driven chatter positioning that reads data-ops-chatter attribute
+/// set on <html> by the JS module at load time.
+///
+/// Root Cause (Odoo 19):
+///   FormCompiler.compileForm() generates the div.o_form_renderer with:
+///     XXL screens → d-flex flex-nowrap h-100 (horizontal row layout)
+///     <XXL screens → d-flex flex-column (vertical stack)
+///   This is INDEPENDENT of mailLayout(). So even when mailLayout()
+///   returns BOTTOM_CHATTER, the form renderer still forces row layout.
+///
+///   The actual flex parent of both o_form_sheet_bg and o-mail-Form-chatter
+///   is div.o_form_renderer, NOT div.o_form_view.o_xxl_form_view.
 ///
 
 // =============================================================================
-// CHATTER POSITION CONTROL
+// BOTTOM CHATTER — Override the form renderer's XXL row layout
 // =============================================================================
 
-// The actual positioning is handled by the FormRenderer patch in JS
-// This SCSS just provides any additional styling needed
+html[data-ops-chatter="bottom"] {
 
-// Default: bottom position (no special styling needed - Odoo native)
+    // -------------------------------------------------------------------------
+    // TARGET 1: The REAL flex parent (div.o_form_renderer)
+    // -------------------------------------------------------------------------
+    // On XXL screens, Odoo adds .flex-nowrap (= flex-direction: row).
+    // Override to column so chatter stacks below the form sheet.
 
-// Side position adjustments (when applied by JS patch)
-.o_form_view.o_xxl_form_view .o_form_sheet_bg {
-    // Ensure proper layout when chatter is on the side
-    // Most handling is done in JS, minimal CSS needed
+    .o_form_renderer.flex-nowrap {
+        flex-direction: column !important;
+    }
+
+    // -------------------------------------------------------------------------
+    // TARGET 2: The outer form view container (div.o_form_view.o_xxl_form_view)
+    // -------------------------------------------------------------------------
+    // This has flex-flow: row nowrap !important for side-chatter on XXL.
+    // Override to column. Also reset the width:1px hack on the inner container.
+
+    .o_form_view.o_xxl_form_view {
+        flex-flow: column nowrap !important;
+
+        .o_form_view_container {
+            width: auto !important;
+        }
+
+        .o_form_sheet_bg {
+            flex: 1 1 auto !important;
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // TARGET 3: Chatter container — ensure full-width below the form
+    // -------------------------------------------------------------------------
+    // When mailLayout() returns BOTTOM_CHATTER, Odoo gives the chatter
+    // "mt-4 mt-md-0" instead of "o-aside". But just in case the aside
+    // class persists (e.g., stale compiled templates), override it too.
+
+    .o-mail-Form-chatter {
+        width: 100% !important;
+        max-width: 100% !important;
+
+        &.o-aside {
+            flex-shrink: 1 !important;
+            flex-grow: 0 !important;
+            width: 100% !important;
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // TARGET 4: Reset the reduced padding that Odoo adds for side chatter
+    // -------------------------------------------------------------------------
+
+    .o_form_sheet_bg:has(+ .o-mail-Form-chatter) {
+        --formView-sheetBg-padding-right: var(--formView-sheetBg-padding-x) !important;
+    }
 }
+
+// =============================================================================
+// SIDE CHATTER — No overrides needed (Odoo native behavior)
+// =============================================================================
+// html[data-ops-chatter="side"] uses Odoo 19's native XXL layout as-is.

@@ -10,8 +10,6 @@
         </xpath>
         <xpath expr="//head" position="inside">
             <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
-            <!-- Dynamic CSS Variables - loaded AFTER main assets to override -->
-            <link rel="stylesheet" type="text/css" href="/ops_theme/variables.css"/>
         </xpath>
     </template>
 
@@ -22,7 +20,6 @@
         <xpath expr="//head" position="inside">
             <link rel="shortcut icon" type="image/x-icon" href="/ops_theme/favicon"/>
             <link rel="icon" type="image/x-icon" href="/ops_theme/favicon"/>
-            <link rel="stylesheet" type="text/css" href="/ops_theme/variables.css"/>
         </xpath>
     </template>
 
@@ -38,13 +35,12 @@
     </template>
 
     <!-- ===================================================================== -->
-    <!-- ADD NAVBAR STYLE DATA ATTRIBUTES TO HTML                              -->
+    <!-- ADD NAVBAR STYLE DATA ATTRIBUTES TO HTML (light mode forced)          -->
     <!-- ===================================================================== -->
     <template id="ops_html_attrs" inherit_id="web.layout" name="OPS HTML Attributes" priority="100">
         <xpath expr="//html" position="attributes">
-            <!-- Bootstrap dark mode: call color_scheme() so it resolves cookie → DB pref → company default → 'light'.
-                 Same method that selects the CSS bundle, keeping them in sync. -->
-            <attribute name="t-att-data-bs-theme">request.env['ir.http'].color_scheme() if request else 'light'</attribute>
+            <!-- Force light mode — dark mode disabled -->
+            <attribute name="data-bs-theme">light</attribute>
             <attribute name="t-att-data-ops-navbar">request.env.company.ops_navbar_style or 'dark'</attribute>
             <attribute name="t-att-data-ops-radius">request.env.company.ops_border_radius or 'rounded'</attribute>
             <attribute name="t-att-data-ops-shadow">request.env.company.ops_card_shadow or 'medium'</attribute>

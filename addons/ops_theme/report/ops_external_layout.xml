@@ -2,16 +2,19 @@
 <odoo>
 
     <!-- ================================================================
-         OPS EXTERNAL LAYOUT — Single Source of Truth
+         OPS EXTERNAL LAYOUT — Shared Component Library
+         ================================================================
+         Single source of truth for ALL OPS external document components.
 
-         Registered as a layout option in Odoo's Document Layout picker.
-         When selected, all reports using t-call="web.external_layout"
-         will use this layout.
+         Structure:
+           1. Paper format
+           2. Main layout (header/article/footer)
+           3. Reusable components: title_bar, address_block, info_bar,
+              totals_block, bottom_section (words + bank + terms + sigs)
+           4. Layout registration
 
-         Structure: div.header → div.article → div.footer
-         wkhtmltopdf extracts header/footer for page repetition.
-
-         All CSS is inline — no external stylesheet dependencies.
+         All CSS is inline for wkhtmltopdf compatibility.
+         Colors come from _ops dict via company.get_ops_report_settings().
          ================================================================ -->
 
     <!-- ======================== PAPER FORMAT ========================= -->
@@ -45,32 +48,40 @@
             </t>
         </t>
 
-        <!-- Dynamic colors — ops_report_primary_color from accounting, ops_primary_color from theme -->
-        <t t-set="ops_primary" t-value="company.ops_report_primary_color or '#3d58a3'"/>
-        <t t-set="ops_text_on_primary" t-value="company.ops_report_text_on_primary or '#FFFFFF'"/>
-        <t t-set="ops_body_text" t-value="company.ops_report_body_text_color or '#1a1a1a'"/>
-        <t t-set="ops_rgb" t-value="'%s,%s,%s' % (int(ops_primary[1:3], 16), int(ops_primary[3:5], 16), int(ops_primary[5:7], 16)) if ops_primary.startswith('#') and len(ops_primary) == 7 else '61,88,163'"/>
+        <!-- Load ALL settings via single Python helper (crash-proof dict) -->
+        <t t-set="_ops" t-value="company.get_ops_report_settings()"/>
+
+        <!-- Backward-compatible color aliases used by individual reports -->
+        <t t-set="ops_primary" t-value="_ops['primary']"/>
+        <t t-set="ops_text_on_primary" t-value="_ops['text_on_primary']"/>
+        <t t-set="ops_body_text" t-value="_ops['body_text']"/>
+        <t t-set="ops_rgb" t-value="_ops['rgb']"/>
 
         <!-- =================== HEADER =================== -->
-        <div t-attf-class="header o_company_#{company.id}_layout" style="border-bottom: none; padding-bottom: 0;">
+        <div t-attf-class="header o_company_#{company.id}_layout" style="border-bottom: none !important; padding-bottom: 0;">
+            <style>
+                .header, .header * { border: none !important; outline: none !important; box-shadow: none !important; }
+                hr.ops-accent-line { border: none !important; display: block !important; }
+            </style>
             <table style="width: 100%; border-collapse: collapse; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
                 <tr>
                     <!-- Logo or initials -->
-                    <td style="width: 60px; vertical-align: top; padding-right: 10px;">
+                    <t t-set="_logo_size" t-value="str(_ops.get('logo_size', 80))"/>
+                    <td t-attf-style="width: #{str(int(_ops.get('logo_size', 80)) + 10)}px; vertical-align: top; padding-right: 10px;">
                         <t t-if="company.logo">
                             <img t-att-src="image_data_uri(company.logo)"
-                                 style="max-width: 55px; max-height: 55px; border-radius: 5px;"
+                                 t-attf-style="max-width: #{_logo_size}px; max-height: #{_logo_size}px; border-radius: 5px;"
                                  alt="Company Logo"/>
                         </t>
                         <t t-else="">
-                            <div t-attf-style="width: 55px; height: 55px; border-radius: 5px; background: #{ops_primary}; color: #{ops_text_on_primary}; text-align: center; line-height: 55px; font-size: 16px; font-weight: 700;">
+                            <div t-attf-style="width: #{_logo_size}px; height: #{_logo_size}px; border-radius: 5px; background: #{_ops['primary']}; color: #{_ops['text_on_primary']}; text-align: center; line-height: #{_logo_size}px; font-size: 16px; font-weight: 700;">
                                 <t t-esc="(company.name or 'CO')[:2].upper()"/>
                             </div>
                         </t>
                     </td>
                     <!-- Company info -->
                     <td style="vertical-align: top;">
-                        <div t-attf-style="font-size: 14pt; font-weight: 700; color: #{ops_primary}; margin-bottom: 1px;">
+                        <div t-attf-style="font-size: 14pt; font-weight: 700; color: #{_ops['primary']}; margin-bottom: 1px;">
                             <t t-esc="company.name"/>
                         </div>
                         <div style="font-size: 7.5pt; color: #64748b; line-height: 1.55;">
@@ -97,26 +108,36 @@
                             </t>
                         </div>
                     </td>
-                    <!-- Print date -->
+                    <!-- Doc ref + Print date -->
                     <td style="vertical-align: top; text-align: right; white-space: nowrap;">
                         <div style="font-size: 7pt; color: #94a3b8; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                            <t t-set="_doc" t-value="o or doc"/>
+                            <t t-if="_doc and _doc.name">
+                                <span style="font-weight: 600; color: #64748b;">Ref:</span>
+                                <span t-esc="_doc.name"/>
+                                <span style="margin: 0 4px;">|</span>
+                            </t>
                             Printed: <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %b %Y')"/>
                         </div>
                     </td>
                 </tr>
             </table>
-            <hr t-attf-style="background: #{ops_primary}; height: 2.5px; margin: 6px 0 0 0; border: none;"/>
+            <hr class="ops-accent-line" t-attf-style="background: #{_ops['primary']}; height: 2.5px; margin: 6px 0 0 0;"/>
         </div>
 
         <!-- =================== ARTICLE =================== -->
         <div t-attf-class="article o_report_layout_ops o_company_#{company.id}_layout"
-             t-attf-style="font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #{ops_body_text}; font-size: 9pt; line-height: 1.5;">
+             t-attf-style="font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #{_ops['body_text']}; font-size: 9pt; line-height: 1.5;">
             <t t-out="0"/>
         </div>
 
         <!-- =================== FOOTER =================== -->
         <div t-attf-class="footer o_company_#{company.id}_layout" style="font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
-            <table style="width: 100%; border-collapse: collapse; border-top: 1px solid #e2e8f0; padding-top: 6px; font-size: 7pt;">
+            <style>
+                .footer, .footer * { border: none !important; outline: none !important; box-shadow: none !important; }
+                .footer table.ops-footer-table { border-top: 1px solid #e2e8f0 !important; }
+            </style>
+            <table class="ops-footer-table" style="width: 100%; border-collapse: collapse; padding-top: 6px; font-size: 7pt;">
                 <tr>
                     <td style="vertical-align: middle; color: #94a3b8;">
                         <strong style="color: #64748b;"><t t-esc="company.name"/></strong>
@@ -126,14 +147,20 @@
                         <t t-if="company.vat">
                             &#160;|&#160; VAT: <t t-esc="company.vat"/>
                         </t>
+                        <t t-if="company.phone">
+                            &#160;|&#160; Tel: <t t-esc="company.phone"/>
+                        </t>
+                        <t t-if="company.email">
+                            &#160;|&#160; <t t-esc="company.email"/>
+                        </t>
                         <t t-if="company.website">
                             &#160;|&#160; <t t-esc="company.website"/>
                         </t>
                     </td>
                     <td style="text-align: right; vertical-align: middle; white-space: nowrap;">
-                        <t t-if="company.ops_show_external_badge">
+                        <t t-if="_ops['show_badge']">
                             <span style="font-size: 6.5pt; color: #94a3b8; margin-right: 3px;">Powered by</span>
-                            <img src="data:image/png;base64,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" style="height: 18px; vertical-align: middle; margin-left: 4px;" alt="OPS Framework"/>
+                            <span style="background: #1e40af; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color: white; padding: 2px 7px; border-radius: 3px; font-weight: 600; font-size: 6pt; text-transform: uppercase; letter-spacing: 0.5px;">OPS Framework</span>
                             <span style="margin-left: 8px;"/>
                         </t>
                         <t t-if="report_type == 'pdf'">
@@ -147,24 +174,74 @@
         </div>
     </template>
 
-    <!-- ===================== HELPER TEMPLATES ======================== -->
+    <!-- ===================== REUSABLE COMPONENTS ===================== -->
 
-    <!-- Address block: renders partner address with fail-safe -->
+    <!-- =================== TITLE BAR =================== -->
+    <template id="ops_title_bar" name="OPS Title Bar">
+        <!--
+            Usage: <t t-set="doc_title" t-value="'Sales Quotation'"/>
+                   <t t-set="doc_ref" t-value="doc.name"/>
+                   <t t-set="doc_status" t-value="'PAID'"/>  (optional)
+                   <t t-set="title_bg" t-value="'#dc2626'"/>  (optional override)
+                   <t t-call="ops_theme.ops_title_bar"/>
+        -->
+        <t t-set="_title_bg" t-value="title_bg or _ops['primary']"/>
+        <div t-attf-style="background: #{_title_bg}; color: #{_ops['text_on_primary']}; padding: 10px 14px; border-radius: 3px; margin-bottom: 14px;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="font-size: 14pt; font-weight: 700;">
+                        <t t-esc="doc_title"/>
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="font-size: 12pt; font-weight: 600;">
+                            <t t-esc="doc_ref"/>
+                        </div>
+                        <t t-if="doc_status">
+                            <span style="font-size: 7.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 3px; margin-top: 2px; display: inline-block;">
+                                <t t-esc="doc_status"/>
+                            </span>
+                        </t>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+    <!-- =================== ADDRESS BLOCK =================== -->
     <template id="ops_address_block" name="OPS Address Block">
         <!--
             Usage: <t t-call="ops_theme.ops_address_block">
                        <t t-set="partner" t-value="doc.partner_id"/>
                        <t t-set="addr_label" t-value="'Invoice To'"/>
+                       <t t-set="contact_person" t-value="doc.ops_contact_id"/>  (optional)
                    </t>
         -->
         <t t-if="partner">
             <div style="font-size: 8.5pt; margin-bottom: 12px;">
-                <div t-if="addr_label" t-attf-style="font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #{company.ops_report_primary_color or '#3d58a3'}; margin-bottom: 4px;">
+                <div t-if="addr_label" t-attf-style="font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #{_ops['primary']}; margin-bottom: 4px;">
                     <t t-esc="addr_label"/>
                 </div>
                 <div style="font-weight: 600; font-size: 9.5pt;">
                     <t t-esc="partner.name"/>
                 </div>
+                <!-- Contact Person (if provided) -->
+                <t t-if="contact_person">
+                    <t t-set="_cp_mobile" t-value="contact_person.mobile if 'mobile' in contact_person._fields else ''"/>
+                    <div style="color: #1e293b; margin-top: 3px; font-size: 8.5pt;">
+                        <span style="font-weight: 600;">Attn:</span> <t t-esc="contact_person.name"/>
+                        <t t-if="contact_person.function">
+                            <span style="color: #64748b;"> — <t t-esc="contact_person.function"/></span>
+                        </t>
+                    </div>
+                    <div t-if="contact_person.phone or _cp_mobile or contact_person.email"
+                         style="color: #475569; font-size: 8pt; margin-top: 1px;">
+                        <t t-if="_cp_mobile">M: <t t-esc="_cp_mobile"/></t>
+                        <t t-elif="contact_person.phone">T: <t t-esc="contact_person.phone"/></t>
+                        <t t-if="(_cp_mobile or contact_person.phone) and contact_person.email"> | </t>
+                        <t t-if="contact_person.email"><t t-esc="contact_person.email"/></t>
+                    </div>
+                </t>
+                <!-- Address details -->
                 <div style="color: #475569; line-height: 1.6; margin-top: 2px; font-size: 8pt;">
                     <t t-if="partner.street"><t t-esc="partner.street"/><br/></t>
                     <t t-if="partner.street2"><t t-esc="partner.street2"/><br/></t>
@@ -174,88 +251,212 @@
                     <t t-if="partner.city or partner.state_id or partner.zip"><br/></t>
                     <t t-if="partner.country_id"><t t-esc="partner.country_id.name"/><br/></t>
                     <t t-if="partner.vat">Tax ID: <t t-esc="partner.vat"/><br/></t>
-                    <t t-if="partner.phone">Tel: <t t-esc="partner.phone"/></t>
-                    <t t-if="partner.phone and partner.email"> | </t>
-                    <t t-if="partner.email"><t t-esc="partner.email"/></t>
+                    <!-- Only show partner phone/email if no contact person (avoid duplication) -->
+                    <t t-if="not contact_person">
+                        <t t-if="partner.phone">Tel: <t t-esc="partner.phone"/></t>
+                        <t t-if="partner.phone and partner.email"> | </t>
+                        <t t-if="partner.email"><t t-esc="partner.email"/></t>
+                    </t>
                 </div>
             </div>
         </t>
     </template>
 
-    <!-- Signature block -->
-    <template id="ops_signature_block" name="OPS Signature Block">
+    <!-- =================== TOTALS BLOCK =================== -->
+    <template id="ops_totals_block" name="OPS Totals Block">
         <!--
-            Usage: <t t-call="ops_theme.ops_signature_block"/>
-            Requires: company in context
+            Usage: <t t-set="amount_untaxed" t-value="doc.amount_untaxed"/>
+                   <t t-set="amount_tax" t-value="doc.amount_tax"/>
+                   <t t-set="amount_total" t-value="doc.amount_total"/>
+                   <t t-set="currency" t-value="doc.currency_id"/>
+                   <t t-set="total_label" t-value="'Total'"/>  (optional)
+                   <t t-set="total_bg" t-value="'#dc2626'"/>  (optional override)
+                   <t t-set="amount_paid" t-value="..."/>  (optional)
+                   <t t-set="amount_residual" t-value="..."/>  (optional)
+                   <t t-call="ops_theme.ops_totals_block"/>
         -->
-        <t t-if="company.ops_show_signature_block">
-            <t t-set="sig1" t-value="company.ops_signature_label_1 or 'Prepared By'"/>
-            <t t-set="sig2" t-value="company.ops_signature_label_2 or 'Authorized Signatory'"/>
-            <t t-set="sig3" t-value="company.ops_signature_label_3 or 'Customer Acceptance'"/>
-            <div style="margin-top: 30px; page-break-inside: avoid;">
+        <table style="width: 40%; margin-left: auto; border-collapse: collapse; margin-top: 4px;">
+            <tr class="ops-totals-row">
+                <td style="padding: 5px 10px; font-size: 8pt; color: #64748b;">Untaxed Amount</td>
+                <td style="padding: 5px 10px; text-align: right; font-variant-numeric: tabular-nums; font-size: 9pt;">
+                    <t t-esc="amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                </td>
+            </tr>
+            <t t-if="amount_tax">
+                <tr class="ops-totals-row">
+                    <td style="padding: 5px 10px; font-size: 8pt; color: #64748b;">Taxes</td>
+                    <td style="padding: 5px 10px; text-align: right; font-variant-numeric: tabular-nums; font-size: 9pt;">
+                        <t t-esc="amount_tax" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                    </td>
+                </tr>
+            </t>
+            <tr t-attf-style="background: #{total_bg or _ops['primary']}; color: #{_ops['text_on_primary']};">
+                <td style="padding: 8px 10px; font-size: 9pt; font-weight: 700;">
+                    <t t-esc="total_label or 'Total'"/>
+                </td>
+                <td style="padding: 8px 10px; text-align: right; font-size: 11pt; font-weight: 700; font-variant-numeric: tabular-nums;">
+                    <t t-esc="amount_total" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                </td>
+            </tr>
+        </table>
+        <!-- Paid + Balance due (for partial payments) -->
+        <t t-if="amount_paid and amount_residual">
+            <table style="width: 40%; margin-left: auto; border-collapse: collapse; margin-top: -1px;">
+                <tr class="ops-totals-row">
+                    <td style="padding: 5px 10px; font-size: 8pt; color: #16a34a;">Amount Paid</td>
+                    <td style="padding: 5px 10px; text-align: right; font-variant-numeric: tabular-nums; font-size: 9pt; color: #16a34a;">
+                        <t t-esc="amount_paid" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                    </td>
+                </tr>
+                <tr style="background: #fef3c7;">
+                    <td style="padding: 8px 10px; font-size: 9pt; font-weight: 700; color: #92400e;">Balance Due</td>
+                    <td style="padding: 8px 10px; text-align: right; font-size: 11pt; font-weight: 700; font-variant-numeric: tabular-nums; color: #92400e;">
+                        <t t-esc="amount_residual" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                    </td>
+                </tr>
+            </table>
+        </t>
+    </template>
+
+    <!-- =================== BOTTOM SECTION =================== -->
+    <template id="ops_bottom_section" name="OPS Bottom Section">
+        <!--
+            Orchestrator: calls all bottom components in order.
+            Each sub-template is self-guarded (renders nothing if not applicable).
+
+            Expects in scope:
+              _ops           — settings dict
+              company        — res.company record
+              o or doc       — the document record
+              amount_for_words   — float (optional)
+              currency_for_words — res.currency (optional)
+              doc_note       — html/text (optional, for terms)
+              show_bank      — override (optional, default from _ops)
+        -->
+        <!-- Amount in Words -->
+        <t t-call="ops_theme.ops_amount_words_block"/>
+        <!-- Bank Details -->
+        <t t-call="ops_theme.ops_bank_block"/>
+        <!-- Terms & Conditions -->
+        <t t-call="ops_theme.ops_terms_block"/>
+        <!-- Signatures -->
+        <t t-call="ops_theme.ops_signature_block"/>
+    </template>
+
+    <!-- =================== AMOUNT IN WORDS =================== -->
+    <template id="ops_amount_words_block" name="OPS Amount in Words">
+        <!--
+            Usage: Set amount_for_words and currency_for_words before calling.
+            Reads _ops['show_words'] and _ops['words_lang'] for toggle/language.
+        -->
+        <t t-if="_ops['show_words'] and amount_for_words and currency_for_words">
+            <t t-set="_words" t-value="env['ops.report.helpers'].amount_to_words(amount_for_words, currency_for_words, _ops['words_lang'])"/>
+            <t t-if="_words">
+                <div t-attf-style="margin-top: 10px; padding: 6px 10px; background: rgba(#{_ops['rgb']}, 0.07); border-radius: 3px; font-size: 8.5pt; page-break-inside: avoid;">
+                    <span style="font-weight: 600; color: #475569;">Amount in Words:</span>
+                    <t t-if="_words.get('en')">
+                        <span style="color: #1e293b;"> <t t-esc="_words['en']"/></span>
+                    </t>
+                    <t t-if="_words.get('ar')">
+                        <br/><span dir="rtl" style="color: #1e293b; font-family: 'Arial', 'Tahoma', sans-serif;"><t t-esc="_words['ar']"/></span>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- =================== BANK DETAILS =================== -->
+    <template id="ops_bank_block" name="OPS Bank Details">
+        <!--
+            Self-guarded: only renders if _ops['show_bank'] and company has bank accounts.
+            Set show_bank_override=False to suppress even when enabled.
+        -->
+        <t t-if="_ops['show_bank'] and company.partner_id.bank_ids">
+            <t t-set="_bank" t-value="company.partner_id.bank_ids[:1]"/>
+            <div class="ops-bank-box" style="margin-top: 14px; padding: 8px 10px; font-size: 7.5pt; page-break-inside: avoid;">
+                <div t-attf-style="font-weight: 600; margin-bottom: 4px; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #{_ops['primary']};">Bank Details for Payment</div>
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
-                        <td style="width: 33%; padding: 0 10px 0 0; vertical-align: top;">
-                            <div style="border-top: 1px solid #cbd5e1; padding-top: 6px; text-align: center;">
-                                <div style="font-size: 7pt; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">
-                                    <t t-esc="sig1"/>
-                                </div>
-                            </div>
-                        </td>
-                        <td style="width: 33%; padding: 0 5px; vertical-align: top;">
-                            <div style="border-top: 1px solid #cbd5e1; padding-top: 6px; text-align: center;">
-                                <div style="font-size: 7pt; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">
-                                    <t t-esc="sig2"/>
-                                </div>
-                            </div>
-                        </td>
-                        <td style="width: 33%; padding: 0 0 0 10px; vertical-align: top;">
-                            <div style="border-top: 1px solid #cbd5e1; padding-top: 6px; text-align: center;">
-                                <div style="font-size: 7pt; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">
-                                    <t t-esc="sig3"/>
-                                </div>
-                            </div>
-                        </td>
+                        <t t-if="_bank.bank_id and _bank.bank_id.name">
+                            <td style="padding: 2px 8px 2px 0;">
+                                <span style="font-weight: 600; color: #64748b;">Bank:</span>
+                                <t t-esc="_bank.bank_id.name"/>
+                            </td>
+                        </t>
+                        <t t-if="_bank.acc_number">
+                            <td style="padding: 2px 8px;">
+                                <span style="font-weight: 600; color: #64748b;">Account:</span>
+                                <t t-esc="_bank.acc_number"/>
+                            </td>
+                        </t>
+                        <t t-if="_bank.bank_id and _bank.bank_id.bic">
+                            <td style="padding: 2px 8px;">
+                                <span style="font-weight: 600; color: #64748b;">SWIFT:</span>
+                                <t t-esc="_bank.bank_id.bic"/>
+                            </td>
+                        </t>
+                        <t t-if="_bank.acc_holder_name">
+                            <td style="padding: 2px 0 2px 8px;">
+                                <span style="font-weight: 600; color: #64748b;">Holder:</span>
+                                <t t-esc="_bank.acc_holder_name"/>
+                            </td>
+                        </t>
                     </tr>
                 </table>
             </div>
         </t>
     </template>
 
-    <!-- Terms & Conditions -->
+    <!-- =================== TERMS & CONDITIONS =================== -->
     <template id="ops_terms_block" name="OPS Terms Block">
         <!--
-            Usage: <t t-call="ops_theme.ops_terms_block">
-                       <t t-set="doc_note" t-value="doc.note"/>
-                   </t>
-            Falls back to company.ops_report_terms if no doc_note
+            Usage: <t t-set="doc_note" t-value="doc.note"/>
+                   <t t-call="ops_theme.ops_terms_block"/>
+            Falls back to company.ops_report_terms if no doc_note.
         -->
-        <t t-set="terms" t-value="doc_note or company.ops_report_terms or False"/>
+        <t t-set="terms" t-value="doc_note or _ops['report_terms'] or False"/>
         <t t-if="terms">
-            <div style="margin-top: 16px; padding: 8px 10px; border-left: 3px solid #e2e8f0; font-size: 7.5pt; color: #64748b; page-break-inside: avoid;">
+            <div class="ops-terms-box" style="margin-top: 16px; padding: 8px 10px; font-size: 7.5pt; color: #64748b; page-break-inside: avoid;">
                 <div style="font-weight: 600; margin-bottom: 4px; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px;">Terms &amp; Conditions</div>
                 <t t-out="terms"/>
             </div>
         </t>
     </template>
 
-    <!-- Amount in words -->
-    <template id="ops_amount_words_block" name="OPS Amount in Words">
+    <!-- =================== SIGNATURE BLOCK =================== -->
+    <template id="ops_signature_block" name="OPS Signature Block">
         <!--
-            Usage: <t t-call="ops_theme.ops_amount_words_block">
-                       <t t-set="amount_words_en" t-value="'...'"/>
-                       <t t-set="amount_words_ar" t-value="'...'"/>
-                   </t>
+            Self-guarded by _ops['show_sig'].
+            Reads signature labels from _ops dict.
+            Set sig_labels override: <t t-set="sig_labels" t-value="['Prepared By', 'Approved By']"/>
         -->
-        <t t-if="amount_words_en or amount_words_ar">
-            <div t-attf-style="margin-top: 10px; padding: 6px 10px; background: rgba(#{company.ops_report_primary_color and ('%s,%s,%s' % (int(company.ops_report_primary_color[1:3], 16), int(company.ops_report_primary_color[3:5], 16), int(company.ops_report_primary_color[5:7], 16))) or '61,88,163'}, 0.07); border-radius: 3px; font-size: 8.5pt; page-break-inside: avoid;">
-                <span style="font-weight: 600; color: #475569;">Amount in Words:</span>
-                <t t-if="amount_words_en">
-                    <span style="color: #1e293b;"> <t t-esc="amount_words_en"/></span>
-                </t>
-                <t t-if="amount_words_ar">
-                    <br/><span dir="rtl" style="color: #1e293b; font-family: 'Arial', 'Tahoma', sans-serif;"><t t-esc="amount_words_ar"/></span>
-                </t>
+        <t t-if="_ops['show_sig']">
+            <div style="margin-top: 30px; page-break-inside: avoid;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 33%; padding: 0 10px 0 0; vertical-align: top;">
+                            <div class="ops-sig-line" style="padding-top: 6px; text-align: center;">
+                                <div style="font-size: 7pt; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">
+                                    <t t-esc="_ops['sig1']"/>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 33%; padding: 0 5px; vertical-align: top;">
+                            <div class="ops-sig-line" style="padding-top: 6px; text-align: center;">
+                                <div style="font-size: 7pt; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">
+                                    <t t-esc="_ops['sig2']"/>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 33%; padding: 0 0 0 10px; vertical-align: top;">
+                            <div class="ops-sig-line" style="padding-top: 6px; text-align: center;">
+                                <div style="font-size: 7pt; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">
+                                    <t t-esc="_ops['sig3']"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </t>
     </template>

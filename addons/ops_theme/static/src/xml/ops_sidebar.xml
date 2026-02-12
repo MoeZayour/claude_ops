@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- =================================================================== -->
+    <!-- OPS Sidebar Component Template                                      -->
+    <!-- =================================================================== -->
+    <t t-name="ops_theme.OpsSidebar">
+
+        <!-- Recovery tab — visible only when sidebar is invisible on desktop -->
+        <button t-if="state.enabled and state.sidebarType === 'invisible' and !state.isMobile"
+                class="ops-sidebar-recovery-tab"
+                t-on-click="toggleSidebar"
+                title="Show sidebar navigation"
+                aria-label="Show sidebar">
+            <i class="fa fa-chevron-right"/>
+        </button>
+
+        <!-- Mobile toggle button (visible only on small screens) -->
+        <button t-if="state.enabled and state.isMobile"
+                class="ops-sidebar-mobile-toggle btn"
+                t-on-click="openMobile"
+                aria-label="Open sidebar navigation">
+            <i class="fa fa-bars"/>
+        </button>
+
+        <!-- Mobile backdrop -->
+        <div t-if="state.mobileOpen"
+             class="ops-sidebar-backdrop"
+             t-on-click="closeMobile"/>
+
+        <!-- Sidebar container -->
+        <aside t-if="state.enabled"
+               t-att-class="sidebarClass"
+               role="navigation"
+               aria-label="Application sidebar">
+
+            <!-- Header: toggle button -->
+            <div class="ops-sidebar-header">
+                <button class="ops-sidebar-toggle btn"
+                        t-on-click="toggleSidebar"
+                        title="Toggle sidebar (Large / Small / Hidden)"
+                        aria-label="Toggle sidebar size">
+                    <i class="fa fa-bars"/>
+                </button>
+                <span t-if="showLabels" class="ops-sidebar-title" t-esc="companyName"/>
+            </div>
+
+            <!-- Home link -->
+            <a class="ops-sidebar-app ops-sidebar-home"
+               t-on-click.prevent="onHomeClick"
+               href="/odoo"
+               title="Home">
+                <span class="ops-sidebar-app-icon">
+                    <i class="fa fa-home ops-sidebar-icon-fallback"/>
+                </span>
+                <span t-if="showLabels" class="ops-sidebar-app-name">Home</span>
+            </a>
+
+            <!-- Apps list -->
+            <nav class="ops-sidebar-apps">
+                <t t-foreach="apps" t-as="app" t-key="app.id">
+                    <a t-attf-class="ops-sidebar-app {{ isActiveApp(app) ? 'ops-sidebar-app-active' : '' }}"
+                       t-on-click.prevent="() => this.onAppClick(app)"
+                       t-attf-href="/odoo/{{ app.actionPath or ('action-' + app.actionID) }}"
+                       t-att-title="app.name"
+                       t-att-data-menu-xmlid="app.xmlid">
+
+                        <!-- App icon -->
+                        <span class="ops-sidebar-app-icon">
+                            <img t-if="getAppIcon(app)"
+                                 t-att-src="getAppIcon(app)"
+                                 t-att-alt="app.name"
+                                 class="ops-sidebar-icon-img"
+                                 loading="lazy"/>
+                            <i t-else="" class="fa fa-th-large ops-sidebar-icon-fallback"/>
+                        </span>
+
+                        <!-- App name (visible in large mode) -->
+                        <span t-if="showLabels" class="ops-sidebar-app-name"
+                              t-esc="app.name"/>
+                    </a>
+                </t>
+            </nav>
+
+            <!-- Footer -->
+            <div class="ops-sidebar-footer">
+                <img t-if="showLabels"
+                     src="/ops_theme/static/description/ops_badge_footer_512.png"
+                     class="ops-sidebar-footer-badge"
+                     alt="OPS"
+                     loading="lazy"/>
+            </div>
+        </aside>
+    </t>
+
+</templates>

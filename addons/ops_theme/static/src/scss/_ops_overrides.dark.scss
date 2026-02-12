@@ -1,0 +1,27 @@
+///
+/// OPS Theme — Dark Mode Overrides for _ops_overrides.scss
+/// ========================================================
+/// Loaded ONLY via web.assets_web_dark.
+///
+/// MOST dark mode adaptation is automatic:
+/// _ops_overrides.scss is recompiled in the dark bundle with dark values
+/// from _colors_dark.scss, so compiled vars like $o-action, $ops_color_surface,
+/// $ops_box_shadow_* are already dark-appropriate.
+///
+/// This file ONLY handles cases where CSS specificity overrides are needed.
+///
+
+// =============================================================================
+// NAVBAR — "Light" style needs explicit dark treatment
+// =============================================================================
+// In light mode, data-ops-navbar="light" sets a white background with dark text.
+// In dark mode, the compiled $ops_color_surface is already dark (#1e293b), so
+// the light style override in _ops_overrides.scss already compiles correctly.
+//
+// No additional overrides needed — the compiled values handle both modes.
+
+// =============================================================================
+// CARD SHADOW — Dark mode shadow adjustments
+// =============================================================================
+// Shadow CSS vars compile with dark values ($ops_box_shadow_*) automatically.
+// No additional overrides needed.

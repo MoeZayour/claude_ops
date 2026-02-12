@@ -1,161 +1,105 @@
 // =============================================================================
-// OPS THEME — OVERRIDES
+// OPS THEME — STRUCTURAL OVERRIDES (Light Mode)
 // =============================================================================
-// Theme-level overrides that respond to HTML data attributes and CSS variables.
-// Uses var(--ops-*) from /ops_theme/variables.css for runtime customization.
-// =============================================================================
-
-// =============================================================================
-// FULL SKIN — Wire --ops-* runtime vars to Bootstrap/Odoo CSS properties
-// =============================================================================
-// These :root overrides connect preset colors from /variables.css to the
-// actual Bootstrap properties that control page layout. Without this section,
-// --ops-bg/surface/text/border are orphan variables that nothing reads.
+// Loaded in web.assets_backend. Compiled with light mode SCSS values.
+// In the dark bundle, this same file is recompiled with dark values.
 //
-// LIGHT MODE ONLY — dark mode wiring is handled in _ops_dark.dark.scss
+// DESIGN RULES:
+//   - COLORS: Use compiled SCSS only ($o-*, $ops_*). No var(--ops-*) for color.
+//   - STRUCTURAL: var(--ops-*) OK for radius, shadow (instant preview in Settings).
+//   - Navbar style: HTML attribute selectors + compiled values.
 // =============================================================================
 
-html:not([data-bs-theme="dark"]) {
-    // Page-level colors
-    --body-bg: var(--ops-bg, #f1f5f9);
-    --body-color: var(--ops-text, #1e293b);
-    --border-color: var(--ops-border, #e2e8f0);
-    --emphasis-color: var(--ops-text, #1e293b);
-
-    // Link colors
-    --link-color: var(--ops-accent2, var(--ops-secondary, #3b82f6));
-    --link-hover-color: var(--ops-secondary-hover, #2563eb);
-
-    // Secondary/tertiary backgrounds (sidebars, grouped sections)
-    --secondary-bg: var(--ops-surface, #ffffff);
-    --tertiary-bg: var(--ops-bg, #f1f5f9);
-}
-
-// Web client root background
-html:not([data-bs-theme="dark"]) .o_web_client {
-    background-color: var(--ops-bg, #f1f5f9) !important;
-}
-
-// Surface elements — cards, sheets, kanban, list backgrounds
-html:not([data-bs-theme="dark"]) {
-    .o_form_sheet {
-        background-color: var(--ops-surface, #ffffff) !important;
-    }
-
-    .o_kanban_record, .card:not(.bg-primary):not(.bg-success):not(.bg-warning):not(.bg-danger):not(.bg-info) {
-        background-color: var(--ops-surface, #ffffff) !important;
-    }
-
-    .o_list_view .o_list_table {
-        --table-bg: var(--ops-surface, #ffffff);
-    }
-
-    .o_control_panel {
-        background-color: var(--ops-bg, #f1f5f9) !important;
-    }
-
-    .o_base_settings_view .o_setting_container .settings_tab {
-        background-color: var(--ops-surface, #ffffff) !important;
-    }
-
-    .dropdown-menu {
-        background-color: var(--ops-surface, #ffffff) !important;
-        border-color: var(--ops-border, #e2e8f0) !important;
-    }
-
-    .modal-content {
-        background-color: var(--ops-surface, #ffffff) !important;
-        border-color: var(--ops-border, #e2e8f0) !important;
-    }
-}
-
 // =============================================================================
-// NAVBAR — data-ops-navbar ATTRIBUTE
+// NAVBAR — data-ops-navbar ATTRIBUTE (server-set on <html>)
 // =============================================================================
+// Default navbar styling is handled by Odoo native ($o-navbar-background).
+// We only override for specific style choices.
 
-// Dark and Primary are identical (brand-colored bar)
+// Dark and Primary: brand-colored bar (this IS the default, but explicit for clarity)
 html[data-ops-navbar="dark"],
 html[data-ops-navbar="primary"] {
-    .o_main_navbar, nav.o_main_navbar {
-        background: var(--ops-navbar-bg, var(--ops-primary)) !important;
+
+    .o_main_navbar,
+    nav.o_main_navbar {
+        background: $o-navbar-background;
+
         .o_menu_sections .o_nav_entry,
-        .o_menu_sections .dropdown-toggle { background: var(--ops-navbar-bg, var(--ops-primary)) !important; }
-        .o_menu_toggle, .o_menu_sections button, .o_menu_sections a,
-        .o_menu_systray .dropdown-toggle { color: var(--ops-navbar-text, #ffffff) !important; }
-    }
-}
-
-// Light navbar
-html[data-ops-navbar="light"] {
-    .o_main_navbar, nav.o_main_navbar {
-        background: #f8fafc !important;
-        border-bottom: 1px solid #e2e8f0 !important;
-        .o_menu_sections .o_nav_entry,
-        .o_menu_sections .dropdown-toggle { background: #f8fafc !important; }
-        .o_menu_toggle, .o_menu_sections button, .o_menu_sections a,
-        .o_menu_systray .dropdown-toggle { color: #1e293b !important; }
-        .o_menu_sections button:hover, .o_menu_sections a:hover { background: rgba(0, 0, 0, 0.05) !important; }
-    }
-}
-
-// =============================================================================
-// BORDER RADIUS — data-ops-radius ATTRIBUTE (CSS var only, no per-component)
-// =============================================================================
-
-html[data-ops-radius="sharp"]   { --ops-radius-md: 0px; --ops-border-radius: 0px; }
-html[data-ops-radius="rounded"] { --ops-radius-md: 8px; --ops-border-radius: 8px; }
-html[data-ops-radius="pill"]    { --ops-radius-md: 16px; --ops-border-radius: 16px; }
-
-// =============================================================================
-// CARD SHADOW — data-ops-shadow ATTRIBUTE (CSS var only)
-// =============================================================================
-
-html[data-ops-shadow="none"]   { --ops-card-shadow: none; }
-html[data-ops-shadow="light"]  { --ops-card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-html[data-ops-shadow="medium"] { --ops-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-html[data-ops-shadow="heavy"]  { --ops-card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
-
-// Apply shadow var to standard containers
-.o_form_sheet, .o_kanban_record, .card { box-shadow: var(--ops-card-shadow) !important; }
-
-// =============================================================================
-// BUTTON & LINK COLORS — LIGHT MODE ONLY
-// =============================================================================
-
-html:not([data-bs-theme="dark"]) {
-    .btn-primary {
-        background-color: var(--ops-btn, var(--ops-secondary)) !important;
-        border-color: var(--ops-btn, var(--ops-secondary)) !important;
-        color: #ffffff !important;
-        &:hover, &:focus {
-            background-color: var(--ops-btn-hover, var(--ops-secondary-hover, #2563eb)) !important;
-            border-color: var(--ops-btn-hover, var(--ops-secondary-hover, #2563eb)) !important;
+        .o_menu_sections .dropdown-toggle {
+            background: $o-navbar-background;
         }
     }
-    .btn-success { background-color: var(--ops-success) !important; border-color: var(--ops-success) !important; }
-    .btn-warning { background-color: var(--ops-warning) !important; border-color: var(--ops-warning) !important; }
-    .btn-danger  { background-color: var(--ops-danger) !important; border-color: var(--ops-danger) !important; }
+}
 
-    a:not(.btn):not(.nav-link):not(.dropdown-item) {
-        color: var(--ops-accent2, var(--ops-secondary));
-        &:hover { color: var(--ops-secondary-hover, #2563eb); }
+// Light navbar: inverted colors (light bg, dark text)
+// In dark mode, the dark override file reverses these.
+html[data-ops-navbar="light"] {
+
+    .o_main_navbar,
+    nav.o_main_navbar {
+        background: $ops_color_surface;
+        border-bottom: 1px solid $ops_color_border;
+
+        .o_menu_sections .o_nav_entry,
+        .o_menu_sections .dropdown-toggle {
+            background: $ops_color_surface;
+        }
+
+        .o_menu_toggle,
+        .o_menu_sections button,
+        .o_menu_sections a,
+        .o_menu_systray .dropdown-toggle {
+            color: $ops_color_text;
+        }
+
+        .o_menu_sections button:hover,
+        .o_menu_sections a:hover {
+            background: $ops_surface_hover;
+        }
     }
+}
 
-    .badge.text-bg-primary, .badge.bg-primary { background-color: var(--ops-btn, var(--ops-secondary)) !important; }
-    .badge.text-bg-success, .badge.bg-success { background-color: var(--ops-success) !important; }
-    .badge.text-bg-warning, .badge.bg-warning { background-color: var(--ops-warning) !important; }
-    .badge.text-bg-danger, .badge.bg-danger   { background-color: var(--ops-danger) !important; }
+// =============================================================================
+// BORDER RADIUS — data-ops-radius ATTRIBUTE (CSS var for instant preview)
+// =============================================================================
 
-    .form-control:focus, .form-select:focus {
-        border-color: var(--ops-btn, var(--ops-secondary)) !important;
-        box-shadow: 0 0 0 3px rgba(var(--ops-btn-rgb, var(--ops-secondary-rgb)), 0.15) !important;
-    }
+html[data-ops-radius="sharp"] {
+    --ops-border-radius: 0px;
+}
 
-    .o_statusbar_status .o_arrow_button.btn-primary,
-    .o_statusbar_status .o_arrow_button.o_active {
-        background-color: var(--ops-btn, var(--ops-secondary)) !important;
-        color: #ffffff !important;
-    }
+html[data-ops-radius="rounded"] {
+    --ops-border-radius: 8px;
+}
+
+html[data-ops-radius="pill"] {
+    --ops-border-radius: 16px;
+}
+
+// =============================================================================
+// CARD SHADOW — data-ops-shadow ATTRIBUTE (CSS var for instant preview)
+// =============================================================================
+
+html[data-ops-shadow="none"] {
+    --ops-card-shadow: none;
+}
+
+html[data-ops-shadow="light"] {
+    --ops-card-shadow: #{$ops_box_shadow_sm};
+}
+
+html[data-ops-shadow="medium"] {
+    --ops-card-shadow: #{$ops_box_shadow_md};
+}
+
+html[data-ops-shadow="heavy"] {
+    --ops-card-shadow: #{$ops_box_shadow_lg};
+}
+
+// Apply shadow var to standard containers
+.o_form_sheet,
+.o_kanban_record,
+.card {
+    box-shadow: var(--ops-card-shadow);
 }
 
 // =============================================================================
@@ -164,25 +108,33 @@ html:not([data-bs-theme="dark"]) {
 
 .o_base_settings_view .o_setting_container .settings_tab .tab {
     transition: background-color 0.2s ease, color 0.2s ease;
-    &:hover:not(.selected) { background-color: rgba(var(--ops-secondary-rgb), 0.06); }
-    &.selected { box-shadow: inset 3px 0 0 var(--ops-secondary, #3b82f6); font-weight: 600; }
+
+    &:hover:not(.selected) {
+        background-color: rgba($o-action, 0.06);
+    }
+
+    &.selected {
+        box-shadow: inset 3px 0 0 $o-action;
+        font-weight: 600;
+    }
 }
 
 .o_base_settings_view .settings > .app_settings_block h2 {
-    border-left: 3px solid var(--ops-secondary, #3b82f6);
+    border-left: 3px solid $o-action;
     font-weight: 600;
 }
 
 .o-settings-form-view .o_searchview:focus-within {
-    border-color: var(--ops-secondary, #3b82f6) !important;
-    box-shadow: 0 0 0 3px rgba(var(--ops-secondary-rgb), 0.12) !important;
+    border-color: $o-action;
+    box-shadow: 0 0 0 3px rgba($o-action, 0.12);
 }
 
 .o_settings_container .o_searchable_setting {
     border-radius: var(--ops-border-radius, 8px);
+
     &.o_setting_highlight {
-        --SearchableSetting__highlight-border: var(--ops-secondary, #3b82f6);
-        --SearchableSetting__highlight-background: rgba(var(--ops-secondary-rgb), 0.08);
+        --SearchableSetting__highlight-border: #{$o-action};
+        --SearchableSetting__highlight-background: #{rgba($o-action, 0.08)};
     }
 }
 
@@ -191,25 +143,25 @@ html:not([data-bs-theme="dark"]) {
 // =============================================================================
 
 .o_notification {
-    border-left: 4px solid transparent !important;
-    &.border-success, &.o_notification_success { border-left-color: var(--ops-success) !important; }
-    &.border-warning, &.o_notification_warning { border-left-color: var(--ops-warning) !important; }
-    &.border-danger, &.o_notification_danger   { border-left-color: var(--ops-danger) !important; }
-    &.border-info, &.o_notification_info       { border-left-color: var(--ops-secondary) !important; }
-}
+    border-left: 4px solid transparent;
 
-// =============================================================================
-// SOFT BADGE VARIANTS
-// =============================================================================
+    &.border-success,
+    &.o_notification_success {
+        border-left-color: $o-success;
+    }
 
-.badge-soft-primary { background: rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.12) !important; color: var(--ops-secondary) !important; }
-.badge-soft-success { background: rgba(16, 185, 129, 0.12) !important; color: var(--ops-success) !important; }
-.badge-soft-warning { background: rgba(245, 158, 11, 0.12) !important; color: var(--ops-warning) !important; }
-.badge-soft-danger  { background: rgba(239, 68, 68, 0.12) !important; color: var(--ops-danger) !important; }
-.badge-soft-info    { background: rgba(6, 182, 212, 0.12) !important; color: var(--ops-info, #06b6d4) !important; }
+    &.border-warning,
+    &.o_notification_warning {
+        border-left-color: $o-warning;
+    }
 
-// Info button/badge overrides
-html:not([data-bs-theme="dark"]) {
-    .btn-info { background-color: var(--ops-info, #06b6d4) !important; border-color: var(--ops-info, #06b6d4) !important; }
-    .badge.text-bg-info, .badge.bg-info { background-color: var(--ops-info, #06b6d4) !important; }
+    &.border-danger,
+    &.o_notification_danger {
+        border-left-color: $o-danger;
+    }
+
+    &.border-info,
+    &.o_notification_info {
+        border-left-color: $o-action;
+    }
 }

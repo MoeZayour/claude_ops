@@ -140,13 +140,6 @@
                     padding: 3rem 2rem;
                     background-color: #ffffff;
                 }
-                html[data-bs-theme="dark"] .ops-login-form-panel {
-                    background-color: #212529;
-                }
-                html[data-bs-theme="dark"] .ops-login-header h2,
-                html[data-bs-theme="dark"] .ops-login-header p {
-                    color: #dee2e6;
-                }
                 /* Hide default Odoo card styling */
                 .ops-login-form-panel .card {
                     background: transparent !important;

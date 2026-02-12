@@ -8,9 +8,6 @@
  *
  * CSS handles all visual debranding (_debranding.scss).
  * No MutationObserver needed — CSS is faster and more reliable.
- *
- * Cookie sync (from former theme_loader.js) ensures dark mode cookie
- * matches server-rendered data-bs-theme attribute.
  */
 
 import { registry } from "@web/core/registry";
@@ -78,29 +75,13 @@ function enforceTitle() {
 }
 
 // =============================================================================
-// 3. COOKIE SYNC — Ensure color_scheme cookie matches server rendering
-// =============================================================================
-
-function syncColorSchemeCookie() {
-    const serverScheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
-    const cookieMatch = document.cookie.match(/(?:^|;\s*)color_scheme=(\w+)/);
-    const cookieValue = cookieMatch ? cookieMatch[1] : null;
-
-    if (!cookieValue && serverScheme === 'dark') {
-        document.cookie = 'color_scheme=dark;path=/;SameSite=Lax;max-age=31536000';
-    }
-}
-
-// =============================================================================
 // INITIALIZATION
 // =============================================================================
 
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
         enforceTitle();
-        syncColorSchemeCookie();
     });
 } else {
     enforceTitle();
-    syncColorSchemeCookie();
 }

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- 1. Corporate Blue (Default) -->
+        <record id="skin_corporate_blue" model="ops.theme.skin">
+            <field name="name">Corporate Blue</field>
+            <field name="tag">Professional</field>
+            <field name="sequence">10</field>
+            <field name="primary_color">#1e293b</field>
+            <field name="secondary_color">#3b82f6</field>
+            <field name="success_color">#10b981</field>
+            <field name="warning_color">#f59e0b</field>
+            <field name="danger_color">#ef4444</field>
+            <field name="info_color">#06b6d4</field>
+            <field name="bg_color">#f1f5f9</field>
+            <field name="surface_color">#ffffff</field>
+            <field name="text_color">#1e293b</field>
+            <field name="border_color">#e2e8f0</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- 2. Clean Light -->
+        <record id="skin_clean_light" model="ops.theme.skin">
+            <field name="name">Clean Light</field>
+            <field name="tag">Minimal</field>
+            <field name="sequence">20</field>
+            <field name="primary_color">#334155</field>
+            <field name="secondary_color">#0ea5e9</field>
+            <field name="success_color">#14b8a6</field>
+            <field name="warning_color">#f97316</field>
+            <field name="danger_color">#dc2626</field>
+            <field name="info_color">#0891b2</field>
+            <field name="bg_color">#ffffff</field>
+            <field name="surface_color">#f8fafc</field>
+            <field name="text_color">#0f172a</field>
+            <field name="border_color">#e2e8f0</field>
+            <field name="navbar_style">light</field>
+        </record>
+
+        <!-- 3. Enterprise Navy -->
+        <record id="skin_enterprise_navy" model="ops.theme.skin">
+            <field name="name">Enterprise Navy</field>
+            <field name="tag">Corporate</field>
+            <field name="sequence">30</field>
+            <field name="primary_color">#0f172a</field>
+            <field name="secondary_color">#2563eb</field>
+            <field name="success_color">#059669</field>
+            <field name="warning_color">#d97706</field>
+            <field name="danger_color">#b91c1c</field>
+            <field name="info_color">#0891b2</field>
+            <field name="bg_color">#f8fafc</field>
+            <field name="surface_color">#ffffff</field>
+            <field name="text_color">#0f172a</field>
+            <field name="border_color">#e2e8f0</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- 4. Warm Professional -->
+        <record id="skin_warm_professional" model="ops.theme.skin">
+            <field name="name">Warm Professional</field>
+            <field name="tag">Classic</field>
+            <field name="sequence">40</field>
+            <field name="primary_color">#292524</field>
+            <field name="secondary_color">#d97706</field>
+            <field name="success_color">#65a30d</field>
+            <field name="warning_color">#ea580c</field>
+            <field name="danger_color">#dc2626</field>
+            <field name="info_color">#0d9488</field>
+            <field name="bg_color">#fafaf9</field>
+            <field name="surface_color">#ffffff</field>
+            <field name="text_color">#292524</field>
+            <field name="border_color">#e7e5e4</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+    </data>
+</odoo>

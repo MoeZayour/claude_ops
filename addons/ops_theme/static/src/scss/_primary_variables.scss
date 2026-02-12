@@ -1,67 +1,31 @@
 ///
 /// OPS Framework — Primary Variable Overrides
 /// ============================================
-/// Loads BEFORE Bootstrap compilation via web._assets_primary_variables
-/// This single file replaces Odoo purple everywhere it appears in the UI:
-/// buttons, tabs, badges, selections, active states, etc.
+/// Loads BEFORE Bootstrap compilation via web._assets_primary_variables.
 ///
-
-// =============================================================================
-// BRAND COLOR REPLACEMENT — The Source of All Color
-// =============================================================================
-
-// Odoo 19 CE derives its purple (#71639e) from $o-community-color.
-// Override this ONE variable and every native purple element turns navy.
-$o-community-color: #1e293b;
-
-// These cascade from o-community-color but we set them explicitly for safety:
-$o-enterprise-color: #1e293b;
-$o-brand-odoo: #1e293b;
-$o-brand-primary: #1e293b;
-
-// =============================================================================
-// ACTION / ACCENT COLOR — Buttons, Links, Active States
-// =============================================================================
-
-// The "action" color is what Odoo uses for primary buttons and interactive elements.
-$o-action: #3b82f6;  // OPS Blue
-
-// =============================================================================
-// SEMANTIC COLORS
-// =============================================================================
-
-$o-success: #10b981;  // Teal green
-$o-info: #06b6d4;     // Cyan
-$o-warning: #f59e0b;  // Amber
-$o-danger: #ef4444;   // Red
-
-// =============================================================================
-// LINK COLOR
-// =============================================================================
-
-$o-main-link-color: #3b82f6;  // OPS Blue for links
-
-// =============================================================================
-// NAVBAR — Top Navigation Bar
-// =============================================================================
-$o-navbar-background: #1e293b;
-$o-navbar-inverse: white;
-
-// =============================================================================
-// DARK MODE — Re-enable Bootstrap 5.3 dark mode (Odoo disables it)
-// =============================================================================
-// Odoo sets $enable-dark-mode: false !default; in bootstrap_overridden.scss
-// We re-enable it so Bootstrap generates [data-bs-theme="dark"] CSS rules.
-$enable-dark-mode: true;
-
-// Tell the browser this page supports both light AND dark color schemes.
-// Odoo defaults to "bright" which locks the page to light-only (scrollbars,
-// form controls, etc. ignore dark mode).
-$o-webclient-color-scheme: light dark;
+/// COLOR DEFINITIONS ARE IN _colors_light.scss (loaded before this file).
+/// This file only contains STRUCTURAL overrides that don't change per-skin.
+///
+/// IMPORTANT: Color-related variables ($o-navbar-background, $o-webclient-color-scheme)
+/// are set in _colors_light.scss and _colors_dark.scss so they adapt per mode.
+///
 
 // =============================================================================
 // FONT — Inter as Primary
 // =============================================================================
-// $o-we-font-family-override does NOT exist in Odoo 19 CE (website-only).
-// Override the actual system fonts variable instead.
-$o-system-fonts: ('Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Ubuntu, 'Noto Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji');
+$o-system-fonts: (
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Ubuntu,
+    'Noto Sans',
+    Arial,
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    'Noto Color Emoji'
+);

@@ -3,6 +3,7 @@
 OPS Theme - Company Branding Extension
 ========================================
 Full theme customization fields for white-label branding.
+Light-only skin system with 10 colors + 1 navbar style.
 """
 
 import base64
@@ -24,24 +25,23 @@ class ResCompanyBranding(models.Model):
     ops_theme_preset = fields.Selection(
         selection=[
             ('corporate_blue', 'Corporate Blue'),
-            ('modern_dark', 'Modern Dark'),
             ('clean_light', 'Clean Light'),
             ('enterprise_navy', 'Enterprise Navy'),
             ('warm_professional', 'Warm Professional'),
-            ('mono_minimal', 'Monochromatic Minimalism'),
-            ('neon_highlights', 'Neon Highlights'),
-            ('warm_tones', 'Warm Tones'),
-            ('muted_pastels', 'Muted Pastels'),
-            ('deep_jewel', 'Deep Jewel Tones'),
-            ('contrast_vibrant', 'Contrasting Vibrancy'),
             ('custom', 'Custom'),
         ],
-        string='Theme Preset',
+        string='Theme Preset (Legacy)',
         default='corporate_blue',
     )
 
+    ops_theme_skin_id = fields.Many2one(
+        'ops.theme.skin',
+        string='Theme Preset',
+        default=lambda self: self.env.ref('ops_theme.skin_corporate_blue', raise_if_not_found=False)
+    )
+
     # =========================================================================
-    # BRAND COLORS
+    # BRAND COLORS (10 skin colors)
     # =========================================================================
     ops_primary_color = fields.Char(
         string='Primary Brand Color',
@@ -75,7 +75,7 @@ class ResCompanyBranding(models.Model):
     )
 
     # =========================================================================
-    # EXTENDED PALETTE COLORS
+    # CANVAS COLORS
     # =========================================================================
     ops_bg_color = fields.Char(
         string='Background Color',
@@ -96,16 +96,6 @@ class ResCompanyBranding(models.Model):
         string='Border Color',
         default='#e2e8f0',
         help='Default border and divider color.',
-    )
-    ops_accent2_color = fields.Char(
-        string='Accent 2 Color',
-        default='#60a5fa',
-        help='Secondary accent for badges, tags, and alternate highlights.',
-    )
-    ops_btn_color = fields.Char(
-        string='Button Color',
-        default='#3b82f6',
-        help='Primary call-to-action button background color.',
     )
 
     # =========================================================================
@@ -207,7 +197,7 @@ class ResCompanyBranding(models.Model):
     )
     ops_show_signature_block = fields.Boolean(
         string='Show Signature Block',
-        default=True,
+        default=False,
         help='Display signature lines on printed documents.',
     )
     ops_signature_label_1 = fields.Char(
@@ -236,16 +226,29 @@ class ResCompanyBranding(models.Model):
     )
 
     # =========================================================================
+    # REPORT COLORS (external PDF documents)
+    # =========================================================================
+    ops_report_primary_color = fields.Char(string='Report Primary Color', default='#5B6BBB')
+    ops_report_text_on_primary = fields.Char(string='Report Text on Primary', default='#FFFFFF')
+    ops_report_body_text_color = fields.Char(string='Report Body Text Color', default='#1a1a1a')
+    ops_logo_max_size = fields.Integer(string='Report Logo Max Size (px)', default=80)
+    ops_show_product_code = fields.Boolean(string='Show Product Code on Reports', default=True)
+
+    # =========================================================================
+    # UI ENHANCEMENT TOGGLES
+    # =========================================================================
+    ops_sidebar_enabled = fields.Boolean(string='Enable Sidebar', default=True)
+    ops_sidebar_logo = fields.Binary(string='Sidebar Logo', attachment=True)
+    ops_home_menu_enhanced = fields.Boolean(string='Enhanced Home Menu', default=True)
+    ops_dialog_enhancements = fields.Boolean(string='Dialog Enhancements', default=True)
+    ops_chatter_enhanced = fields.Boolean(string='Chatter Enhancements', default=True)
+    ops_group_controls_enabled = fields.Boolean(string='Group Controls', default=True)
+    ops_auto_refresh_enabled = fields.Boolean(string='Auto Refresh Lists', default=False)
+    ops_auto_refresh_interval = fields.Integer(string='Auto Refresh Interval (s)', default=30)
+
+    # =========================================================================
     # USER DEFAULTS
     # =========================================================================
-    ops_default_color_mode = fields.Selection(
-        selection=[
-            ('light', 'Light Mode'),
-            ('dark', 'Dark Mode'),
-        ],
-        string='Default Color Mode',
-        default='light',
-    )
     ops_default_chatter_position = fields.Selection(
         selection=[
             ('bottom', 'Bottom'),
@@ -256,13 +259,8 @@ class ResCompanyBranding(models.Model):
     )
 
     # =========================================================================
-    # PRESET DEFINITIONS
+    # PRESET DEFINITIONS (light skins only)
     # =========================================================================
-    DARK_PRESETS = {
-        'modern_dark', 'mono_minimal', 'neon_highlights',
-        'warm_tones', 'muted_pastels', 'deep_jewel', 'contrast_vibrant',
-    }
-
     THEME_PRESETS = {
         'corporate_blue': {
             'ops_primary_color': '#1e293b',
@@ -275,23 +273,6 @@ class ResCompanyBranding(models.Model):
             'ops_surface_color': '#ffffff',
             'ops_text_color': '#1e293b',
             'ops_border_color': '#e2e8f0',
-            'ops_accent2_color': '#60a5fa',
-            'ops_btn_color': '#3b82f6',
-            'ops_navbar_style': 'dark',
-        },
-        'modern_dark': {
-            'ops_primary_color': '#111827',
-            'ops_secondary_color': '#6366f1',
-            'ops_success_color': '#22c55e',
-            'ops_warning_color': '#eab308',
-            'ops_danger_color': '#f43f5e',
-            'ops_info_color': '#22d3ee',
-            'ops_bg_color': '#0f172a',
-            'ops_surface_color': '#1e293b',
-            'ops_text_color': '#f1f5f9',
-            'ops_border_color': '#334155',
-            'ops_accent2_color': '#818cf8',
-            'ops_btn_color': '#6366f1',
             'ops_navbar_style': 'dark',
         },
         'clean_light': {
@@ -305,8 +286,6 @@ class ResCompanyBranding(models.Model):
             'ops_surface_color': '#f8fafc',
             'ops_text_color': '#0f172a',
             'ops_border_color': '#e2e8f0',
-            'ops_accent2_color': '#38bdf8',
-            'ops_btn_color': '#0ea5e9',
             'ops_navbar_style': 'light',
         },
         'enterprise_navy': {
@@ -320,8 +299,6 @@ class ResCompanyBranding(models.Model):
             'ops_surface_color': '#ffffff',
             'ops_text_color': '#0f172a',
             'ops_border_color': '#e2e8f0',
-            'ops_accent2_color': '#3b82f6',
-            'ops_btn_color': '#2563eb',
             'ops_navbar_style': 'dark',
         },
         'warm_professional': {
@@ -335,98 +312,6 @@ class ResCompanyBranding(models.Model):
             'ops_surface_color': '#ffffff',
             'ops_text_color': '#292524',
             'ops_border_color': '#e7e5e4',
-            'ops_accent2_color': '#ea580c',
-            'ops_btn_color': '#d97706',
-            'ops_navbar_style': 'dark',
-        },
-        'mono_minimal': {
-            'ops_primary_color': '#1E1E1E',
-            'ops_secondary_color': '#7c7c7c',
-            'ops_success_color': '#4ade80',
-            'ops_warning_color': '#fbbf24',
-            'ops_danger_color': '#f87171',
-            'ops_info_color': '#a8a8a8',
-            'ops_bg_color': '#121212',
-            'ops_surface_color': '#1E1E1E',
-            'ops_text_color': '#E0E0E0',
-            'ops_border_color': '#444444',
-            'ops_accent2_color': '#AAAAAA',
-            'ops_btn_color': '#E0E0E0',
-            'ops_navbar_style': 'dark',
-        },
-        'neon_highlights': {
-            'ops_primary_color': '#1A1A1A',
-            'ops_secondary_color': '#00FF85',
-            'ops_success_color': '#4ade80',
-            'ops_warning_color': '#fbbf24',
-            'ops_danger_color': '#f87171',
-            'ops_info_color': '#00d4ff',
-            'ops_bg_color': '#0D0D0D',
-            'ops_surface_color': '#1A1A1A',
-            'ops_text_color': '#FFFFFF',
-            'ops_border_color': '#333333',
-            'ops_accent2_color': '#1E90FF',
-            'ops_btn_color': '#00FF85',
-            'ops_navbar_style': 'dark',
-        },
-        'warm_tones': {
-            'ops_primary_color': '#2A2420',
-            'ops_secondary_color': '#FF6F61',
-            'ops_success_color': '#4ade80',
-            'ops_warning_color': '#DAA520',
-            'ops_danger_color': '#f87171',
-            'ops_info_color': '#e09f3e',
-            'ops_bg_color': '#1C1C1C',
-            'ops_surface_color': '#2A2420',
-            'ops_text_color': '#F5E8D8',
-            'ops_border_color': '#4A4038',
-            'ops_accent2_color': '#DAA520',
-            'ops_btn_color': '#FF6F61',
-            'ops_navbar_style': 'dark',
-        },
-        'muted_pastels': {
-            'ops_primary_color': '#363636',
-            'ops_secondary_color': '#A8DADC',
-            'ops_success_color': '#6bdb8e',
-            'ops_warning_color': '#fbbf24',
-            'ops_danger_color': '#f87171',
-            'ops_info_color': '#7ec8e3',
-            'ops_bg_color': '#2C2C2C',
-            'ops_surface_color': '#363636',
-            'ops_text_color': '#E4E4E4',
-            'ops_border_color': '#505050',
-            'ops_accent2_color': '#FFC1CC',
-            'ops_btn_color': '#A8DADC',
-            'ops_navbar_style': 'dark',
-        },
-        'deep_jewel': {
-            'ops_primary_color': '#242424',
-            'ops_secondary_color': '#006B7F',
-            'ops_success_color': '#4ade80',
-            'ops_warning_color': '#fbbf24',
-            'ops_danger_color': '#f87171',
-            'ops_info_color': '#2dd4bf',
-            'ops_bg_color': '#1A1A1A',
-            'ops_surface_color': '#242424',
-            'ops_text_color': '#F0F0F0',
-            'ops_border_color': '#404040',
-            'ops_accent2_color': '#822659',
-            'ops_btn_color': '#3E5641',
-            'ops_navbar_style': 'dark',
-        },
-        'contrast_vibrant': {
-            'ops_primary_color': '#222222',
-            'ops_secondary_color': '#FF5722',
-            'ops_success_color': '#4ade80',
-            'ops_warning_color': '#fbbf24',
-            'ops_danger_color': '#f87171',
-            'ops_info_color': '#00bcd4',
-            'ops_bg_color': '#181818',
-            'ops_surface_color': '#222222',
-            'ops_text_color': '#F7F7F7',
-            'ops_border_color': '#404040',
-            'ops_accent2_color': '#673AB7',
-            'ops_btn_color': '#FF5722',
             'ops_navbar_style': 'dark',
         },
     }
@@ -439,32 +324,16 @@ class ResCompanyBranding(models.Model):
         'ops_warning_color', 'ops_danger_color', 'ops_info_color',
         'ops_theme_preset', 'ops_navbar_style', 'ops_card_shadow',
         'ops_border_radius', 'ops_bg_color', 'ops_surface_color',
-        'ops_text_color', 'ops_border_color', 'ops_accent2_color',
-        'ops_btn_color',
+        'ops_text_color', 'ops_border_color',
     }
 
     def write(self, vals):
-        """Override write to log theme changes and auto-set color mode.
-
-        SCSS variables are hardcoded at compile time — they do NOT read from
-        the database.  All dynamic theming is handled at runtime by the
-        /ops_theme/variables.css controller (served with no-cache headers).
-        Therefore we do NOT need to delete compiled asset bundles on every
-        settings save.  Doing so would force a full SCSS recompilation
-        (~30 s) that produces identical output and causes an unstyled flash.
-        """
-        # Auto-set color mode when preset changes
-        preset = vals.get('ops_theme_preset')
-        if preset and preset != 'custom' and 'ops_default_color_mode' not in vals:
-            vals['ops_default_color_mode'] = (
-                'dark' if preset in self.DARK_PRESETS else 'light'
-            )
-
+        """Override write to log theme changes."""
         res = super().write(vals)
         if self._THEME_FIELDS & set(vals.keys()):
             _logger.info(
                 "OPS Theme: Theme fields updated — changes will appear on "
-                "next page load via /ops_theme/variables.css"
+                "next page load via compiled CSS bundles"
             )
         return res
 
@@ -489,38 +358,72 @@ class ResCompanyBranding(models.Model):
             else:
                 company.ops_favicon_mimetype = False
 
+    # =========================================================================
+    # REPORT COLOR HELPERS
+    # =========================================================================
+    @staticmethod
+    def _hex_to_rgb(hex_str):
+        try:
+            h = (hex_str or '').lstrip('#')
+            if len(h) == 6:
+                return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+        except (ValueError, TypeError):
+            pass
+        return (91, 107, 187)
+
+    def get_report_rgb(self):
+        r, g, b = self._hex_to_rgb(self.ops_report_primary_color or '#5B6BBB')
+        return '%d,%d,%d' % (r, g, b)
+
+    def get_report_primary_light(self):
+        r, g, b = self._hex_to_rgb(self.ops_report_primary_color or '#5B6BBB')
+        return '#%02x%02x%02x' % (int(r+(255-r)*0.85), int(g+(255-g)*0.85), int(b+(255-b)*0.85))
+
+    def get_report_primary_dark(self):
+        r, g, b = self._hex_to_rgb(self.ops_report_primary_color or '#5B6BBB')
+        return '#%02x%02x%02x' % (int(r*0.75), int(g*0.75), int(b*0.75))
+
     def get_ops_report_settings(self):
-        """Return OPS report settings as a plain dict for QWeb templates.
-
-        Neither hasattr() nor getattr() are available in Odoo 19 QWeb sandbox.
-        This method wraps all OPS-specific field access in try/except so
-        templates never crash during module upgrades or with stale registries.
-
-        Usage in QWeb:
-            <t t-set="_ops" t-value="company.get_ops_report_settings()"/>
-            <t t-if="_ops['show_words']">...</t>
-        """
+        """Return OPS report settings as a plain dict for QWeb templates."""
         self.ensure_one()
         defaults = {
-            'show_words': False,
-            'show_bank': False,
+            'primary': '#5B6BBB',
+            'text_on_primary': '#FFFFFF',
+            'body_text': '#1a1a1a',
+            'rgb': '91,107,187',
+            'primary_light': '#e2e5f3',
+            'primary_dark': '#44508c',
+            'show_words': True,
+            'show_bank': True,
+            'show_badge': True,
             'show_sig': False,
             'words_lang': 'en',
             'sig1': 'Prepared By',
             'sig2': 'Authorized Signatory',
             'sig3': 'Customer Acceptance',
             'report_terms': False,
+            'logo_size': 80,
+            'show_code': True,
         }
         try:
             return {
+                'primary': self.ops_report_primary_color or '#5B6BBB',
+                'text_on_primary': self.ops_report_text_on_primary or '#FFFFFF',
+                'body_text': self.ops_report_body_text_color or '#1a1a1a',
+                'rgb': self.get_report_rgb(),
+                'primary_light': self.get_report_primary_light(),
+                'primary_dark': self.get_report_primary_dark(),
                 'show_words': self.ops_show_amount_words,
                 'show_bank': self.ops_show_bank_details,
+                'show_badge': self.ops_show_external_badge,
                 'show_sig': self.ops_show_signature_block,
                 'words_lang': self.ops_amount_words_lang or 'en',
                 'sig1': self.ops_signature_label_1 or 'Prepared By',
                 'sig2': self.ops_signature_label_2 or 'Authorized Signatory',
                 'sig3': self.ops_signature_label_3 or 'Customer Acceptance',
                 'report_terms': self.ops_report_terms,
+                'logo_size': self.ops_logo_max_size or 80,
+                'show_code': self.ops_show_product_code,
             }
         except (AttributeError, KeyError):
             return defaults

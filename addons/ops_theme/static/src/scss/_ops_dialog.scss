@@ -1,0 +1,121 @@
+// =============================================================================
+// OPS Theme - Dialog Fullscreen Toggle (Light Mode)
+// =============================================================================
+// Styles for the fullscreen toggle button and the fullscreen dialog state.
+// The .ops-dialog-fullscreen class is toggled on .modal by the JS patch.
+//
+// Structure:
+//   .o_dialog > .modal.ops-dialog-fullscreen > .modal-dialog > .modal-content
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// 1. Fullscreen toggle button (in the header, next to close button)
+// ---------------------------------------------------------------------------
+.ops-dialog-fullscreen-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.25rem;
+    padding: 0.25rem 0.4rem;
+    opacity: 0.6;
+    color: var(--body-color);
+    font-size: 0.875rem;
+    line-height: 1;
+    border: none;
+    background: transparent;
+    transition: opacity 0.2s ease, color 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+        opacity: 1;
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 1px;
+        border-radius: 0.25rem;
+    }
+
+    .fa {
+        pointer-events: none;  // Click targets the button, not the icon
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 2. Smooth transition on modal-dialog for entering/exiting fullscreen
+// ---------------------------------------------------------------------------
+.modal .modal-dialog {
+    transition: max-width 0.3s ease,
+                width 0.3s ease,
+                height 0.3s ease,
+                margin 0.3s ease,
+                border-radius 0.3s ease;
+}
+
+.modal .modal-content {
+    transition: height 0.3s ease,
+                border-radius 0.3s ease;
+}
+
+// ---------------------------------------------------------------------------
+// 3. Fullscreen state
+// ---------------------------------------------------------------------------
+.modal.ops-dialog-fullscreen {
+    .modal-dialog {
+        max-width: 100vw;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+
+        // Override Bootstrap centered positioning
+        &.modal-dialog-centered {
+            min-height: 100vh;
+        }
+    }
+
+    .modal-content {
+        height: 100vh;
+        border-radius: 0;
+        border: none;
+    }
+
+    .modal-header {
+        border-radius: 0;
+        // Subtle bottom border to separate header from content
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-body {
+        flex: 1 1 auto;
+        overflow: auto;
+        // Ensure content doesn't overflow in fullscreen
+        max-height: none;
+    }
+
+    .modal-footer {
+        border-radius: 0;
+        border-top: 1px solid var(--border-color);
+    }
+
+    // When fullscreen, the expand button shows compress icon
+    .ops-dialog-fullscreen-btn {
+        opacity: 0.8;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 4. Size class overrides in fullscreen (fullscreen trumps all sizes)
+// ---------------------------------------------------------------------------
+.modal.ops-dialog-fullscreen .modal-dialog {
+    &.modal-sm,
+    &.modal-md,
+    &.modal-lg,
+    &.modal-xl,
+    &.modal-fs,
+    &.modal-fullscreen {
+        max-width: 100vw;
+        width: 100vw;
+    }
+}

@@ -5,9 +5,9 @@
         <div class="ops-theme-selector">
 
             <!-- Light Themes -->
-            <div class="ops-ts-section-label">Light Themes</div>
+            <div class="ops-ts-section-label">Themes</div>
             <div class="ops-ts-grid">
-                <t t-foreach="lightPalettes" t-as="p" t-key="p.key">
+                <t t-foreach="palettes" t-as="p" t-key="p.key">
                     <div t-attf-class="ops-ts-card {{ isSelected(p.key) ? 'ops-ts-selected' : '' }}"
                          t-attf-style="border-color: {{ isSelected(p.key) ? p.accent : '' }}"
                          t-on-click="() => this.onSelect(p.key)">
@@ -20,36 +20,7 @@
                                   t-esc="p.tag"/>
                         </div>
                         <div class="ops-ts-swatches">
-                            <t t-foreach="[['BG', p.bg], ['Srf', p.surface], ['Bdr', p.border], ['Txt', p.text], ['Acc1', p.accent], ['Acc2', p.accent2], ['Btn', p.btn]]"
-                               t-as="swatch" t-key="swatch[0]">
-                                <div class="ops-ts-swatch">
-                                    <div class="ops-ts-swatch-circle" t-attf-style="background: {{ swatch[1] }}"/>
-                                    <span class="ops-ts-swatch-label" t-esc="swatch[0]"/>
-                                    <span class="ops-ts-swatch-hex" t-esc="swatch[1]"/>
-                                </div>
-                            </t>
-                        </div>
-                    </div>
-                </t>
-            </div>
-
-            <!-- Dark Themes -->
-            <div class="ops-ts-section-label mt-3">Dark Themes</div>
-            <div class="ops-ts-grid">
-                <t t-foreach="darkPalettes" t-as="p" t-key="p.key">
-                    <div t-attf-class="ops-ts-card ops-ts-card-dark {{ isSelected(p.key) ? 'ops-ts-selected' : '' }}"
-                         t-attf-style="border-color: {{ isSelected(p.key) ? p.accent : '' }}"
-                         t-on-click="() => this.onSelect(p.key)">
-                        <div class="ops-ts-card-header">
-                            <div class="ops-ts-name-row">
-                                <div class="ops-ts-accent-dot" t-attf-style="background: {{ p.accent }}"/>
-                                <span class="ops-ts-name" t-esc="p.name"/>
-                            </div>
-                            <span class="ops-ts-tag" t-attf-style="background: {{ p.accent }}22; color: {{ p.accent }}"
-                                  t-esc="p.tag"/>
-                        </div>
-                        <div class="ops-ts-swatches">
-                            <t t-foreach="[['BG', p.bg], ['Srf', p.surface], ['Bdr', p.border], ['Txt', p.text], ['Acc1', p.accent], ['Acc2', p.accent2], ['Btn', p.btn]]"
+                            <t t-foreach="[['BG', p.bg], ['Srf', p.surface], ['Bdr', p.border], ['Txt', p.text], ['Acc', p.accent]]"
                                t-as="swatch" t-key="swatch[0]">
                                 <div class="ops-ts-swatch">
                                     <div class="ops-ts-swatch-circle" t-attf-style="background: {{ swatch[1] }}"/>
