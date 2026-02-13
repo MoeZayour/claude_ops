@@ -13,16 +13,20 @@
                         <field name="date_to"/>
                     </group>
                     <group string="Filters">
-                        <field name="ops_branch_ids" widget="many2many_tags"/>
-                        <field name="ops_business_unit_ids" widget="many2many_tags"/>
+                        <field name="branch_ids" widget="many2many_tags"/>
+                        <field name="business_unit_ids" widget="many2many_tags"/>
                         <field name="budget_ids" widget="many2many_tags"
                                domain="[('state', 'in', ['confirmed', 'done'])]"/>
                         <field name="include_draft"/>
                     </group>
                 </group>
                 <footer>
-                    <button name="action_print" string="Print Report"
-                            type="object" class="btn-primary"/>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

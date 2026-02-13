@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- OPS REPORT SHAPE A — LINE-BASED REPORTS                       -->
+    <!-- Used by: GL, Partner Ledger, SOA, Cash Book, Day Book, Bank   -->
+    <!-- Renders grouped lines with dynamic column visibility.         -->
+    <!-- ============================================================ -->
+
+    <template id="ops_report_shape_lines">
+        <t t-call="ops_matrix_accounting.ops_report_base">
+            <t t-set="meta" t-value="data.get('meta', {})"/>
+            <t t-set="colors" t-value="data.get('colors', {})"/>
+
+            <!-- Column display config -->
+            <t t-set="col_labels" t-value="{'date':'Date','entry':'Entry','journal':'Jnl','account_code':'Code','account_name':'Account','label':'Description','ref':'Reference','partner':'Partner','branch':'Branch','bu':'BU','debit':'Debit','credit':'Credit','balance':'Balance','currency':'Curr','amount_currency':'FCY Amount'}"/>
+            <t t-set="col_align" t-value="{'debit':'right','credit':'right','balance':'right','amount_currency':'right'}"/>
+            <t t-set="col_type" t-value="{'debit':'number','credit':'number','balance':'number','amount_currency':'number'}"/>
+            <t t-set="visible_cols" t-value="data.get('visible_columns', ['date','entry','label','debit','credit','balance'])"/>
+
+            <!-- ==================== GROUP LOOP ==================== -->
+            <t t-foreach="data.get('groups', [])" t-as="group">
+
+                <!-- Group header -->
+                <div t-attf-style="background:#{colors.get('primary_light', '#edeef5')}; padding:6px 10px; margin-top:16px; margin-bottom:4px; font-weight:bold; font-size:9pt; border-left:3px solid #{colors.get('primary', '#5B6BBB')};">
+                    <t t-out="group.get('group_key', '')"/> — <t t-out="group.get('group_name', '')"/>
+                    <t t-if="group.get('group_meta')">
+                        <t t-foreach="group['group_meta'].items()" t-as="gm">
+                            <span style="margin-left:12px; font-weight:normal; font-size:8pt; color:#6b7280;">
+                                <t t-out="gm[0]"/>: <t t-out="gm[1]"/>
+                            </span>
+                        </t>
+                    </t>
+                </div>
+
+                <!-- Lines table -->
+                <table style="width:100%; border-collapse:collapse; margin-bottom:2px;">
+                    <!-- Column headers -->
+                    <thead>
+                        <tr>
+                            <t t-foreach="visible_cols" t-as="col">
+                                <th t-attf-style="background-color:#{colors.get('primary', '#5B6BBB')}; color:#{colors.get('text_on_primary', '#FFFFFF')}; padding:4px 6px; font-size:8pt; font-weight:bold; text-align:#{col_align.get(col, 'left')}; border:1px solid #{colors.get('border', '#e5e7eb')};">
+                                    <t t-out="col_labels.get(col, col)"/>
+                                </th>
+                            </t>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- Opening balance row -->
+                        <t t-if="group.get('opening_balance', 0) != 0">
+                            <tr>
+                                <t t-foreach="visible_cols" t-as="col">
+                                    <td t-attf-style="padding:3px 6px; font-size:8pt; font-style:italic; color:#6b7280; text-align:#{col_align.get(col, 'left')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')};">
+                                        <t t-if="col == 'label'">Opening Balance</t>
+                                        <t t-elif="col == 'balance'">
+                                            <t t-out="helpers.format_amount(group.get('opening_balance', 0))"/>
+                                        </t>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+
+                        <!-- Detail lines -->
+                        <t t-foreach="group.get('lines', [])" t-as="line">
+                            <tr>
+                                <t t-foreach="visible_cols" t-as="col">
+                                    <t t-set="cell_val" t-value="line.get(col, '')"/>
+                                    <t t-set="is_num" t-value="col_type.get(col) == 'number'"/>
+                                    <td t-attf-style="padding:3px 6px; font-size:8pt; text-align:#{col_align.get(col, 'left')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')}; #{line_parity == 'odd' and 'background:#f9fafb;' or ''}">
+                                        <t t-if="col == 'balance'">
+                                            <span t-attf-style="color:#{cell_val >= 0 and colors.get('success', '#059669') or colors.get('danger', '#dc2626')};">
+                                                <t t-out="helpers.format_amount(cell_val)"/>
+                                            </span>
+                                        </t>
+                                        <t t-elif="is_num and cell_val">
+                                            <t t-if="cell_val == 0">
+                                                <span t-attf-style="color:#{colors.get('zero', '#94a3b8')};">
+                                                    <t t-out="helpers.format_amount(cell_val)"/>
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-out="helpers.format_amount(cell_val)"/>
+                                            </t>
+                                        </t>
+                                        <t t-elif="is_num and not cell_val">
+                                            <span t-attf-style="color:#{colors.get('zero', '#94a3b8')};">-</span>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-out="cell_val"/>
+                                        </t>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+
+                        <!-- Group total row -->
+                        <tr>
+                            <t t-foreach="visible_cols" t-as="col">
+                                <td t-attf-style="padding:4px 6px; font-size:8pt; font-weight:bold; text-align:#{col_align.get(col, 'left')}; border-top:2px solid #{colors.get('primary', '#5B6BBB')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')};">
+                                    <t t-if="col == 'label'">Total <t t-out="group.get('group_name', '')"/></t>
+                                    <t t-elif="col == 'debit'">
+                                        <t t-out="helpers.format_amount(group.get('total_debit', 0))"/>
+                                    </t>
+                                    <t t-elif="col == 'credit'">
+                                        <t t-out="helpers.format_amount(group.get('total_credit', 0))"/>
+                                    </t>
+                                    <t t-elif="col == 'balance'">
+                                        <span t-attf-style="color:#{group.get('closing_balance', 0) >= 0 and colors.get('success', '#059669') or colors.get('danger', '#dc2626')};">
+                                            <t t-out="helpers.format_amount(group.get('closing_balance', 0))"/>
+                                        </span>
+                                    </t>
+                                </td>
+                            </t>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+
+            <!-- ==================== GRAND TOTALS ==================== -->
+            <t t-set="gt" t-value="data.get('grand_totals', {})"/>
+            <t t-if="gt">
+                <table style="width:100%; border-collapse:collapse; margin-top:16px;">
+                    <tr>
+                        <t t-foreach="visible_cols" t-as="col">
+                            <td t-attf-style="padding:6px; font-size:9pt; font-weight:bold; text-align:#{col_align.get(col, 'left')}; border-top:3px double #{colors.get('primary', '#5B6BBB')}; border-bottom:3px double #{colors.get('primary', '#5B6BBB')}; background:#{colors.get('primary_light', '#edeef5')};">
+                                <t t-if="col == 'label'">Grand Total</t>
+                                <t t-elif="col == 'debit'">
+                                    <t t-out="helpers.format_amount(gt.get('total_debit', 0))"/>
+                                </t>
+                                <t t-elif="col == 'credit'">
+                                    <t t-out="helpers.format_amount(gt.get('total_credit', 0))"/>
+                                </t>
+                                <t t-elif="col == 'balance'">
+                                    <span t-attf-style="color:#{gt.get('closing_balance', 0) >= 0 and colors.get('success', '#059669') or colors.get('danger', '#dc2626')};">
+                                        <t t-out="helpers.format_amount(gt.get('closing_balance', 0))"/>
+                                    </span>
+                                </t>
+                            </td>
+                        </t>
+                    </tr>
+                </table>
+            </t>
+        </t>
+    </template>
+</odoo>

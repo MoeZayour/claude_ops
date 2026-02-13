@@ -245,7 +245,7 @@ class OpsIpWhitelist(models.Model):
         elif self.apply_to == 'users':
             return user.id in self.user_ids.ids
         elif self.apply_to == 'groups':
-            user_groups = user.groups_id.ids
+            user_groups = user.group_ids.ids
             return any(group_id in user_groups for group_id in self.group_ids.ids)
 
         return False

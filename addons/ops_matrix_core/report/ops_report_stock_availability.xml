@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         OPS STOCK AVAILABILITY REPORT
+         Standalone report bound to sale.order.
+         Shows storable product availability per SO warehouse.
+         Uses OPS Component Library (ops_theme).
+         ================================================================ -->
+
+    <record id="action_report_stock_availability" model="ir.actions.report">
+        <field name="name">Stock Availability</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_core.report_stock_availability</field>
+        <field name="report_file">ops_matrix_core.report_stock_availability</field>
+        <field name="paperformat_id" ref="ops_theme.paperformat_ops_external"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Stock_Availability_%s' % (object.name or '').replace('/', '_')</field>
+    </record>
+
+    <!-- Report wrapper -->
+    <template id="report_stock_availability">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <t t-call="ops_matrix_core.report_stock_availability_document"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Document body -->
+    <template id="report_stock_availability_document">
+        <div class="page ops-report-page">
+
+            <t t-set="company" t-value="doc.company_id"/>
+            <t t-set="_ops" t-value="company.get_ops_report_settings()"/>
+
+            <!-- OPS Structural CSS -->
+            <t t-call="ops_theme.ops_report_css"/>
+
+            <!-- Title Bar -->
+            <t t-set="doc_title" t-value="'Stock Availability'"/>
+            <t t-set="doc_ref" t-value="doc.name"/>
+            <t t-call="ops_theme.ops_title_bar"/>
+
+            <!-- Info Bar -->
+            <table class="ops-info-bar" t-attf-style="width:100%; border-collapse:collapse; margin-bottom:14px; background:rgba(#{_ops['rgb']},0.04);">
+                <tr>
+                    <td class="ops-info-cell" style="padding:7px 10px; font-size:8pt; width:25%;">
+                        <span t-attf-style="font-size:7pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#{_ops['primary']};">Customer</span><br/>
+                        <span style="font-weight:600;"><t t-esc="doc.partner_id.name"/></span>
+                    </td>
+                    <td class="ops-info-cell" style="padding:7px 10px; font-size:8pt; width:25%;">
+                        <span t-attf-style="font-size:7pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#{_ops['primary']};">Order Date</span><br/>
+                        <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                    </td>
+                    <td class="ops-info-cell" style="padding:7px 10px; font-size:8pt; width:25%;">
+                        <span t-attf-style="font-size:7pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#{_ops['primary']};">Warehouse</span><br/>
+                        <span><t t-esc="doc.warehouse_id.name if doc.warehouse_id else 'Default'"/></span>
+                    </td>
+                    <td class="ops-info-cell" style="padding:7px 10px; font-size:8pt; width:25%;">
+                        <span t-attf-style="font-size:7pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#{_ops['primary']};">Branch</span><br/>
+                        <span><t t-esc="doc.ops_branch_id.name if doc.ops_branch_id else '—'"/></span>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Availability Data -->
+            <t t-set="availability_data" t-value="doc._get_products_availability_data()"/>
+
+            <t t-if="not availability_data">
+                <div style="padding:20px; margin:20px 0; text-align:center; font-size:9pt; color:#64748b;">
+                    <strong>No storable products found.</strong><br/>
+                    <span style="font-size:8pt; opacity:0.7;">This sale order contains only services or consumable items.</span>
+                </div>
+            </t>
+
+            <t t-else="">
+                <!-- Counters -->
+                <t t-set="total_lines" t-value="len(availability_data)"/>
+                <t t-set="short_lines" t-value="sum(1 for d in availability_data if d['is_insufficient'])"/>
+                <t t-set="ok_lines" t-value="total_lines - short_lines"/>
+
+                <!-- Items Table -->
+                <table class="ops-items-table">
+                    <thead>
+                        <tr t-attf-style="background:#{_ops['primary']}; color:#{_ops['text_on_primary']};">
+                            <th style="width:28px;" class="ctr">#</th>
+                            <th>SKU</th>
+                            <th>Product</th>
+                            <th style="width:55px;">UoM</th>
+                            <th class="num" style="width:70px;">Ordered</th>
+                            <th class="num" style="width:70px;">Available</th>
+                            <th class="num" style="width:70px;">Shortfall</th>
+                            <th class="ctr" style="width:80px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="row_idx" t-value="0"/>
+                        <t t-foreach="availability_data" t-as="line">
+                            <t t-set="row_idx" t-value="row_idx + 1"/>
+                            <t t-set="is_short" t-value="line['is_insufficient']"/>
+                            <tr t-attf-style="#{is_short and 'background-color:#fef2f2 !important;' or ''}">
+                                <td class="ctr"><t t-esc="row_idx"/></td>
+                                <td>
+                                    <span style="font-weight:600; font-size:7.5pt;"><t t-esc="line['sku'] or '—'"/></span>
+                                </td>
+                                <td><t t-esc="line['product_name']"/></td>
+                                <td><t t-esc="line['uom']"/></td>
+                                <td class="num" style="font-weight:600;">
+                                    <t t-esc="'{:,.2f}'.format(line['ordered_qty'])"/>
+                                </td>
+                                <td class="num" t-attf-style="font-weight:700; color:#{is_short and '#dc2626' or _ops['primary']};">
+                                    <t t-esc="'{:,.2f}'.format(line['display_qty'])"/>
+                                </td>
+                                <td class="num">
+                                    <t t-if="line['shortfall'] > 0">
+                                        <span style="color:#dc2626; font-weight:600;">
+                                            (<t t-esc="'{:,.2f}'.format(line['shortfall'])"/>)
+                                        </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span style="color:#94a3b8;">—</span>
+                                    </t>
+                                </td>
+                                <td class="ctr">
+                                    <t t-if="not is_short">
+                                        <span style="display:inline-block; padding:2px 8px; background:#dcfce7; color:#166534;
+                                                       border-radius:3px; font-size:7pt; font-weight:600;">IN STOCK</span>
+                                    </t>
+                                    <t t-elif="line['stock_on_hand'] > 0">
+                                        <span style="display:inline-block; padding:2px 8px; background:#fef3c7; color:#92400e;
+                                                       border-radius:3px; font-size:7pt; font-weight:600;">PARTIAL</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span style="display:inline-block; padding:2px 8px; background:#fee2e2; color:#991b1b;
+                                                       border-radius:3px; font-size:7pt; font-weight:600;">OUT OF STOCK</span>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+                <!-- Summary Bar -->
+                <table class="ops-summary-bar" style="width:100%; border-collapse:collapse; margin-top:14px;">
+                    <tr>
+                        <td t-attf-style="padding:8px 12px; font-size:8pt; width:33%;">
+                            <span t-attf-style="font-size:7pt; font-weight:600; text-transform:uppercase; color:#{_ops['primary']};">Total Lines</span><br/>
+                            <span style="font-size:11pt; font-weight:700;"><t t-esc="total_lines"/></span>
+                        </td>
+                        <td style="padding:8px 12px; font-size:8pt; width:33%;">
+                            <span style="font-size:7pt; font-weight:600; text-transform:uppercase; color:#166534;">Available</span><br/>
+                            <span style="font-size:11pt; font-weight:700; color:#166534;"><t t-esc="ok_lines"/></span>
+                        </td>
+                        <td style="padding:8px 12px; font-size:8pt; width:34%;">
+                            <span t-attf-style="font-size:7pt; font-weight:600; text-transform:uppercase; color:#{'#dc2626' if short_lines else '#166534'};">Short</span><br/>
+                            <span t-attf-style="font-size:11pt; font-weight:700; color:#{'#dc2626' if short_lines else '#166534'};"><t t-esc="short_lines"/></span>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Fulfilment Verdict -->
+                <t t-if="short_lines > 0">
+                    <div class="ops-verdict-warn" style="margin-top:14px; padding:10px 14px;
+                                  background:#fef2f2; border-radius:0 3px 3px 0; font-size:8pt;">
+                        <strong style="color:#991b1b;">Action Required</strong>
+                        <span style="color:#7f1d1d;"> — <t t-esc="short_lines"/>
+                            product<t t-if="short_lines > 1">s</t> cannot be fully fulfilled from current stock.
+                            Consider procurement, inter-branch transfer, or partial shipment.</span>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="ops-verdict-ok" style="margin-top:14px; padding:10px 14px;
+                                  background:#f0fdf4; border-radius:0 3px 3px 0; font-size:8pt;">
+                        <strong style="color:#166534;">Ready to Fulfil</strong>
+                        <span style="color:#14532d;"> — All products are available in sufficient quantities.</span>
+                    </div>
+                </t>
+            </t>
+
+            <!-- Report Footer Note -->
+            <div class="ops-disclaimer" style="margin-top:24px; padding-top:8px; font-size:7pt; color:#94a3b8;">
+                Stock levels are based on warehouse on-hand quantities at the time of report generation.
+                Quantities may change due to concurrent operations.
+            </div>
+
+        </div>
+    </template>
+
+</odoo>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ops_theme.SkinSelector">
+        <div class="ops-skin-selector">
+            <div class="ops-skin-grid">
+                <t t-foreach="state.skins" t-as="skin" t-key="skin.id">
+                    <div t-attf-class="skin-card {{ isSelected(skin.id) ? 'active' : '' }}"
+                         t-on-click="() => this.selectSkin(skin.id)">
+                        <!-- Tag -->
+                        <span class="skin-tag"
+                              t-attf-style="background: {{ getTagColor(skin.tag) }}; color: {{ getTagTextColor(skin.tag) }}">
+                            <t t-esc="skin.tag"/>
+                        </span>
+
+                        <!-- Palette Preview -->
+                        <div class="palette-preview">
+                            <div class="palette-swatch" t-attf-style="background: {{ skin.brand_color }}"/>
+                            <div class="palette-swatch" t-attf-style="background: {{ skin.action_color }}"/>
+                            <div class="palette-swatch" t-attf-style="background: {{ skin.bg_color }}"/>
+                        </div>
+
+                        <!-- Title -->
+                        <span class="skin-title"><t t-esc="skin.name"/></span>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -12,10 +12,14 @@
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_user'))]"/>
     </record>
     
+    <!-- OPS Administrator: highest OPS-level group but does NOT imply group_system.
+         group_system is reserved for SYS_ADMIN persona only (framework owner).
+         Previous version implied group_system which made any Matrix Administrator
+         bypass ALL record rules (branch isolation, IT Admin blindness, etc.) -->
     <record id="group_ops_admin_power" model="res.groups">
         <field name="name">OPS Administrator</field>
-        <field name="implied_ids" eval="[(4, ref('base.group_system'))]"/>
-        <field name="comment">Full system authority - unrestricted access to all OPS features and standard Odoo administration.</field>
+        <field name="implied_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_manager')])]"/>
+        <field name="comment">Top-level OPS authority. Full access to all OPS features, governance rules, and approval configuration. Does NOT bypass security rules — only SYS_ADMIN (group_system) does.</field>
     </record>
 
     <record id="group_ops_product_approver" model="res.groups">
@@ -26,7 +30,7 @@
     
     <record id="group_ops_matrix_administrator" model="res.groups">
         <field name="name">Matrix Administrator</field>
-        <field name="comment">Full access to matrix configuration including dashboard widgets.</field>
+        <field name="comment">Full access to matrix configuration including dashboard widgets. Inherits OPS Administrator.</field>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_admin_power'))]"/>
     </record>
 
@@ -53,6 +57,12 @@
         <field name="name">Can See Stock Valuation</field>
         <field name="comment">Grants visibility to inventory valuation amounts. Required for financial reporting and stock analysis.</field>
         <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+    </record>
+
+    <!-- Pricing Authority Group - Controls who can modify selling prices -->
+    <record id="group_ops_price_manager" model="res.groups">
+        <field name="name">Price Manager</field>
+        <field name="comment">Can modify unit prices on sale order lines. Assigned to commercial and finance leadership (CFO, Financial Controller, Sales Leader, Chief Accountant). Operational managers must request price changes via approval workflow.</field>
     </record>
 
     <!-- Executive Groups -->
@@ -142,6 +152,6 @@
     <record id="group_ops_can_export" model="res.groups">
         <field name="name">Can Export Data</field>
         <field name="comment">Users who can use the Secure Export Wizard to export data. Exports are logged and filtered by matrix permissions.</field>
-        <field name="implied_ids" eval="[(4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_manager')])]"/>
     </record>
 </odoo>

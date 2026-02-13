@@ -1,27 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-OPS Matrix Treasury Intelligence Engine
-=======================================
+OPS Matrix Treasury Intelligence Engine (v2 Data Contracts)
+============================================================
 
-Comprehensive PDC (Post-Dated Check) analysis and reporting wizard.
-Provides registry, maturity analysis, and on-hand tracking for both
-receivable and payable post-dated checks.
-
-Reports Supported:
-- PDC Registry: Complete list with all details
-- Maturity Analysis: Grouped by aging periods
-- PDCs in Hand: Open/uncleared checks only
-
-Author: OPS Matrix Framework
-Version: 1.0 (Phase 3 - Treasury Engine)
+PDC analysis wizard refactored to use Shape C (matrix) data contracts.
+Reports: Registry, Maturity Analysis, PDCs in Hand.
 """
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import date_utils
+from dataclasses import asdict
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import logging
+
+from ..report.ops_report_contracts import (
+    build_report_meta, build_report_colors,
+    ShapeCReport, ColumnDef, MatrixRow,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -57,14 +53,8 @@ class OpsTreasuryReportWizard(models.TransientModel):
     # ============================================
     # 2. DATE FILTERS
     # ============================================
-    date_from = fields.Date(
-        string='From Date',
-        help='Filter by maturity date from'
-    )
-    date_to = fields.Date(
-        string='To Date',
-        help='Filter by maturity date to'
-    )
+    date_from = fields.Date(string='From Date', help='Filter by maturity date from')
+    date_to = fields.Date(string='To Date', help='Filter by maturity date to')
     as_of_date = fields.Date(
         string='As of Date',
         default=lambda self: fields.Date.context_today(self),
@@ -74,33 +64,17 @@ class OpsTreasuryReportWizard(models.TransientModel):
     # ============================================
     # 3. DIMENSION FILTERS
     # ============================================
-    # company_id inherited from ops.base.report.wizard
-
     branch_ids = fields.Many2many(
-        'ops.branch',
-        'treasury_wizard_branch_rel',
-        'wizard_id',
-        'branch_id',
-        string='Branches',
-        help='Filter by specific branches. Leave empty for all.'
+        'ops.branch', 'treasury_wizard_branch_rel', 'wizard_id', 'branch_id',
+        string='Branches', help='Filter by specific branches. Leave empty for all.'
     )
-
     partner_ids = fields.Many2many(
-        'res.partner',
-        'treasury_wizard_partner_rel',
-        'wizard_id',
-        'partner_id',
-        string='Partners',
-        help='Filter by specific customers/vendors'
+        'res.partner', 'treasury_wizard_partner_rel', 'wizard_id', 'partner_id',
+        string='Partners', help='Filter by specific customers/vendors'
     )
-
     bank_ids = fields.Many2many(
-        'res.bank',
-        'treasury_wizard_bank_rel',
-        'wizard_id',
-        'bank_id',
-        string='Banks',
-        help='Filter by specific banks'
+        'res.bank', 'treasury_wizard_bank_rel', 'wizard_id', 'bank_id',
+        string='Banks', help='Filter by specific banks'
     )
 
     # ============================================
@@ -111,17 +85,13 @@ class OpsTreasuryReportWizard(models.TransientModel):
         ('open', 'Open Only (Not Cleared)'),
         ('cleared', 'Cleared Only'),
         ('bounced', 'Bounced Only'),
-    ], string='Status Filter', default='all',
-       help='Filter by check status')
+    ], string='Status Filter', default='all', help='Filter by check status')
 
     # ============================================
     # 5. MATURITY ANALYSIS OPTIONS
     # ============================================
-    period_length = fields.Integer(
-        string='Period Length (days)',
-        default=30,
-        help='Number of days per aging period'
-    )
+    period_length = fields.Integer(string='Period Length (days)', default=30,
+                                   help='Number of days per aging period')
 
     # ============================================
     # 6. OUTPUT OPTIONS
@@ -137,12 +107,8 @@ class OpsTreasuryReportWizard(models.TransientModel):
     # ============================================
     # 7. COMPUTED FIELDS
     # ============================================
-    # report_title, filter_summary, record_count, currency_id inherited from base
-
     total_amount = fields.Monetary(
-        compute='_compute_totals',
-        string='Total Amount',
-        currency_field='currency_id'
+        compute='_compute_totals', string='Total Amount', currency_field='currency_id'
     )
 
     # ============================================
@@ -150,16 +116,14 @@ class OpsTreasuryReportWizard(models.TransientModel):
     # ============================================
 
     def _get_engine_name(self):
-        """Return engine name for template filtering."""
         return 'treasury'
 
+    def _get_report_shape(self):
+        return 'matrix'
+
     def _get_report_titles(self):
-        """Return mapping of report_type to human-readable title."""
-        # Treasury has dynamic titles based on pdc_type
         pdc_suffix = {
-            'inbound': 'Receivable',
-            'outbound': 'Payable',
-            'both': 'All PDCs',
+            'inbound': 'Receivable', 'outbound': 'Payable', 'both': 'All PDCs',
         }.get(self.pdc_type, '')
         return {
             'registry': f'PDC Registry - {pdc_suffix}',
@@ -168,30 +132,22 @@ class OpsTreasuryReportWizard(models.TransientModel):
         }
 
     def _get_scalar_fields_for_template(self):
-        """Return scalar fields for template save/load."""
         return ['report_type', 'pdc_type', 'state_filter', 'period_length', 'group_by']
 
     def _get_m2m_fields_for_template(self):
-        """Return Many2many fields for template save/load."""
         return ['branch_ids', 'partner_ids', 'bank_ids']
 
     def _get_report_template_xmlid(self):
-        """Return XML ID of report template based on report_type."""
         self.ensure_one()
-
-        template_mapping = {
+        mapping = {
             'registry': 'ops_matrix_accounting.report_treasury_registry_corporate',
             'maturity': 'ops_matrix_accounting.report_treasury_maturity_corporate',
             'on_hand': 'ops_matrix_accounting.report_treasury_on_hand_corporate',
         }
-
-        return template_mapping.get(self.report_type, 'ops_matrix_accounting.report_treasury_registry_corporate')
+        return mapping.get(self.report_type, mapping['registry'])
 
     def _add_filter_summary_parts(self, parts):
-        """Add treasury-specific filter descriptions."""
-        # Override date display for maturity dates
         if self.date_from and self.date_to:
-            # Remove generic date part and add maturity-specific
             parts[:] = [p for p in parts if not p.startswith('Period:')]
             parts.append(f"Maturity: {self.date_from} to {self.date_to}")
         elif self.date_from:
@@ -199,41 +155,31 @@ class OpsTreasuryReportWizard(models.TransientModel):
             parts.append(f"Maturity from: {self.date_from}")
         elif self.date_to:
             parts.append(f"Maturity to: {self.date_to}")
-
         if self.branch_ids:
             parts.append(f"Branches: {len(self.branch_ids)} selected")
-
         if self.partner_ids:
             parts.append(f"Partners: {len(self.partner_ids)} selected")
-
         if self.state_filter != 'all':
             parts.append(f"Status: {dict(self._fields['state_filter'].selection).get(self.state_filter)}")
 
     def _estimate_record_count(self):
-        """Estimate number of PDCs matching filters."""
         count = 0
         if self.pdc_type in ('inbound', 'both'):
-            domain = self._build_domain('inbound')
-            count += self.env['ops.pdc.receivable'].search_count(domain)
+            count += self.env['ops.pdc.receivable'].search_count(self._build_domain('inbound'))
         if self.pdc_type in ('outbound', 'both'):
-            domain = self._build_domain('outbound')
-            count += self.env['ops.pdc.payable'].search_count(domain)
+            count += self.env['ops.pdc.payable'].search_count(self._build_domain('outbound'))
         return count
 
-    @api.depends('pdc_type', 'branch_ids', 'partner_ids', 'date_from',
-                 'date_to', 'state_filter')
+    @api.depends('pdc_type', 'branch_ids', 'partner_ids', 'date_from', 'date_to', 'state_filter')
     def _compute_totals(self):
-        """Calculate total amount of matching PDCs."""
         for wizard in self:
             try:
                 total = 0.0
                 if wizard.pdc_type in ('inbound', 'both'):
-                    domain = wizard._build_domain('inbound')
-                    pdcs = self.env['ops.pdc.receivable'].search(domain)
+                    pdcs = self.env['ops.pdc.receivable'].search(wizard._build_domain('inbound'))
                     total += sum(pdcs.mapped('amount'))
                 if wizard.pdc_type in ('outbound', 'both'):
-                    domain = wizard._build_domain('outbound')
-                    pdcs = self.env['ops.pdc.payable'].search(domain)
+                    pdcs = self.env['ops.pdc.payable'].search(wizard._build_domain('outbound'))
                     total += sum(pdcs.mapped('amount'))
                 wizard.total_amount = total
             except Exception as e:
@@ -245,29 +191,22 @@ class OpsTreasuryReportWizard(models.TransientModel):
     # ============================================
 
     def _build_domain(self, pdc_type):
-        """Build domain for PDC query."""
+        """Build domain for PDC query with branch isolation."""
         self.ensure_one()
-        domain = []
+        # Branch isolation -- ALWAYS included
+        domain = list(self._get_branch_filter_domain(branch_field='branch_id'))
 
-        # Date filters (maturity date)
         if self.date_from:
             domain.append(('maturity_date', '>=', self.date_from))
         if self.date_to:
             domain.append(('maturity_date', '<=', self.date_to))
-
-        # Branch filter
         if self.branch_ids:
             domain.append(('branch_id', 'in', self.branch_ids.ids))
-
-        # Partner filter
         if self.partner_ids:
             domain.append(('partner_id', 'in', self.partner_ids.ids))
-
-        # Bank filter
         if self.bank_ids:
             domain.append(('bank_id', 'in', self.bank_ids.ids))
 
-        # Status filter
         if self.state_filter == 'open':
             if pdc_type == 'inbound':
                 domain.append(('state', 'in', ['draft', 'deposited']))
@@ -279,10 +218,8 @@ class OpsTreasuryReportWizard(models.TransientModel):
             if pdc_type == 'inbound':
                 domain.append(('state', '=', 'bounced'))
             else:
-                # Payable doesn't have bounced state, return empty
                 domain.append(('id', '=', 0))
 
-        # On-hand report: only open PDCs
         if self.report_type == 'on_hand':
             if pdc_type == 'inbound':
                 domain.append(('state', 'in', ['draft', 'deposited']))
@@ -292,166 +229,223 @@ class OpsTreasuryReportWizard(models.TransientModel):
         return domain
 
     # ============================================
-    # REPORT GENERATION
+    # REPORT DATA (v2 contracts)
     # ============================================
-    # _validate_filters and action_generate_report inherited from base
 
     def _get_report_data(self):
-        """Get report data based on report_type."""
+        """Get report data as v2 ShapeCReport dict."""
         self.ensure_one()
+        self._check_intelligence_access(self._get_pillar_name())
 
         dispatch = {
             'registry': self._get_registry_data,
             'maturity': self._get_maturity_data,
             'on_hand': self._get_on_hand_data,
         }
-
-        handler = dispatch.get(self.report_type, self._get_registry_data)
-        return handler()
-
-    # ============================================
-    # PDC REGISTRY DATA
-    # ============================================
+        return dispatch.get(self.report_type, self._get_registry_data)()
 
     def _get_registry_data(self):
-        """Get PDC Registry report data."""
+        """PDC Registry -> Shape C matrix report."""
         self.ensure_one()
+        meta = build_report_meta(self, 'registry', self._get_report_titles()['registry'], 'matrix')
+        colors = build_report_colors(self.company_id)
 
-        inbound_data = []
-        outbound_data = []
+        columns = [
+            ColumnDef(key='pdc_number', label='PDC #', col_type='string'),
+            ColumnDef(key='pdc_type', label='Type', col_type='string', width=8),
+            ColumnDef(key='partner', label='Partner', col_type='string'),
+            ColumnDef(key='bank', label='Bank', col_type='string'),
+            ColumnDef(key='amount', label='Amount', col_type='currency', align='right', subtotal=True),
+            ColumnDef(key='check_date', label='Issue Date', col_type='date'),
+            ColumnDef(key='maturity_date', label='Due Date', col_type='date'),
+            ColumnDef(key='status', label='Status', col_type='string', width=10),
+            ColumnDef(key='branch', label='Branch', col_type='string'),
+        ]
 
-        # Fetch receivable PDCs
+        rows = []
+        totals = {'inbound_total': 0.0, 'outbound_total': 0.0}
+
         if self.pdc_type in ('inbound', 'both'):
-            domain = self._build_domain('inbound')
-            pdcs = self.env['ops.pdc.receivable'].search(domain, order='maturity_date, id')
-            inbound_data = self._process_pdc_records(pdcs, 'inbound')
+            pdcs = self.env['ops.pdc.receivable'].search(
+                self._build_domain('inbound'), order='maturity_date, id')
+            for pdc in pdcs:
+                rows.append(MatrixRow(values={
+                    'pdc_number': pdc.name or '',
+                    'pdc_type': 'Receivable',
+                    'partner': pdc.partner_id.name or '',
+                    'bank': pdc.bank_id.name if pdc.bank_id else '',
+                    'amount': pdc.amount,
+                    'check_date': str(pdc.check_date) if pdc.check_date else '',
+                    'maturity_date': str(pdc.maturity_date) if pdc.maturity_date else '',
+                    'status': dict(pdc._fields['state'].selection).get(pdc.state, ''),
+                    'branch': pdc.branch_id.name if pdc.branch_id else '',
+                }))
+                totals['inbound_total'] += pdc.amount
 
-        # Fetch payable PDCs
         if self.pdc_type in ('outbound', 'both'):
-            domain = self._build_domain('outbound')
-            pdcs = self.env['ops.pdc.payable'].search(domain, order='maturity_date, id')
-            outbound_data = self._process_pdc_records(pdcs, 'outbound')
+            pdcs = self.env['ops.pdc.payable'].search(
+                self._build_domain('outbound'), order='maturity_date, id')
+            for pdc in pdcs:
+                rows.append(MatrixRow(values={
+                    'pdc_number': pdc.name or '',
+                    'pdc_type': 'Payable',
+                    'partner': pdc.partner_id.name or '',
+                    'bank': pdc.bank_id.name if pdc.bank_id else '',
+                    'amount': pdc.amount,
+                    'check_date': str(pdc.check_date) if pdc.check_date else '',
+                    'maturity_date': str(pdc.maturity_date) if pdc.maturity_date else '',
+                    'status': dict(pdc._fields['state'].selection).get(pdc.state, ''),
+                    'branch': pdc.branch_id.name if pdc.branch_id else '',
+                }))
+                totals['outbound_total'] += pdc.amount
 
-        # Calculate totals
-        inbound_total = sum(p['amount'] for p in inbound_data)
-        outbound_total = sum(p['amount'] for p in outbound_data)
+        totals['net_position'] = totals['inbound_total'] - totals['outbound_total']
+        totals['total_count'] = len(rows)
 
-        return {
-            'report_type': 'registry',
-            'report_title': self.report_title,
-            'wizard_id': self.id,
-            'company_name': self.company_id.name,
-            'company_currency': self.company_id.currency_id.name,
-            'date_from': str(self.date_from) if self.date_from else None,
-            'date_to': str(self.date_to) if self.date_to else None,
-            'filters': self._get_filter_dict(),
-            'pdc_type': self.pdc_type,
-            'inbound': {
-                'data': inbound_data,
-                'total': inbound_total,
-                'count': len(inbound_data),
-            },
-            'outbound': {
-                'data': outbound_data,
-                'total': outbound_total,
-                'count': len(outbound_data),
-            },
-            'totals': {
-                'inbound_total': inbound_total,
-                'outbound_total': outbound_total,
-                'net_position': inbound_total - outbound_total,
-                'total_count': len(inbound_data) + len(outbound_data),
-            },
-        }
-
-    def _process_pdc_records(self, pdcs, pdc_type):
-        """Process PDC records into report format."""
-        data = []
-        for pdc in pdcs:
-            data.append({
-                'id': pdc.id,
-                'name': pdc.name,
-                'partner_name': pdc.partner_id.name,
-                'partner_id': pdc.partner_id.id,
-                'amount': pdc.amount,
-                'currency': pdc.currency_id.name,
-                'check_number': pdc.check_number,
-                'check_date': str(pdc.check_date) if pdc.check_date else '',
-                'maturity_date': str(pdc.maturity_date),
-                'bank_name': pdc.bank_id.name if pdc.bank_id else '',
-                'branch_name': pdc.branch_id.name if pdc.branch_id else '',
-                'branch_code': pdc.branch_id.code if pdc.branch_id else '',
-                'state': pdc.state,
-                'state_label': dict(pdc._fields['state'].selection).get(pdc.state),
-                'pdc_type': pdc_type,
-                'notes': pdc.notes or '',
-            })
-        return data
-
-    # ============================================
-    # MATURITY ANALYSIS DATA
-    # ============================================
+        return asdict(ShapeCReport(meta=meta, colors=colors, columns=columns, rows=rows, totals=totals))
 
     def _get_maturity_data(self):
-        """Get PDC Maturity Analysis report data."""
+        """PDC Maturity Analysis -> Shape C matrix report."""
         self.ensure_one()
+        meta = build_report_meta(self, 'maturity', self._get_report_titles()['maturity'], 'matrix')
+        colors = build_report_colors(self.company_id)
 
         today = self.as_of_date or fields.Date.today()
         period = self.period_length
 
-        # Initialize aging buckets
-        aging_buckets = {
-            'overdue': {'label': 'Overdue', 'inbound': 0, 'outbound': 0, 'inbound_count': 0, 'outbound_count': 0},
-            'current': {'label': 'Current (Not Due)', 'inbound': 0, 'outbound': 0, 'inbound_count': 0, 'outbound_count': 0},
-            'period_1': {'label': f'1-{period} days', 'inbound': 0, 'outbound': 0, 'inbound_count': 0, 'outbound_count': 0},
-            'period_2': {'label': f'{period+1}-{period*2} days', 'inbound': 0, 'outbound': 0, 'inbound_count': 0, 'outbound_count': 0},
-            'period_3': {'label': f'{period*2+1}-{period*3} days', 'inbound': 0, 'outbound': 0, 'inbound_count': 0, 'outbound_count': 0},
-            'period_4': {'label': f'{period*3+1}-{period*4} days', 'inbound': 0, 'outbound': 0, 'inbound_count': 0, 'outbound_count': 0},
-            'older': {'label': f'>{period*4} days', 'inbound': 0, 'outbound': 0, 'inbound_count': 0, 'outbound_count': 0},
-        }
+        columns = [
+            ColumnDef(key='bucket', label='Aging Bucket', col_type='string'),
+            ColumnDef(key='inbound', label='Inbound', col_type='currency', align='right', subtotal=True),
+            ColumnDef(key='outbound', label='Outbound', col_type='currency', align='right', subtotal=True),
+            ColumnDef(key='net', label='Net Position', col_type='currency', align='right', subtotal=True),
+            ColumnDef(key='inbound_count', label='In Count', col_type='number', align='right', subtotal=True),
+            ColumnDef(key='outbound_count', label='Out Count', col_type='number', align='right', subtotal=True),
+        ]
 
-        # Process inbound PDCs
+        buckets = [
+            ('overdue', 'Overdue'),
+            ('current', 'Current (Not Due)'),
+            ('period_1', f'1-{period} days'),
+            ('period_2', f'{period+1}-{period*2} days'),
+            ('period_3', f'{period*2+1}-{period*3} days'),
+            ('period_4', f'{period*3+1}-{period*4} days'),
+            ('older', f'>{period*4} days'),
+        ]
+
+        aging = {key: {'inbound': 0.0, 'outbound': 0.0, 'inbound_count': 0, 'outbound_count': 0}
+                 for key, _ in buckets}
+
         if self.pdc_type in ('inbound', 'both'):
             domain = self._build_domain('inbound')
-            # Only analyze open PDCs for maturity
             domain.append(('state', 'in', ['draft', 'deposited']))
             pdcs = self.env['ops.pdc.receivable'].search(domain)
-            self._age_pdcs(pdcs, aging_buckets, today, period, 'inbound')
+            self._age_pdcs(pdcs, aging, today, period, 'inbound')
 
-        # Process outbound PDCs
         if self.pdc_type in ('outbound', 'both'):
             domain = self._build_domain('outbound')
             domain.append(('state', 'in', ['draft', 'issued', 'presented']))
             pdcs = self.env['ops.pdc.payable'].search(domain)
-            self._age_pdcs(pdcs, aging_buckets, today, period, 'outbound')
+            self._age_pdcs(pdcs, aging, today, period, 'outbound')
 
-        # Calculate totals
-        total_inbound = sum(b['inbound'] for b in aging_buckets.values())
-        total_outbound = sum(b['outbound'] for b in aging_buckets.values())
+        rows = []
+        for key, label in buckets:
+            b = aging[key]
+            rows.append(MatrixRow(values={
+                'bucket': label,
+                'inbound': b['inbound'],
+                'outbound': b['outbound'],
+                'net': b['inbound'] - b['outbound'],
+                'inbound_count': b['inbound_count'],
+                'outbound_count': b['outbound_count'],
+            }))
 
-        return {
-            'report_type': 'maturity',
-            'report_title': self.report_title,
-            'wizard_id': self.id,
-            'company_name': self.company_id.name,
-            'company_currency': self.company_id.currency_id.name,
-            'as_of_date': str(today),
-            'period_length': period,
-            'filters': self._get_filter_dict(),
-            'pdc_type': self.pdc_type,
-            'aging_buckets': list(aging_buckets.values()),
-            'totals': {
-                'inbound_total': total_inbound,
-                'outbound_total': total_outbound,
-                'net_position': total_inbound - total_outbound,
-            },
-        }
+        total_in = sum(b['inbound'] for b in aging.values())
+        total_out = sum(b['outbound'] for b in aging.values())
+        rows.append(MatrixRow(style='grand_total', values={
+            'bucket': 'Total',
+            'inbound': total_in,
+            'outbound': total_out,
+            'net': total_in - total_out,
+            'inbound_count': sum(b['inbound_count'] for b in aging.values()),
+            'outbound_count': sum(b['outbound_count'] for b in aging.values()),
+        }))
+
+        totals = {'inbound_total': total_in, 'outbound_total': total_out, 'net_position': total_in - total_out}
+
+        return asdict(ShapeCReport(meta=meta, colors=colors, columns=columns, rows=rows, totals=totals))
+
+    def _get_on_hand_data(self):
+        """PDCs in Hand -> Shape C matrix report."""
+        self.ensure_one()
+        meta = build_report_meta(self, 'on_hand', self._get_report_titles()['on_hand'], 'matrix')
+        colors = build_report_colors(self.company_id)
+
+        today = fields.Date.today()
+
+        columns = [
+            ColumnDef(key='pdc_number', label='PDC #', col_type='string'),
+            ColumnDef(key='pdc_type', label='Type', col_type='string', width=8),
+            ColumnDef(key='partner', label='Partner', col_type='string'),
+            ColumnDef(key='bank', label='Bank', col_type='string'),
+            ColumnDef(key='amount', label='Amount', col_type='currency', align='right', subtotal=True),
+            ColumnDef(key='maturity_date', label='Due Date', col_type='date'),
+            ColumnDef(key='days_held', label='Days Held', col_type='number', align='right'),
+            ColumnDef(key='status', label='Status', col_type='string'),
+            ColumnDef(key='branch', label='Branch', col_type='string'),
+        ]
+
+        rows = []
+        totals = {'inbound_total': 0.0, 'outbound_total': 0.0}
+
+        if self.pdc_type in ('inbound', 'both'):
+            pdcs = self.env['ops.pdc.receivable'].search(
+                self._build_domain('inbound'), order='maturity_date, id')
+            for pdc in pdcs:
+                days_held = (today - pdc.check_date).days if pdc.check_date else 0
+                rows.append(MatrixRow(values={
+                    'pdc_number': pdc.name or '',
+                    'pdc_type': 'Receivable',
+                    'partner': pdc.partner_id.name or '',
+                    'bank': pdc.bank_id.name if pdc.bank_id else '',
+                    'amount': pdc.amount,
+                    'maturity_date': str(pdc.maturity_date) if pdc.maturity_date else '',
+                    'days_held': days_held,
+                    'status': dict(pdc._fields['state'].selection).get(pdc.state, ''),
+                    'branch': pdc.branch_id.name if pdc.branch_id else '',
+                }))
+                totals['inbound_total'] += pdc.amount
+
+        if self.pdc_type in ('outbound', 'both'):
+            pdcs = self.env['ops.pdc.payable'].search(
+                self._build_domain('outbound'), order='maturity_date, id')
+            for pdc in pdcs:
+                days_held = (today - pdc.check_date).days if pdc.check_date else 0
+                rows.append(MatrixRow(values={
+                    'pdc_number': pdc.name or '',
+                    'pdc_type': 'Payable',
+                    'partner': pdc.partner_id.name or '',
+                    'bank': pdc.bank_id.name if pdc.bank_id else '',
+                    'amount': pdc.amount,
+                    'maturity_date': str(pdc.maturity_date) if pdc.maturity_date else '',
+                    'days_held': days_held,
+                    'status': dict(pdc._fields['state'].selection).get(pdc.state, ''),
+                    'branch': pdc.branch_id.name if pdc.branch_id else '',
+                }))
+                totals['outbound_total'] += pdc.amount
+
+        totals['net_position'] = totals['inbound_total'] - totals['outbound_total']
+        totals['total_count'] = len(rows)
+
+        return asdict(ShapeCReport(meta=meta, colors=colors, columns=columns, rows=rows, totals=totals))
+
+    # ============================================
+    # HELPER METHODS
+    # ============================================
 
     def _age_pdcs(self, pdcs, buckets, today, period, pdc_type):
         """Age PDCs into appropriate buckets."""
         for pdc in pdcs:
             days_to_maturity = (pdc.maturity_date - today).days
-
             if days_to_maturity < 0:
                 bucket = 'overdue'
             elif days_to_maturity == 0:
@@ -466,129 +460,19 @@ class OpsTreasuryReportWizard(models.TransientModel):
                 bucket = 'period_4'
             else:
                 bucket = 'older'
-
             buckets[bucket][pdc_type] += pdc.amount
             buckets[bucket][f'{pdc_type}_count'] += 1
-
-    # ============================================
-    # PDCs IN HAND DATA
-    # ============================================
-
-    def _get_on_hand_data(self):
-        """Get PDCs in Hand report data."""
-        self.ensure_one()
-
-        inbound_data = []
-        outbound_data = []
-
-        # Fetch open receivable PDCs (in hand = draft or deposited)
-        if self.pdc_type in ('inbound', 'both'):
-            domain = self._build_domain('inbound')
-            # Already filtered for on_hand in _build_domain
-            pdcs = self.env['ops.pdc.receivable'].search(domain, order='maturity_date, id')
-            inbound_data = self._process_pdc_records(pdcs, 'inbound')
-
-        # Fetch open payable PDCs (in hand = draft or issued)
-        if self.pdc_type in ('outbound', 'both'):
-            domain = self._build_domain('outbound')
-            pdcs = self.env['ops.pdc.payable'].search(domain, order='maturity_date, id')
-            outbound_data = self._process_pdc_records(pdcs, 'outbound')
-
-        # Group by branch if requested
-        grouped_inbound = {}
-        grouped_outbound = {}
-        if self.group_by == 'branch':
-            grouped_inbound = self._group_by_field(inbound_data, 'branch_name')
-            grouped_outbound = self._group_by_field(outbound_data, 'branch_name')
-        elif self.group_by == 'partner':
-            grouped_inbound = self._group_by_field(inbound_data, 'partner_name')
-            grouped_outbound = self._group_by_field(outbound_data, 'partner_name')
-        elif self.group_by == 'bank':
-            grouped_inbound = self._group_by_field(inbound_data, 'bank_name')
-            grouped_outbound = self._group_by_field(outbound_data, 'bank_name')
-        elif self.group_by == 'state':
-            grouped_inbound = self._group_by_field(inbound_data, 'state_label')
-            grouped_outbound = self._group_by_field(outbound_data, 'state_label')
-
-        inbound_total = sum(p['amount'] for p in inbound_data)
-        outbound_total = sum(p['amount'] for p in outbound_data)
-
-        return {
-            'report_type': 'on_hand',
-            'report_title': self.report_title,
-            'wizard_id': self.id,
-            'company_name': self.company_id.name,
-            'company_currency': self.company_id.currency_id.name,
-            'as_of_date': str(fields.Date.today()),
-            'filters': self._get_filter_dict(),
-            'pdc_type': self.pdc_type,
-            'group_by': self.group_by,
-            'inbound': {
-                'data': inbound_data,
-                'grouped': grouped_inbound,
-                'total': inbound_total,
-                'count': len(inbound_data),
-            },
-            'outbound': {
-                'data': outbound_data,
-                'grouped': grouped_outbound,
-                'total': outbound_total,
-                'count': len(outbound_data),
-            },
-            'totals': {
-                'inbound_total': inbound_total,
-                'outbound_total': outbound_total,
-                'net_position': inbound_total - outbound_total,
-            },
-        }
-
-    def _group_by_field(self, data, field_name):
-        """Group data by a specific field."""
-        grouped = {}
-        for item in data:
-            key = item.get(field_name, 'Unspecified') or 'Unspecified'
-            if key not in grouped:
-                grouped[key] = {
-                    'name': key,
-                    'items': [],
-                    'total': 0,
-                    'count': 0,
-                }
-            grouped[key]['items'].append(item)
-            grouped[key]['total'] += item['amount']
-            grouped[key]['count'] += 1
-        return list(grouped.values())
-
-    # ============================================
-    # HELPER METHODS
-    # ============================================
-
-    def _get_filter_dict(self):
-        """Get filter summary as dictionary."""
-        return {
-            'report_type': self.report_type,
-            'pdc_type': self.pdc_type,
-            'date_from': str(self.date_from) if self.date_from else None,
-            'date_to': str(self.date_to) if self.date_to else None,
-            'branch_count': len(self.branch_ids),
-            'branch_names': self.branch_ids.mapped('name') if self.branch_ids else [],
-            'partner_count': len(self.partner_ids),
-            'bank_count': len(self.bank_ids),
-            'state_filter': self.state_filter,
-            'group_by': self.group_by,
-        }
 
     def _return_report_action(self, data):
         """Return appropriate report action for PDF generation."""
         report_refs = {
-            'registry': 'ops_matrix_accounting.report_treasury_registry_pdf',
-            'maturity': 'ops_matrix_accounting.report_treasury_maturity_pdf',
-            'on_hand': 'ops_matrix_accounting.report_treasury_on_hand_pdf',
+            'registry': 'ops_matrix_accounting.action_report_pdc_registry',
+            'maturity': 'ops_matrix_accounting.action_report_pdc_maturity',
+            'on_hand': 'ops_matrix_accounting.action_report_pdc_on_hand',
         }
-
-        report_ref = report_refs.get(self.report_type, report_refs['registry'])
-
-        return self.env.ref(report_ref).report_action(self)
+        return self.env.ref(report_refs.get(self.report_type, report_refs['registry'])).report_action(
+            self, data={'wizard_id': self.id, 'wizard_model': self._name},
+        )
 
     # ============================================
     # ACTION METHODS
@@ -597,21 +481,12 @@ class OpsTreasuryReportWizard(models.TransientModel):
     def action_view_pdcs(self):
         """Open filtered PDCs in list view."""
         self.ensure_one()
-
         if self.pdc_type == 'inbound':
-            model = 'ops.pdc.receivable'
-            domain = self._build_domain('inbound')
-            name = _('Receivable PDCs')
+            model, domain, name = 'ops.pdc.receivable', self._build_domain('inbound'), _('Receivable PDCs')
         elif self.pdc_type == 'outbound':
-            model = 'ops.pdc.payable'
-            domain = self._build_domain('outbound')
-            name = _('Payable PDCs')
+            model, domain, name = 'ops.pdc.payable', self._build_domain('outbound'), _('Payable PDCs')
         else:
-            # Both - show receivable by default
-            model = 'ops.pdc.receivable'
-            domain = self._build_domain('inbound')
-            name = _('Receivable PDCs')
-
+            model, domain, name = 'ops.pdc.receivable', self._build_domain('inbound'), _('Receivable PDCs')
         return {
             'name': name,
             'type': 'ir.actions.act_window',
@@ -621,97 +496,17 @@ class OpsTreasuryReportWizard(models.TransientModel):
             'context': {'search_default_group_by_state': 1},
         }
 
-    def action_export_excel(self):
-        """
-        Export Treasury Intelligence report to Excel.
-
-        Uses Phase 5 corporate Excel format structure with dynamic branding.
-        Generates file directly using xlsxwriter (no report_xlsx dependency).
-        """
-        self.ensure_one()
-
-        try:
-            import xlsxwriter
-        except ImportError:
-            raise UserError(_("xlsxwriter Python library is not installed. Cannot generate Excel reports."))
-
-        import io
-        import base64
-
-        # Get report data with security checks
-        report_data = self._get_report_data()
-
-        # Create in-memory Excel file
-        output = io.BytesIO()
-        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-
-        try:
-            # Generate Excel report using the XLSX report generator
-            xlsx_report = self.env['report.ops_matrix_accounting.report_treasury_xlsx']
-            xlsx_report.generate_xlsx_report(workbook, report_data, self)
-        finally:
-            workbook.close()
-
-        # Get file content
-        output.seek(0)
-        file_content = output.read()
-        output.close()
-
-        # Encode to base64
-        file_content_b64 = base64.b64encode(file_content)
-
-        # Generate filename based on report type
-        report_type_labels = {
-            'registry': 'PDC_Registry',
-            'maturity': 'Maturity_Analysis',
-            'on_hand': 'PDCs_In_Hand',
-        }
-        pdc_type_labels = {
-            'inbound': 'Receivable',
-            'outbound': 'Payable',
-            'both': 'All',
-        }
-        report_label = report_type_labels.get(self.report_type, 'Treasury')
-        pdc_label = pdc_type_labels.get(self.pdc_type, '')
-        filename = f"OPS_{report_label}_{pdc_label}_{fields.Date.today().strftime('%Y%m%d')}.xlsx"
-
-        # Create attachment and return download action
-        attachment = self.env['ir.attachment'].create({
-            'name': filename,
-            'type': 'binary',
-            'datas': file_content_b64,
-            'res_model': self._name,
-            'res_id': self.id,
-            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        })
-
-        return {
-            'type': 'ir.actions.act_url',
-            'url': f'/web/content/{attachment.id}?download=true',
-            'target': 'self',
-        }
-
     # ============================================
     # ONCHANGE METHODS
     # ============================================
 
     @api.onchange('report_type')
     def _onchange_report_type(self):
-        """Adjust options based on report type."""
         if self.report_type == 'maturity':
-            # Maturity analysis should focus on open PDCs
             self.state_filter = 'open'
         if self.report_type == 'on_hand':
-            # On-hand shows only open
-            self.state_filter = 'all'  # Domain handles it
+            self.state_filter = 'all'
 
     @api.onchange('pdc_type')
     def _onchange_pdc_type(self):
-        """Clear partner filter when switching PDC type."""
         self.partner_ids = False
-
-    # ============================================
-    # SMART TEMPLATE METHODS
-    # ============================================
-    # _onchange_report_template_id, _get_template_config, action_save_template
-    # are inherited from ops.base.report.wizard

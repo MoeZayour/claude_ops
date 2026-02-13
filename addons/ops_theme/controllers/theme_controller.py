@@ -54,8 +54,8 @@ class OPSThemeController(http.Controller):
         company_id = request.env.company.id if request.env.company else 1
         company = request.env['res.company'].sudo().browse(company_id)
         return {
-            'primary_color': company.ops_primary_color or '#1e293b',
-            'secondary_color': company.ops_secondary_color or '#3b82f6',
+            'brand_color': company.ops_brand_color or '#1e293b',
+            'action_color': company.ops_action_color or '#3b82f6',
             'success_color': company.ops_success_color or '#10b981',
             'warning_color': company.ops_warning_color or '#f59e0b',
             'danger_color': company.ops_danger_color or '#ef4444',
@@ -67,6 +67,7 @@ class OPSThemeController(http.Controller):
             'navbar_style': company.ops_navbar_style or 'dark',
             'card_shadow': company.ops_card_shadow or 'medium',
             'border_radius': company.ops_border_radius or 'rounded',
+            'is_dark_skin': company.ops_is_dark_skin,
         }
 
     # =========================================================================

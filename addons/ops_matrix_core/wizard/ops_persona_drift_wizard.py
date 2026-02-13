@@ -151,7 +151,7 @@ class OpsPersonaDriftWizard(models.TransientModel):
                 'drift_status': 'no_persona',
                 'persona_names': '',
                 'expected_groups': '',
-                'actual_groups': self._format_groups(user.groups_id),
+                'actual_groups': self._format_groups(user.group_ids),
                 'extra_groups': '',
                 'missing_groups': '',
                 'severity': 'medium',
@@ -168,7 +168,7 @@ class OpsPersonaDriftWizard(models.TransientModel):
                 expected_groups |= persona.access_group_ids
 
         # Get actual groups (filter to relevant ones)
-        actual_groups = user.groups_id
+        actual_groups = user.group_ids
 
         # Define sensitive/OPS-related groups to check
         ops_groups = actual_groups.filtered(

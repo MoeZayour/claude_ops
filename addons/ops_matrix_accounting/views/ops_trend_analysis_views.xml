@@ -83,7 +83,7 @@
 
                             <separator string="Variance Details"/>
                             <div class="oe_form_box_info" invisible="('trend_data', '!=', False)">
-                                <p>Click "Generate Report" to compute trend analysis.</p>
+                                <p>Click a button below to generate trend analysis.</p>
                             </div>
                         </page>
 
@@ -118,10 +118,10 @@
                 </sheet>
 
                 <footer>
-                    <button name="action_generate_report" string="Generate Report"
-                            type="object" class="btn-primary"/>
-                    <button name="action_export_excel" string="Export to Excel"
-                            type="object" class="btn-secondary"/>
+                    <button name="action_generate_report" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

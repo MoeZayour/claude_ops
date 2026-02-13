@@ -100,7 +100,21 @@ class ResCompany(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list: List[Dict[str, Any]]) -> 'ResCompany':
-        """Override create to auto-generate OPS code and analytic account."""
+        """Override create to auto-generate OPS code and analytic account.
+
+        GOVERNANCE: Only SYS_ADMIN (group_system) can create companies.
+        Companies are legal entities in OPS — creating one is a structural
+        change that affects the entire tenant. IT Admin and all other personas
+        are blocked from company creation.
+        """
+        # Skip governance check during module install/upgrade
+        if not self.env.context.get('install_mode') and not self.env.context.get('module'):
+            if not self.env.user.has_group('base.group_system'):
+                raise ValidationError(_(
+                    'Only the System Administrator can create new companies. '
+                    'Contact your SYS_ADMIN to provision a new legal entity.'
+                ))
+
         for vals in vals_list:
             if vals.get('ops_code', 'New') == 'New':
                 company_name = vals.get('name', '')

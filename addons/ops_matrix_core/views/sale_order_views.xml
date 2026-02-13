@@ -16,6 +16,12 @@
                         invisible="approval_request_count == 0">
                     <field name="approval_request_count" widget="statinfo" string="Approvals"/>
                 </button>
+                <button name="action_download_consolidated_documents"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-pdf-o"
+                        string="Documents"
+                        help="Download consolidated product documents (deduplicated)"/>
                 <button name="action_request_approval"
                         type="object"
                         class="oe_stat_button"
@@ -72,16 +78,21 @@
                 <attribute name="invisible">state == 'waiting_approval'</attribute>
             </xpath>
 
-            <!-- Matrix dimension fields -->
+            <!-- Contact person + Matrix fields (flat inside partner_details group) -->
             <xpath expr="//field[@name='partner_id']" position="after">
-                <group name="matrix_info">
-                    <field name="ops_branch_id" options="{'no_open': True}"
-                           readonly="state == 'waiting_approval'"/>
-                    <field name="ops_business_unit_id" options="{'no_open': True}"
-                           readonly="state == 'waiting_approval'"/>
-                    <field name="approval_locked" invisible="1"/>
-                    <field name="approval_request_id" invisible="1"/>
-                </group>
+                <field name="ops_contact_id"
+                       string="Contact Person"
+                       context="{'default_parent_id': partner_id}"
+                       options="{'no_create': False, 'no_create_edit': False}"
+                       readonly="state == 'waiting_approval'"/>
+                <field name="ops_branch_id" string="Branch"
+                       options="{'no_open': True}"
+                       readonly="state == 'waiting_approval'"/>
+                <field name="ops_business_unit_id" string="Business Unit"
+                       options="{'no_open': True}"
+                       readonly="state == 'waiting_approval'"/>
+                <field name="approval_locked" invisible="1"/>
+                <field name="approval_request_id" invisible="1"/>
             </xpath>
 
             <!-- STRICT GOVERNANCE: Make partner_id readonly when waiting_approval -->
@@ -129,15 +140,13 @@
             </xpath>
         </field>
     </record>
-    
+
     <!-- ISS-002: The Cost Shield - Protected Cost/Margin Fields on Sale Order Lines -->
-    <!-- Security: Only Administrators and OPS Managers can view cost and margin data -->
     <record id="view_order_line_tree_cost_shield" model="ir.ui.view">
         <field name="name">sale.order.line.tree.cost.shield</field>
         <field name="model">sale.order.line</field>
         <field name="inherit_id" ref="sale.view_order_line_tree"/>
         <field name="arch" type="xml">
-            <!-- Add protected cost/margin columns - visible only to Admin/OPS Manager -->
             <xpath expr="//field[@name='price_subtotal']" position="after">
                 <field name="purchase_price"
                        string="Cost"
@@ -156,16 +165,4 @@
         </field>
     </record>
 
-    <!-- ========================================================================
-         PRICE PROTECTION: Lock Unit Prices for Sales Reps
-         Only Managers and Administrators can edit the Unit Price field
-         Sales Reps see it as readonly to prevent unauthorized price changes
-
-         Odoo 19 Implementation: Protection is enforced at model level via
-         @api.constrains on sale.order.line.price_unit - see sale_order.py
-
-         Note: View-level readonly was removed due to Odoo 19 sol_o2m widget
-         incompatibility. Model-level enforcement is more robust anyway.
-    ======================================================================== -->
-    
 </odoo>

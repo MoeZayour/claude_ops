@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- OPS REPORT CONFIGS — Per-report configuration templates       -->
+    <!-- Each template calls the appropriate shape template.           -->
+    <!-- The wizard controls visible_columns/value_columns in data.    -->
+    <!-- ============================================================ -->
+
+    <!-- ==================== FINANCIAL PILLAR ==================== -->
+
+    <!-- 1. General Ledger → Shape A -->
+    <template id="report_general_ledger">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_lines"/></t>
+    </template>
+
+    <!-- 2. Trial Balance → Shape C -->
+    <template id="report_trial_balance">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 3. Profit &amp; Loss → Shape B -->
+    <template id="report_profit_loss">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_hierarchy"/></t>
+    </template>
+
+    <!-- 4. Balance Sheet → Shape B -->
+    <template id="report_balance_sheet">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_hierarchy"/></t>
+    </template>
+
+    <!-- 5. Cash Flow Statement → Shape B -->
+    <template id="report_cash_flow">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_hierarchy"/></t>
+    </template>
+
+    <!-- 6. Aged Receivables → Shape C -->
+    <template id="report_aged_receivables">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 7. Aged Payables → Shape C -->
+    <template id="report_aged_payables">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 8. Partner Ledger → Shape A -->
+    <template id="report_partner_ledger">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_lines"/></t>
+    </template>
+
+    <!-- 9. Statement of Account → Shape A -->
+    <template id="report_statement_of_account">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_lines"/></t>
+    </template>
+
+    <!-- ==================== DAILY BOOKS PILLAR ==================== -->
+
+    <!-- 10. Cash Book → Shape A -->
+    <template id="report_cash_book">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_lines"/></t>
+    </template>
+
+    <!-- 11. Day Book → Shape A -->
+    <template id="report_day_book">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_lines"/></t>
+    </template>
+
+    <!-- 12. Bank Book → Shape A -->
+    <template id="report_bank_book">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_lines"/></t>
+    </template>
+
+    <!-- ==================== TREASURY PILLAR ==================== -->
+
+    <!-- 13. PDC Registry → Shape C -->
+    <template id="report_pdc_registry">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 14. PDC Maturity → Shape C -->
+    <template id="report_pdc_maturity">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 15. PDCs in Hand → Shape C -->
+    <template id="report_pdc_on_hand">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- ==================== ASSET PILLAR ==================== -->
+
+    <!-- 16. Asset Register → Shape C -->
+    <template id="report_asset_register">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 17. Depreciation Schedule → Shape C -->
+    <template id="report_depreciation_schedule">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 18. Asset Disposal → Shape C -->
+    <template id="report_asset_disposal">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 19. Asset Forecast → Shape C -->
+    <template id="report_asset_forecast">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 20. Asset Movement → Shape C -->
+    <template id="report_asset_movement">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- ==================== INVENTORY PILLAR ==================== -->
+
+    <!-- 21. Stock Valuation → Shape C -->
+    <template id="report_stock_valuation">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 22. Inventory Aging → Shape C -->
+    <template id="report_inventory_aging">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 23. Inventory Movement → Shape C -->
+    <template id="report_inventory_movement">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- 24. Negative Stock → Shape C -->
+    <template id="report_negative_stock">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_matrix"/></t>
+    </template>
+
+    <!-- ==================== CONSOLIDATION PILLAR ==================== -->
+
+    <!-- 25. Company Consolidation → Shape B -->
+    <template id="report_company_consolidation">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_hierarchy"/></t>
+    </template>
+
+    <!-- 26. Branch P&amp;L → Shape B -->
+    <template id="report_branch_pnl">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_hierarchy"/></t>
+    </template>
+
+    <!-- 27. BU Report → Shape B -->
+    <template id="report_bu_report">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_hierarchy"/></t>
+    </template>
+
+    <!-- 28. Consolidated Balance Sheet → Shape B -->
+    <template id="report_consolidated_bs">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_hierarchy"/></t>
+    </template>
+
+    <!-- ==================== BUDGET PILLAR ==================== -->
+
+    <!-- 29. Budget vs Actual → Shape B -->
+    <template id="report_budget_vs_actual">
+        <t t-call="ops_matrix_accounting.ops_html_container"><t t-call="ops_matrix_accounting.ops_report_shape_hierarchy"/></t>
+    </template>
+
+</odoo>

@@ -1,245 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- OPS Delivery Note Report Action -->
-    <record id="action_report_ops_delivery" model="ir.actions.report">
-        <field name="name">Delivery Note (OPS)</field>
-        <field name="model">stock.picking</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ops_matrix_core.report_ops_delivery</field>
-        <field name="report_file">ops_matrix_core.report_ops_delivery</field>
+    <!-- ================================================================
+         OPS DELIVERY NOTE / GOODS RECEIPT / TRANSFER NOTE
+         Inherits native stock.report_delivery_document via XPath.
+         ================================================================ -->
+
+    <!-- Re-enable and style native stock report actions -->
+    <record id="stock.action_report_delivery" model="ir.actions.report">
+        <field name="paperformat_id" ref="ops_theme.paperformat_ops_external"/>
         <field name="binding_model_id" ref="stock.model_stock_picking"/>
         <field name="binding_type">report</field>
-        <field name="print_report_name">'Delivery - %s' % object.name</field>
+    </record>
+    <record id="stock.action_report_picking" model="ir.actions.report">
+        <field name="paperformat_id" ref="ops_theme.paperformat_ops_external"/>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
     </record>
 
-    <!-- Main Template -->
-    <template id="report_ops_delivery">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="doc">
-                <t t-call="ops_matrix_core.report_ops_delivery_document"/>
-            </t>
-        </t>
-    </template>
+    <template id="report_delivery_document_ops"
+              name="OPS Delivery Document"
+              inherit_id="stock.report_delivery_document"
+              priority="99">
 
-    <!-- Delivery Note Document Template -->
-    <template id="report_ops_delivery_document">
-        <t t-set="company" t-value="doc.company_id or env.company"/>
-        <t t-set="primary_color" t-value="company.ops_primary_color or '#1e293b'"/>
-        <t t-set="show_badge" t-value="company.ops_show_external_badge"/>
-        <t t-set="is_outgoing" t-value="doc.picking_type_code == 'outgoing'"/>
-        <t t-set="is_incoming" t-value="doc.picking_type_code == 'incoming'"/>
-        <t t-set="doc_title" t-value="'Delivery Note' if is_outgoing else ('Goods Receipt' if is_incoming else 'Transfer Note')"/>
+        <xpath expr="//div[@class='page']" position="replace">
+            <div class="page ops-report-page">
+                <!-- Alias o -> doc -->
+                <t t-set="doc" t-value="o"/>
+                <t t-set="company" t-value="doc.company_id"/>
+                <t t-set="_ops" t-value="company.get_ops_report_settings()"/>
+                <t t-set="is_outgoing" t-value="doc.picking_type_code == 'outgoing'"/>
+                <t t-set="is_incoming" t-value="doc.picking_type_code == 'incoming'"/>
 
-        <t t-set="ops_primary" t-value="primary_color"/>
-        <t t-set="ops_rgb" t-value="'%s,%s,%s' % (int(ops_primary[1:3], 16), int(ops_primary[3:5], 16), int(ops_primary[5:7], 16)) if ops_primary.startswith('#') and len(ops_primary) == 7 else '30,41,59'"/>
+                <!-- CSS -->
+                <t t-call="ops_theme.ops_report_css"/>
 
-        <div class="article ops-external-doc">
-            <t t-call="ops_theme.ops_report_css"/>
+                <!-- Title Bar -->
+                <t t-set="doc_title" t-value="'Delivery Note' if is_outgoing else ('Goods Receipt' if is_incoming else 'Internal Transfer')"/>
+                <t t-set="doc_ref" t-value="doc.name"/>
+                <t t-call="ops_theme.ops_title_bar"/>
 
-            <!-- LETTERHEAD -->
-            <div class="ops-letterhead">
-                <div class="ops-company-block">
-                    <img t-if="company.logo" class="ops-company-logo"
-                         t-att-src="image_data_uri(company.logo)"/>
-                    <div t-else="" class="ops-company-logo-placeholder">
-                        <t t-esc="(company.name or 'CO')[:2].upper()"/>
-                    </div>
-                    <div>
-                        <div class="ops-company-name"><t t-esc="company.name"/></div>
-                        <div class="ops-company-details">
-                            <t t-if="company.street"><t t-esc="company.street"/><br/></t>
-                            <t t-if="company.street2"><t t-esc="company.street2"/><br/></t>
-                            <t t-if="company.city"><t t-esc="company.city"/></t>
-                            <t t-if="company.country_id">, <t t-esc="company.country_id.name"/></t><br/>
-                            <t t-if="company.phone">Tel: <t t-esc="company.phone"/></t>
-                        </div>
-                    </div>
-                </div>
-                <div class="ops-doc-meta">
-                    <div class="ops-doc-ref"><t t-esc="doc.name"/></div>
-                    Date: <t t-esc="doc.scheduled_date" t-options='{"widget": "date"}'/><br/>
-                    <t t-if="doc.date_done">Completed: <t t-esc="doc.date_done" t-options='{"widget": "date"}'/><br/></t>
-                    <t t-if="doc.origin">Source: <t t-esc="doc.origin"/><br/></t>
-                    <t t-if="doc.ops_branch_id">Branch: <t t-esc="doc.ops_branch_id.name"/></t>
-                </div>
-            </div>
-
-            <!-- TITLE BAR -->
-            <div class="ops-title-bar">
-                <h2><t t-esc="doc_title"/></h2>
-                <span class="ops-doc-status">
-                    <t t-if="doc.state == 'done'">Completed</t>
-                    <t t-elif="doc.state == 'assigned'">Ready</t>
-                    <t t-elif="doc.state == 'waiting'">Waiting</t>
-                    <t t-elif="doc.state == 'confirmed'">Confirmed</t>
-                    <t t-else=""><t t-esc="doc.state"/></t>
-                </span>
-            </div>
-
-            <!-- ADDRESS BLOCKS -->
-            <div class="ops-address-row">
-                <div class="ops-address-block" t-if="is_outgoing">
-                    <div class="ops-address-label">Deliver To</div>
-                    <div class="ops-address-name"><t t-esc="doc.partner_id.name or 'Customer'"/></div>
-                    <div class="ops-address-details">
-                        <t t-if="doc.partner_id.street"><t t-esc="doc.partner_id.street"/><br/></t>
-                        <t t-if="doc.partner_id.street2"><t t-esc="doc.partner_id.street2"/><br/></t>
-                        <t t-if="doc.partner_id.city"><t t-esc="doc.partner_id.city"/></t>
-                        <t t-if="doc.partner_id.country_id">, <t t-esc="doc.partner_id.country_id.name"/></t><br/>
-                        <t t-if="doc.partner_id.phone">Tel: <t t-esc="doc.partner_id.phone"/></t>
-                    </div>
-                </div>
-                <div class="ops-address-block" t-if="is_incoming">
-                    <div class="ops-address-label">From Vendor</div>
-                    <div class="ops-address-name"><t t-esc="doc.partner_id.name or 'Vendor'"/></div>
-                    <div class="ops-address-details">
-                        <t t-if="doc.partner_id.street"><t t-esc="doc.partner_id.street"/><br/></t>
-                        <t t-if="doc.partner_id.city"><t t-esc="doc.partner_id.city"/></t>
-                    </div>
-                </div>
-                <div class="ops-address-block" t-if="not is_outgoing and not is_incoming">
-                    <div class="ops-address-label">Partner</div>
-                    <div class="ops-address-name"><t t-esc="doc.partner_id.name or 'Internal'"/></div>
-                </div>
-                <div class="ops-address-block">
-                    <div class="ops-address-label"><t t-if="is_outgoing">Ship From</t><t t-else="">Destination</t></div>
-                    <div class="ops-address-name">
-                        <t t-if="is_outgoing"><t t-esc="doc.location_id.warehouse_id.name or company.name"/></t>
-                        <t t-else=""><t t-esc="doc.location_dest_id.warehouse_id.name or company.name"/></t>
-                    </div>
-                    <div class="ops-address-details">
-                        <t t-esc="company.street or ''"/><br/>
-                        <t t-esc="company.city or ''"/>
-                    </div>
-                </div>
-            </div>
-
-            <!-- INFO BAR -->
-            <div class="ops-info-bar">
-                <div class="ops-info-cell">
-                    <div class="ops-info-label">Operation Type</div>
-                    <div class="ops-info-value"><t t-esc="doc.picking_type_id.name"/></div>
-                </div>
-                <div class="ops-info-cell" t-if="doc.origin">
-                    <div class="ops-info-label">Source</div>
-                    <div class="ops-info-value"><t t-esc="doc.origin"/></div>
-                </div>
-                <div class="ops-info-cell">
-                    <div class="ops-info-label">Total Items</div>
-                    <div class="ops-info-value"><t t-esc="len(doc.move_ids)"/></div>
-                </div>
-            </div>
-
-            <!-- LINE ITEMS -->
-            <table class="ops-items-table">
-                <thead>
+                <!-- Addresses -->
+                <table style="width:100%; border-collapse:collapse; margin-bottom:14px;">
                     <tr>
-                        <th style="width: 25px;">#</th>
-                        <th style="width: 80px;">Code</th>
-                        <th>Product</th>
-                        <th style="width: 60px;" class="num">Ordered</th>
-                        <th style="width: 60px;" class="num">Delivered</th>
-                        <th style="width: 50px;">UoM</th>
-                        <th style="width: 100px;">Lot/Serial</th>
+                        <td style="width:50%; vertical-align:top; padding-right:10px;">
+                            <t t-if="is_outgoing and doc.partner_id">
+                                <t t-call="ops_theme.ops_address_block">
+                                    <t t-set="partner" t-value="doc.partner_id"/>
+                                    <t t-set="addr_label" t-value="'Deliver To'"/>
+                                </t>
+                            </t>
+                            <t t-if="is_incoming and doc.partner_id">
+                                <t t-call="ops_theme.ops_address_block">
+                                    <t t-set="partner" t-value="doc.partner_id"/>
+                                    <t t-set="addr_label" t-value="'From Vendor'"/>
+                                </t>
+                            </t>
+                            <t t-if="not is_outgoing and not is_incoming">
+                                <div style="font-size:8.5pt; margin-bottom:12px;">
+                                    <div t-attf-style="font-size:7pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#{_ops['primary']}; margin-bottom:4px;">From</div>
+                                    <div style="font-weight:600; font-size:9.5pt;"><t t-esc="doc.location_id.display_name"/></div>
+                                </div>
+                            </t>
+                        </td>
+                        <td style="width:50%; vertical-align:top; padding-left:10px;">
+                            <t t-if="is_outgoing">
+                                <div style="font-size:8.5pt; margin-bottom:12px;">
+                                    <div t-attf-style="font-size:7pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#{_ops['primary']}; margin-bottom:4px;">Ship From</div>
+                                    <div style="font-weight:600; font-size:9.5pt;"><t t-esc="doc.location_id.display_name"/></div>
+                                </div>
+                            </t>
+                            <t t-if="is_incoming">
+                                <div style="font-size:8.5pt; margin-bottom:12px;">
+                                    <div t-attf-style="font-size:7pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#{_ops['primary']}; margin-bottom:4px;">Receive At</div>
+                                    <div style="font-weight:600; font-size:9.5pt;"><t t-esc="doc.location_dest_id.display_name"/></div>
+                                </div>
+                            </t>
+                            <t t-if="not is_outgoing and not is_incoming">
+                                <div style="font-size:8.5pt; margin-bottom:12px;">
+                                    <div t-attf-style="font-size:7pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#{_ops['primary']}; margin-bottom:4px;">To</div>
+                                    <div style="font-weight:600; font-size:9.5pt;"><t t-esc="doc.location_dest_id.display_name"/></div>
+                                </div>
+                            </t>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <t t-set="line_num" t-value="0"/>
-                    <t t-foreach="doc.move_ids" t-as="move">
-                        <t t-set="line_num" t-value="line_num + 1"/>
-                        <tr>
-                            <td><t t-esc="line_num"/></td>
-                            <td><t t-esc="move.product_id.default_code or '-'"/></td>
-                            <td>
-                                <strong><t t-esc="move.product_id.name"/></strong>
-                                <t t-if="move.description_picking and move.description_picking != move.product_id.name">
-                                    <span class="ops-item-code"><t t-esc="move.description_picking[:60]"/></span>
-                                </t>
-                            </td>
-                            <td class="num"><t t-esc="'{:,.2f}'.format(move.product_uom_qty)"/></td>
-                            <td class="num" style="font-weight: 600;"><t t-esc="'{:,.2f}'.format(move.quantity)"/></td>
-                            <td><t t-esc="move.product_uom.name"/></td>
-                            <td>
-                                <t t-if="move.move_line_ids">
-                                    <t t-foreach="move.move_line_ids[:2]" t-as="ml">
-                                        <t t-if="ml.lot_id"><t t-esc="ml.lot_id.name"/><br/></t>
+                </table>
+
+                <!-- Info Bar -->
+                <table class="ops-info-bar" t-attf-style="width:100%; border-collapse:collapse; margin-bottom:14px;">
+                    <tr t-attf-style="background:rgba(#{_ops['rgb']},0.04);">
+                        <td t-if="doc.scheduled_date" class="ops-info-cell" style="padding:6px 10px; text-align:center;">
+                            <div style="font-size:6.5pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#64748b;">Scheduled Date</div>
+                            <div style="font-size:8.5pt; font-weight:500; margin-top:2px; color:#1e293b;">
+                                <t t-esc="doc.scheduled_date" t-options="{'widget': 'date'}"/>
+                            </div>
+                        </td>
+                        <td t-if="doc.date_done" class="ops-info-cell" style="padding:6px 10px; text-align:center;">
+                            <div style="font-size:6.5pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#64748b;">Completed Date</div>
+                            <div style="font-size:8.5pt; font-weight:500; margin-top:2px; color:#1e293b;">
+                                <t t-esc="doc.date_done" t-options="{'widget': 'date'}"/>
+                            </div>
+                        </td>
+                        <td t-if="doc.origin" class="ops-info-cell" style="padding:6px 10px; text-align:center;">
+                            <div style="font-size:6.5pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#64748b;">Source Document</div>
+                            <div style="font-size:8.5pt; font-weight:500; margin-top:2px; color:#1e293b;"><t t-esc="doc.origin"/></div>
+                        </td>
+                        <td t-if="doc.picking_type_id" class="ops-info-cell" style="padding:6px 10px; text-align:center;">
+                            <div style="font-size:6.5pt; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; color:#64748b;">Operation Type</div>
+                            <div style="font-size:8.5pt; font-weight:500; margin-top:2px; color:#1e293b;"><t t-esc="doc.picking_type_id.name"/></div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Line Items (no monetary values) -->
+                <t t-set="moves" t-value="doc.move_ids"/>
+                <t t-set="has_lot" t-value="any(m.move_line_ids and any(ml.lot_id or ml.lot_name for ml in m.move_line_ids) for m in moves)"/>
+
+                <table class="ops-items-table">
+                    <thead>
+                        <tr t-attf-style="background:#{_ops['primary']}; color:#{_ops['text_on_primary']};">
+                            <th style="width:4%;" class="ctr">#</th>
+                            <th>Product</th>
+                            <th style="width:10%;" class="num">Ordered</th>
+                            <th style="width:10%;" class="num">Delivered</th>
+                            <th style="width:8%;" class="ctr">UoM</th>
+                            <th t-if="has_lot" style="width:15%;">Lot/Serial</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="line_num" t-value="0"/>
+                        <t t-foreach="moves" t-as="move">
+                            <t t-set="line_num" t-value="line_num + 1"/>
+                            <tr>
+                                <td class="ctr" style="color:#94a3b8; font-size:8pt;"><t t-esc="line_num"/></td>
+                                <td>
+                                    <t t-if="_ops.get('show_code') and move.product_id and move.product_id.default_code">
+                                        <span class="ops-product-code">[<t t-esc="move.product_id.default_code"/>]</span><br/>
                                     </t>
-                                    <t t-if="len(move.move_line_ids) > 2">...</t>
-                                </t>
+                                    <span t-esc="move.description_picking or move.product_id.name"/>
+                                </td>
+                                <td class="num"><t t-esc="move.product_uom_qty" t-options="{'widget':'float','precision':2}"/></td>
+                                <td class="num"><t t-esc="move.quantity" t-options="{'widget':'float','precision':2}"/></td>
+                                <td class="ctr" style="font-size:8pt; color:#64748b;">
+                                    <t t-if="move.product_uom" t-esc="move.product_uom.name"/>
+                                </td>
+                                <td t-if="has_lot" style="font-size:7.5pt; color:#64748b;">
+                                    <t t-foreach="move.move_line_ids" t-as="ml">
+                                        <t t-if="ml.lot_id"><t t-esc="ml.lot_id.name"/><t t-if="not ml_last">, </t></t>
+                                        <t t-elif="ml.lot_name"><t t-esc="ml.lot_name"/><t t-if="not ml_last">, </t></t>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+                <!-- Delivery Summary -->
+                <div style="margin-top:14px; page-break-inside:avoid;">
+                    <table class="ops-summary-bar" style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td style="padding:8px 12px; text-align:center;">
+                                <div style="font-size:6.5pt; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; color:#94a3b8; margin-bottom:2px;">Total Lines</div>
+                                <div t-attf-style="font-size:14pt; font-weight:700; color:#{_ops['primary']};"><t t-esc="len(moves)"/></div>
+                            </td>
+                            <td style="padding:8px 12px; text-align:center;">
+                                <div style="font-size:6.5pt; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; color:#94a3b8; margin-bottom:2px;">Total Quantity</div>
+                                <div t-attf-style="font-size:14pt; font-weight:700; color:#{_ops['primary']};"><t t-esc="sum(m.quantity for m in moves)" t-options="{'widget':'float','precision':2}"/></div>
+                            </td>
+                            <td t-if="doc.shipping_weight" style="padding:8px 12px; text-align:center;">
+                                <div style="font-size:6.5pt; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; color:#94a3b8; margin-bottom:2px;">Total Weight</div>
+                                <div t-attf-style="font-size:14pt; font-weight:700; color:#{_ops['primary']};"><t t-esc="doc.shipping_weight" t-options="{'widget':'float','precision':2}"/> kg</div>
                             </td>
                         </tr>
-                    </t>
-                </tbody>
-            </table>
+                    </table>
+                </div>
 
-            <!-- SUMMARY -->
-            <div class="ops-delivery-summary">
-                <div class="ops-summary-item">
-                    <div class="ops-summary-label">Total Lines</div>
-                    <div class="ops-summary-value"><t t-esc="len(doc.move_ids)"/></div>
-                </div>
-                <div class="ops-summary-item">
-                    <div class="ops-summary-label">Total Quantity</div>
-                    <div class="ops-summary-value"><t t-esc="'{:,.0f}'.format(sum(doc.move_ids.mapped('quantity')))"/></div>
-                </div>
-                <div class="ops-summary-item" t-if="doc.shipping_weight">
-                    <div class="ops-summary-label">Total Weight</div>
-                    <div class="ops-summary-value"><t t-esc="'{:,.2f}'.format(doc.shipping_weight)"/> kg</div>
-                </div>
+                <!-- Notes -->
+                <t t-set="doc_note" t-value="doc.note"/>
+                <t t-call="ops_theme.ops_terms_block"/>
+
+                <!-- Signatures -->
+                <t t-call="ops_theme.ops_signature_block"/>
+
             </div>
+        </xpath>
 
-            <!-- SIGNATURES -->
-            <div class="ops-signature-row">
-                <div class="ops-signature-block">
-                    <div class="ops-signature-line">
-                        <div class="ops-sig-label">Prepared By</div>
-                        <div class="ops-sig-sub">Warehouse Staff</div>
-                    </div>
-                </div>
-                <div class="ops-signature-block">
-                    <div class="ops-signature-line">
-                        <div class="ops-sig-label">Checked By</div>
-                        <div class="ops-sig-sub">Quality Control</div>
-                    </div>
-                </div>
-                <div class="ops-signature-block" t-if="is_outgoing">
-                    <div class="ops-signature-line">
-                        <div class="ops-sig-label">Received By</div>
-                        <div class="ops-sig-sub">Customer Signature</div>
-                    </div>
-                </div>
-                <div class="ops-signature-block">
-                    <div class="ops-signature-line">
-                        <div class="ops-sig-label">Driver</div>
-                        <div class="ops-sig-sub">Name &amp; ID</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- NOTES -->
-            <div class="ops-terms" t-if="doc.note">
-                <h4>Notes</h4>
-                <p><t t-esc="doc.note"/></p>
-            </div>
-
-            <!-- FOOTER -->
-            <div class="ops-footer">
-                <div class="ops-footer-company">
-                    <strong><t t-esc="company.name"/></strong>
-                    <t t-if="company.company_registry"> | CR: <t t-esc="company.company_registry"/></t>
-                    <t t-if="company.vat"> | VAT: <t t-esc="company.vat"/></t>
-                </div>
-                <div class="ops-footer-right">
-                    <div t-if="show_badge" class="ops-external-badge">
-                        <span class="powered-by">Powered by</span>
-                        <span class="badge">OPS Framework</span>
-                    </div>
-                    <span class="ops-page-number">Page <span class="page"/> of <span class="topage"/></span>
-                </div>
-            </div>
-
-        </div>
     </template>
 
 </odoo>

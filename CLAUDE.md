@@ -9,24 +9,68 @@ Your job is to deliver **fully working Odoo 19 CE custom modules** via source co
 
 ---
 
-## 📍 Project Location
+## 📍 Architecture & File Locations
+
+### The VPS
+All project files live on a single VPS server. The **origin** of all source code is:
 
 ```
-Host Path:      /opt/gemini_odoo19           ← YOUR ROOT WORKSPACE (git repo)
+/opt/gemini_odoo19/                     ← THE SINGLE SOURCE OF TRUTH
+├── addons/                             ← All OPS module code lives here
+├── config/                             ← Odoo configuration (READ-ONLY)
+├── docker-compose.yml                  ← Docker config (READ-ONLY)
+├── claude_files/                       ← Working docs, audit reports, specs
+├── docs/                               ← User/admin documentation
+└── ...
+```
+
+### What runs on the VPS
+Two Docker containers read from this origin:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  VPS: /opt/gemini_odoo19/addons/   ← ORIGIN (source files) │
+│                    │                                         │
+│         ┌──────────┴──────────┐                             │
+│         ▼                     ▼                             │
+│  gemini_odoo19          MCP Server                          │
+│  (Odoo 19 CE)          (Claude Chat)                        │
+│  sees files at:         sees files at:                       │
+│  /mnt/extra-addons/     /mnt/host-opt/gemini_odoo19/        │
+│  (bind mount)           (bind mount)                        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+Both containers bind-mount the VPS `/opt/gemini_odoo19/` directory. Changes to origin files are instantly visible to both containers.
+
+### ⚠️ CRITICAL: Path Rules
+
+| Who | Read files at | Write files at |
+|-----|--------------|----------------|
+| **Claude Code CLI** (SSH on VPS) | `/opt/gemini_odoo19/addons/` | `/opt/gemini_odoo19/addons/` |
+| **Claude Chat** (MCP tools) | `/mnt/host-opt/gemini_odoo19/addons/` | `/mnt/host-opt/gemini_odoo19/addons/` |
+| **Odoo container** | `/mnt/extra-addons/` | ❌ **NEVER WRITE HERE** |
+
+**Why `/mnt/host-opt/` for MCP?** The MCP server runs inside its own Docker container. It bind-mounts the VPS `/opt/` directory to `/mnt/host-opt/`. So `/mnt/host-opt/gemini_odoo19/` IS your VPS `/opt/gemini_odoo19/` — same physical files.
+
+**⚠️ DANGER: `/opt/gemini_odoo19/` from MCP context is NOT the real VPS path!** It's a stale copy inside the MCP container's own filesystem. **NEVER read or write to `/opt/` from MCP tools.** Always use `/mnt/host-opt/`.
+
+### Rules Summary
+- ✅ **All file edits** → via host path only (MCP: `/mnt/host-opt/...`, CLI: `/opt/...`)
+- ✅ **Container exec** → ONLY for: `odoo -u` module updates, `docker restart`, log viewing, DB read queries
+- ❌ **NEVER** write files via `docker exec` (no python open/write, no bash heredoc, no cat/tee inside container)
+- ❌ **NEVER** use `/opt/gemini_odoo19/` from MCP context (stale copy, not real host)
+
+### Project Info
+
+```
 Container:      gemini_odoo19                ← Docker container name
-Container Map:  ./addons → /mnt/extra-addons ← Odoo reads addons from here
-Config Map:     ./config → /etc/odoo (ro)    ← Read-only config mount
 Port:           8089 (HTTP), 8082 (longpoll)
 Database:       mz-db (PostgreSQL via gemini_odoo19_db container)
 URL:            https://ops.mz-im.com
 GitHub:         https://github.com/MoeZayour/claude_ops
 Odoo Version:   19.0 Community Edition
 ```
-
-### Path Reference for MCP (Claude Chat)
-When Claude Chat accesses this VPS via MCP tools, host paths appear under `/mnt/host-opt/`:
-- MCP sees: `/mnt/host-opt/gemini_odoo19/` = Host `/opt/gemini_odoo19/`
-- MCP sees: `/mnt/host-opt/gemini_odoo19/addons/` = Container `/mnt/extra-addons/`
 
 ---
 
@@ -227,6 +271,8 @@ class ModelName(models.Model):
 | ❌ Use f-strings in SQL queries | SQL injection risk |
 | ❌ Use `sudo()` without documentation | Privilege escalation |
 | ❌ Break existing functionality | Preserve working code |
+| ❌ Write/modify files inside container (`docker exec` writes) | Host is source of truth |
+| ❌ Use `/opt/` path from MCP context | Stale copy — use `/mnt/host-opt/` |
 
 ---
 
@@ -256,6 +302,50 @@ class ModelName(models.Model):
 | `skill-creator` | Create new skills |
 | `ui-ux-pro-max` | UI/UX development |
 | `web-performance-optimization` | Performance optimization |
+
+---
+
+## 🦉 Odoo 19 OWL / Frontend Gotchas
+
+### Many2one `record.update()` Format (CRITICAL)
+When updating a Many2one field from a custom OWL widget, you **MUST** use object format. Array format **silently fails** — the value never reaches the server.
+
+```javascript
+// ✅ CORRECT — object with id and display_name
+await this.props.record.update({
+    [this.props.name]: { id: recordId, display_name: recordName },
+});
+
+// ✅ CORRECT — clear the field
+await this.props.record.update({ [this.props.name]: false });
+
+// ❌ WRONG — silently fails, value becomes empty recordset on server
+await this.props.record.update({
+    [this.props.name]: [recordId, recordName],  // ARRAY FORMAT DOES NOT WORK
+});
+```
+
+**Why:** `record.update()` → `_preprocessMany2oneChanges()` → `_completeMany2OneValue()` checks `value.id`. Arrays don't have an `.id` property, so the value is treated as empty/falsy.
+
+### No `useService("company")` in Odoo 19
+Use the `user` singleton instead:
+```javascript
+import { user } from "@web/core/user";
+// user.activeCompany.id, user.activeCompanies, user.allowedCompanies
+```
+
+### Odoo 19 Field Name Changes
+| Old (Odoo 17/18) | New (Odoo 19) |
+|-------------------|---------------|
+| `sale.order.line.product_uom` | `product_uom_id` |
+| `sale.order.line.tax_id` | `tax_ids` |
+| `purchase.order.line.taxes_id` | `tax_ids` |
+| `res.users.groups_id` | `group_ids` |
+| `ir.ui.menu.groups_id` | `group_ids` |
+| `res.partner.mobile` | Removed from base (needs `phone_validation`/`sms`/`crm`) |
+
+### QWeb Template Restrictions
+`hasattr()` and `getattr()` are **NOT available** in Odoo 19's QWeb sandbox. Use Python helper methods on models instead (e.g., `company.get_ops_report_settings()`).
 
 ---
 

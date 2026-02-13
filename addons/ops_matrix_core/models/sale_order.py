@@ -74,6 +74,15 @@ class SaleOrder(models.Model):
         help='Business Unit responsible for this sale order. Required for all orders.'
     )
 
+    # Contact person for the quotation
+    ops_contact_id = fields.Many2one(
+        'res.partner',
+        string='Contact Person',
+        tracking=True,
+        domain="[('parent_id', '=', partner_id), ('is_company', '=', False)]",
+        help='Contact person for this quotation. Limited to contacts under the selected customer.',
+    )
+
     # Additional sale order specific fields
     ops_credit_check_passed = fields.Boolean(
         string='Credit Check Passed',
@@ -168,60 +177,104 @@ class SaleOrder(models.Model):
                     ) % (line.product_id.name, product_unit.name))
 
     def _get_products_availability_data(self) -> List[Dict[str, Any]]:
-        """
-        Task 4: Prepare data for Products Availability Report.
-        Returns availability data for each storable product in the sale order.
+        """Return stock availability for each storable product on the SO.
+
+        Checks warehouse-specific on-hand qty via the SO's warehouse_id
+        context.  For each storable line:
+        - available = min(ordered, on_hand)
+        - shortfall = max(0, ordered - on_hand)
+        - is_insufficient = True when on_hand < ordered
+
+        Only products with is_storable=True are included (Odoo 19 schema).
         """
         self.ensure_one()
         availability_data = []
-        
+        wh_id = self.warehouse_id.id if self.warehouse_id else False
+
         for line in self.order_line:
             product = line.product_id
-            
-            # Skip service and consumable products
-            if product.type in ['service', 'consu']:
+            if not product or not product.is_storable:
                 continue
-            
-            # Get stock on hand for the product
-            stock_on_hand = product.qty_available
-            
-            # Calculate display qty = min(ordered qty, stock on hand)
-            display_qty = min(line.product_uom_qty, stock_on_hand)
-            
-            # Determine if stock is insufficient (for styling)
-            is_insufficient = stock_on_hand < line.product_uom_qty
-            
+
+            # Warehouse-scoped on-hand qty
+            if wh_id:
+                stock_on_hand = product.with_context(warehouse=wh_id).qty_available
+            else:
+                stock_on_hand = product.qty_available
+
+            ordered = line.product_uom_qty
+            display_qty = min(ordered, max(0, stock_on_hand))
+            shortfall = max(0, ordered - stock_on_hand)
+            is_insufficient = stock_on_hand < ordered
+
             availability_data.append({
                 'sku': product.default_code or '',
                 'product_name': product.name,
-                'ordered_qty': line.product_uom_qty,
+                'uom': line.product_uom.name if line.product_uom else '',
+                'ordered_qty': ordered,
                 'stock_on_hand': stock_on_hand,
                 'display_qty': display_qty,
+                'shortfall': shortfall,
                 'is_insufficient': is_insufficient,
             })
-        
+
         return availability_data
 
-    @api.model
-    def _get_unique_product_documents(self):
-        """Get unique documents from all order lines, removing duplicates"""
-        documents = {}
-        
+    def action_download_consolidated_documents(self):
+        """Consolidate all product documents from SO lines into a single PDF.
+
+        Deduplicates by file content (ir.attachment checksum) so identical
+        files attached to different products appear only once.
+        Non-PDF attachments are skipped.
+        """
+        self.ensure_one()
+        import base64
+        from odoo.tools.pdf import merge_pdf
+
+        seen_checksums = set()
+        pdf_data_list = []
+
         for line in self.order_line:
-            # Check for product documents - if the field exists (Odoo 18+ feature or custom)
-            # In Odoo 19, product documents are standard.
-            if line.product_id and hasattr(line.product_id, 'product_document_ids'):
-                for doc in line.product_id.product_document_ids:
-                    # In Odoo 19, product.document has 'show_in_quotation'
-                    if (not hasattr(doc, 'show_in_quotation') or doc.show_in_quotation) and doc.id not in documents:
-                        documents[doc.id] = {
-                            'name': doc.name,
-                            'product_ids': [line.product_id]
-                        }
-                    elif doc.id in documents:
-                        documents[doc.id]['product_ids'].append(line.product_id)
-        
-        return list(documents.values())
+            if not line.product_id or not line.product_id.product_tmpl_id:
+                continue
+            tmpl = line.product_id.product_tmpl_id
+            if not hasattr(tmpl, 'product_document_ids'):
+                continue
+            for doc in tmpl.product_document_ids:
+                attachment = doc.ir_attachment_id
+                if not attachment or not attachment.checksum:
+                    continue
+                if attachment.mimetype != 'application/pdf':
+                    continue
+                if attachment.checksum in seen_checksums:
+                    continue
+                seen_checksums.add(attachment.checksum)
+                raw = attachment.raw
+                if raw:
+                    pdf_data_list.append(raw)
+
+        if not pdf_data_list:
+            raise UserError(_(
+                "No PDF documents found on the products in this sales order."
+            ))
+
+        merged = merge_pdf(pdf_data_list)
+        filename = '%s_Documents.pdf' % self.name.replace('/', '_')
+
+        att = self.env['ir.attachment'].create({
+            'name': filename,
+            'type': 'binary',
+            'datas': base64.b64encode(merged),
+            'mimetype': 'application/pdf',
+            'res_model': self._name,
+            'res_id': self.id,
+        })
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%s?download=true' % att.id,
+            'target': 'new',
+        }
 
     def _is_immediate_payment_term(self) -> bool:
         """
@@ -842,6 +895,12 @@ class SaleOrder(models.Model):
                 )
 
         return super().write(vals)
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id_ops_contact(self):
+        """Clear contact person when customer changes (parent mismatch)."""
+        if self.ops_contact_id and self.ops_contact_id.parent_id != self.partner_id:
+            self.ops_contact_id = False
 
     @api.onchange('ops_branch_id', 'ops_business_unit_id')
     def _onchange_matrix_dimensions(self):

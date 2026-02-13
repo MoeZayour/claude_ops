@@ -75,7 +75,7 @@ class TestMatrixAccessControl(TransactionCase):
             'login': 'north_sales@test.com',
             'company_id': cls.company.id,
             'company_ids': [(6, 0, [cls.company.id])],
-            'groups_id': [(6, 0, [cls.group_ops_user.id])],
+            'group_ids': [(6, 0, [cls.group_ops_user.id])],
         })
 
         # Add OPS permissions
@@ -90,7 +90,7 @@ class TestMatrixAccessControl(TransactionCase):
             'login': 'south_finance@test.com',
             'company_id': cls.company.id,
             'company_ids': [(6, 0, [cls.company.id])],
-            'groups_id': [(6, 0, [cls.group_ops_user.id])],
+            'group_ids': [(6, 0, [cls.group_ops_user.id])],
         })
 
         cls.user_south_finance.write({

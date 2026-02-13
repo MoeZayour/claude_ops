@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'OPS Theme',
-    'version': '19.0.19.0.0',
+    'version': '19.0.21.0.0',
     'category': 'Themes/Backend',
     'summary': 'Minimal OPS Framework theme — Odoo owns the layout, OPS owns the colors',
     'description': """
@@ -79,11 +79,10 @@ Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
             'ops_theme/static/src/js/ops_dialog_patch.js',
             'ops_theme/static/src/js/ops_sidebar.js',
             'ops_theme/static/src/js/ops_webclient_patch.js',
-            'ops_theme/static/src/js/ops_theme_selector.js',
+            'ops_theme/static/src/js/ops_skin_selector.js',
             'ops_theme/static/src/js/ops_home_menu.js',
-            'ops_theme/static/src/xml/ops_theme_selector.xml',
+            'ops_theme/static/src/xml/ops_skin_selector.xml',
             'ops_theme/static/src/xml/ops_home_menu.xml',
-            'ops_theme/static/src/js/theme_preview.js',
 
             # Group expand/collapse controls (cog menu)
             'ops_theme/static/src/js/ops_group_controls.js',
@@ -109,6 +108,7 @@ Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
     'installable': True,
     'application': False,
     'auto_install': False,
+    'pre_init_hook': 'pre_init_hook',
     'post_init_hook': 'post_init_hook',
     'uninstall_hook': 'uninstall_hook',
 }

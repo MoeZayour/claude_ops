@@ -165,3 +165,105 @@ html[data-ops-shadow="heavy"] {
         border-left-color: $o-action;
     }
 }
+
+// =============================================================================
+// SMART SKINS — .ops-is-dark overrides (auto-applied when bg luminance < 128)
+// =============================================================================
+// When a dark-background skin is active, the server adds class="ops-is-dark"
+// to <html>. These rules ensure dark skins remain usable regardless of the
+// navbar_style setting.
+
+// =============================================================================
+// SEAMLESS SKINS — When bg == surface == border (no visual boundary)
+// =============================================================================
+// When all three canvas colors match, borders become invisible. We replace
+// border-based separation with subtle shadow depth for cards and kanban.
+// This is detected at compile time: if the skin's colors match, the rules apply.
+
+@if $ops_color_bg == $ops_color_surface and $ops_color_bg == $ops_color_border {
+    .o_kanban_record {
+        border: none !important;
+        box-shadow: 0 2px 8px rgba(255, 255, 255, 0.04), 0 1px 3px rgba(255, 255, 255, 0.06);
+    }
+
+    .o_setting_box,
+    .o_settings_container .o_setting_box {
+        border: none !important;
+        box-shadow: 0 2px 8px rgba(255, 255, 255, 0.04), 0 1px 3px rgba(255, 255, 255, 0.06);
+    }
+
+    .o_form_sheet {
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.03);
+    }
+
+    .card {
+        border: none !important;
+        box-shadow: 0 2px 8px rgba(255, 255, 255, 0.04);
+    }
+
+    // List view row separation via subtle shadow instead of border
+    .o_list_view .o_data_row {
+        border-color: rgba(255, 255, 255, 0.04);
+    }
+}
+
+html.ops-is-dark {
+
+    // -- Navbar: Force surface color to prevent navy-on-navy invisibility --
+    .o_main_navbar,
+    nav.o_main_navbar {
+        background: var(--ops-surface) !important;
+        border-bottom: 1px solid var(--ops-border);
+
+        .o_menu_sections .o_nav_entry,
+        .o_menu_sections .dropdown-toggle {
+            background: var(--ops-surface) !important;
+        }
+
+        .o_menu_toggle,
+        .o_menu_sections button,
+        .o_menu_sections a,
+        .o_menu_systray .dropdown-toggle {
+            color: var(--ops-text);
+        }
+    }
+
+    // -- Headings: Force text color instead of brand (prevents dark-on-dark) --
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--ops-text) !important;
+    }
+
+    // -- Semantic colors: Brighten for dark backgrounds via color-mix --
+    --ops-success: color-mix(in srgb, #{$ops_color_success}, white 20%);
+    --ops-warning: color-mix(in srgb, #{$ops_color_warning}, white 20%);
+    --ops-danger: color-mix(in srgb, #{$ops_color_danger}, white 20%);
+    --ops-info: color-mix(in srgb, #{$ops_color_info}, white 20%);
+
+    // -- Links: Ensure visibility on dark backgrounds --
+    a:not(.btn) {
+        color: var(--ops-action);
+    }
+
+    // -- Form inputs: Dark surface for readability --
+    .o_field_widget input,
+    .o_field_widget textarea,
+    .o_field_widget select {
+        background-color: var(--ops-surface);
+        color: var(--ops-text);
+        border-color: var(--ops-border);
+    }
+
+    // -- Cards and sheets: Use skin surface --
+    .o_form_sheet,
+    .o_kanban_record,
+    .card {
+        background-color: var(--ops-surface);
+        color: var(--ops-text);
+    }
+
+    // -- Sidebar: Already dark, just ensure contrast --
+    .ops-sidebar {
+        background: var(--ops-brand);
+    }
+}

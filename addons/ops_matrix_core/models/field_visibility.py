@@ -140,13 +140,13 @@ class OpsFieldVisibilityRule(models.Model):
         if user is None:
             user = self.env.user
         
-        # Safely get user groups - handle cases where groups_id might not be loaded
+        # Safely get user groups - handle cases where group_ids might not be loaded
         try:
-            user_groups = user.groups_id.ids if hasattr(user, 'groups_id') else []
+            user_groups = user.group_ids.ids if hasattr(user, 'group_ids') else []
         except AttributeError:
-            # If groups_id not available, fetch user properly
+            # If group_ids not available, fetch user properly
             user = self.env['res.users'].browse(user.id)
-            user_groups = user.groups_id.ids if user.exists() else []
+            user_groups = user.group_ids.ids if user.exists() else []
         
         hidden_fields = {}
         
@@ -222,7 +222,7 @@ class OpsFieldVisibilityRule(models.Model):
             return True
         
         # Check if current user is in any restricted group
-        user_groups = self.env.user.groups_id
+        user_groups = self.env.user.group_ids
         for rule in rules:
             restricted_groups = rule.security_group_id
             if restricted_groups in user_groups:

@@ -22,18 +22,6 @@ class ResCompanyBranding(models.Model):
     # =========================================================================
     # THEME PRESET
     # =========================================================================
-    ops_theme_preset = fields.Selection(
-        selection=[
-            ('corporate_blue', 'Corporate Blue'),
-            ('clean_light', 'Clean Light'),
-            ('enterprise_navy', 'Enterprise Navy'),
-            ('warm_professional', 'Warm Professional'),
-            ('custom', 'Custom'),
-        ],
-        string='Theme Preset (Legacy)',
-        default='corporate_blue',
-    )
-
     ops_theme_skin_id = fields.Many2one(
         'ops.theme.skin',
         string='Theme Preset',
@@ -41,17 +29,17 @@ class ResCompanyBranding(models.Model):
     )
 
     # =========================================================================
-    # BRAND COLORS (10 skin colors)
+    # BRAND COLORS (10 skin colors — OPS Design Guide v1.0 naming)
     # =========================================================================
-    ops_primary_color = fields.Char(
-        string='Primary Brand Color',
+    ops_brand_color = fields.Char(
+        string='Brand Color',
         default='#1e293b',
-        help='Main brand color for headers, navbar, and primary UI elements.',
+        help='Main brand color for navbar, sidebar, and headings accent.',
     )
-    ops_secondary_color = fields.Char(
-        string='OPS Secondary Color',
+    ops_action_color = fields.Char(
+        string='Action Color',
         default='#3b82f6',
-        help='Accent color for links, buttons, and highlights.',
+        help='Interactive elements: buttons, links, focus rings, selected items.',
     )
     ops_success_color = fields.Char(
         string='Success Color',
@@ -259,70 +247,36 @@ class ResCompanyBranding(models.Model):
     )
 
     # =========================================================================
-    # PRESET DEFINITIONS (light skins only)
+    # SMART SKIN — Auto-detect dark backgrounds
     # =========================================================================
-    THEME_PRESETS = {
-        'corporate_blue': {
-            'ops_primary_color': '#1e293b',
-            'ops_secondary_color': '#3b82f6',
-            'ops_success_color': '#10b981',
-            'ops_warning_color': '#f59e0b',
-            'ops_danger_color': '#ef4444',
-            'ops_info_color': '#06b6d4',
-            'ops_bg_color': '#f1f5f9',
-            'ops_surface_color': '#ffffff',
-            'ops_text_color': '#1e293b',
-            'ops_border_color': '#e2e8f0',
-            'ops_navbar_style': 'dark',
-        },
-        'clean_light': {
-            'ops_primary_color': '#334155',
-            'ops_secondary_color': '#0ea5e9',
-            'ops_success_color': '#14b8a6',
-            'ops_warning_color': '#f97316',
-            'ops_danger_color': '#dc2626',
-            'ops_info_color': '#0891b2',
-            'ops_bg_color': '#ffffff',
-            'ops_surface_color': '#f8fafc',
-            'ops_text_color': '#0f172a',
-            'ops_border_color': '#e2e8f0',
-            'ops_navbar_style': 'light',
-        },
-        'enterprise_navy': {
-            'ops_primary_color': '#0f172a',
-            'ops_secondary_color': '#2563eb',
-            'ops_success_color': '#059669',
-            'ops_warning_color': '#d97706',
-            'ops_danger_color': '#b91c1c',
-            'ops_info_color': '#0891b2',
-            'ops_bg_color': '#f8fafc',
-            'ops_surface_color': '#ffffff',
-            'ops_text_color': '#0f172a',
-            'ops_border_color': '#e2e8f0',
-            'ops_navbar_style': 'dark',
-        },
-        'warm_professional': {
-            'ops_primary_color': '#292524',
-            'ops_secondary_color': '#d97706',
-            'ops_success_color': '#65a30d',
-            'ops_warning_color': '#ea580c',
-            'ops_danger_color': '#dc2626',
-            'ops_info_color': '#0d9488',
-            'ops_bg_color': '#fafaf9',
-            'ops_surface_color': '#ffffff',
-            'ops_text_color': '#292524',
-            'ops_border_color': '#e7e5e4',
-            'ops_navbar_style': 'dark',
-        },
-    }
+    ops_is_dark_skin = fields.Boolean(
+        string='Dark Skin Detected',
+        compute='_compute_ops_is_dark_skin',
+        store=True,
+        help='Automatically True when the background color luminance < 128.',
+    )
+
+    @api.depends('ops_bg_color')
+    def _compute_ops_is_dark_skin(self):
+        """Detect if the current skin is dark based on bg_color luminance."""
+        for company in self:
+            bg = (company.ops_bg_color or '#f1f5f9').lstrip('#')
+            try:
+                r = int(bg[0:2], 16)
+                g = int(bg[2:4], 16)
+                b = int(bg[4:6], 16)
+                luminance = 0.299 * r + 0.587 * g + 0.114 * b
+                company.ops_is_dark_skin = luminance < 128
+            except (ValueError, IndexError):
+                company.ops_is_dark_skin = False
 
     # =========================================================================
     # THEME-AWARE WRITE — Clear assets on color/layout changes
     # =========================================================================
     _THEME_FIELDS = {
-        'ops_primary_color', 'ops_secondary_color', 'ops_success_color',
+        'ops_brand_color', 'ops_action_color', 'ops_success_color',
         'ops_warning_color', 'ops_danger_color', 'ops_info_color',
-        'ops_theme_preset', 'ops_navbar_style', 'ops_card_shadow',
+        'ops_navbar_style', 'ops_card_shadow',
         'ops_border_radius', 'ops_bg_color', 'ops_surface_color',
         'ops_text_color', 'ops_border_color',
     }

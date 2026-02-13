@@ -5,7 +5,7 @@
 # ==================================================================
 # 1. Core Structure (Company → Branch → BU → Config → Mixin)
 from . import res_company          # First: base Odoo model
-from . import res_company_branding  # Company branding fields for reports
+
 from . import ops_branch            # Second: Branch model (depends on company)
 from . import ops_business_unit     # Third: BU model (depends on branch)
 from . import ops_matrix_config     # Fourth: Configuration model

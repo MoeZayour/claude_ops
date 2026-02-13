@@ -592,8 +592,8 @@ class OpsSecurityComplianceCheck(models.Model):
                 # Find users with both groups
                 conflicting_users = self.env['res.users'].sudo().search([
                     ('active', '=', True),
-                    ('groups_id', 'in', group1.id),
-                    ('groups_id', 'in', group2.id),
+                    ('group_ids', 'in', group1.id),
+                    ('group_ids', 'in', group2.id),
                 ])
 
                 if conflicting_users:
@@ -674,12 +674,12 @@ class OpsSecurityComplianceCheck(models.Model):
 
         for user in users_with_personas:
             # Get all OPS-related groups the user has
-            user_ops_groups = user.groups_id.filtered(
+            user_ops_groups = user.group_ids.filtered(
                 lambda g: 'ops' in g.full_name.lower() or 'ops_matrix' in g.category_id.name.lower() if g.category_id else False
             )
 
             # Check if user has admin-level groups that may indicate drift
-            sensitive_groups = user.groups_id.filtered(
+            sensitive_groups = user.group_ids.filtered(
                 lambda g: any(kw in g.name.lower() for kw in ['admin', 'manager', 'cost', 'margin', 'executive'])
             )
 

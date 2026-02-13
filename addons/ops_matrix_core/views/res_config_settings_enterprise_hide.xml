@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        =====================================================================
+        ENTERPRISE FEATURE CLEANUP
+        =====================================================================
+        Hide enterprise-only settings that cannot be installed on CE.
+        These are upsell placeholders with no code behind them.
+        OPS provides its own replacements where needed (budget, 3-way match,
+        financial reports) — those have their own settings panels.
+        =====================================================================
+    -->
+
+    <!-- ================================================================
+         ACCOUNTING SETTINGS
+         Inherit: account.res_config_settings_view_form
+         ================================================================ -->
+    <record id="view_settings_hide_enterprise_account" model="ir.ui.view">
+        <field name="name">res.config.settings.hide.enterprise.account</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="priority">999</field>
+        <field name="arch" type="xml">
+            <!-- Automatic Currency Rates (module: currency_rate_live) -->
+            <xpath expr="//setting[@id='update_exchange_rates']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Intrastat (module: account_intrastat) -->
+            <xpath expr="//setting[@id='intrastat_statistics']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Batch Payments (module: account_batch_payment) -->
+            <xpath expr="//setting[@id='account_batch_payment']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- SEPA Direct Debit (module: account_sepa_direct_debit) -->
+            <xpath expr="//setting[@id='collect_customer_payment']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- SEPA/ISO 20022 Payments (module: account_iso20022) -->
+            <xpath expr="//setting[@id='sepa_payments']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- AI Digitize Vendor Bills (module: account_extract) -->
+            <xpath expr="//setting[@id='account_ocr_settings']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Dynamic Reports (module: account_reports) — OPS has 16 reports -->
+            <xpath expr="//setting[@id='dynamic_report']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Budget Management (module: account_budget) — OPS has ops.budget -->
+            <xpath expr="//setting[@id='account_budget']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         INVENTORY / STOCK SETTINGS
+         Inherit: stock.res_config_settings_view_form
+         ================================================================ -->
+    <record id="view_settings_hide_enterprise_stock" model="ir.ui.view">
+        <field name="name">res.config.settings.hide.enterprise.stock</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="stock.res_config_settings_view_form"/>
+        <field name="priority">999</field>
+        <field name="arch" type="xml">
+            <!-- Hide entire Shipping Connectors block (10 enterprise connectors) -->
+            <xpath expr="//block[@name='shipping_connectors_setting_container']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Hide entire Barcode block (stock_barcode + barcodelookup) -->
+            <xpath expr="//block[@name='barcode_setting_container']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Quality Control (module: quality_control + quality_control_worksheet) -->
+            <xpath expr="//setting[@id='quality_control']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         SALES SETTINGS
+         Inherit: sale.res_config_settings_view_form
+         ================================================================ -->
+    <record id="view_settings_hide_enterprise_sale" model="ir.ui.view">
+        <field name="name">res.config.settings.hide.enterprise.sale</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="priority">999</field>
+        <field name="arch" type="xml">
+            <!-- Shipping connectors (static text — "please go to Home>Apps") -->
+            <xpath expr="//setting[@id='ups']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='shipping_costs_dhl']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='shipping_costs_fedex']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='shipping_costs_usps']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Shipping connectors (upgrade_boolean) -->
+            <xpath expr="//setting[@id='shipping_costs_bpost']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='shipping_costs_easypost']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='shipping_costs_sendcloud']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='shipping_costs_shiprocket']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='shipping_costs_starshipit']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//setting[@id='shipping_costs_envia']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Sales Commission (module: sale_commission) -->
+            <xpath expr="//setting[@id='setting_commission']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Amazon Connector (module: sale_amazon) -->
+            <xpath expr="//setting[@id='amazon_connector']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Shopee Connector (module: sale_shopee) -->
+            <xpath expr="//setting[@id='shopee_connector']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         PURCHASE SETTINGS
+         Inherit: purchase.res_config_settings_view_form_purchase
+         ================================================================ -->
+    <record id="view_settings_hide_enterprise_purchase" model="ir.ui.view">
+        <field name="name">res.config.settings.hide.enterprise.purchase</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase"/>
+        <field name="priority">999</field>
+        <field name="arch" type="xml">
+            <!-- 3-Way Matching (module: account_3way_match) — OPS has its own -->
+            <xpath expr="//setting[@id='three_way_matching']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         GENERAL SETTINGS (base_setup)
+         Inherit: base_setup.res_config_settings_view_form
+         ================================================================ -->
+    <record id="view_settings_hide_enterprise_base" model="ir.ui.view">
+        <field name="name">res.config.settings.hide.enterprise.base</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="priority">999</field>
+        <field name="arch" type="xml">
+            <!-- Inter-Company Transactions (module: account_inter_company_rules) -->
+            <xpath expr="//setting[@id='inter_company']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

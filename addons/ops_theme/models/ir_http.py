@@ -68,6 +68,7 @@ class IrHttp(models.AbstractModel):
                         if company.ops_auto_refresh_enabled is not None
                         else False
                     )
+                    result['ops_is_dark_skin'] = company.ops_is_dark_skin
             except Exception:
                 _logger.debug(
                     'Failed to load OPS theme preferences for session_info',
@@ -82,5 +83,6 @@ class IrHttp(models.AbstractModel):
                 result['ops_chatter_enhanced'] = True
                 result['ops_group_controls_enabled'] = True
                 result['ops_auto_refresh_enabled'] = False
+                result['ops_is_dark_skin'] = False
 
         return result

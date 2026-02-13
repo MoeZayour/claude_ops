@@ -123,7 +123,7 @@ class OpsKpiBoard(models.Model):
 
         # Check group access
         if self.group_ids:
-            user_groups = user.groups_id
+            user_groups = user.group_ids
             if self.group_ids & user_groups:
                 return True
 

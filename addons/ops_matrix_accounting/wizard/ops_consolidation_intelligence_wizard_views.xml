@@ -77,7 +77,7 @@
                                domain="[('company_id', '=', company_id)]"
                                options="{'no_create': True}"/>
                         <!-- Multi-branch filter for Company Consolidation -->
-                        <field name="ops_branch_ids"
+                        <field name="branch_ids"
                                widget="many2many_tags"
                                invisible="report_type in ('branch_pl', 'consolidated_bs')"
                                domain="[('company_id', '=', company_id)]"
@@ -93,7 +93,7 @@
                                required="report_type == 'bu_report'"
                                options="{'no_create': True}"/>
                         <!-- Multi-BU filter for Branch PL -->
-                        <field name="ops_business_unit_ids"
+                        <field name="business_unit_ids"
                                widget="many2many_tags"
                                invisible="report_type in ('bu_report', 'consolidated_bs', 'company_consolidation')"
                                options="{'no_create': True}"/>
@@ -102,14 +102,13 @@
 
                 <!-- Action Buttons -->
                 <footer>
-                    <button name="action_generate"
-                            string="Generate Report"
-                            type="object"
-                            class="btn-primary"
-                            icon="fa-print"/>
-                    <button string="Cancel"
-                            class="btn-secondary"
-                            special="cancel"/>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
 
             </form>

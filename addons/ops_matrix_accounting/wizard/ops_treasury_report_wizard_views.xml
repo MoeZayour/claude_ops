@@ -165,34 +165,13 @@
 
                 <!-- ==================== ACTION BUTTONS ==================== -->
                 <footer>
-                    <button name="action_view_report"
-                            string="View Report"
-                            type="object"
-                            class="btn-primary"
-                            icon="fa-eye"
-                            help="Open report in browser for preview"/>
-                    <button name="action_generate_report"
-                            string="Print PDF"
-                            type="object"
-                            class="btn-secondary"
-                            icon="fa-print"
-                            help="Generate PDF for printing or download"/>
-                    <button name="action_export_excel"
-                            string="Export Excel"
-                            type="object"
-                            class="btn-success"
-                            icon="fa-file-excel-o"
-                            help="Export data to Excel spreadsheet"/>
-                    <button name="action_view_pdcs"
-                            string="View PDCs"
-                            type="object"
-                            class="btn-info"
-                            icon="fa-list"
-                            help="View detailed PDC list in tree view"/>
-                    <button string="Cancel"
-                            class="btn-default"
-                            icon="fa-times"
-                            special="cancel"/>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
 
             </form>

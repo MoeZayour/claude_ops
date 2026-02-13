@@ -166,10 +166,5 @@
     </record>
 
     <!-- Menu Item -->
-    <menuitem id="menu_ops_budget"
-              name="Budget Control"
-              parent="account.menu_finance"
-              action="action_ops_budget"
-              sequence="25"
-                  groups="ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo,ops_matrix_core.group_ops_accountant,ops_matrix_core.group_ops_executive,ops_matrix_core.group_ops_bu_leader"/>
+    <!-- Menu moved to accounting_menus.xml -->
 </odoo>

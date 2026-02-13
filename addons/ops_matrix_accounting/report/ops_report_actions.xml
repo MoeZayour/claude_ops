@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- OPS REPORT ACTIONS — ir.actions.report records                -->
+    <!-- All 29 reports using the universal bridge parser.             -->
+    <!-- Bridge: report.ops_matrix_accounting.report_document          -->
+    <!-- ============================================================ -->
+
+    <!-- ==================== FINANCIAL PILLAR (9) ==================== -->
+
+    <!-- 1. General Ledger (Shape A — Landscape) -->
+    <record id="action_report_gl" model="ir.actions.report">
+        <field name="name">General Ledger</field>
+        <field name="model">ops.gl.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_general_ledger</field>
+        <field name="report_file">ops_matrix_accounting.report_general_ledger</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 2. Trial Balance (Shape C — Landscape) -->
+    <record id="action_report_tb" model="ir.actions.report">
+        <field name="name">Trial Balance</field>
+        <field name="model">ops.tb.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_trial_balance</field>
+        <field name="report_file">ops_matrix_accounting.report_trial_balance</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 3. Profit &amp; Loss (Shape B — Portrait) -->
+    <record id="action_report_pnl" model="ir.actions.report">
+        <field name="name">Profit &amp; Loss</field>
+        <field name="model">ops.pnl.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_profit_loss</field>
+        <field name="report_file">ops_matrix_accounting.report_profit_loss</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_financial"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 4. Balance Sheet (Shape B — Portrait) -->
+    <record id="action_report_bs" model="ir.actions.report">
+        <field name="name">Balance Sheet</field>
+        <field name="model">ops.bs.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_balance_sheet</field>
+        <field name="report_file">ops_matrix_accounting.report_balance_sheet</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_financial"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 5. Cash Flow Statement (Shape B — Portrait) -->
+    <record id="action_report_cf" model="ir.actions.report">
+        <field name="name">Cash Flow Statement</field>
+        <field name="model">ops.cf.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_cash_flow</field>
+        <field name="report_file">ops_matrix_accounting.report_cash_flow</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_financial"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 6. Aged Receivables (Shape C — Landscape) -->
+    <record id="action_report_aged_receivables" model="ir.actions.report">
+        <field name="name">Aged Receivables</field>
+        <field name="model">ops.aged.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_aged_receivables</field>
+        <field name="report_file">ops_matrix_accounting.report_aged_receivables</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 7. Aged Payables (Shape C — Landscape) -->
+    <record id="action_report_aged_payables" model="ir.actions.report">
+        <field name="name">Aged Payables</field>
+        <field name="model">ops.aged.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_aged_payables</field>
+        <field name="report_file">ops_matrix_accounting.report_aged_payables</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 8. Partner Ledger (Shape A — Landscape) -->
+    <record id="action_report_partner_ledger" model="ir.actions.report">
+        <field name="name">Partner Ledger</field>
+        <field name="model">ops.partner.ledger.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_partner_ledger</field>
+        <field name="report_file">ops_matrix_accounting.report_partner_ledger</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 9. Statement of Account (Shape A — Landscape) -->
+    <record id="action_report_soa" model="ir.actions.report">
+        <field name="name">Statement of Account</field>
+        <field name="model">ops.partner.ledger.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_statement_of_account</field>
+        <field name="report_file">ops_matrix_accounting.report_statement_of_account</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- ==================== DAILY BOOKS PILLAR (3) ==================== -->
+
+    <!-- 10. Cash Book (Shape A — Landscape) -->
+    <record id="action_report_cash_book" model="ir.actions.report">
+        <field name="name">Cash Book</field>
+        <field name="model">ops.cash.book.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_cash_book</field>
+        <field name="report_file">ops_matrix_accounting.report_cash_book</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 11. Day Book (Shape A — Landscape) -->
+    <record id="action_report_day_book" model="ir.actions.report">
+        <field name="name">Day Book</field>
+        <field name="model">ops.day.book.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_day_book</field>
+        <field name="report_file">ops_matrix_accounting.report_day_book</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 12. Bank Book (Shape A — Landscape) -->
+    <record id="action_report_bank_book" model="ir.actions.report">
+        <field name="name">Bank Book</field>
+        <field name="model">ops.bank.book.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_bank_book</field>
+        <field name="report_file">ops_matrix_accounting.report_bank_book</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- ==================== TREASURY PILLAR (3) ==================== -->
+
+    <!-- 13. PDC Registry (Shape C — Landscape) -->
+    <record id="action_report_pdc_registry" model="ir.actions.report">
+        <field name="name">PDC Registry</field>
+        <field name="model">ops.treasury.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_pdc_registry</field>
+        <field name="report_file">ops_matrix_accounting.report_pdc_registry</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 14. PDC Maturity (Shape C — Landscape) -->
+    <record id="action_report_pdc_maturity" model="ir.actions.report">
+        <field name="name">PDC Maturity</field>
+        <field name="model">ops.treasury.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_pdc_maturity</field>
+        <field name="report_file">ops_matrix_accounting.report_pdc_maturity</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 15. PDCs in Hand (Shape C — Landscape) -->
+    <record id="action_report_pdc_on_hand" model="ir.actions.report">
+        <field name="name">PDCs in Hand</field>
+        <field name="model">ops.treasury.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_pdc_on_hand</field>
+        <field name="report_file">ops_matrix_accounting.report_pdc_on_hand</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- ==================== ASSET PILLAR (5) ==================== -->
+
+    <!-- 16. Asset Register (Shape C — Landscape) -->
+    <record id="action_report_asset_register" model="ir.actions.report">
+        <field name="name">Asset Register</field>
+        <field name="model">ops.asset.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_asset_register</field>
+        <field name="report_file">ops_matrix_accounting.report_asset_register</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 17. Depreciation Schedule (Shape C — Landscape) -->
+    <record id="action_report_depreciation_schedule" model="ir.actions.report">
+        <field name="name">Depreciation Schedule</field>
+        <field name="model">ops.asset.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_depreciation_schedule</field>
+        <field name="report_file">ops_matrix_accounting.report_depreciation_schedule</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 18. Asset Disposal (Shape C — Landscape) -->
+    <record id="action_report_asset_disposal" model="ir.actions.report">
+        <field name="name">Asset Disposal Report</field>
+        <field name="model">ops.asset.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_asset_disposal</field>
+        <field name="report_file">ops_matrix_accounting.report_asset_disposal</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 19. Asset Forecast (Shape C — Landscape) -->
+    <record id="action_report_asset_forecast" model="ir.actions.report">
+        <field name="name">Asset Forecast</field>
+        <field name="model">ops.asset.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_asset_forecast</field>
+        <field name="report_file">ops_matrix_accounting.report_asset_forecast</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 20. Asset Movement (Shape C — Landscape) -->
+    <record id="action_report_asset_movement" model="ir.actions.report">
+        <field name="name">Asset Movement</field>
+        <field name="model">ops.asset.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_asset_movement</field>
+        <field name="report_file">ops_matrix_accounting.report_asset_movement</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- ==================== INVENTORY PILLAR (4) ==================== -->
+
+    <!-- 21. Stock Valuation (Shape C — Landscape) -->
+    <record id="action_report_stock_valuation" model="ir.actions.report">
+        <field name="name">Stock Valuation</field>
+        <field name="model">ops.inventory.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_stock_valuation</field>
+        <field name="report_file">ops_matrix_accounting.report_stock_valuation</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 22. Inventory Aging (Shape C — Landscape) -->
+    <record id="action_report_inventory_aging" model="ir.actions.report">
+        <field name="name">Inventory Aging</field>
+        <field name="model">ops.inventory.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_inventory_aging</field>
+        <field name="report_file">ops_matrix_accounting.report_inventory_aging</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 23. Inventory Movement (Shape C — Landscape) -->
+    <record id="action_report_inventory_movement" model="ir.actions.report">
+        <field name="name">Inventory Movement</field>
+        <field name="model">ops.inventory.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_inventory_movement</field>
+        <field name="report_file">ops_matrix_accounting.report_inventory_movement</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 24. Negative Stock (Shape C — Landscape) -->
+    <record id="action_report_negative_stock" model="ir.actions.report">
+        <field name="name">Negative Stock Report</field>
+        <field name="model">ops.inventory.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_negative_stock</field>
+        <field name="report_file">ops_matrix_accounting.report_negative_stock</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- ==================== CONSOLIDATION PILLAR (4) ==================== -->
+
+    <!-- 25. Company Consolidation (Shape B — Landscape) -->
+    <record id="action_report_company_consolidation" model="ir.actions.report">
+        <field name="name">Company Consolidation</field>
+        <field name="model">ops.consolidation.intelligence.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_company_consolidation</field>
+        <field name="report_file">ops_matrix_accounting.report_company_consolidation</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 26. Branch P&amp;L (Shape B — Landscape for side-by-side) -->
+    <record id="action_report_branch_pnl" model="ir.actions.report">
+        <field name="name">Branch P&amp;L</field>
+        <field name="model">ops.consolidation.intelligence.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_branch_pnl</field>
+        <field name="report_file">ops_matrix_accounting.report_branch_pnl</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 27. BU Report (Shape B — Landscape for side-by-side) -->
+    <record id="action_report_bu_report" model="ir.actions.report">
+        <field name="name">Business Unit Report</field>
+        <field name="model">ops.consolidation.intelligence.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_bu_report</field>
+        <field name="report_file">ops_matrix_accounting.report_bu_report</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- 28. Consolidated Balance Sheet (Shape B — Landscape) -->
+    <record id="action_report_consolidated_bs" model="ir.actions.report">
+        <field name="name">Consolidated Balance Sheet</field>
+        <field name="model">ops.consolidation.intelligence.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_consolidated_bs</field>
+        <field name="report_file">ops_matrix_accounting.report_consolidated_bs</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_landscape"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- ==================== BUDGET PILLAR (1) ==================== -->
+
+    <!-- 29. Budget vs Actual (Shape B — Portrait) -->
+    <record id="action_report_budget_vs_actual" model="ir.actions.report">
+        <field name="name">Budget vs Actual</field>
+        <field name="model">ops.budget.vs.actual.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ops_matrix_accounting.report_budget_vs_actual</field>
+        <field name="report_file">ops_matrix_accounting.report_budget_vs_actual</field>
+        <field name="paperformat_id" ref="ops_matrix_accounting.paperformat_ops_a4_financial"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+</odoo>

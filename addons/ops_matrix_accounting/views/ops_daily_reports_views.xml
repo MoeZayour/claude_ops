@@ -2,7 +2,7 @@
 <odoo>
  <!--
  ===================================================
- OPS Matrix Daily Reports - Phase 4 v2 Contract UI
+ OPS Matrix Daily Reports - Phase 3 Corporate UI
  Cash Book, Day Book, Bank Book
  ===================================================
  -->
@@ -32,7 +32,7 @@
  </group>
  <group name="group_2">
  <field name="company_id"
- options="{&apos;no_create&apos;: True}"
+ options="{'no_create': True}"
  groups="base.group_multi_company"
  help="Company to report on"/>
  <field name="target_move"
@@ -41,17 +41,17 @@
  </group>
  </group>
 
- <!-- ==================== SCOPE &amp; FILTERS ==================== -->
+ <!-- ==================== SCOPE & FILTERS ==================== -->
  <group name="scope_section" string="Scope &amp; Filters">
  <group name="group_3">
  <field name="journal_ids"
  widget="many2many_tags"
- options="{&apos;no_create&apos;: True}"
+ options="{'no_create': True}"
  placeholder="All Cash Journals"
  help="Filter by specific cash journals (leave empty for all)"/>
  <field name="branch_ids"
  widget="many2many_tags"
- options="{&apos;no_create&apos;: True, &apos;color_field&apos;: &apos;color&apos;}"
+ options="{'no_create': True, 'color_field': 'color'}"
  placeholder="All Branches"
  help="Filter by specific branches (leave empty for all authorized branches)"/>
  </group>
@@ -65,24 +65,16 @@
  </group>
  </group>
 
- <!-- ==================== OUTPUT FORMAT ==================== -->
- <group name="output_section" string="Output Format">
- <field name="output_format" widget="radio"/>
- </group>
-
  <!-- ==================== ACTION BUTTONS ==================== -->
- <footer>
- <button name="action_generate_report"
- string="Generate Report"
- type="object"
- class="btn-primary"
- icon="fa-print"
- help="Generate report in selected output format"/>
- <button string="Cancel"
- class="btn-default"
- icon="fa-times"
- special="cancel"/>
- </footer>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
 
  </form>
  </field>
@@ -109,7 +101,7 @@
  <field name="date"
  help="Date for day book report"/>
  <field name="company_id"
- options="{&apos;no_create&apos;: True}"
+ options="{'no_create': True}"
  groups="base.group_multi_company"
  help="Company to report on"/>
  </group>
@@ -120,42 +112,34 @@
  </group>
  </group>
 
- <!-- ==================== SCOPE &amp; FILTERS ==================== -->
+ <!-- ==================== SCOPE & FILTERS ==================== -->
  <group name="scope_section" string="Scope &amp; Filters">
  <group name="group_7">
  <field name="journal_ids"
  widget="many2many_tags"
- options="{&apos;no_create&apos;: True}"
+ options="{'no_create': True}"
  placeholder="All Journals"
  help="Filter by specific journals (leave empty for all)"/>
  </group>
  <group name="group_8">
  <field name="branch_ids"
  widget="many2many_tags"
- options="{&apos;no_create&apos;: True, &apos;color_field&apos;: &apos;color&apos;}"
+ options="{'no_create': True, 'color_field': 'color'}"
  placeholder="All Branches"
  help="Filter by specific branches (leave empty for all authorized branches)"/>
  </group>
  </group>
 
- <!-- ==================== OUTPUT FORMAT ==================== -->
- <group name="output_section" string="Output Format">
- <field name="output_format" widget="radio"/>
- </group>
-
  <!-- ==================== ACTION BUTTONS ==================== -->
- <footer>
- <button name="action_generate_report"
- string="Generate Report"
- type="object"
- class="btn-primary"
- icon="fa-print"
- help="Generate report in selected output format"/>
- <button string="Cancel"
- class="btn-default"
- icon="fa-times"
- special="cancel"/>
- </footer>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
 
  </form>
  </field>
@@ -186,7 +170,7 @@
  </group>
  <group name="group_10">
  <field name="company_id"
- options="{&apos;no_create&apos;: True}"
+ options="{'no_create': True}"
  groups="base.group_multi_company"
  help="Company to report on"/>
  <field name="target_move"
@@ -195,17 +179,17 @@
  </group>
  </group>
 
- <!-- ==================== SCOPE &amp; FILTERS ==================== -->
+ <!-- ==================== SCOPE & FILTERS ==================== -->
  <group name="scope_section" string="Scope &amp; Filters">
  <group name="group_11">
  <field name="journal_ids"
  widget="many2many_tags"
- options="{&apos;no_create&apos;: True}"
+ options="{'no_create': True}"
  placeholder="All Bank Journals"
  help="Filter by specific bank journals (leave empty for all)"/>
  <field name="branch_ids"
  widget="many2many_tags"
- options="{&apos;no_create&apos;: True, &apos;color_field&apos;: &apos;color&apos;}"
+ options="{'no_create': True, 'color_field': 'color'}"
  placeholder="All Branches"
  help="Filter by specific branches (leave empty for all authorized branches)"/>
  </group>
@@ -215,24 +199,16 @@
  </group>
  </group>
 
- <!-- ==================== OUTPUT FORMAT ==================== -->
- <group name="output_section" string="Output Format">
- <field name="output_format" widget="radio"/>
- </group>
-
  <!-- ==================== ACTION BUTTONS ==================== -->
- <footer>
- <button name="action_generate_report"
- string="Generate Report"
- type="object"
- class="btn-primary"
- icon="fa-print"
- help="Generate report in selected output format"/>
- <button string="Cancel"
- class="btn-default"
- icon="fa-times"
- special="cancel"/>
- </footer>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
 
  </form>
  </field>

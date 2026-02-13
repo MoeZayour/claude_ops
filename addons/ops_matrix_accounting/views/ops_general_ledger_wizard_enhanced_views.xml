@@ -161,16 +161,13 @@
 
                 <!-- FOOTER: Action Hierarchy | Primary: PDF | Secondary: Excel | Links: Preview, Entries -->
                 <footer>
-                    <button name="action_generate_report" type="object"
-                            string="Print PDF" class="btn-primary"
-                            icon="fa-file-pdf-o"/>
-                    <button name="action_export_to_excel" type="object"
-                            string="Export Excel" class="btn-secondary"
-                            icon="fa-file-excel-o"/>
-                    <button name="action_view_transactions" type="object"
-                            string="View Entries" class="btn-link"
-                            invisible="report_type in ('pl', 'bs', 'cf', 'tb')"/>
-                    <button string="Close" class="btn-secondary" special="cancel"/>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
 
             </form>

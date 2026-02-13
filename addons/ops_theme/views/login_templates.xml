@@ -15,7 +15,7 @@
 
                     <!-- LEFT PANEL: Company Branding -->
                     <div class="ops-login-brand"
-                         t-attf-style="background: linear-gradient(135deg, #{company.ops_primary_color or '#1e293b'} 0%, #0f172a 100%);">
+                         t-attf-style="background: linear-gradient(135deg, #{company.ops_brand_color or '#1e293b'} 0%, #0f172a 100%);">
 
                         <!-- Company Logo (controlled by settings) -->
                         <t t-if="company.ops_login_show_logo">

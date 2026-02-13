@@ -13,8 +13,6 @@ from odoo import models, api, _
 import logging
 
 _logger = logging.getLogger(__name__)
-
-
 class ResUsersGroupMapper(models.Model):
     _inherit = 'res.users'
 
@@ -106,6 +104,8 @@ class ResUsersGroupMapper(models.Model):
         """
         Map persona to Odoo 19 security groups automatically.
         This is the "Zero-Friction" setup logic.
+        
+        CRITICAL: All 18 personas must be mapped here.
         """
         self.ensure_one()
 
@@ -115,36 +115,74 @@ class ResUsersGroupMapper(models.Model):
         persona_code = self.persona_id.code
         groups_to_add = []
 
-        # Persona -> Group Mapping
+        # ====================================================================
+        # COMPLETE PERSONA → GROUP MAPPING (18 Personas)
+        # ====================================================================
         persona_group_map = {
+            # EXECUTIVE LEVEL
             'CEO': [
-                'base.group_erp_manager',  # Access Rights
+                # NOTE: group_erp_manager intentionally excluded - CEO must NOT
+                # create users. Only SYS_ADMIN (group_system) can create users
+                # because user creation requires assigning branch/BU/persona
+                # which are locked to group_system on the form view.
                 'sales_team.group_sale_manager',  # Sales Manager
                 'account.group_account_manager',  # Billing Manager
                 'stock.group_stock_manager',  # Inventory Manager
+                'purchase.group_purchase_manager',  # Purchase Manager
                 'ops_matrix_core.group_ops_executive',  # OPS Executive
-                'ops_matrix_core.group_ops_matrix_administrator',  # Matrix Admin
             ],
             'CFO': [
                 'account.group_account_manager',  # Billing Manager
                 'account.group_account_user',  # Billing
                 'ops_matrix_core.group_ops_executive',  # OPS Executive
                 'ops_matrix_core.group_ops_cost_controller',  # Cost Controller
+                'ops_matrix_core.group_ops_see_cost',  # See Cost Prices
+                'ops_matrix_core.group_ops_see_margin',  # See Margins
+                'ops_matrix_core.group_ops_price_manager',  # Price Manager (pricing authority)
             ],
+            
+            # FINANCIAL CONTROLLER (Anchor)
+            'FIN_CTRL': [
+                'account.group_account_manager',  # Billing Manager
+                'account.group_account_user',  # Billing
+                'sale.group_sale_manager',  # Sales Administrator
+                'purchase.group_purchase_manager',  # Purchase Manager
+                'ops_matrix_core.group_ops_executive',  # OPS Executive
+                'ops_matrix_core.group_ops_cost_controller',  # Cost Controller
+                'ops_matrix_core.group_ops_price_manager',  # Price Manager (pricing authority)
+            ],
+            
+            # DIRECTOR LEVEL
             'SALES_LEADER': [
                 'sales_team.group_sale_manager',  # Sales Manager
                 'sale.group_sale_manager',  # Administrator
                 'ops_matrix_core.group_ops_bu_leader',  # BU Leader
+                'ops_matrix_core.group_ops_see_cost',  # See Cost Prices
+                'ops_matrix_core.group_ops_price_manager',  # Price Manager (pricing authority)
             ],
+            
+            # MANAGER LEVEL
             'SALES_MGR': [
                 'sales_team.group_sale_manager',  # Sales Manager
                 'sale.group_sale_salesman_all_leads',  # See All Leads
                 'ops_matrix_core.group_ops_manager',  # OPS Manager
             ],
-            'SALES_REP': [
-                'sales_team.group_sale_salesman',  # User: Own Documents Only
-                'sale.group_sale_salesman',  # User: Own Documents Only
-                'ops_matrix_core.group_ops_user',  # OPS User
+            'PURCHASE_MGR': [
+                'purchase.group_purchase_manager',  # Purchase Manager
+                'stock.group_stock_user',  # Inventory User
+                'ops_matrix_core.group_ops_manager',  # OPS Manager
+                'ops_matrix_core.group_ops_see_cost',  # See Cost Prices
+            ],
+            'LOG_MGR': [
+                'stock.group_stock_manager',  # Inventory Manager
+                'ops_matrix_core.group_ops_branch_manager',  # Branch Manager
+                'ops_matrix_core.group_ops_manager',  # OPS Manager
+                'ops_matrix_core.group_ops_see_cost',  # See Cost Prices
+            ],
+            'TREASURY_OFF': [
+                'account.group_account_user',  # Billing
+                'ops_matrix_core.group_ops_manager',  # OPS Manager
+                'ops_matrix_core.group_ops_treasury',  # Treasury Officer (payment execution)
             ],
             'HR_MGR': [
                 'hr.group_hr_manager',  # Officer (if HR installed)
@@ -154,45 +192,66 @@ class ResUsersGroupMapper(models.Model):
                 'account.group_account_manager',  # Billing Manager
                 'account.group_account_user',  # Billing
                 'ops_matrix_core.group_ops_manager',  # OPS Manager
+                'ops_matrix_core.group_ops_see_cost',  # See Cost Prices
+                'ops_matrix_core.group_ops_price_manager',  # Price Manager (pricing authority)
             ],
-            'FIN_MGR': [
-                'account.group_account_manager',  # Accounting Manager (full invoicing)
-                'account.group_account_invoice',  # Invoicing access
-                'account.group_account_user',  # Accounting features
-                'ops_matrix_core.group_ops_manager',  # OPS Manager
+            'SYS_ADMIN': [
+                'base.group_system',  # Settings (superuser — bypasses all record rules)
+                'ops_matrix_core.group_ops_matrix_administrator',  # Matrix Admin
             ],
-            'ACCOUNTANT': [
-                'account.group_account_user',  # Billing
-                'account.group_account_invoice',  # Billing
+            
+            # USER LEVEL
+            'SALES_REP': [
+                'sales_team.group_sale_salesman',  # User: Own Documents Only
+                'sale.group_sale_salesman',  # User: Own Documents Only
                 'ops_matrix_core.group_ops_user',  # OPS User
             ],
-            'LOG_MGR': [
-                'stock.group_stock_manager',  # Inventory Manager
-                'ops_matrix_core.group_ops_branch_manager',  # Branch Manager
-                'ops_matrix_core.group_ops_manager',  # OPS Manager
+            'PURCHASE_OFF': [
+                'purchase.group_purchase_user',  # Purchase User
+                'stock.group_stock_user',  # Inventory User
+                'ops_matrix_core.group_ops_user',  # OPS User
+                'ops_matrix_core.group_ops_see_cost',  # See Cost Prices
             ],
             'LOG_CLERK': [
                 'stock.group_stock_user',  # User
                 'ops_matrix_core.group_ops_user',  # OPS User
             ],
-            'TECH_SUPPORT': [
-                'base.group_user',  # Internal User
+            'ACCOUNTANT': [
+                'account.group_account_user',  # Billing
+                'account.group_account_invoice',  # Invoicing
+                'ops_matrix_core.group_ops_user',  # OPS User
+                'ops_matrix_core.group_ops_see_cost',  # See Cost Prices
+            ],
+            'AR_CLERK': [
+                'account.group_account_invoice',  # Invoicing (customer invoices)
                 'ops_matrix_core.group_ops_user',  # OPS User
             ],
-            'SYS_ADMIN': [
-                'base.group_system',  # Settings
-                'ops_matrix_core.group_ops_matrix_administrator',  # Matrix Admin
+            'AP_CLERK': [
+                'account.group_account_invoice',  # Invoicing (vendor bills)
+                'ops_matrix_core.group_ops_user',  # OPS User
+            ],
+            'TECH_SUPPORT': [
+                'base.group_user',  # Internal User
+                'base.group_erp_manager',  # Access Rights — can create/manage users
+                'ops_matrix_core.group_ops_it_admin',  # IT Admin (blindness rules block business data)
+                'ops_matrix_core.group_ops_user',  # OPS User
             ],
         }
 
         # Get groups for this persona
         group_xmlids = persona_group_map.get(persona_code, [])
+        
+        if not group_xmlids:
+            _logger.warning(f"No group mapping found for persona code: {persona_code}")
+            return
 
         for xmlid in group_xmlids:
             try:
                 group = self.env.ref(xmlid, raise_if_not_found=False)
                 if group:
                     groups_to_add.append(group.id)
+                else:
+                    _logger.warning(f"Group not found: {xmlid} for persona {persona_code}")
             except Exception as e:
                 _logger.warning(f"Could not find group {xmlid}: {e}")
 
@@ -200,3 +259,5 @@ class ResUsersGroupMapper(models.Model):
         if groups_to_add:
             self.group_ids = [(4, gid) for gid in groups_to_add]
             _logger.info(f"Auto-mapped {len(groups_to_add)} groups to user {self.name} based on persona {persona_code}")
+        else:
+            _logger.warning(f"No valid groups found for persona {persona_code}")

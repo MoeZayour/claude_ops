@@ -6,6 +6,12 @@
         <field name="model">ops.secure.export.wizard</field>
         <field name="arch" type="xml">
             <form string="Secure Data Export">
+                <!-- Show context source if pre-filled from list view -->
+                <div class="alert alert-success" role="status" invisible="not context_source">
+                    <i class="fa fa-check-circle"/> <strong>Auto-filled:</strong> <field name="context_source" class="oe_inline"/>
+                    <div class="small text-muted">Review and adjust filters/fields below, then click Export.</div>
+                </div>
+                
                 <group name="outer_group_1">
                     <group name="outer_group_2">
                         <field name="model_id" options="{'no_create': True}"/>

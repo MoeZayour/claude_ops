@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Export Interceptor JS Asset -->
+    <template id="assets_backend" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/ops_matrix_core/static/src/js/export_interceptor.js"/>
+        </xpath>
+    </template>
+</odoo>

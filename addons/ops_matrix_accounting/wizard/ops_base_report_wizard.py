@@ -15,7 +15,7 @@ Version: 1.0 (Phase 11 - Code Refactoring)
 """
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError, ValidationError, AccessError
 from odoo.tools import date_utils
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -93,6 +93,32 @@ class OpsBaseReportWizard(models.AbstractModel):
     )
 
     # ============================================
+    # COMMON REPORT FIELDS (v2 contract base)
+    # ============================================
+    output_format = fields.Selection([
+        ('pdf', 'PDF Report'),
+        ('excel', 'Excel Export'),
+        ('html', 'View in Browser'),
+    ], string='Output Format', default='pdf')
+
+    date_from = fields.Date(string='Start Date')
+    date_to = fields.Date(string='End Date')
+    as_of_date = fields.Date(string='As of Date')
+
+    branch_ids = fields.Many2many('ops.branch', string='Branches')
+    business_unit_ids = fields.Many2many('ops.business.unit', string='Business Units')
+
+    target_move = fields.Selection([
+        ('posted', 'Posted Only'),
+        ('all', 'All Entries'),
+    ], default='posted', string='Target Moves')
+
+    matrix_filter_mode = fields.Selection([
+        ('any', 'Any'),
+        ('exact', 'Exact'),
+    ], default='any', string='Matrix Filter Mode')
+
+    # ============================================
     # ABSTRACT METHODS - MUST OVERRIDE
     # ============================================
 
@@ -152,6 +178,13 @@ class OpsBaseReportWizard(models.AbstractModel):
             dict: Action dictionary
         """
         raise NotImplementedError("Subclasses must implement _return_report_action()")
+
+    def _get_report_shape(self):
+        """Return report shape: 'lines', 'hierarchy', or 'matrix'.
+
+        Subclasses MUST implement this for the v2 data contract system.
+        """
+        raise NotImplementedError("Subclasses must implement _get_report_shape()")
 
     # ============================================
     # OPTIONAL HOOKS - MAY OVERRIDE
@@ -316,7 +349,12 @@ class OpsBaseReportWizard(models.AbstractModel):
     # ============================================
 
     def action_generate_report(self):
-        """Main action: Validate filters and generate report."""
+        """Main action: Validate filters and generate report.
+
+        Dispatches to PDF, Excel, or HTML based on ``output_format``.
+        Security checks (IT Admin Blindness, branch isolation) run first,
+        regardless of output format.
+        """
         self.ensure_one()
 
         # =====================================================================
@@ -336,7 +374,14 @@ class OpsBaseReportWizard(models.AbstractModel):
         if isinstance(validation_result, dict) and 'warning' in validation_result:
             pass  # Allow to proceed with warning
 
-        # Dispatch to appropriate handler
+        # Dispatch based on output format
+        output_fmt = getattr(self, 'output_format', 'pdf') or 'pdf'
+        if output_fmt == 'excel':
+            return self.action_export_to_excel()
+        elif output_fmt == 'html':
+            return self.action_view_in_browser()
+
+        # Default: PDF
         report_data = self._get_report_data()
 
         # Log to audit trail (The Black Box)
@@ -432,6 +477,59 @@ class OpsBaseReportWizard(models.AbstractModel):
         except Exception as e:
             # CRITICAL: Never block report generation due to audit failure
             _logger.error(f"Audit logging failed (non-blocking): {e}")
+
+    # ============================================
+    # EXCEL / HTML OUTPUT
+    # ============================================
+
+    def action_generate_pdf(self):
+        """Generate PDF report directly (button action)."""
+        self.ensure_one()
+        self.output_format = 'pdf'
+        return self.action_generate_report()
+
+    def action_export_to_excel(self):
+        """Excel export using generic renderer.
+
+        Only users in ``group_ops_can_export`` may use this.
+        Generates an XLSX file via ``ops.excel.renderer`` and returns
+        a download action for the resulting attachment.
+        """
+        if not self.env.user.has_group('ops_matrix_core.group_ops_can_export'):
+            raise AccessError(_("You do not have permission to export data. Contact your administrator."))
+
+        import base64
+        report_data = self._get_report_data()
+        self._log_report_audit(report_data)
+
+        renderer = self.env['ops.excel.renderer']
+        xlsx_content = renderer.render(report_data)
+
+        title = report_data.get('meta', {}).get('report_title', 'Report')
+        filename = '%s_%s.xlsx' % (title.replace(' ', '_'), fields.Date.today())
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,
+            'type': 'binary',
+            'datas': base64.b64encode(xlsx_content),
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
+
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '%s/web/content/%s?download=true' % (base_url, attachment.id),
+            'target': 'self',
+        }
+
+    def action_view_in_browser(self):
+        """Open report in browser HTML view (Phase 5 controller)."""
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        url = '%s/ops/report/html/%s/%s' % (base_url, self._name, self.id)
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
 
     # ============================================
     # TEMPLATE METHODS

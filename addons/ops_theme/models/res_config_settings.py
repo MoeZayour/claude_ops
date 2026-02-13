@@ -3,12 +3,24 @@
 OPS Theme - Configuration Settings
 ===================================
 Full settings UI for theme customization. Light-only skin system.
+Colors are read directly from the selected skin preset — no manual
+color pickers exposed to the user.
 """
 
-from odoo import api, fields, models
+import logging
 
-# Default layout colors (Corporate Blue)
-LIGHT_LAYOUT_DEFAULTS = {
+from odoo import fields, models
+
+_logger = logging.getLogger(__name__)
+
+# Default colors (Corporate Blue)
+CORPORATE_BLUE = {
+    'brand': '#1e293b',
+    'primary': '#3b82f6',
+    'success': '#10b981',
+    'info': '#06b6d4',
+    'warning': '#f59e0b',
+    'danger': '#ef4444',
     'bg': '#f1f5f9',
     'surface': '#ffffff',
     'text': '#1e293b',
@@ -22,63 +34,10 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     # =========================================================================
-    # THEME PRESET
+    # THEME PRESET — the only color control exposed to users
     # =========================================================================
     ops_theme_skin_id = fields.Many2one(
         related='company_id.ops_theme_skin_id',
-        readonly=False,
-    )
-    # Deprecated — kept for backwards compat
-    ops_theme_preset = fields.Selection(
-        related='company_id.ops_theme_preset',
-        readonly=False,
-    )
-
-    # =========================================================================
-    # BRAND COLORS (10 skin colors)
-    # =========================================================================
-    ops_primary_color = fields.Char(
-        related='company_id.ops_primary_color',
-        readonly=False,
-    )
-    ops_secondary_color = fields.Char(
-        related='company_id.ops_secondary_color',
-        readonly=False,
-    )
-    ops_success_color = fields.Char(
-        related='company_id.ops_success_color',
-        readonly=False,
-    )
-    ops_warning_color = fields.Char(
-        related='company_id.ops_warning_color',
-        readonly=False,
-    )
-    ops_danger_color = fields.Char(
-        related='company_id.ops_danger_color',
-        readonly=False,
-    )
-    ops_info_color = fields.Char(
-        related='company_id.ops_info_color',
-        readonly=False,
-    )
-
-    # =========================================================================
-    # CANVAS COLORS
-    # =========================================================================
-    ops_bg_color = fields.Char(
-        related='company_id.ops_bg_color',
-        readonly=False,
-    )
-    ops_surface_color = fields.Char(
-        related='company_id.ops_surface_color',
-        readonly=False,
-    )
-    ops_text_color = fields.Char(
-        related='company_id.ops_text_color',
-        readonly=False,
-    )
-    ops_border_color = fields.Char(
-        related='company_id.ops_border_color',
         readonly=False,
     )
 
@@ -235,54 +194,62 @@ class ResConfigSettings(models.TransientModel):
     )
 
     # =========================================================================
-    # ONCHANGE — Preset applies colors on the settings form
+    # HELPERS — Extract colors from skin or fallback to defaults
     # =========================================================================
-    @api.onchange('ops_theme_skin_id')
-    def _onchange_ops_theme_skin_id(self):
-        """Apply preset colors when theme skin changes."""
-        if self.ops_theme_skin_id:
-            skin = self.ops_theme_skin_id
 
-            # Main palette colors (10 fields)
-            self.ops_primary_color = skin.primary_color
-            self.ops_secondary_color = skin.secondary_color
-            self.ops_success_color = skin.success_color
-            self.ops_warning_color = skin.warning_color
-            self.ops_danger_color = skin.danger_color
-            self.ops_info_color = skin.info_color
-
-            self.ops_bg_color = skin.bg_color
-            self.ops_surface_color = skin.surface_color
-            self.ops_text_color = skin.text_color
-            self.ops_border_color = skin.border_color
-
-            self.ops_navbar_style = skin.navbar_style
-
-    # =========================================================================
-    # SET VALUES — Write colors to compile-time SCSS via color_assets
-    # =========================================================================
-    def set_values(self):
-        """Override to write color changes to SCSS via ir.asset."""
-        res = super().set_values()
-
-        color_editor = self.env['ops_theme.color_assets']
-
-        # Light SCSS only
-        light_colors = {
-            'brand': self.ops_primary_color or '#1e293b',
-            'primary': self.ops_secondary_color or '#3b82f6',
-            'success': self.ops_success_color or '#10b981',
-            'info': self.ops_info_color or '#06b6d4',
-            'warning': self.ops_warning_color or '#f59e0b',
-            'danger': self.ops_danger_color or '#ef4444',
-            'bg': self.ops_bg_color or LIGHT_LAYOUT_DEFAULTS['bg'],
-            'surface': self.ops_surface_color or LIGHT_LAYOUT_DEFAULTS['surface'],
-            'text': self.ops_text_color or LIGHT_LAYOUT_DEFAULTS['text'],
-            'border': self.ops_border_color or LIGHT_LAYOUT_DEFAULTS['border'],
+    def _get_skin_colors(self):
+        """Return 10-color dict from the selected skin, or Corporate Blue."""
+        skin = self.ops_theme_skin_id
+        if not skin:
+            return dict(CORPORATE_BLUE)
+        return {
+            'brand': skin.brand_color or CORPORATE_BLUE['brand'],
+            'primary': skin.action_color or CORPORATE_BLUE['primary'],
+            'success': skin.success_color or CORPORATE_BLUE['success'],
+            'info': skin.info_color or CORPORATE_BLUE['info'],
+            'warning': skin.warning_color or CORPORATE_BLUE['warning'],
+            'danger': skin.danger_color or CORPORATE_BLUE['danger'],
+            'bg': skin.bg_color or CORPORATE_BLUE['bg'],
+            'surface': skin.surface_color or CORPORATE_BLUE['surface'],
+            'text': skin.text_color or CORPORATE_BLUE['text'],
+            'border': skin.border_color or CORPORATE_BLUE['border'],
         }
 
-        color_editor.set_light_colors(light_colors)
+    # =========================================================================
+    # SET VALUES — Read skin colors, sync to company, compile SCSS
+    # =========================================================================
+    def set_values(self):
+        """Override to compile skin colors into SCSS and sync to company."""
+        res = super().set_values()
 
+        skin = self.ops_theme_skin_id
+        colors = self._get_skin_colors()
+
+        # Sync skin colors → company fields (used by login template + controller)
+        self.company_id.write({
+            'ops_brand_color': colors['brand'],
+            'ops_action_color': colors['primary'],
+            'ops_success_color': colors['success'],
+            'ops_warning_color': colors['warning'],
+            'ops_danger_color': colors['danger'],
+            'ops_info_color': colors['info'],
+            'ops_bg_color': colors['bg'],
+            'ops_surface_color': colors['surface'],
+            'ops_text_color': colors['text'],
+            'ops_border_color': colors['border'],
+        })
+
+        # Sync navbar style from skin
+        if skin and skin.navbar_style:
+            self.company_id.write({'ops_navbar_style': skin.navbar_style})
+
+        # Compile colors into SCSS via ir.asset
+        self.env['ops_theme.color_assets'].set_light_colors(colors)
+
+        _logger.info(
+            "OPS Theme: Skin '%s' applied — SCSS compiled, reload required",
+            skin.name if skin else 'Corporate Blue (default)',
+        )
         return res
 
     # =========================================================================
@@ -298,21 +265,16 @@ class ResConfigSettings(models.TransientModel):
         skin = self.env.ref('ops_theme.skin_corporate_blue', raise_if_not_found=False)
         self.company_id.write({
             'ops_theme_skin_id': skin.id if skin else False,
-            'ops_theme_preset': 'corporate_blue',
-
-            # Light palette (10 colors)
-            'ops_primary_color': '#1e293b',
-            'ops_secondary_color': '#3b82f6',
-            'ops_success_color': '#10b981',
-            'ops_warning_color': '#f59e0b',
-            'ops_danger_color': '#ef4444',
-            'ops_info_color': '#06b6d4',
-            'ops_bg_color': '#f1f5f9',
-            'ops_surface_color': '#ffffff',
-            'ops_text_color': '#1e293b',
-            'ops_border_color': '#e2e8f0',
-
-            # UI defaults
+            'ops_brand_color': CORPORATE_BLUE['brand'],
+            'ops_action_color': CORPORATE_BLUE['primary'],
+            'ops_success_color': CORPORATE_BLUE['success'],
+            'ops_warning_color': CORPORATE_BLUE['warning'],
+            'ops_danger_color': CORPORATE_BLUE['danger'],
+            'ops_info_color': CORPORATE_BLUE['info'],
+            'ops_bg_color': CORPORATE_BLUE['bg'],
+            'ops_surface_color': CORPORATE_BLUE['surface'],
+            'ops_text_color': CORPORATE_BLUE['text'],
+            'ops_border_color': CORPORATE_BLUE['border'],
             'ops_favicon': False,
             'ops_login_background': False,
             'ops_login_tagline': 'Enterprise Resource Planning',
@@ -328,12 +290,4 @@ class ResConfigSettings(models.TransientModel):
         return {
             'type': 'ir.actions.client',
             'tag': 'reload',
-        }
-
-    def action_preview_theme(self):
-        """Open new tab to preview theme."""
-        return {
-            'type': 'ir.actions.act_url',
-            'url': '/web',
-            'target': 'new',
         }

@@ -79,145 +79,82 @@
         color: #64748b;
         padding: 8px 0 6px 12px;
         margin: 16px 0 12px 0;
-        border-left: 3px solid var(--ops-secondary, #3b82f6);
-        background: linear-gradient(90deg, rgba(var(--ops-secondary-rgb, 59, 130, 246), 0.04), transparent);
+        border-left: 3px solid var(--ops-action, #3b82f6);
+        background: linear-gradient(90deg, rgba(59, 130, 246, 0.04), transparent);
     }
 
-    /* --- Theme palette selector --- */
-    .ops-ts-section-label {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.6px;
-        color: #94a3b8;
-        margin-bottom: 8px;
+    /* --- Skin Selector Widget --- */
+    .ops-skin-selector {
+        width: 100%;
     }
 
-    .ops-ts-grid {
+    .ops-skin-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 10px;
-        margin-bottom: 4px;
     }
 
-    @media (max-width: 992px) {
-        .ops-ts-grid {
-            grid-template-columns: 1fr;
+    @media (max-width: 768px) {
+        .ops-skin-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
     }
 
-    .ops-ts-card {
+    .skin-card {
         background: #ffffff;
         border: 2px solid #e2e8f0;
         border-radius: 10px;
-        padding: 10px 14px;
+        padding: 10px 12px;
         cursor: pointer;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
 
         &:hover {
+            border-color: #94a3b8;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        &.ops-ts-selected {
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+        &.active {
+            border-color: var(--ops-action, #3b82f6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
     }
 
-    .ops-ts-card-dark {
-        background: #111318;
-        border-color: #1e293b;
-    }
-
-    .ops-ts-card-custom {
+    .skin-card-custom {
         background: linear-gradient(135deg, #f8fafc, #f1f5f9);
         border-style: dashed;
     }
 
-    .ops-ts-card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 8px;
-    }
-
-    .ops-ts-name-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .ops-ts-accent-dot {
-        width: 16px;
-        height: 16px;
-        border-radius: 5px;
-        flex-shrink: 0;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-    }
-
-    .ops-ts-name {
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: #1e293b;
-    }
-
-    .ops-ts-card-dark .ops-ts-name {
-        color: #f1f5f9;
-    }
-
-    .ops-ts-tag {
-        font-size: 0.62rem;
-        font-weight: 600;
+    .skin-tag {
+        font-size: 0.6rem;
+        font-weight: 700;
         padding: 2px 8px;
         border-radius: 10px;
         white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
     }
 
-    .ops-ts-swatches {
+    .palette-preview {
         display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
+        width: 100%;
+        height: 24px;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.06);
     }
 
-    .ops-ts-swatch {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2px;
+    .palette-swatch {
+        flex: 1;
     }
 
-    .ops-ts-swatch-circle {
-        width: 28px;
-        height: 28px;
-        border-radius: 7px;
-        border: 1px solid rgba(128, 128, 128, 0.2);
-        flex-shrink: 0;
-    }
-
-    .ops-ts-swatch-label {
-        font-size: 0.6rem;
-        color: #94a3b8;
-        line-height: 1;
-    }
-
-    .ops-ts-swatch-hex {
-        font-size: 0.52rem;
-        color: #64748b;
-        font-family: monospace;
-        line-height: 1;
-    }
-
-    .ops-ts-card-dark .ops-ts-swatch-label {
-        color: #64748b;
-    }
-
-    .ops-ts-card-dark .ops-ts-swatch-hex {
-        color: #475569;
-    }
-
-    .ops-ts-custom-hint {
+    .skin-title {
         font-size: 0.78rem;
-        color: #94a3b8;
-        font-style: italic;
-        padding: 4px 0;
+        font-weight: 600;
+        color: #334155;
+        line-height: 1.2;
     }
 }

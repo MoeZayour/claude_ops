@@ -57,7 +57,7 @@
  <!-- ==================== SCOPE & FILTERS ==================== -->
  <group name="scope_section" string="Scope &amp; Filters">
  <group name="group_3">
- <field name="ops_branch_ids"
+ <field name="branch_ids"
  widget="many2many_tags"
  options="{'no_create': True, 'color_field': 'color'}"
  help="Filter by specific branches (leave empty for all authorized branches)"/>
@@ -202,30 +202,15 @@
  </group>
 
  <!-- ==================== ACTION BUTTONS ==================== -->
- <footer>
- <button name="action_view_report"
- string="View Report"
- type="object"
- class="btn-primary"
- icon="fa-eye"
- help="Open report in browser for preview"/>
- <button name="action_generate_report"
- string="Print PDF"
- type="object"
- class="btn-secondary"
- icon="fa-print"
- help="Generate PDF for printing or download"/>
- <button name="action_view_quants"
- string="View Stock"
- type="object"
- class="btn-info"
- icon="fa-list"
- help="View stock quants in tree view"/>
- <button string="Cancel"
- class="btn-default"
- icon="fa-times"
- special="cancel"/>
- </footer>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
 
  </form>
  </field>

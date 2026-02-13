@@ -41,13 +41,13 @@ class ResUsersSoD(models.Model):
     def _compute_sod_conflicts(self):
         """
         Detect conflicting group memberships that violate Segregation of Duties.
-
-        IT Admin should never have business manager rights or access to
-        sensitive financial data.
+        
+        Note: No @api.depends decorator to avoid Odoo 19 dependency resolution issues
+        during model loading. Field recomputation triggered manually when needed.
         """
         for user in self:
             conflicts = []
-            user_groups = getattr(user, 'groups_id', self.env['res.groups'])
+            user_groups = user.group_ids
 
             for group1_ref, group2_ref, conflict_desc in self.SOD_CONFLICT_PAIRS:
                 try:

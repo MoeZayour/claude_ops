@@ -170,6 +170,7 @@ class OPSColorAssets(models.AbstractModel):
             _logger.info("OPS Theme: Created color asset %s", custom_url)
 
         self._clear_compiled_bundles(bundle)
+        self.env['ir.attachment'].regenerate_assets_bundles()
         self.env.registry.clear_cache('assets')
 
     # ----------------------------------------------------------
@@ -204,6 +205,7 @@ class OPSColorAssets(models.AbstractModel):
             ('path', '=', custom_url)
         ]).unlink()
         self._clear_compiled_bundles(bundle)
+        self.env['ir.attachment'].regenerate_assets_bundles()
         self.env.registry.clear_cache('assets')
         _logger.info("OPS Theme: Reset color asset %s to defaults", url)
 

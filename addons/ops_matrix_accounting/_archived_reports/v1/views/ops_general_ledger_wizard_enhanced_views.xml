@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =================================================================
+         Matrix Financial Intelligence - Wizard Form View
+         Layout Refactor: Viktor Kessler Audit v2.0
+         Date: 2026-02-04
+         Changes:
+           Two column master layout (Report Type | Period)
+           Preview moved beside period (visible without scrolling)
+           3 tab notebook (Scope / Filters / Display)
+           Contextual field visibility per report type
+           Clean footer hierarchy (PDF primary, Excel secondary)
+           Removed emojis from section headers
+         ================================================================= -->
+
+    <record id="view_ops_general_ledger_wizard_enhanced_form" model="ir.ui.view">
+        <field name="name">ops.general.ledger.wizard.enhanced.form</field>
+        <field name="model">ops.general.ledger.wizard.enhanced</field>
+        <field name="arch" type="xml">
+            <form string="Matrix Financial Intelligence">
+
+                <!-- Hidden computed/related fields -->
+                <group invisible="1" name="hidden_fields">
+                    <field name="currency_id"/>
+                    <field name="report_title"/>
+                </group>
+
+                <!-- ROW 0: Template Quick Start (compact) -->
+                <group name="template_section">
+                    <group name="group_1">
+                        <field name="report_template_id"
+                               string="Template"
+                               placeholder="Select a saved template..."
+                               options="{'no_create': True, 'no_open': True}"/>
+                    </group>
+                    <group name="group_2">
+                        <button name="action_save_template" type="object"
+                                string="Save Template"
+                                class="btn-link btn-sm"
+                                icon="fa-save"/>
+                    </group>
+                </group>
+
+                <separator/>
+
+                <!-- ROW 1: Report Type (left) + Period (right) | Master two column control -->
+                <group name="group_3">
+                    <group string="Report Type" name="report_type_section">
+                        <field name="report_type" widget="radio" nolabel="1"/>
+                    </group>
+                    <group string="Reporting Period" name="period_section">
+                        <field name="date_from"
+                               invisible="report_type == 'bs'"
+                               required="report_type != 'bs'"/>
+                        <field name="date_to"
+                               invisible="report_type == 'bs'"
+                               required="report_type != 'bs'"/>
+                        <field name="as_of_date"
+                               invisible="report_type != 'bs'"
+                               required="report_type == 'bs'"/>
+                        <field name="target_move" widget="radio"/>
+                        <field name="include_initial_balance"
+                               invisible="report_type not in ('gl', 'tb')"/>
+                        <separator string="Preview"/>
+                        <field name="record_count"
+                               string="Est. Records"
+                               readonly="1"/>
+                        <field name="filter_summary"
+                               string="Active Filters"
+                               readonly="1"/>
+                    </group>
+                </group>
+
+                <!-- ROW 2: Contextual Notebook with 3 tabs: Scope / Filters / Display -->
+                <notebook name="ops_wizard_notebook">
+
+                    <!-- TAB 1: SCOPE | Where am I looking? | Organization + Matrix dimension mode -->
+                    <page string="Scope" name="scope_tab">
+                        <group name="group_4">
+                            <group name="organization" string="Organization">
+                                <field name="company_id"
+                                       options="{'no_create': True}"/>
+                                <field name="branch_ids"
+                                       widget="many2many_tags"
+                                       options="{'no_create': True, 'color_field': 'color'}"
+                                       placeholder="All branches"/>
+                                <field name="business_unit_ids"
+                                       widget="many2many_tags"
+                                       options="{'no_create': True, 'color_field': 'color'}"
+                                       placeholder="All business units"/>
+                            </group>
+                            <group name="matrix_filter_mode_1" string="Matrix Filter Mode">
+                                <field name="matrix_filter_mode"
+                                       widget="radio" nolabel="1"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <!-- TAB 2: FILTERS | What data am I selecting? | Account and Partner filters -->
+                    <page string="Filters" name="filters_tab">
+                        <group name="group_7">
+                            <group name="account_filters" string="Account Filters"
+                                   invisible="report_type in ('aged', 'soa')">
+                                <field name="journal_ids"
+                                       widget="many2many_tags"
+                                       options="{'no_create': True}"
+                                       placeholder="All journals"/>
+                                <field name="account_ids"
+                                       widget="many2many_tags"
+                                       options="{'no_create': True}"
+                                       placeholder="All accounts"
+                                       invisible="report_type not in ('gl', 'tb')"/>
+                                <field name="account_type_ids"
+                                       invisible="report_type not in ('gl', 'tb')"/>
+                                <field name="display_account"
+                                       widget="radio"
+                                       invisible="report_type not in ('gl', 'tb')"/>
+                            </group>
+                            <group name="partner_filters" string="Partner Filters"
+                                   invisible="report_type in ('tb', 'pl', 'bs', 'cf')">
+                                <field name="partner_ids"
+                                       widget="many2many_tags"
+                                       options="{'no_create': True}"
+                                       placeholder="All partners"
+                                       required="report_type == 'soa'"/>
+                                <field name="partner_type"
+                                       invisible="report_type not in ('aged', 'soa')"/>
+                                <field name="aging_type"
+                                       widget="radio"
+                                       invisible="report_type != 'aged'"/>
+                                <field name="period_length"
+                                       invisible="report_type != 'aged'"
+                                       string="Period Length (days)"/>
+                                <field name="reconciled"
+                                       widget="radio"
+                                       invisible="report_type not in ('gl', 'partner')"/>
+                            </group>
+                        </group>
+                    </page>
+
+                    <!-- TAB 3: DISPLAY | How should it look? | Format and Consolidation -->
+                    <page string="Display" name="display_tab">
+                        <group name="group_10">
+                            <group name="format" string="Format">
+                                <field name="report_format" widget="radio"/>
+                                <field name="sort_by"/>
+                                <field name="group_by_date"
+                                       invisible="report_type != 'gl'"/>
+                            </group>
+                            <group name="consolidation" string="Consolidation">
+                                <field name="consolidate_by_branch"/>
+                                <field name="consolidate_by_bu"/>
+                                <field name="consolidate_by_partner"
+                                       invisible="report_type not in ('gl', 'partner', 'aged')"/>
+                            </group>
+                        </group>
+                    </page>
+
+                </notebook>
+
+                <!-- FOOTER: Action Hierarchy | Primary: PDF | Secondary: Excel | Links: Preview, Entries -->
+                <footer>
+                    <button name="action_generate_report" type="object"
+                            string="Print PDF" class="btn-primary"
+                            icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" type="object"
+                            string="Export Excel" class="btn-secondary"
+                            icon="fa-file-excel-o"/>
+                    <button name="action_view_transactions" type="object"
+                            string="View Entries" class="btn-link"
+                            invisible="report_type in ('pl', 'bs', 'cf', 'tb')"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_ops_general_ledger_wizard_enhanced" model="ir.actions.act_window">
+        <field name="name">Matrix Financial Intelligence</field>
+        <field name="res_model">ops.general.ledger.wizard.enhanced</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- Menu: moved to views/accounting_menus.xml -->
+
+</odoo>

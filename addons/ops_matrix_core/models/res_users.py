@@ -62,7 +62,8 @@ class ResUsers(models.Model):
         'ops.branch',
         string='Primary Branch',
         help='Primary branch this user belongs to',
-        tracking=True
+        tracking=True,
+        required=False
     )
 
     # ============================================
@@ -353,51 +354,40 @@ class ResUsers(models.Model):
 
     @api.depends('ops_persona_ids')
     def _compute_persona_ids(self):
-        """Compute legacy persona_ids from ops_persona_ids."""
+        """Alias compute: Sync ops_persona_ids -> persona_ids."""
         for user in self:
             user.persona_ids = user.ops_persona_ids
 
     def _inverse_persona_ids(self):
-        """Inverse synchronization: Writing to legacy field updates ops_persona_ids."""
+        """Alias inverse: Writing persona_ids updates ops_persona_ids."""
         for user in self:
             user.ops_persona_ids = user.persona_ids
 
     # ========================================================================
-    # COMPUTED METHODS - New Matrix Fields
+    # COMPUTED METHODS - Access Summary
     # ========================================================================
 
-    @api.depends('ops_allowed_branch_ids', 'ops_allowed_business_unit_ids',
-                 'is_cross_branch_bu_leader', 'is_matrix_administrator')
+    @api.depends('ops_allowed_branch_ids', 'ops_allowed_business_unit_ids')
     def _compute_matrix_access_summary(self):
-        """Compute human-readable summary of matrix access."""
+        """Generate human-readable summary of user's matrix access."""
         for user in self:
             parts = []
 
-            # Branch access summary
             if user.ops_allowed_branch_ids:
-                if len(user.ops_allowed_branch_ids) <= 3:
-                    branch_codes = [b.code if hasattr(b, 'code') else b.name
-                                   for b in user.ops_allowed_branch_ids]
-                    parts.append(f"Branches: {', '.join(branch_codes)}")
-                else:
-                    parts.append(f"Branches: {len(user.ops_allowed_branch_ids)} branches")
+                branch_count = len(user.ops_allowed_branch_ids)
+                parts.append(_('%d branch(es)') % branch_count)
 
-            # BU access summary
             if user.ops_allowed_business_unit_ids:
-                if len(user.ops_allowed_business_unit_ids) <= 3:
-                    bu_codes = [bu.code if hasattr(bu, 'code') else bu.name
-                               for bu in user.ops_allowed_business_unit_ids]
-                    parts.append(f"BUs: {', '.join(bu_codes)}")
-                else:
-                    parts.append(f"BUs: {len(user.ops_allowed_business_unit_ids)} units")
+                bu_count = len(user.ops_allowed_business_unit_ids)
+                parts.append(_('%d BU(s)') % bu_count)
 
-            # Role indicators
             if user.is_cross_branch_bu_leader:
-                parts.append("Cross-Branch Leader")
-            if user.is_matrix_administrator:
-                parts.append("Matrix Admin")
+                parts.append(_('Cross-Branch BU Leader'))
 
-            user.matrix_access_summary = " | ".join(parts) if parts else "No matrix access"
+            if user.is_matrix_administrator:
+                parts.append(_('Matrix Admin'))
+
+            user.matrix_access_summary = ', '.join(parts) if parts else _('No matrix access')
 
     @api.depends('ops_allowed_branch_ids', 'ops_allowed_business_unit_ids')
     def _compute_allowed_counts(self):
@@ -408,52 +398,77 @@ class ResUsers(models.Model):
 
     @api.depends('ops_allowed_branch_ids')
     def _compute_effective_companies(self):
-        """Compute companies from allowed branches."""
+        """Compute effective companies from allowed branches."""
         for user in self:
-            # Get companies from allowed branches (ops.branch has company_id field)
-            companies = user.ops_allowed_branch_ids.mapped('company_id')
-            user.effective_company_ids = [(6, 0, companies.ids)]
+            # Get unique companies from allowed branches
+            company_ids = user.ops_allowed_branch_ids.mapped('company_id').ids
+            user.effective_company_ids = [(6, 0, company_ids)]
 
     # ========================================================================
-    # VALIDATION CONSTRAINTS
+    # SOD CONFLICT DETECTION
     # ========================================================================
 
-    @api.onchange('ops_allowed_branch_ids', 'ops_default_branch_id')
-    def _onchange_auto_populate_primary_branch(self):
-        """Auto-populate Primary Branch when allowed branches are selected."""
+    @api.depends('group_ids')
+    def _compute_sod_conflicts(self):
+        """
+        Detect Segregation of Duties (SoD) violations based on group memberships.
+        Uses ops.sod.policy records to identify conflicting groups.
+        """
+        SodPolicy = self.env['ops.sod.policy'].sudo()
+
         for user in self:
-            # Only auto-populate if primary_branch_id is not yet set
-            if not user.primary_branch_id:
-                # First try to use default branch if set
-                if user.ops_default_branch_id and user.ops_default_branch_id in user.ops_allowed_branch_ids:
-                    user.primary_branch_id = user.ops_default_branch_id
-                # Otherwise use first allowed branch
-                elif user.ops_allowed_branch_ids:
-                    user.primary_branch_id = user.ops_allowed_branch_ids[0]
+            conflicts = []
+            user_groups = user.group_ids
+
+            # Search all active SoD policies
+            policies = SodPolicy.search([('active', '=', True)])
+
+            for policy in policies:
+                # Check if user has BOTH conflicting groups
+                has_group_a = policy.group_a_id in user_groups
+                has_group_b = policy.group_b_id in user_groups
+
+                if has_group_a and has_group_b:
+                    conflicts.append(
+                        _('Policy "%(policy)s": %(group_a)s + %(group_b)s') % {
+                            'policy': policy.name,
+                            'group_a': policy.group_a_id.name,
+                            'group_b': policy.group_b_id.name
+                        }
+                    )
+
+            # Set computed fields
+            user.sod_conflicts = '\n'.join(conflicts) if conflicts else False
+            user.has_sod_conflict = bool(conflicts)
+            user.sod_conflict_count = len(conflicts)
+
+    # ========================================================================
+    # CONSTRAINT VALIDATION
+    # ========================================================================
 
     @api.constrains('ops_default_branch_id', 'ops_allowed_branch_ids')
-    def _check_default_branch_in_allowed(self):
+    def _check_default_branch_allowed(self):
         """Ensure default branch is in user's allowed branches."""
         for user in self:
-            if (user.ops_default_branch_id and
-                user.ops_default_branch_id not in user.ops_allowed_branch_ids):
-                raise ValidationError(_(
-                    "Default branch '%(branch_name)s' must be in user's allowed branches."
-                ) % {
-                    'branch_name': user.ops_default_branch_id.name
-                })
+            if user.ops_default_branch_id and user.ops_allowed_branch_ids:
+                if user.ops_default_branch_id not in user.ops_allowed_branch_ids:
+                    raise ValidationError(_(
+                        "Default branch %(branch_name)s must be one of the user's allowed branches."
+                    ) % {
+                        'branch_name': user.ops_default_branch_id.name
+                    })
 
     @api.constrains('ops_default_business_unit_id', 'ops_allowed_business_unit_ids')
-    def _check_default_bu_in_allowed(self):
-        """Ensure default BU is in user's allowed business units."""
+    def _check_default_bu_allowed(self):
+        """Ensure default BU is in user's allowed BUs."""
         for user in self:
-            if (user.ops_default_business_unit_id and
-                user.ops_default_business_unit_id not in user.ops_allowed_business_unit_ids):
-                raise ValidationError(_(
-                    "Default business unit '%(bu_name)s' must be in user's allowed business units."
-                ) % {
-                    'bu_name': user.ops_default_business_unit_id.name
-                })
+            if user.ops_default_business_unit_id and user.ops_allowed_business_unit_ids:
+                if user.ops_default_business_unit_id not in user.ops_allowed_business_unit_ids:
+                    raise ValidationError(_(
+                        "Default business unit %(bu_name)s must be one of the user's allowed business units."
+                    ) % {
+                        'bu_name': user.ops_default_business_unit_id.name
+                    })
 
     @api.constrains('ops_allowed_branch_ids')
     def _check_branch_company_consistency(self):
@@ -475,13 +490,13 @@ class ResUsers(models.Model):
     @api.constrains('primary_branch_id', 'ops_allowed_business_unit_ids', 'ops_persona_ids', 'persona_id')
     def _check_user_matrix_requirements(self):
         """
-        Ensure non-admin internal users have:
+        ✅ HARD VALIDATION: Ensure non-admin internal users have:
         1. At least one OPS Persona assigned
-        2. A Primary Branch assigned
+        2. A Primary Branch assigned (now required=True)
         3. At least one Business Unit assigned
         """
         # Skip during module installation/upgrade
-        if self.env.context.get('install_mode') or self.env.context.get('module'):
+        if self.env.context.get('install_mode'):
             return
 
         # Skip during data import
@@ -509,10 +524,10 @@ class ResUsers(models.Model):
                 continue
 
             # Skip Settings Managers / System Administrators
-            if system_group and hasattr(user, 'groups_id') and user.groups_id and system_group in user.groups_id:
+            if system_group and hasattr(user, 'group_ids') and user.group_ids and system_group in user.group_ids:
                 continue
 
-            # === GOVERNANCE VALIDATION (Soft) ===
+            # === GOVERNANCE VALIDATION (HARD) ===
             errors = []
 
             # Check 1: At least one Persona assigned
@@ -522,7 +537,7 @@ class ResUsers(models.Model):
                     _("• OPS Persona: At least one persona must be assigned.")
                 )
 
-            # Check 2: Primary Branch assigned
+            # Check 2: Primary Branch assigned (redundant with required=True, but kept for clarity)
             if not user.primary_branch_id:
                 errors.append(
                     _("• Primary Branch: A primary branch must be assigned.")
@@ -534,26 +549,33 @@ class ResUsers(models.Model):
                     _("• Business Units: At least one business unit must be assigned.")
                 )
 
+            # ✅ RAISE ERROR if validation fails
             if errors:
-                _logger.warning(
-                    "User '%s' (ID: %s) is missing OPS Matrix requirements: %s",
-                    user.name,
-                    user.id,
-                    ', '.join(errors)
-                )
+                raise ValidationError(_(
+                    "User '%(name)s' is missing required OPS Matrix configuration:\n%(errors)s\n\n"
+                    "All internal users must have:\n"
+                    "- At least one OPS Persona\n"
+                    "- A Primary Branch\n"
+                    "- At least one Business Unit"
+                ) % {
+                    'name': user.name,
+                    'errors': '\n'.join(errors)
+                })
 
     # ========================================================================
     # CRUD OVERRIDE
     # ========================================================================
 
+
     @api.model_create_multi
     def create(self, vals_list):
         """
         Override create to handle OPS Matrix governance on user creation.
-        Auto-populates missing values where possible.
+        Auto-populates missing values where possible, then enforces
+        hard validation: every internal user MUST have persona, branch, and BU.
         """
         # Skip during module installation/upgrade
-        if self.env.context.get('install_mode') or self.env.context.get('module'):
+        if self.env.context.get('install_mode'):
             return super().create(vals_list)
 
         for vals in vals_list:
@@ -574,22 +596,19 @@ class ResUsers(models.Model):
 
             if not has_ops_persona and persona_id:
                 vals['ops_persona_ids'] = [(4, persona_id)]
-                _logger.info(f"Auto-synced persona_id {persona_id} to ops_persona_ids during create")
 
             # AUTO-POPULATE: If primary_branch_id is missing, try to find a default
             if not vals.get('primary_branch_id'):
-                # Try to get from allowed branches
                 ops_allowed_branch_ids = vals.get('ops_allowed_branch_ids', [])
                 for cmd in ops_allowed_branch_ids:
                     if isinstance(cmd, (list, tuple)):
-                        if cmd[0] == 4:  # (4, id) - link
+                        if cmd[0] == 4:
                             vals['primary_branch_id'] = cmd[1]
                             break
-                        elif cmd[0] == 6 and cmd[2]:  # (6, _, ids) - replace
+                        elif cmd[0] == 6 and cmd[2]:
                             vals['primary_branch_id'] = cmd[2][0]
                             break
 
-                # If still no branch, try to find company's default branch
                 if not vals.get('primary_branch_id'):
                     company_id = vals.get('company_id') or self.env.company.id
                     default_branch = self.env['ops.branch'].search([
@@ -598,12 +617,66 @@ class ResUsers(models.Model):
                     ], limit=1, order='sequence, id')
                     if default_branch:
                         vals['primary_branch_id'] = default_branch.id
-                        # Also add to allowed branches if not present
                         if not ops_allowed_branch_ids:
                             vals['ops_allowed_branch_ids'] = [(4, default_branch.id)]
 
-        # Create the user - validation constraints will fire after creation
-        return super().create(vals_list)
+            # HARD VALIDATION — persona, branch, BU required
+            # @api.constrains only fires when watched fields are IN vals.
+            # If none are set, the constraint never triggers.
+            errors = []
+            user_name = vals.get('name', vals.get('login', 'New User'))
+
+            if not vals.get('persona_id'):
+                errors.append(_("• OPS Persona: A persona must be assigned."))
+
+            if not vals.get('primary_branch_id'):
+                errors.append(_("• Primary Branch: A primary branch must be assigned."))
+
+            if not self._vals_has_m2m_data(vals.get('ops_allowed_business_unit_ids', [])):
+                errors.append(_("• Business Unit: At least one business unit must be assigned."))
+
+            if errors:
+                raise ValidationError(_(
+                    "Cannot create user '%(name)s' — missing required OPS Matrix configuration:\n%(errors)s\n\n"
+                    "All internal users must have:\n"
+                    "- An OPS Persona\n"
+                    "- A Primary Branch\n"
+                    "- At least one Business Unit"
+                ) % {
+                    'name': user_name,
+                    'errors': '\n'.join(errors)
+                })
+
+        # Create the user
+        users = super().create(vals_list)
+
+        # Map persona to security groups for each created user
+        for user in users:
+            if user.persona_id and not user.share:
+                user._map_persona_to_groups()
+                _logger.info(
+                    "Auto-mapped security groups for new user %s with persona %s",
+                    user.name, user.persona_id.code
+                )
+
+        return users
+
+    @staticmethod
+    def _vals_has_m2m_data(commands):
+        """Check if M2M ORM commands actually contain data.
+        Returns True if commands would result in at least one linked record.
+        """
+        if not commands:
+            return False
+        for cmd in commands:
+            if isinstance(cmd, (list, tuple)):
+                if cmd[0] == 4 and cmd[1]:        # (4, id) link
+                    return True
+                if cmd[0] == 6 and cmd[2]:         # (6, 0, [ids]) replace
+                    return True
+                if cmd[0] == 0 and cmd[2]:         # (0, 0, {vals}) create+link
+                    return True
+        return False
 
     def write(self, vals):
         """
@@ -641,20 +714,17 @@ class ResUsers(models.Model):
                 # Auto-map security groups (method from res_users_group_mapper.py)
                 user._map_persona_to_groups()
 
-        # Log matrix access changes for security audit
+        # Log matrix access changes (server log only — all matrix fields
+        # have tracking=True so Odoo chatter records changes natively.
+        # Manual message_post removed: caused cascading side-effects
+        # during user creation, corrupting the save response.)
         if matrix_changes:
+            changed = [k for k in vals if k in matrix_fields]
             for user in self:
                 _logger.info(
-                    f"User {user.name} (ID: {user.id}) matrix access rights modified. "
-                    f"Changes: {', '.join([k for k in vals.keys() if k in matrix_fields])}"
+                    "User %s (ID: %s) matrix access modified: %s",
+                    user.name, user.id, ', '.join(changed)
                 )
-
-                # Post message for audit trail on partner (users don't have message_post)
-                if user.partner_id:
-                    user.partner_id.message_post(
-                        body=_('Matrix access rights updated by %s') % self.env.user.name,
-                        subject=_('Security Configuration Change')
-                    )
 
         return result
 

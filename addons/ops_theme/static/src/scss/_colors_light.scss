@@ -156,3 +156,24 @@ $o-theme-text-colors: (
     "danger": $ops_color_danger,
     "muted": $ops_text_muted,
 );
+
+// =============================================================================
+// CSS CUSTOM PROPERTIES — Runtime skin tokens for Smart Skins
+// =============================================================================
+// These :root vars mirror the compiled SCSS values and enable:
+// 1. Runtime overrides via .ops-is-dark class
+// 2. Live preview in settings (theme_preview.js)
+// 3. JS access to current skin colors
+
+:root {
+    --ops-brand: #{$ops_color_brand};
+    --ops-action: #{$ops_color_primary};
+    --ops-success: #{$ops_color_success};
+    --ops-warning: #{$ops_color_warning};
+    --ops-danger: #{$ops_color_danger};
+    --ops-info: #{$ops_color_info};
+    --ops-bg: #{$ops_color_bg};
+    --ops-surface: #{$ops_color_surface};
+    --ops-text: #{$ops_color_text};
+    --ops-border: #{$ops_color_border};
+}

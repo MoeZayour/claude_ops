@@ -7,36 +7,17 @@ class IrExports(models.Model):
     
     @api.model
     def create(self, vals):
-        """Override export creation to enforce security"""
-        # Check if user is IT Admin or System Admin
-        # In Odoo 19, check for appropriate groups.
+        """Override export template creation to enforce security"""
+        # Allow IT Admin and System Admin to create export templates
         if not self.env.user.has_group('ops_matrix_core.group_ops_it_admin') and \
            not self.env.user.has_group('base.group_system'):
             raise AccessError(_(
-                'Direct export is disabled for security reasons. '
-                'Please use the Secure Excel Export Wizard from the Reporting menu.'
+                'Saving export templates is disabled for security reasons.\n'
+                'You can still export data using the export button.'
             ))
         return super(IrExports, self).create(vals)
 
 
-class BaseModel(models.AbstractModel):
-    _inherit = 'base'
-    
-    def export_data(self, fields_to_export):
-        """Override export_data to restrict native export"""
-        # Allow IT Admin and System Admin
-        if self.env.user.has_group('ops_matrix_core.group_ops_it_admin') or \
-           self.env.user.has_group('base.group_system'):
-            return super(BaseModel, self).export_data(fields_to_export)
-        
-        # Block for all other users
-        raise AccessError(_(
-            'Direct data export is disabled for security reasons.\n\n'
-            'Please use the Secure Excel Export Wizard:\n'
-            'Reporting → Export Tools → Secure Excel Export\n\n'
-            'This ensures:\n'
-            '• Field-level security is enforced\n'
-            '• Branch filtering is applied\n'
-            '• Export activity is logged\n'
-            '• Data is properly formatted'
-        ))
+# Note: We do NOT override export_data() here.
+# The JS export_interceptor.js handles redirection to secure wizard.
+# This allows the export button to remain active while JS intercepts the click.

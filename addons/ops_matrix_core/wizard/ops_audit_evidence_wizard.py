@@ -404,7 +404,7 @@ class OpsAuditEvidenceWizard(models.TransientModel):
         for user in users:
             sheet.write(row, 0, user.name, styles['cell'])
             for col, group in enumerate(groups, 1):
-                has_group = group in user.groups_id
+                has_group = group in user.group_ids
                 sheet.write(row, col, 'X' if has_group else '', styles['passed'] if has_group else styles['cell'])
             row += 1
 

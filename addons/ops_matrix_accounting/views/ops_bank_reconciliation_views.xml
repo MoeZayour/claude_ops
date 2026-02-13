@@ -192,10 +192,5 @@
     </record>
 
     <!-- Menu Items -->
-    <menuitem id="menu_ops_bank_reconciliation"
-              name="Bank Reconciliation"
-              parent="account.menu_finance"
-              action="action_ops_bank_reconciliation"
-              sequence="30"
-                  groups="ops_matrix_core.group_ops_treasury,ops_matrix_core.group_ops_finance_manager,ops_matrix_core.group_ops_cfo"/>
+    <!-- Menu moved to accounting_menus.xml -->
 </odoo>

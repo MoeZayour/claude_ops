@@ -27,7 +27,7 @@ class ResPartner(models.Model):
         string='Master Verified',
         default=False,
         tracking=True,
-        groups='ops_matrix_core.group_ops_manager,base.group_system',
+
         help='Indicates this customer has been verified by Master Data Management.\n\n'
              'SMART GATE LOGIC:\n'
              '• CREDIT transactions: BLOCKED if not verified\n'

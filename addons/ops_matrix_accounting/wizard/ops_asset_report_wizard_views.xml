@@ -61,9 +61,6 @@
                         <field name="asset_state"
                                widget="radio"
                                help="Filter by asset status (active, sold, disposed, or all)"/>
-                        <field name="include_fully_depreciated"
-                               invisible="report_type not in ['register', 'forecast']"
-                               help="Include assets with zero remaining depreciation"/>
                     </group>
                 </group>
 
@@ -87,10 +84,6 @@
                                widget="many2many_tags"
                                options="{'no_create': True}"
                                help="Filter by asset categories (leave empty for all)"/>
-                        <field name="depreciation_state"
-                               widget="radio"
-                               invisible="report_type != 'forecast'"
-                               help="Filter by depreciation status"/>
                     </group>
                 </group>
 
@@ -104,9 +97,6 @@
                                 <field name="group_by"
                                        widget="radio"
                                        help="Group assets by category, branch, or business unit"/>
-                                <field name="show_depreciation_details"
-                                       invisible="report_type != 'register'"
-                                       help="Include detailed depreciation schedule for each asset"/>
                             </group>
                         </group>
 
@@ -134,11 +124,7 @@
                 <!-- ==================== PREVIEW SECTION ==================== -->
                 <group name="preview_section" string="Report Preview">
                     <group name="group_7">
-                        <field name="asset_count"
-                               readonly="1"
-                               string="Matching Assets"
-                               help="Number of asset records matching the current filters"/>
-                        <field name="total_gross_value"
+                        <field name="total_cost"
                                readonly="1"
                                widget="monetary"
                                string="Total Gross Value"
@@ -161,60 +147,17 @@
                            colspan="2"
                            help="Summary of filters and criteria applied to this report"/>
 
-                    <div class="alert alert-success mt-2"
-                         role="alert"
-                         invisible="asset_count &gt; 1000">
-                        <i class="fa fa-check-circle"/> Good dataset size for quick processing
-                    </div>
-                    <div class="alert alert-warning mt-2"
-                         role="alert"
-                         invisible="asset_count &lt;= 1000 or asset_count &gt; 2000">
-                        <i class="fa fa-exclamation-triangle"/> Large dataset - may take longer to process
-                    </div>
-                    <div class="alert alert-danger mt-2"
-                         role="alert"
-                         invisible="asset_count &lt;= 2000">
-                        <i class="fa fa-warning"/> Very large dataset - consider adding filters to narrow scope
-                    </div>
                 </group>
 
                 <!-- ==================== ACTION BUTTONS ==================== -->
                 <footer>
-                    <button name="action_view_report"
-                            string="View Report"
-                            type="object"
-                            class="btn-primary"
-                            icon="fa-eye"
-                            help="Open report in browser for preview"/>
-                    <button name="action_generate_report"
-                            string="Print PDF"
-                            type="object"
-                            class="btn-secondary"
-                            icon="fa-file-pdf-o"
-                            help="Generate PDF for printing or download"/>
-                    <button name="action_export_excel"
-                            string="Export Excel"
-                            type="object"
-                            class="btn-success"
-                            icon="fa-file-excel-o"
-                            help="Export data to Excel spreadsheet"/>
-                    <button name="action_view_assets"
-                            string="View Assets"
-                            type="object"
-                            class="btn-info"
-                            icon="fa-list"
-                            help="View detailed asset list in tree view"/>
-                    <button name="action_view_depreciation"
-                            string="View Depreciation"
-                            type="object"
-                            class="btn-info"
-                            icon="fa-calendar"
-                            invisible="report_type != 'forecast'"
-                            help="View depreciation schedule details"/>
-                    <button string="Cancel"
-                            class="btn-default"
-                            icon="fa-times"
-                            special="cancel"/>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
 
             </form>

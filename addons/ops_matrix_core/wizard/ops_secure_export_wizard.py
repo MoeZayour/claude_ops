@@ -60,6 +60,38 @@ class OpsSecureExportWizard(models.TransientModel):
         help='Number of records that will be exported based on current filters'
     )
 
+    context_source = fields.Char(
+        string='Source',
+        compute='_compute_context_source',
+        help='Indicates if wizard was launched from list view'
+    )
+
+    @api.depends('model_id')
+    def _compute_context_source(self):
+        """Show helpful message when launched from list view."""
+        for wizard in self:
+            if wizard._context.get('active_model'):
+                wizard.context_source = f"Pre-filled from {wizard.model_id.name} list view"
+            else:
+                wizard.context_source = False
+
+    @api.model
+    def default_get(self, fields_list):
+        """Handle context from export button intercept."""
+        res = super().default_get(fields_list)
+        
+        # If launched from list view export button, context will have these
+        if self._context.get('default_model_id'):
+            res['model_id'] = self._context.get('default_model_id')
+        
+        if self._context.get('default_domain'):
+            res['domain'] = self._context.get('default_domain')
+        
+        if self._context.get('default_field_ids'):
+            res['field_ids'] = self._context.get('default_field_ids')
+        
+        return res
+
     @api.depends('model_id', 'domain')
     def _compute_record_count(self):
         """Compute the number of records that match current filters."""

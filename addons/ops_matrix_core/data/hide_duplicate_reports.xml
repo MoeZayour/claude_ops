@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="0">
     <!--
-    Phase 13: UAT Fixes - Report Menu Management
+    OPS inherits native templates directly via XPath.
+    No report bindings need to be hidden.
 
-    Stock Availability Report is now the primary availability report with OPS branding.
-    Re-enabled via binding in sale_order_availability_report.xml.
+    We only deactivate the Quote Builder "raw" variant to prevent
+    it from appearing as a separate option alongside the styled report.
     -->
-
-    <!-- No reports are hidden - the availability report is now enabled with OPS branding -->
-
+    <record id="sale_pdf_quote_builder.action_report_saleorder_raw" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
 </odoo>

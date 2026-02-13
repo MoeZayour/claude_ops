@@ -25,7 +25,7 @@
                             <field name="ops_allowed_branch_ids"
                                    string="Allowed Branches"
                                    widget="many2many_tags"
-                                   groups="base.group_system"
+                                   groups="base.group_erp_manager"
                                    options="{'no_create': True, 'color_field': 'color'}"
                                    help="All branches this user can access (define scope first)"/>
                             <field name="allowed_branch_count" readonly="1"/>
@@ -35,7 +35,7 @@
                             <field name="ops_allowed_business_unit_ids"
                                    string="Allowed Business Units"
                                    widget="many2many_tags"
-                                   groups="base.group_system"
+                                   groups="base.group_erp_manager"
                                    options="{'no_create': True}"
                                    help="All business units this user can access (REQUIRED - must select at least one)"/>
                             <field name="allowed_bu_count" readonly="1"/>
@@ -46,7 +46,7 @@
                     <group name="step_2_assign_persona" string="Step 2: Assign Persona">
                         <group name="outer_group_5">
                             <field name="persona_id" string="OPS Persona"
-                                   groups="base.group_system"
+                                   groups="base.group_erp_manager"
                                    options="{'no_create': True}"
                                    help="User's organizational role (REQUIRED - auto-adds to persona list)"/>
                         </group>
@@ -60,17 +60,17 @@
                     <group name="step_3_set_default_selections" string="Step 3: Set Default Selections">
                         <group name="outer_group_8">
                             <field name="primary_branch_id" string="Primary Branch"
-                                   groups="base.group_system"
+                                   groups="base.group_erp_manager"
                                    options="{'no_create': True}"
                                    help="Main branch this user belongs to (auto-populated from allowed branches)"/>
                             <field name="ops_default_branch_id" string="Default Branch for Transactions"
-                                   groups="base.group_system"
+                                   groups="base.group_erp_manager"
                                    options="{'no_create': True}"
                                    help="Default branch for new transactions (optional)"/>
                         </group>
                         <group name="outer_group_9">
                             <field name="ops_default_business_unit_id" string="Default Business Unit for Transactions"
-                                   groups="base.group_system"
+                                   groups="base.group_erp_manager"
                                    options="{'no_create': True}"
                                    help="Default business unit for new transactions (optional)"/>
                         </group>
@@ -96,7 +96,7 @@
                         <field name="default_business_unit_id" invisible="1" string="Default BU (Alias)"/>
                     </group>
                     
-                    <group name="outer_group_13" groups="base.group_system">
+                    <group name="outer_group_13" groups="base.group_erp_manager">
                         <button name="action_reset_matrix_access"
                                 string="Reset to Company Defaults"
                                 type="object"

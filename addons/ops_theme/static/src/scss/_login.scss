@@ -40,7 +40,7 @@
     color: #fff;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, var(--ops-primary, #1e293b) 0%, #0f172a 100%);
+    background: linear-gradient(135deg, var(--ops-brand, #1e293b) 0%, color-mix(in srgb, var(--ops-brand, #1e293b) 80%, black) 100%);
 
     .ops-login-logo {
         max-width: 200px;
@@ -93,7 +93,7 @@
             display: block;
             height: 4px;
             border-radius: 9999px;
-            background: var(--ops-secondary, #3b82f6);
+            background: var(--ops-primary, #3b82f6);
             &:nth-child(1) { width: 60px; opacity: 0.9; }
             &:nth-child(2) { width: 40px; opacity: 0.6; }
             &:nth-child(3) { width: 24px; opacity: 0.3; }
@@ -201,7 +201,7 @@ html[data-bs-theme="dark"] .ops-login-header {
         &::placeholder { color: var(--ops-text-muted, #94a3b8); }
         &:focus {
             outline: none;
-            border-color: var(--ops-secondary, #3b82f6);
+            border-color: var(--ops-primary, #3b82f6);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
     }
@@ -228,7 +228,7 @@ html[data-bs-theme="dark"] .ops-login-header {
         text-transform: uppercase;
         letter-spacing: 0.5px;
         color: #fff !important;
-        background: var(--ops-secondary, #3b82f6) !important;
+        background: var(--ops-primary, #3b82f6) !important;
         border: none !important;
         border-radius: var(--ops-radius-md, 8px);
         cursor: pointer;
@@ -236,16 +236,16 @@ html[data-bs-theme="dark"] .ops-login-header {
         margin-top: 0.5rem;
 
         &:hover:not(:disabled) {
-            background: var(--ops-secondary-hover, #2563eb) !important;
+            background: color-mix(in srgb, var(--ops-primary, #3b82f6) 85%, black) !important;
         }
-        &:focus { outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); }
+        &:focus { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ops-primary, #3b82f6) 30%, transparent); }
         &:disabled { opacity: 0.6; cursor: not-allowed; }
     }
 
     a {
-        color: var(--ops-secondary, #3b82f6);
+        color: var(--ops-primary, #3b82f6);
         font-size: 0.875rem;
-        &:hover { color: var(--ops-secondary-hover, #2563eb); text-decoration: underline; }
+        &:hover { color: color-mix(in srgb, var(--ops-primary, #3b82f6) 85%, black); text-decoration: underline; }
     }
 
     .alert-danger {

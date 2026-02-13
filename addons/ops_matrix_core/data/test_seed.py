@@ -295,7 +295,7 @@ def seed_test_data(env):
             except:
                 pass
         if group_ids:
-            vals['groups_id'] = [(6, 0, group_ids)]
+            vals['group_ids'] = [(6, 0, group_ids)]
         
         try:
             users[data['login']] = User.create(vals)

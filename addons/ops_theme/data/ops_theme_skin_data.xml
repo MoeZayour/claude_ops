@@ -1,76 +1,308 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
 
-        <!-- 1. Corporate Blue (Default) -->
-        <record id="skin_corporate_blue" model="ops.theme.skin">
-            <field name="name">Corporate Blue</field>
-            <field name="tag">Professional</field>
+        <!-- ============================================================ -->
+        <!-- Wellbeing Series                                             -->
+        <!-- ============================================================ -->
+
+        <!-- 1. Paperback -->
+        <record id="skin_paperback" model="ops.theme.skin">
+            <field name="name">Paperback</field>
+            <field name="tag">Anti-Blue</field>
             <field name="sequence">10</field>
-            <field name="primary_color">#1e293b</field>
-            <field name="secondary_color">#3b82f6</field>
+            <field name="brand_color">#5d4037</field>
+            <field name="action_color">#d97706</field>
+            <field name="bg_color">#f5f0e1</field>
+            <field name="surface_color">#fffbf0</field>
+            <field name="text_color">#4a4036</field>
+            <field name="border_color">#e6dfcf</field>
             <field name="success_color">#10b981</field>
             <field name="warning_color">#f59e0b</field>
             <field name="danger_color">#ef4444</field>
             <field name="info_color">#06b6d4</field>
-            <field name="bg_color">#f1f5f9</field>
-            <field name="surface_color">#ffffff</field>
-            <field name="text_color">#1e293b</field>
-            <field name="border_color">#e2e8f0</field>
             <field name="navbar_style">dark</field>
         </record>
 
-        <!-- 2. Clean Light -->
+        <!-- 2. Nordic Frost -->
+        <record id="skin_nordic_frost" model="ops.theme.skin">
+            <field name="name">Nordic Frost</field>
+            <field name="tag">Focus</field>
+            <field name="sequence">20</field>
+            <field name="brand_color">#374151</field>
+            <field name="action_color">#4f46e5</field>
+            <field name="bg_color">#f3f4f6</field>
+            <field name="surface_color">#ffffff</field>
+            <field name="text_color">#111827</field>
+            <field name="border_color">#e5e7eb</field>
+            <field name="success_color">#10b981</field>
+            <field name="warning_color">#f59e0b</field>
+            <field name="danger_color">#ef4444</field>
+            <field name="info_color">#06b6d4</field>
+            <field name="navbar_style">light</field>
+        </record>
+
+        <!-- 3. Zen Garden -->
+        <record id="skin_zen_garden" model="ops.theme.skin">
+            <field name="name">Zen Garden</field>
+            <field name="tag">Stress Relief</field>
+            <field name="sequence">30</field>
+            <field name="brand_color">#354f52</field>
+            <field name="action_color">#52796f</field>
+            <field name="bg_color">#f5f7f5</field>
+            <field name="surface_color">#ffffff</field>
+            <field name="text_color">#1e2925</field>
+            <field name="border_color">#dbece5</field>
+            <field name="success_color">#10b981</field>
+            <field name="warning_color">#f59e0b</field>
+            <field name="danger_color">#ef4444</field>
+            <field name="info_color">#06b6d4</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- Designer Series                                              -->
+        <!-- ============================================================ -->
+
+        <!-- 4. Clean Light -->
         <record id="skin_clean_light" model="ops.theme.skin">
             <field name="name">Clean Light</field>
             <field name="tag">Minimal</field>
-            <field name="sequence">20</field>
-            <field name="primary_color">#334155</field>
-            <field name="secondary_color">#0ea5e9</field>
-            <field name="success_color">#14b8a6</field>
-            <field name="warning_color">#f97316</field>
-            <field name="danger_color">#dc2626</field>
-            <field name="info_color">#0891b2</field>
+            <field name="sequence">40</field>
+            <field name="brand_color">#0f172a</field>
+            <field name="action_color">#0ea5e9</field>
             <field name="bg_color">#ffffff</field>
             <field name="surface_color">#f8fafc</field>
             <field name="text_color">#0f172a</field>
             <field name="border_color">#e2e8f0</field>
+            <field name="success_color">#14b8a6</field>
+            <field name="warning_color">#f97316</field>
+            <field name="danger_color">#dc2626</field>
+            <field name="info_color">#0891b2</field>
             <field name="navbar_style">light</field>
         </record>
 
-        <!-- 3. Enterprise Navy -->
+        <!-- 5. Modern Dark -->
+        <record id="skin_modern_dark" model="ops.theme.skin">
+            <field name="name">Modern Dark</field>
+            <field name="tag">Sleek</field>
+            <field name="sequence">50</field>
+            <field name="brand_color">#0f172a</field>
+            <field name="action_color">#6366f1</field>
+            <field name="bg_color">#0f172a</field>
+            <field name="surface_color">#1e293b</field>
+            <field name="text_color">#f1f5f9</field>
+            <field name="border_color">#334155</field>
+            <field name="success_color">#34d399</field>
+            <field name="warning_color">#fbbf24</field>
+            <field name="danger_color">#f87171</field>
+            <field name="info_color">#38bdf8</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- 6. Neon Highlights -->
+        <record id="skin_neon_highlights" model="ops.theme.skin">
+            <field name="name">Neon Highlights</field>
+            <field name="tag">Energetic</field>
+            <field name="sequence">60</field>
+            <field name="brand_color">#0D0D0D</field>
+            <field name="action_color">#00FF85</field>
+            <field name="bg_color">#0D0D0D</field>
+            <field name="surface_color">#1A1A1A</field>
+            <field name="text_color">#FFFFFF</field>
+            <field name="border_color">#333333</field>
+            <field name="success_color">#00FF85</field>
+            <field name="warning_color">#FFD700</field>
+            <field name="danger_color">#FF4444</field>
+            <field name="info_color">#00D4FF</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- 7. Warm Tones -->
+        <record id="skin_warm_tones" model="ops.theme.skin">
+            <field name="name">Warm Tones</field>
+            <field name="tag">Inviting</field>
+            <field name="sequence">70</field>
+            <field name="brand_color">#1C1C1C</field>
+            <field name="action_color">#FF6F61</field>
+            <field name="bg_color">#1C1C1C</field>
+            <field name="surface_color">#2A2420</field>
+            <field name="text_color">#F5E8D8</field>
+            <field name="border_color">#4A4038</field>
+            <field name="success_color">#7BC67E</field>
+            <field name="warning_color">#FFB347</field>
+            <field name="danger_color">#FF6B6B</field>
+            <field name="info_color">#64B5F6</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- 8. Muted Pastels -->
+        <record id="skin_muted_pastels" model="ops.theme.skin">
+            <field name="name">Muted Pastels</field>
+            <field name="tag">Creative</field>
+            <field name="sequence">80</field>
+            <field name="brand_color">#2C2C2C</field>
+            <field name="action_color">#A8DADC</field>
+            <field name="bg_color">#2C2C2C</field>
+            <field name="surface_color">#363636</field>
+            <field name="text_color">#E4E4E4</field>
+            <field name="border_color">#505050</field>
+            <field name="success_color">#81C784</field>
+            <field name="warning_color">#FFD54F</field>
+            <field name="danger_color">#E57373</field>
+            <field name="info_color">#4FC3F7</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- 9. Monochromatic -->
+        <record id="skin_monochromatic" model="ops.theme.skin">
+            <field name="name">Monochromatic</field>
+            <field name="tag">Pro</field>
+            <field name="sequence">90</field>
+            <field name="brand_color">#121212</field>
+            <field name="action_color">#E0E0E0</field>
+            <field name="bg_color">#121212</field>
+            <field name="surface_color">#1E1E1E</field>
+            <field name="text_color">#E0E0E0</field>
+            <field name="border_color">#444444</field>
+            <field name="success_color">#A5D6A7</field>
+            <field name="warning_color">#FFE082</field>
+            <field name="danger_color">#EF9A9A</field>
+            <field name="info_color">#90CAF9</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- Industry Series                                              -->
+        <!-- ============================================================ -->
+
+        <!-- 10. Emerald Trust -->
+        <record id="skin_emerald_trust" model="ops.theme.skin">
+            <field name="name">Emerald Trust</field>
+            <field name="tag">Clinical</field>
+            <field name="sequence">100</field>
+            <field name="brand_color">#0f766e</field>
+            <field name="action_color">#10b981</field>
+            <field name="bg_color">#f0fdfa</field>
+            <field name="surface_color">#ffffff</field>
+            <field name="text_color">#134e4a</field>
+            <field name="border_color">#ccfbf1</field>
+            <field name="success_color">#10b981</field>
+            <field name="warning_color">#f59e0b</field>
+            <field name="danger_color">#ef4444</field>
+            <field name="info_color">#06b6d4</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- 11. Executive Gold -->
+        <record id="skin_executive_gold" model="ops.theme.skin">
+            <field name="name">Executive Gold</field>
+            <field name="tag">Wealth</field>
+            <field name="sequence">110</field>
+            <field name="brand_color">#1e1b4b</field>
+            <field name="action_color">#d97706</field>
+            <field name="bg_color">#f8fafc</field>
+            <field name="surface_color">#ffffff</field>
+            <field name="text_color">#1e1b4b</field>
+            <field name="border_color">#e2e8f0</field>
+            <field name="success_color">#10b981</field>
+            <field name="warning_color">#f59e0b</field>
+            <field name="danger_color">#ef4444</field>
+            <field name="info_color">#06b6d4</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- 12. Industrial Steel -->
+        <record id="skin_industrial_steel" model="ops.theme.skin">
+            <field name="name">Industrial Steel</field>
+            <field name="tag">Efficiency</field>
+            <field name="sequence">120</field>
+            <field name="brand_color">#374151</field>
+            <field name="action_color">#f97316</field>
+            <field name="bg_color">#f3f4f6</field>
+            <field name="surface_color">#ffffff</field>
+            <field name="text_color">#111827</field>
+            <field name="border_color">#d1d5db</field>
+            <field name="success_color">#10b981</field>
+            <field name="warning_color">#f59e0b</field>
+            <field name="danger_color">#ef4444</field>
+            <field name="info_color">#06b6d4</field>
+            <field name="navbar_style">light</field>
+        </record>
+
+        <!-- 13. Creative Vision -->
+        <record id="skin_creative_vision" model="ops.theme.skin">
+            <field name="name">Creative Vision</field>
+            <field name="tag">Growth</field>
+            <field name="sequence">130</field>
+            <field name="brand_color">#581c87</field>
+            <field name="action_color">#14b8a6</field>
+            <field name="bg_color">#faf5ff</field>
+            <field name="surface_color">#ffffff</field>
+            <field name="text_color">#581c87</field>
+            <field name="border_color">#f3e8ff</field>
+            <field name="success_color">#10b981</field>
+            <field name="warning_color">#f59e0b</field>
+            <field name="danger_color">#ef4444</field>
+            <field name="info_color">#06b6d4</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- Corporate                                                    -->
+        <!-- ============================================================ -->
+
+        <!-- 14. Corporate Blue (DEFAULT — matches factory color defaults) -->
+        <record id="skin_corporate_blue" model="ops.theme.skin">
+            <field name="name">Corporate Blue</field>
+            <field name="tag">Corporate</field>
+            <field name="sequence">140</field>
+            <field name="brand_color">#1e293b</field>
+            <field name="action_color">#3b82f6</field>
+            <field name="bg_color">#f1f5f9</field>
+            <field name="surface_color">#ffffff</field>
+            <field name="text_color">#1e293b</field>
+            <field name="border_color">#e2e8f0</field>
+            <field name="success_color">#10b981</field>
+            <field name="warning_color">#f59e0b</field>
+            <field name="danger_color">#ef4444</field>
+            <field name="info_color">#06b6d4</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- 15. Midnight Abyss -->
+        <record id="skin_midnight_abyss" model="ops.theme.skin">
+            <field name="name">Midnight Abyss</field>
+            <field name="tag">Seamless</field>
+            <field name="sequence">150</field>
+            <field name="brand_color">#020617</field>
+            <field name="action_color">#38bdf8</field>
+            <field name="bg_color">#020617</field>
+            <field name="surface_color">#020617</field>
+            <field name="text_color">#f1f5f9</field>
+            <field name="border_color">#020617</field>
+            <field name="success_color">#34d399</field>
+            <field name="warning_color">#fbbf24</field>
+            <field name="danger_color">#f87171</field>
+            <field name="info_color">#38bdf8</field>
+            <field name="navbar_style">dark</field>
+        </record>
+
+        <!-- 16. Enterprise Navy -->
         <record id="skin_enterprise_navy" model="ops.theme.skin">
             <field name="name">Enterprise Navy</field>
             <field name="tag">Corporate</field>
-            <field name="sequence">30</field>
-            <field name="primary_color">#0f172a</field>
-            <field name="secondary_color">#2563eb</field>
-            <field name="success_color">#059669</field>
-            <field name="warning_color">#d97706</field>
-            <field name="danger_color">#b91c1c</field>
-            <field name="info_color">#0891b2</field>
+            <field name="sequence">160</field>
+            <field name="brand_color">#0f172a</field>
+            <field name="action_color">#2563eb</field>
             <field name="bg_color">#f8fafc</field>
             <field name="surface_color">#ffffff</field>
             <field name="text_color">#0f172a</field>
             <field name="border_color">#e2e8f0</field>
-            <field name="navbar_style">dark</field>
-        </record>
-
-        <!-- 4. Warm Professional -->
-        <record id="skin_warm_professional" model="ops.theme.skin">
-            <field name="name">Warm Professional</field>
-            <field name="tag">Classic</field>
-            <field name="sequence">40</field>
-            <field name="primary_color">#292524</field>
-            <field name="secondary_color">#d97706</field>
-            <field name="success_color">#65a30d</field>
-            <field name="warning_color">#ea580c</field>
-            <field name="danger_color">#dc2626</field>
-            <field name="info_color">#0d9488</field>
-            <field name="bg_color">#fafaf9</field>
-            <field name="surface_color">#ffffff</field>
-            <field name="text_color">#292524</field>
-            <field name="border_color">#e7e5e4</field>
+            <field name="success_color">#059669</field>
+            <field name="warning_color">#d97706</field>
+            <field name="danger_color">#b91c1c</field>
+            <field name="info_color">#0891b2</field>
             <field name="navbar_style">dark</field>
         </record>
 

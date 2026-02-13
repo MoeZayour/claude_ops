@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- OPS REPORT SHAPE B — HIERARCHY-BASED REPORTS                  -->
+    <!-- Used by: P&L, BS, CF, Budget vs Actual, Branch P&L, BU, Cons -->
+    <!-- Renders recursive hierarchy with dynamic value columns.       -->
+    <!-- ============================================================ -->
+
+    <!-- Recursive node renderer -->
+    <template id="ops_hierarchy_node">
+        <t t-foreach="nodes" t-as="node">
+            <t t-set="node_style" t-value="node.get('style', 'detail')"/>
+            <t t-set="node_level" t-value="node.get('level', 0)"/>
+            <t t-set="indent" t-value="node_level * 16"/>
+
+            <!-- Section style -->
+            <t t-if="node_style == 'section'">
+                <tr>
+                    <td t-attf-style="padding:6px 8px 6px #{indent + 8}px; font-size:10pt; font-weight:bold; background:#{colors.get('primary_light', '#edeef5')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')};"
+                        t-att-colspan="1">
+                        <t t-if="node.get('code')"><t t-out="node['code']"/> — </t>
+                        <t t-out="node.get('name', '')"/>
+                    </td>
+                    <t t-foreach="value_columns" t-as="vc">
+                        <td t-attf-style="padding:6px 8px; font-size:10pt; font-weight:bold; text-align:right; background:#{colors.get('primary_light', '#edeef5')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')};">
+                            <t t-set="val" t-value="node.get('values', {}).get(vc.get('key', ''), 0)"/>
+                            <t t-if="val">
+                                <span t-attf-style="color:#{val &lt; 0 and colors.get('danger', '#dc2626') or colors.get('body_text', '#1a1a1a')};">
+                                    <t t-out="helpers.format_amount(val)"/>
+                                </span>
+                            </t>
+                        </td>
+                    </t>
+                </tr>
+            </t>
+
+            <!-- Group style -->
+            <t t-elif="node_style == 'group'">
+                <tr>
+                    <td t-attf-style="padding:4px 8px 4px #{indent + 8}px; font-size:9pt; font-weight:bold; border-bottom:1px solid #{colors.get('border', '#e5e7eb')};">
+                        <t t-if="node.get('code')"><t t-out="node['code']"/> — </t>
+                        <t t-out="node.get('name', '')"/>
+                    </td>
+                    <t t-foreach="value_columns" t-as="vc">
+                        <td t-attf-style="padding:4px 8px; font-size:9pt; font-weight:bold; text-align:right; border-bottom:1px solid #{colors.get('border', '#e5e7eb')};">
+                            <t t-set="val" t-value="node.get('values', {}).get(vc.get('key', ''), 0)"/>
+                            <t t-if="val">
+                                <span t-attf-style="color:#{val &lt; 0 and colors.get('danger', '#dc2626') or colors.get('body_text', '#1a1a1a')};">
+                                    <t t-out="helpers.format_amount(val)"/>
+                                </span>
+                            </t>
+                        </td>
+                    </t>
+                </tr>
+            </t>
+
+            <!-- Detail style -->
+            <t t-elif="node_style == 'detail'">
+                <tr>
+                    <td t-attf-style="padding:3px 8px 3px #{indent + 8}px; font-size:8pt; border-bottom:1px solid #{colors.get('border', '#e5e7eb')};">
+                        <t t-if="node.get('code')">
+                            <span style="color:#6b7280;"><t t-out="node['code']"/></span>
+                            <t t-out="node.get('name', '')"/>
+                        </t>
+                        <t t-else="">
+                            <t t-out="node.get('name', '')"/>
+                        </t>
+                    </td>
+                    <t t-foreach="value_columns" t-as="vc">
+                        <td t-attf-style="padding:3px 8px; font-size:8pt; text-align:right; border-bottom:1px solid #{colors.get('border', '#e5e7eb')};">
+                            <t t-set="val" t-value="node.get('values', {}).get(vc.get('key', ''), 0)"/>
+                            <t t-if="val == 0">
+                                <span t-attf-style="color:#{colors.get('zero', '#94a3b8')};">-</span>
+                            </t>
+                            <t t-elif="val">
+                                <span t-attf-style="color:#{val &lt; 0 and colors.get('danger', '#dc2626') or colors.get('body_text', '#1a1a1a')};">
+                                    <t t-out="helpers.format_amount(val)"/>
+                                </span>
+                            </t>
+                            <t t-else="">
+                                <span t-attf-style="color:#{colors.get('zero', '#94a3b8')};">-</span>
+                            </t>
+                        </td>
+                    </t>
+                </tr>
+            </t>
+
+            <!-- Total style -->
+            <t t-elif="node_style == 'total'">
+                <tr>
+                    <td t-attf-style="padding:5px 8px 5px #{indent + 8}px; font-size:9pt; font-weight:bold; border-top:2px solid #{colors.get('primary', '#5B6BBB')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')}; background:#{colors.get('primary_light', '#edeef5')};">
+                        <t t-out="node.get('name', '')"/>
+                    </td>
+                    <t t-foreach="value_columns" t-as="vc">
+                        <td t-attf-style="padding:5px 8px; font-size:9pt; font-weight:bold; text-align:right; border-top:2px solid #{colors.get('primary', '#5B6BBB')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')}; background:#{colors.get('primary_light', '#edeef5')};">
+                            <t t-set="val" t-value="node.get('values', {}).get(vc.get('key', ''), 0)"/>
+                            <t t-if="val">
+                                <span t-attf-style="color:#{val &lt; 0 and colors.get('danger', '#dc2626') or colors.get('body_text', '#1a1a1a')};">
+                                    <t t-out="helpers.format_amount(val)"/>
+                                </span>
+                            </t>
+                        </td>
+                    </t>
+                </tr>
+            </t>
+
+            <!-- Grand total style -->
+            <t t-elif="node_style == 'grand_total'">
+                <tr>
+                    <td t-attf-style="padding:7px 8px 7px #{indent + 8}px; font-size:10pt; font-weight:bold; border-top:3px double #{colors.get('primary', '#5B6BBB')}; border-bottom:3px double #{colors.get('primary', '#5B6BBB')}; background:#{colors.get('primary', '#5B6BBB')}; color:#{colors.get('text_on_primary', '#FFFFFF')};">
+                        <t t-out="node.get('name', '')"/>
+                    </td>
+                    <t t-foreach="value_columns" t-as="vc">
+                        <td t-attf-style="padding:7px 8px; font-size:10pt; font-weight:bold; text-align:right; border-top:3px double #{colors.get('primary', '#5B6BBB')}; border-bottom:3px double #{colors.get('primary', '#5B6BBB')}; background:#{colors.get('primary', '#5B6BBB')}; color:#{colors.get('text_on_primary', '#FFFFFF')};">
+                            <t t-set="val" t-value="node.get('values', {}).get(vc.get('key', ''), 0)"/>
+                            <t t-if="val">
+                                <t t-out="helpers.format_amount(val)"/>
+                            </t>
+                        </td>
+                    </t>
+                </tr>
+            </t>
+
+            <!-- Recurse into children -->
+            <t t-if="node.get('children')">
+                <t t-call="ops_matrix_accounting.ops_hierarchy_node">
+                    <t t-set="nodes" t-value="node['children']"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Main hierarchy report template -->
+    <template id="ops_report_shape_hierarchy">
+        <t t-call="ops_matrix_accounting.ops_report_base">
+            <t t-set="meta" t-value="data.get('meta', {})"/>
+            <t t-set="colors" t-value="data.get('colors', {})"/>
+            <t t-set="value_columns" t-value="data.get('value_columns', [])"/>
+
+            <table style="width:100%; border-collapse:collapse;">
+                <!-- Column headers -->
+                <thead>
+                    <tr>
+                        <th t-attf-style="background-color:#{colors.get('primary', '#5B6BBB')}; color:#{colors.get('text_on_primary', '#FFFFFF')}; padding:6px 8px; font-size:9pt; font-weight:bold; text-align:left; border:1px solid #{colors.get('border', '#e5e7eb')}; width:40%;">
+                            Account
+                        </th>
+                        <t t-foreach="value_columns" t-as="vc">
+                            <th t-attf-style="background-color:#{colors.get('primary', '#5B6BBB')}; color:#{colors.get('text_on_primary', '#FFFFFF')}; padding:6px 8px; font-size:9pt; font-weight:bold; text-align:right; border:1px solid #{colors.get('border', '#e5e7eb')};">
+                                <t t-out="vc.get('label', vc.get('key', ''))"/>
+                            </th>
+                        </t>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- Render sections recursively -->
+                    <t t-call="ops_matrix_accounting.ops_hierarchy_node">
+                        <t t-set="nodes" t-value="data.get('sections', [])"/>
+                    </t>
+
+                    <!-- Net result row -->
+                    <t t-if="data.get('net_result')">
+                        <t t-set="nr" t-value="data['net_result']"/>
+                        <tr>
+                            <td t-attf-style="padding:8px; font-size:11pt; font-weight:bold; border-top:3px double #{colors.get('primary', '#5B6BBB')}; border-bottom:3px double #{colors.get('primary', '#5B6BBB')}; background:#{colors.get('primary', '#5B6BBB')}; color:#{colors.get('text_on_primary', '#FFFFFF')};">
+                                <t t-out="nr.get('name', 'Net Result')"/>
+                            </td>
+                            <t t-foreach="value_columns" t-as="vc">
+                                <td t-attf-style="padding:8px; font-size:11pt; font-weight:bold; text-align:right; border-top:3px double #{colors.get('primary', '#5B6BBB')}; border-bottom:3px double #{colors.get('primary', '#5B6BBB')}; background:#{colors.get('primary', '#5B6BBB')}; color:#{colors.get('text_on_primary', '#FFFFFF')};">
+                                    <t t-set="val" t-value="nr.get('values', {}).get(vc.get('key', ''), 0)"/>
+                                    <t t-if="val">
+                                        <t t-out="helpers.format_amount(val)"/>
+                                    </t>
+                                </td>
+                            </t>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================== -->
+    <!-- GENERAL LEDGER WIZARD                                               -->
+    <!-- ================================================================== -->
+
+    <record id="view_ops_gl_wizard_form" model="ir.ui.view">
+        <field name="name">ops.gl.report.wizard.form</field>
+        <field name="model">ops.gl.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="General Ledger">
+                <group>
+                    <group string="Period">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="target_move"/>
+                    </group>
+                    <group string="Filters">
+                        <field name="account_ids" widget="many2many_tags"/>
+                        <field name="journal_ids" widget="many2many_tags"/>
+                        <field name="partner_ids" widget="many2many_tags"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Matrix Dimensions">
+                        <field name="branch_ids" widget="many2many_tags"/>
+                        <field name="business_unit_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="Options">
+                        <field name="display_account"/>
+                        <field name="sort_by"/>
+                        <field name="report_format"/>
+                        <field name="include_initial_balance"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_gl_wizard" model="ir.actions.act_window">
+        <field name="name">General Ledger</field>
+        <field name="res_model">ops.gl.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <!-- ================================================================== -->
+    <!-- TRIAL BALANCE WIZARD                                                -->
+    <!-- ================================================================== -->
+
+    <record id="view_ops_tb_wizard_form" model="ir.ui.view">
+        <field name="name">ops.tb.report.wizard.form</field>
+        <field name="model">ops.tb.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Trial Balance">
+                <group>
+                    <group string="Period">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="target_move"/>
+                    </group>
+                    <group string="Filters">
+                        <field name="account_ids" widget="many2many_tags"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Matrix Dimensions">
+                        <field name="branch_ids" widget="many2many_tags"/>
+                        <field name="business_unit_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="Options">
+                        <field name="include_zero_balance"/>
+                        <field name="show_hierarchy"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tb_wizard" model="ir.actions.act_window">
+        <field name="name">Trial Balance</field>
+        <field name="res_model">ops.tb.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <!-- ================================================================== -->
+    <!-- PROFIT &amp; LOSS WIZARD                                            -->
+    <!-- ================================================================== -->
+
+    <record id="view_ops_pnl_wizard_form" model="ir.ui.view">
+        <field name="name">ops.pnl.report.wizard.form</field>
+        <field name="model">ops.pnl.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Profit &amp; Loss Statement">
+                <group>
+                    <group string="Period">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="target_move"/>
+                    </group>
+                    <group string="Comparative Period">
+                        <field name="comparative"/>
+                        <field name="comparative_date_from"
+                               invisible="not comparative"/>
+                        <field name="comparative_date_to"
+                               invisible="not comparative"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Matrix Dimensions">
+                        <field name="branch_ids" widget="many2many_tags"/>
+                        <field name="business_unit_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="Options">
+                        <field name="show_percentage"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pnl_wizard" model="ir.actions.act_window">
+        <field name="name">Profit &amp; Loss</field>
+        <field name="res_model">ops.pnl.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <!-- ================================================================== -->
+    <!-- BALANCE SHEET WIZARD                                                -->
+    <!-- ================================================================== -->
+
+    <record id="view_ops_bs_wizard_form" model="ir.ui.view">
+        <field name="name">ops.bs.report.wizard.form</field>
+        <field name="model">ops.bs.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Balance Sheet">
+                <group>
+                    <group string="Date">
+                        <field name="as_of_date"/>
+                        <field name="target_move"/>
+                    </group>
+                    <group string="Comparative">
+                        <field name="comparative"/>
+                        <field name="comparative_as_of_date"
+                               invisible="not comparative"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Matrix Dimensions">
+                        <field name="branch_ids" widget="many2many_tags"/>
+                        <field name="business_unit_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="Options">
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bs_wizard" model="ir.actions.act_window">
+        <field name="name">Balance Sheet</field>
+        <field name="res_model">ops.bs.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <!-- ================================================================== -->
+    <!-- CASH FLOW STATEMENT WIZARD                                          -->
+    <!-- ================================================================== -->
+
+    <record id="view_ops_cf_wizard_form" model="ir.ui.view">
+        <field name="name">ops.cf.report.wizard.form</field>
+        <field name="model">ops.cf.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cash Flow Statement">
+                <group>
+                    <group string="Period">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="target_move"/>
+                    </group>
+                    <group string="Options">
+                        <field name="method"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Matrix Dimensions">
+                        <field name="branch_ids" widget="many2many_tags"/>
+                        <field name="business_unit_ids" widget="many2many_tags"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cf_wizard" model="ir.actions.act_window">
+        <field name="name">Cash Flow Statement</field>
+        <field name="res_model">ops.cf.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <!-- ================================================================== -->
+    <!-- AGED RECEIVABLES / PAYABLES WIZARD                                  -->
+    <!-- ================================================================== -->
+
+    <record id="view_ops_aged_wizard_form" model="ir.ui.view">
+        <field name="name">ops.aged.report.wizard.form</field>
+        <field name="model">ops.aged.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Aged Receivables / Payables">
+                <group>
+                    <group string="Settings">
+                        <field name="as_of_date"/>
+                        <field name="partner_type"/>
+                        <field name="aging_type"/>
+                        <field name="period_length"/>
+                        <field name="target_move"/>
+                    </group>
+                    <group string="Filters">
+                        <field name="partner_ids" widget="many2many_tags"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Matrix Dimensions">
+                        <field name="branch_ids" widget="many2many_tags"/>
+                        <field name="business_unit_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="Options">
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_aged_wizard" model="ir.actions.act_window">
+        <field name="name">Aged Receivables / Payables</field>
+        <field name="res_model">ops.aged.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <!-- ================================================================== -->
+    <!-- PARTNER LEDGER / SOA WIZARD                                         -->
+    <!-- ================================================================== -->
+
+    <record id="view_ops_partner_ledger_wizard_form" model="ir.ui.view">
+        <field name="name">ops.partner.ledger.wizard.form</field>
+        <field name="model">ops.partner.ledger.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Partner Ledger / Statement of Account">
+                <group>
+                    <group string="Period">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="target_move"/>
+                    </group>
+                    <group string="Filters">
+                        <field name="report_type"/>
+                        <field name="partner_type"/>
+                        <field name="partner_ids" widget="many2many_tags"/>
+                        <field name="reconciled"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Matrix Dimensions">
+                        <field name="branch_ids" widget="many2many_tags"/>
+                        <field name="business_unit_ids" widget="many2many_tags"/>
+                    </group>
+                    <group string="Options">
+                        <field name="include_initial_balance"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_pdf" string="PDF"
+                            type="object" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_to_excel" string="Excel"
+                            type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_view_in_browser" string="View"
+                            type="object" class="btn-secondary" icon="fa-desktop"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_partner_ledger_wizard" model="ir.actions.act_window">
+        <field name="name">Partner Ledger</field>
+        <field name="res_model">ops.partner.ledger.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'partner_ledger'}</field>
+    </record>
+
+    <!-- Split Actions: Separate menu entries with sensible defaults -->
+
+    <record id="action_aged_receivables_wizard" model="ir.actions.act_window">
+        <field name="name">Aged Receivables</field>
+        <field name="res_model">ops.aged.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_partner_type': 'customer'}</field>
+    </record>
+
+    <record id="action_aged_payables_wizard" model="ir.actions.act_window">
+        <field name="name">Aged Payables</field>
+        <field name="res_model">ops.aged.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_partner_type': 'vendor'}</field>
+    </record>
+
+    <record id="action_soa_wizard" model="ir.actions.act_window">
+        <field name="name">Statement of Account</field>
+        <field name="res_model">ops.partner.ledger.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'soa'}</field>
+    </record>
+
+</odoo>

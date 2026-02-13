@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- OPS REPORT SHAPE C — MATRIX/TABLE-BASED REPORTS               -->
+    <!-- Used by: TB, Aged, Asset Register, Depreciation, Treasury,    -->
+    <!--          Inventory, Stock Valuation, etc.                     -->
+    <!-- Renders dynamic columns with typed formatting.                -->
+    <!-- ============================================================ -->
+
+    <template id="ops_report_shape_matrix">
+        <t t-call="ops_matrix_accounting.ops_report_base">
+            <t t-set="meta" t-value="data.get('meta', {})"/>
+            <t t-set="colors" t-value="data.get('colors', {})"/>
+            <t t-set="columns" t-value="data.get('columns', [])"/>
+
+            <table style="width:100%; border-collapse:collapse;">
+                <!-- Column headers -->
+                <thead>
+                    <tr>
+                        <t t-foreach="columns" t-as="col">
+                            <th t-attf-style="background-color:#{colors.get('primary', '#5B6BBB')}; color:#{colors.get('text_on_primary', '#FFFFFF')}; padding:5px 6px; font-size:8pt; font-weight:bold; text-align:#{col.get('align', 'left')}; border:1px solid #{colors.get('border', '#e5e7eb')};">
+                                <t t-out="col.get('label', col.get('key', ''))"/>
+                            </th>
+                        </t>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- Data rows -->
+                    <t t-foreach="data.get('rows', [])" t-as="row">
+                        <t t-set="row_style" t-value="row.get('style', 'detail')"/>
+                        <t t-set="row_level" t-value="row.get('level', 0)"/>
+
+                        <!-- Header row -->
+                        <t t-if="row_style == 'header'">
+                            <tr>
+                                <t t-foreach="columns" t-as="col">
+                                    <t t-set="is_first" t-value="col_index == 0"/>
+                                    <td t-attf-style="padding:5px 6px #{is_first and str(row_level * 16 + 6) + 'px' or '6px'}; font-size:9pt; font-weight:bold; background:#{colors.get('primary_light', '#edeef5')}; text-align:#{col.get('align', 'left')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')};">
+                                        <t t-out="row.get('values', {}).get(col.get('key', ''), '')"/>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+
+                        <!-- Detail row -->
+                        <t t-elif="row_style == 'detail'">
+                            <tr>
+                                <t t-foreach="columns" t-as="col">
+                                    <t t-set="is_first" t-value="col_index == 0"/>
+                                    <t t-set="cell_val" t-value="row.get('values', {}).get(col.get('key', ''), '')"/>
+                                    <t t-set="ctype" t-value="col.get('col_type', 'string')"/>
+                                    <td t-attf-style="padding:3px 6px #{is_first and str(row_level * 16 + 6) + 'px' or '6px'}; font-size:8pt; text-align:#{col.get('align', 'left')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')}; #{row_parity == 'odd' and 'background:#f9fafb;' or ''}">
+                                        <t t-if="ctype in ('currency', 'number')">
+                                            <t t-if="cell_val == 0 or cell_val == '' or cell_val is False">
+                                                <span t-attf-style="color:#{colors.get('zero', '#94a3b8')};">-</span>
+                                            </t>
+                                            <t t-elif="cell_val">
+                                                <span t-attf-style="color:#{cell_val &lt; 0 and colors.get('danger', '#dc2626') or colors.get('body_text', '#1a1a1a')};">
+                                                    <t t-out="helpers.format_amount(cell_val)"/>
+                                                </span>
+                                            </t>
+                                        </t>
+                                        <t t-elif="ctype == 'percentage'">
+                                            <t t-if="cell_val == 0 or cell_val == '' or cell_val is False">
+                                                <span t-attf-style="color:#{colors.get('zero', '#94a3b8')};">-</span>
+                                            </t>
+                                            <t t-elif="cell_val">
+                                                <span t-attf-style="color:#{cell_val &lt; 0 and colors.get('danger', '#dc2626') or colors.get('body_text', '#1a1a1a')};">
+                                                    <t t-out="helpers.format_percentage(cell_val)"/>
+                                                </span>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-out="cell_val"/>
+                                        </t>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+
+                        <!-- Subtotal row -->
+                        <t t-elif="row_style == 'subtotal'">
+                            <tr>
+                                <t t-foreach="columns" t-as="col">
+                                    <t t-set="is_first" t-value="col_index == 0"/>
+                                    <t t-set="cell_val" t-value="row.get('values', {}).get(col.get('key', ''), '')"/>
+                                    <t t-set="ctype" t-value="col.get('col_type', 'string')"/>
+                                    <td t-attf-style="padding:4px 6px #{is_first and str(row_level * 16 + 6) + 'px' or '6px'}; font-size:8pt; font-weight:bold; text-align:#{col.get('align', 'left')}; border-top:1px solid #{colors.get('primary', '#5B6BBB')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')};">
+                                        <t t-if="ctype in ('currency', 'number') and cell_val">
+                                            <span t-attf-style="color:#{cell_val &lt; 0 and colors.get('danger', '#dc2626') or colors.get('body_text', '#1a1a1a')};">
+                                                <t t-out="helpers.format_amount(cell_val)"/>
+                                            </span>
+                                        </t>
+                                        <t t-elif="ctype == 'percentage' and cell_val">
+                                            <span t-attf-style="color:#{cell_val &lt; 0 and colors.get('danger', '#dc2626') or colors.get('body_text', '#1a1a1a')};">
+                                                <t t-out="helpers.format_percentage(cell_val)"/>
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-out="cell_val"/>
+                                        </t>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+
+                        <!-- Total row -->
+                        <t t-elif="row_style == 'total'">
+                            <tr>
+                                <t t-foreach="columns" t-as="col">
+                                    <t t-set="cell_val" t-value="row.get('values', {}).get(col.get('key', ''), '')"/>
+                                    <t t-set="ctype" t-value="col.get('col_type', 'string')"/>
+                                    <td t-attf-style="padding:5px 6px; font-size:9pt; font-weight:bold; text-align:#{col.get('align', 'left')}; border-top:2px solid #{colors.get('primary', '#5B6BBB')}; border-bottom:1px solid #{colors.get('border', '#e5e7eb')}; background:#{colors.get('primary_light', '#edeef5')};">
+                                        <t t-if="ctype in ('currency', 'number') and cell_val">
+                                            <span t-attf-style="color:#{cell_val &lt; 0 and colors.get('danger', '#dc2626') or colors.get('body_text', '#1a1a1a')};">
+                                                <t t-out="helpers.format_amount(cell_val)"/>
+                                            </span>
+                                        </t>
+                                        <t t-elif="ctype == 'percentage' and cell_val">
+                                            <span t-attf-style="color:#{cell_val &lt; 0 and colors.get('danger', '#dc2626') or colors.get('body_text', '#1a1a1a')};">
+                                                <t t-out="helpers.format_percentage(cell_val)"/>
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-out="cell_val"/>
+                                        </t>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+
+                        <!-- Grand total row -->
+                        <t t-elif="row_style == 'grand_total'">
+                            <tr>
+                                <t t-foreach="columns" t-as="col">
+                                    <t t-set="cell_val" t-value="row.get('values', {}).get(col.get('key', ''), '')"/>
+                                    <t t-set="ctype" t-value="col.get('col_type', 'string')"/>
+                                    <td t-attf-style="padding:6px; font-size:10pt; font-weight:bold; text-align:#{col.get('align', 'left')}; border-top:3px double #{colors.get('primary', '#5B6BBB')}; border-bottom:3px double #{colors.get('primary', '#5B6BBB')}; background:#{colors.get('primary', '#5B6BBB')}; color:#{colors.get('text_on_primary', '#FFFFFF')};">
+                                        <t t-if="ctype in ('currency', 'number') and cell_val">
+                                            <t t-out="helpers.format_amount(cell_val)"/>
+                                        </t>
+                                        <t t-elif="ctype == 'percentage' and cell_val">
+                                            <t t-out="helpers.format_percentage(cell_val)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-out="cell_val"/>
+                                        </t>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+                    </t>
+
+                    <!-- Totals row from data['totals'] -->
+                    <t t-if="data.get('totals')">
+                        <tr>
+                            <t t-foreach="columns" t-as="col">
+                                <t t-set="cell_val" t-value="data['totals'].get(col.get('key', ''), '')"/>
+                                <t t-set="ctype" t-value="col.get('col_type', 'string')"/>
+                                <td t-attf-style="padding:6px; font-size:10pt; font-weight:bold; text-align:#{col.get('align', 'left')}; border-top:3px double #{colors.get('primary', '#5B6BBB')}; border-bottom:3px double #{colors.get('primary', '#5B6BBB')}; background:#{colors.get('primary', '#5B6BBB')}; color:#{colors.get('text_on_primary', '#FFFFFF')};">
+                                    <t t-if="ctype in ('currency', 'number') and cell_val">
+                                        <t t-out="helpers.format_amount(cell_val)"/>
+                                    </t>
+                                    <t t-elif="ctype == 'percentage' and cell_val">
+                                        <t t-out="helpers.format_percentage(cell_val)"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-out="cell_val"/>
+                                    </t>
+                                </td>
+                            </t>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </t>
+    </template>
+</odoo>

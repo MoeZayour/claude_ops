@@ -51,7 +51,8 @@
         'data/ops_sod_default_rules.xml',
         'data/field_visibility_rules.xml',
         'data/product_rules.xml',
-        'data/ops_seed_products.xml',
+        # DISABLED: seed data uses 'consu' type removed in Odoo 19
+        # 'data/ops_seed_products.xml',
 
         # 4. MATRIX STRUCTURE (Base Only)
         'data/ops_governance_templates.xml',
@@ -64,7 +65,8 @@
         'data/ops_seed_structure.xml',
         'data/ops_default_data_clean.xml',
         'data/ops_seed_partners.xml',
-        'data/ops_seed_users.xml',
+        # DISABLED: references sales_team.group_sale_manager which may not exist
+        # 'data/ops_seed_users.xml',
         'data/ops_seed_governance.xml',
 
         # 7. Views & Actions (Standard Load)

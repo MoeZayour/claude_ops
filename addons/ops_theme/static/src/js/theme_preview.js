@@ -10,8 +10,8 @@
  */
 
 const OPS_COLOR_FIELDS = [
-    { field: 'ops_primary_color',   varName: '--ops-primary' },
-    { field: 'ops_secondary_color', varName: '--ops-secondary' },
+    { field: 'ops_brand_color',     varName: '--ops-brand' },
+    { field: 'ops_action_color',    varName: '--ops-action' },
     { field: 'ops_success_color',   varName: '--ops-success' },
     { field: 'ops_warning_color',   varName: '--ops-warning' },
     { field: 'ops_danger_color',    varName: '--ops-danger' },
@@ -82,19 +82,19 @@ window.opsPreviewTheme = function () {
         if (value) {
             root.style.setProperty(varName, value);
             root.style.setProperty(`${varName}-rgb`, hexToRgb(value));
-            if (varName === '--ops-secondary' || varName === '--ops-primary') {
+            if (varName === '--ops-action' || varName === '--ops-brand') {
                 root.style.setProperty(`${varName}-hover`, darkenColor(value));
             }
             applied++;
         }
     }
 
-    // Apply primary as navbar bg if dark/primary style
-    const primary = readColorField('ops_primary_color');
-    if (primary) {
-        root.style.setProperty('--ops-navbar-bg', primary);
-        root.style.setProperty('--ops-bg-navbar', primary);
-        root.style.setProperty('--ops-report-header-bg', primary);
+    // Apply brand as navbar bg if dark/primary style
+    const brand = readColorField('ops_brand_color');
+    if (brand) {
+        root.style.setProperty('--ops-navbar-bg', brand);
+        root.style.setProperty('--ops-bg-navbar', brand);
+        root.style.setProperty('--ops-report-header-bg', brand);
     }
 
     // Surface aliases (used by OPS utility components)

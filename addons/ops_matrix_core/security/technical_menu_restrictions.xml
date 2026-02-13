@@ -3,7 +3,7 @@
     
     <!-- Hide Technical menu from non-IT users -->
     <record id="base.menu_administration" model="ir.ui.menu">
-        <field name="groups_id" eval="[(6, 0, [ref('ops_matrix_core.group_ops_it_admin'), ref('base.group_system')])]"/>
+        <field name="group_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_it_admin'), ref('base.group_system')])]"/>
     </record>
     
     <!-- Restrict debug mode -->

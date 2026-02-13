@@ -34,7 +34,7 @@ class SaleOrderLine(models.Model):
         string='Can Edit Unit Price',
         compute='_compute_can_edit_unit_price',
         store=False,
-        help="Determines if the current user can edit unit prices. Only Managers and Admins can edit."
+        help="Determines if the current user can edit unit prices. Only Price Managers (CFO, FIN_CTRL, Sales Leader, Chief Accountant) and SYS_ADMIN can edit."
     )
 
     # The Cost Shield: Field-Level Security for Sale Order Line Costs
@@ -79,9 +79,9 @@ class SaleOrderLine(models.Model):
 
         Only OPS Managers and System Administrators can edit unit prices.
         """
-        is_manager = self.env.user.has_group('ops_matrix_core.group_ops_manager')
+        is_price_mgr = self.env.user.has_group('ops_matrix_core.group_ops_price_manager')
         is_admin = self.env.user.has_group('base.group_system')
-        can_edit = is_manager or is_admin
+        can_edit = is_price_mgr or is_admin
 
         for record in self:
             record.can_edit_unit_price = can_edit
@@ -145,17 +145,17 @@ class SaleOrderLine(models.Model):
         """
         Override write to enforce PRICE PROTECTION.
 
-        Only OPS Managers and System Administrators can modify price_unit.
+        Only Price Managers and System Administrators can modify price_unit.
         """
         # Check if price_unit is being modified
         if 'price_unit' in vals:
             # Skip check for superuser/admin
             if not (self.env.su or self.env.user.has_group('base.group_system')):
                 # Check if user is OPS Manager
-                if not self.env.user.has_group('ops_matrix_core.group_ops_manager'):
+                if not self.env.user.has_group('ops_matrix_core.group_ops_price_manager'):
                     raise UserError(_(
                         "PRICE PROTECTION: You are not authorized to change unit prices.\n\n"
-                        "Only Managers and Administrators can modify the Unit Price field.\n"
+                        "Only Price Managers and Administrators can modify the Unit Price field.\n"
                         "Please contact your manager if a price adjustment is required."
                     ))
 

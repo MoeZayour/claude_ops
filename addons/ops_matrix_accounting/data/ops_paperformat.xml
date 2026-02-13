@@ -3,11 +3,12 @@
     <!--
         OPS Matrix Paper Format Configuration
         =====================================
-        A4 Paper format optimized for financial reports with proper margins
-        to accommodate Odoo's external_layout header/footer.
+        Tight margins optimized for OPS corporate reports.
+        Header repeats via wkhtmltopdf .header div (~18mm).
+        Footer repeats via wkhtmltopdf .footer div (~8mm).
     -->
 
-    <!-- OPS Corporate A4 Paper Format (for reports with custom headers, no external_layout) -->
+    <!-- OPS Corporate A4 (Portrait) -->
     <record id="paperformat_ops_corporate_a4" model="report.paperformat">
         <field name="name">OPS Corporate A4</field>
         <field name="default" eval="False"/>
@@ -15,16 +16,16 @@
         <field name="page_height">0</field>
         <field name="page_width">0</field>
         <field name="orientation">Portrait</field>
-        <field name="margin_top">12</field>
-        <field name="margin_bottom">25</field>
-        <field name="margin_left">12</field>
-        <field name="margin_right">12</field>
+        <field name="margin_top">20</field>
+        <field name="margin_bottom">12</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
         <field name="header_line" eval="False"/>
-        <field name="header_spacing">0</field>
+        <field name="header_spacing">5</field>
         <field name="dpi">96</field>
     </record>
 
-    <!-- OPS A4 Financial Report Paper Format (legacy, for external_layout reports) -->
+    <!-- OPS A4 Financial Report (Portrait) -->
     <record id="paperformat_ops_a4_financial" model="report.paperformat">
         <field name="name">OPS A4 Financial Report</field>
         <field name="default" eval="False"/>
@@ -32,16 +33,16 @@
         <field name="page_height">0</field>
         <field name="page_width">0</field>
         <field name="orientation">Portrait</field>
-        <field name="margin_top">40</field>
-        <field name="margin_bottom">30</field>
-        <field name="margin_left">15</field>
-        <field name="margin_right">15</field>
+        <field name="margin_top">20</field>
+        <field name="margin_bottom">12</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
         <field name="header_line" eval="False"/>
-        <field name="header_spacing">35</field>
+        <field name="header_spacing">5</field>
         <field name="dpi">96</field>
     </record>
 
-    <!-- OPS Corporate A4 Landscape (custom header/footer in template, 25mm bottom for footer) -->
+    <!-- OPS Corporate A4 Landscape -->
     <record id="paperformat_ops_corporate_landscape" model="report.paperformat">
         <field name="name">OPS Corporate A4 Landscape</field>
         <field name="default" eval="False"/>
@@ -49,16 +50,16 @@
         <field name="page_height">0</field>
         <field name="page_width">0</field>
         <field name="orientation">Landscape</field>
-        <field name="margin_top">12</field>
-        <field name="margin_bottom">25</field>
-        <field name="margin_left">12</field>
-        <field name="margin_right">12</field>
+        <field name="margin_top">20</field>
+        <field name="margin_bottom">12</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
         <field name="header_line" eval="False"/>
-        <field name="header_spacing">0</field>
+        <field name="header_spacing">5</field>
         <field name="dpi">96</field>
     </record>
 
-    <!-- OPS A4 Landscape Paper Format (for wide reports) -->
+    <!-- OPS A4 Financial Report (Landscape) -->
     <record id="paperformat_ops_a4_landscape" model="report.paperformat">
         <field name="name">OPS A4 Financial Report (Landscape)</field>
         <field name="default" eval="False"/>
@@ -66,16 +67,16 @@
         <field name="page_height">0</field>
         <field name="page_width">0</field>
         <field name="orientation">Landscape</field>
-        <field name="margin_top">35</field>
-        <field name="margin_bottom">25</field>
-        <field name="margin_left">15</field>
-        <field name="margin_right">15</field>
+        <field name="margin_top">20</field>
+        <field name="margin_bottom">12</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
         <field name="header_line" eval="False"/>
-        <field name="header_spacing">30</field>
+        <field name="header_spacing">5</field>
         <field name="dpi">96</field>
     </record>
 
-    <!-- OPS Letter Size Paper Format (US Standard) -->
+    <!-- OPS Letter Financial Report (US Standard) -->
     <record id="paperformat_ops_letter" model="report.paperformat">
         <field name="name">OPS Letter Financial Report</field>
         <field name="default" eval="False"/>
@@ -83,12 +84,12 @@
         <field name="page_height">0</field>
         <field name="page_width">0</field>
         <field name="orientation">Portrait</field>
-        <field name="margin_top">40</field>
-        <field name="margin_bottom">30</field>
-        <field name="margin_left">15</field>
-        <field name="margin_right">15</field>
+        <field name="margin_top">20</field>
+        <field name="margin_bottom">12</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
         <field name="header_line" eval="False"/>
-        <field name="header_spacing">35</field>
+        <field name="header_spacing">5</field>
         <field name="dpi">96</field>
     </record>
 
