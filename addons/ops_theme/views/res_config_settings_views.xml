@@ -13,24 +13,27 @@
                     <!-- SECTION 1: BRAND IDENTITY (High-Visibility Hero)            -->
                     <!-- ============================================================ -->
                     <block title="Brand Identity" name="ops_brand_identity">
-                        <div class="text-muted mb-3 ms-1">
-                            Core visual configuration. Changes here update the organization's global identity.
+                        <div class="alert alert-info mb-4" role="status">
+                            <i class="fa fa-palette me-2"/>
+                            <strong>Brand Identity Management</strong> — Control global visual appearance, login screen, and corporate assets.
                         </div>
 
-                        <!-- THEME SELECTOR - Full Width for better card display -->
-                        <div class="row o_settings_container">
+                        <!-- THEME SELECTOR - Floating Card Hero -->
+                        <div class="row mb-4">
                             <div class="col-12">
-                                <div class="o_setting_box border-0 shadow-sm p-4 bg-view rounded-3">
-                                    <div class="o_setting_right_pane">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body p-4">
                                         <div class="d-flex align-items-center justify-content-between mb-3">
                                             <div>
-                                                <span class="o_form_label fw-bold fs-5">Organization Skin</span>
-                                                <div class="text-muted small">Select a calibrated palette for the framework.</div>
+                                                <h5 class="mb-1 fw-bold">Organization Skin</h5>
+                                                <p class="text-muted small mb-0">Select a calibrated 10-color palette for your framework</p>
                                             </div>
                                             <button name="action_reset_theme_defaults" type="object"
                                                     string="Restore Defaults"
-                                                    class="btn btn-outline-secondary btn-sm"
-                                                    confirm="Reset to Corporate Blue?"/>
+                                                    class="btn btn-outline-secondary"
+                                                    confirm="Reset all theme settings to Corporate Blue defaults?">
+                                                <i class="fa fa-undo me-1"/> Restore Defaults
+                                            </button>
                                         </div>
                                         <field name="ops_theme_skin_id" widget="ops_skin_selector" class="w-100"/>
                                     </div>
@@ -38,205 +41,306 @@
                             </div>
                         </div>
 
-                        <!-- ASSETS - Side-by-Side -->
-                        <div class="row o_settings_container mt-2">
-                            <div class="col-lg-6">
-                                <setting string="Favicon" help="Browser tab icon (64x64px).">
-                                    <field name="ops_favicon" widget="image" options="{'size': [64, 64]}"/>
-                                </setting>
+                        <!-- CORPORATE ASSETS - Island Cards -->
+                        <div class="row">
+                            <div class="col-lg-6 mb-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h6 class="card-title fw-bold mb-3">
+                                            <i class="fa fa-globe me-2 text-primary"/>Browser Identity
+                                        </h6>
+                                        <label class="o_form_label text-muted small mb-2">Favicon (64x64px)</label>
+                                        <field name="ops_favicon" widget="image" options="{'size': [64, 64]}" class="d-block"/>
+                                        <p class="text-muted small mb-0 mt-2">Appears in browser tabs and bookmarks</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-lg-6">
-                                <setting string="Login Branding" help="Login screen background image.">
-                                    <field name="ops_login_background" widget="image" options="{'size': [160, 90]}"/>
-                                    <div class="mt-2 d-flex flex-column gap-2">
-                                        <div>
-                                            <field name="ops_login_show_logo" class="me-1"/>
-                                            <span class="small text-muted">Show company logo on login</span>
+                            <div class="col-lg-6 mb-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h6 class="card-title fw-bold mb-3">
+                                            <i class="fa fa-sign-in-alt me-2 text-primary"/>Login Screen
+                                        </h6>
+                                        <label class="o_form_label text-muted small mb-2">Background Image (Recommended: 1920x1080px)</label>
+                                        <field name="ops_login_background" widget="image" options="{'size': [160, 90]}" class="d-block mb-3"/>
+                                        <div class="form-check mb-2">
+                                            <field name="ops_login_show_logo" class="form-check-input"/>
+                                            <label class="form-check-label small">Show company logo on login page</label>
                                         </div>
+                                        <label class="o_form_label text-muted small mb-1">Login Tagline</label>
                                         <field name="ops_login_tagline" placeholder="Enterprise Resource Planning" class="w-100"/>
                                     </div>
-                                </setting>
+                                </div>
                             </div>
                         </div>
                     </block>
 
                     <!-- ============================================================ -->
-                    <!-- SECTION 2: INTERFACE & UX                                    -->
+                    <!-- SECTION 2: USER EXPERIENCE                                   -->
                     <!-- ============================================================ -->
-                    <block title="Navigation &amp; UI" name="ops_ux_settings">
-                        <div class="row o_settings_container">
-                            <!-- Sidebar -->
-                            <div class="col-lg-6">
-                                <setting string="Navigation Sidebar" help="Left-hand collapsible app drawer.">
-                                    <field name="ops_sidebar_enabled"/>
-                                    <div invisible="not ops_sidebar_enabled" class="mt-2">
-                                        <label for="ops_sidebar_logo" string="Sidebar Logo" class="small text-muted d-block mb-1"/>
-                                        <field name="ops_sidebar_logo" widget="image" options="{'size': [100, 30]}"/>
-                                    </div>
-                                </setting>
-                            </div>
-                            <div class="col-lg-6">
-                                <setting string="Default Chatter Position" help="Where to show the chatter by default.">
-                                    <field name="ops_default_chatter_position" widget="radio" options="{'horizontal': true}"/>
-                                </setting>
-                            </div>
+                    <block title="User Experience" name="ops_ux_settings">
+                        <div class="alert alert-info mb-4" role="status">
+                            <i class="fa fa-desktop me-2"/>
+                            <strong>User Experience</strong> — Navigation structure, visual physics, and interface enhancements.
                         </div>
 
-                        <div class="row o_settings_container mt-3">
-                            <!-- Visual Physics -->
-                            <div class="col-lg-6">
-                                <setting string="Surface Elevation" help="Global card shadow intensity.">
-                                    <field name="ops_card_shadow" widget="radio" options="{'horizontal': true}"/>
-                                </setting>
-                            </div>
-                            <div class="col-lg-6">
-                                <setting string="Element Rounding" help="Corner radius for buttons and inputs.">
-                                    <field name="ops_border_radius" widget="radio" options="{'horizontal': true}"/>
-                                </setting>
-                            </div>
-                        </div>
-
-                        <!-- UI Enhancements -->
-                        <div class="row o_settings_container mt-3">
-                            <div class="col-lg-6">
-                                <setting string="Enhanced Home Menu" help="Improved app menu with search and favorites.">
-                                    <field name="ops_home_menu_enhanced"/>
-                                </setting>
-                            </div>
-                            <div class="col-lg-6">
-                                <setting string="Dialog Enhancements" help="Enhanced modal/dialog behaviors.">
-                                    <field name="ops_dialog_enhancements"/>
-                                </setting>
-                            </div>
-                        </div>
-
-                        <div class="row o_settings_container mt-3">
-                            <div class="col-lg-6">
-                                <setting string="Enhanced Chatter" help="Improved messaging and activity panel.">
-                                    <field name="ops_chatter_enhanced"/>
-                                </setting>
-                            </div>
-                            <div class="col-lg-6">
-                                <setting string="Group Controls" help="Additional grouping controls in list views.">
-                                    <field name="ops_group_controls_enabled"/>
-                                </setting>
-                            </div>
-                        </div>
-
-                        <div class="row o_settings_container mt-3">
-                            <div class="col-lg-6">
-                                <setting string="Auto Refresh Lists" help="Automatically refresh list views at intervals.">
-                                    <field name="ops_auto_refresh_enabled"/>
-                                    <div invisible="not ops_auto_refresh_enabled" class="mt-2">
-                                        <label for="ops_auto_refresh_interval" string="Refresh Interval" class="small text-muted d-block mb-1"/>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <field name="ops_auto_refresh_interval" class="w-25"/>
-                                            <span class="small text-muted">seconds</span>
+                        <!-- NAVIGATION - Island -->
+                        <h6 class="text-uppercase text-muted fw-bold mb-3 mt-4" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                            Navigation
+                        </h6>
+                        <div class="row mb-3">
+                            <div class="col-lg-6 mb-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <div class="form-check form-switch mb-3">
+                                            <field name="ops_sidebar_enabled" class="form-check-input"/>
+                                            <label class="form-check-label fw-bold">Navigation Sidebar</label>
+                                        </div>
+                                        <p class="text-muted small mb-3">Left-hand collapsible app drawer with quick access</p>
+                                        <div invisible="not ops_sidebar_enabled">
+                                            <label class="o_form_label text-muted small mb-1">Sidebar Logo</label>
+                                            <field name="ops_sidebar_logo" widget="image" options="{'size': [100, 30]}"/>
                                         </div>
                                     </div>
-                                </setting>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-3">Default Chatter Position</h6>
+                                        <p class="text-muted small mb-3">Where to display the messaging panel by default</p>
+                                        <field name="ops_default_chatter_position" widget="radio" options="{'horizontal': true}"/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </block>
 
-                    <!-- ============================================================ -->
-                    <!-- SECTION 3: REPORTING & PDF (Concise & Professional)          -->
-                    <!-- ============================================================ -->
-                    <block title="Reporting &amp; PDF" name="ops_report_settings">
-                        
-                        <!-- Concise Layout: Colors and Logos in one row -->
-                        <div class="row o_settings_container">
-                            <div class="col-lg-6">
-                                <setting string="Report Colors" help="Color palette for printed documents.">
-                                    <div class="d-flex flex-column gap-2">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <span class="small text-muted" style="width: 120px;">Accent Color</span>
-                                            <field name="ops_report_primary_color" widget="color"/>
-                                        </div>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <span class="small text-muted" style="width: 120px;">Text on Accent</span>
-                                            <field name="ops_report_text_on_primary" widget="color"/>
-                                        </div>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <span class="small text-muted" style="width: 120px;">Body Text</span>
-                                            <field name="ops_report_body_text_color" widget="color"/>
+                        <!-- VISUAL PHYSICS - Island -->
+                        <h6 class="text-uppercase text-muted fw-bold mb-3 mt-4" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                            Visual Physics
+                        </h6>
+                        <div class="row mb-3">
+                            <div class="col-lg-6 mb-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-3">Surface Elevation</h6>
+                                        <p class="text-muted small mb-3">Global shadow intensity for cards and panels</p>
+                                        <field name="ops_card_shadow" widget="radio" options="{'horizontal': true}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-3">Element Rounding</h6>
+                                        <p class="text-muted small mb-3">Corner radius for buttons, inputs, and cards</p>
+                                        <field name="ops_border_radius" widget="radio" options="{'horizontal': true}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- UI ENHANCEMENTS - Compact Grid -->
+                        <h6 class="text-uppercase text-muted fw-bold mb-3 mt-4" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                            Interface Enhancements
+                        </h6>
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="form-check form-switch">
+                                            <field name="ops_home_menu_enhanced" class="form-check-input"/>
+                                            <label class="form-check-label">
+                                                <strong>Enhanced Home Menu</strong>
+                                                <span class="d-block text-muted small">Improved app menu with search and favorites</span>
+                                            </label>
                                         </div>
                                     </div>
-                                </setting>
-                            </div>
-                            <div class="col-lg-6">
-                                <setting string="Document Signatures" help="Add up to 3 authorized slots.">
-                                    <field name="ops_show_signature_block"/>
-                                    <div invisible="not ops_show_signature_block" class="mt-2 d-flex gap-2">
-                                        <field name="ops_signature_label_1" placeholder="Prepared" class="w-30"/>
-                                        <field name="ops_signature_label_2" placeholder="Approved" class="w-30"/>
-                                        <field name="ops_signature_label_3" placeholder="Authorized" class="w-30"/>
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="form-check form-switch">
+                                            <field name="ops_dialog_enhancements" class="form-check-input"/>
+                                            <label class="form-check-label">
+                                                <strong>Dialog Enhancements</strong>
+                                                <span class="d-block text-muted small">Enhanced modal/dialog behaviors and transitions</span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </setting>
-                            </div>
-                        </div>
-
-                        <!-- Report Options -->
-                        <div class="row o_settings_container mt-3">
-                            <div class="col-lg-6">
-                                <setting string="Logo Position" help="Alignment of company logo in headers.">
-                                    <field name="ops_report_logo_position" widget="radio" options="{'horizontal': true}"/>
-                                </setting>
-                            </div>
-                            <div class="col-lg-6">
-                                <setting string="Logo Size" help="Maximum height of logo in pixels.">
-                                    <field name="ops_logo_max_size" class="w-25"/>
-                                    <span class="small text-muted ms-2">px</span>
-                                </setting>
-                            </div>
-                        </div>
-
-                        <!-- Document Options -->
-                        <div class="row o_settings_container mt-3">
-                            <div class="col-lg-6">
-                                <div class="o_setting_box">
-                                    <div class="o_setting_right_pane">
-                                        <span class="o_form_label fw-bold mb-2 d-block">Document Options</span>
-                                        <div class="d-flex flex-column gap-2">
-                                            <div>
-                                                <field name="ops_show_external_badge" class="me-2"/>
-                                                <span>Show OPS Badge on PDFs</span>
-                                            </div>
-                                            <div>
-                                                <field name="ops_show_bank_details" class="me-2"/>
-                                                <span>Show Bank Details</span>
-                                            </div>
-                                            <div>
-                                                <field name="ops_show_product_code" class="me-2"/>
-                                                <span>Show Product Internal Reference</span>
-                                            </div>
-                                            <div>
-                                                <field name="ops_show_amount_words" class="me-2"/>
-                                                <span>Show Amount in Words</span>
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="form-check form-switch">
+                                            <field name="ops_chatter_enhanced" class="form-check-input"/>
+                                            <label class="form-check-label">
+                                                <strong>Enhanced Chatter</strong>
+                                                <span class="d-block text-muted small">Improved messaging and activity panel</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <div class="form-check form-switch">
+                                            <field name="ops_group_controls_enabled" class="form-check-input"/>
+                                            <label class="form-check-label">
+                                                <strong>Group Controls</strong>
+                                                <span class="d-block text-muted small">Additional grouping controls in list views</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-check form-switch">
+                                            <field name="ops_auto_refresh_enabled" class="form-check-input"/>
+                                            <label class="form-check-label">
+                                                <strong>Auto Refresh Lists</strong>
+                                                <span class="d-block text-muted small">Automatically refresh list views at intervals</span>
+                                            </label>
+                                        </div>
+                                        <div invisible="not ops_auto_refresh_enabled" class="mt-2 ms-4">
+                                            <label class="o_form_label text-muted small mb-1">Refresh Interval</label>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <field name="ops_auto_refresh_interval" class="w-25"/>
+                                                <span class="small text-muted">seconds</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                                <setting string="Amount in Words Language" help="Language for amount-to-text conversion.">
+                        </div>
+                    </block>
+
+                    <!-- ============================================================ -->
+                    <!-- SECTION 3: REPORTS & DOCUMENTS                               -->
+                    <!-- ============================================================ -->
+                    <block title="Reports &amp; Documents" name="ops_report_settings">
+                        <div class="alert alert-info mb-4" role="status">
+                            <i class="fa fa-file-pdf me-2"/>
+                            <strong>Reports &amp; Documents</strong> — PDF appearance, branding, signatures, and legal text.
+                        </div>
+
+                        <!-- REPORT COLORS & LOGO - Side by Side Cards -->
+                        <div class="row mb-3">
+                            <div class="col-lg-6 mb-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-3">
+                                            <i class="fa fa-palette me-2 text-primary"/>PDF Color Palette
+                                        </h6>
+                                        <div class="d-flex flex-column gap-3">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span class="small text-muted">Accent Color</span>
+                                                <field name="ops_report_primary_color" widget="color"/>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span class="small text-muted">Text on Accent</span>
+                                                <field name="ops_report_text_on_primary" widget="color"/>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span class="small text-muted">Body Text</span>
+                                                <field name="ops_report_body_text_color" widget="color"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold mb-3">
+                                            <i class="fa fa-image me-2 text-primary"/>Company Logo
+                                        </h6>
+                                        <div class="mb-3">
+                                            <label class="o_form_label text-muted small mb-2">Logo Position</label>
+                                            <field name="ops_report_logo_position" widget="radio" options="{'horizontal': true}"/>
+                                        </div>
+                                        <div>
+                                            <label class="o_form_label text-muted small mb-2">Maximum Height</label>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <field name="ops_logo_max_size" class="w-25"/>
+                                                <span class="small text-muted">pixels</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DOCUMENT OPTIONS - Single Wide Card -->
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="fa fa-cog me-2 text-primary"/>Document Display Options
+                                </h6>
+                                <div class="row">
+                                    <div class="col-lg-6 mb-2">
+                                        <div class="form-check">
+                                            <field name="ops_show_external_badge" class="form-check-input"/>
+                                            <label class="form-check-label">Show OPS Badge on PDFs</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-2">
+                                        <div class="form-check">
+                                            <field name="ops_show_bank_details" class="form-check-input"/>
+                                            <label class="form-check-label">Show Bank Details</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-2">
+                                        <div class="form-check">
+                                            <field name="ops_show_product_code" class="form-check-input"/>
+                                            <label class="form-check-label">Show Product Internal Reference</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 mb-2">
+                                        <div class="form-check">
+                                            <field name="ops_show_amount_words" class="form-check-input"/>
+                                            <label class="form-check-label">Show Amount in Words</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-top mt-3 pt-3" invisible="not ops_show_amount_words">
+                                    <label class="o_form_label text-muted small mb-2">Amount in Words Language</label>
                                     <field name="ops_amount_words_lang" widget="radio" options="{'horizontal': true}"/>
-                                </setting>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- TERMS & CONDITIONS - Hero Row -->
-                        <div class="row o_settings_container mt-4">
-                            <div class="col-12">
-                                <div class="o_setting_box border-top pt-4 mt-2">
-                                    <div class="o_setting_right_pane">
-                                        <span class="o_form_label fw-bold mb-2 d-block">Default Terms &amp; Conditions</span>
-                                        <div class="text-muted small mb-3">Global legal text printed at the footer of invoices and quotes.</div>
-                                        <field name="ops_report_terms" widget="html" 
-                                               options="{'collaborative': false, 'resizable': true}" 
-                                               class="w-100 ops-terms-editor"/>
+                        <!-- SIGNATURES - Card -->
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body">
+                                <div class="form-check form-switch mb-3">
+                                    <field name="ops_show_signature_block" class="form-check-input"/>
+                                    <label class="form-check-label fw-bold">
+                                        <i class="fa fa-signature me-2 text-primary"/>Document Signatures
+                                    </label>
+                                </div>
+                                <p class="text-muted small mb-3" invisible="not ops_show_signature_block">
+                                    Add up to 3 signature authorization slots on printed documents
+                                </p>
+                                <div invisible="not ops_show_signature_block" class="d-flex gap-2">
+                                    <div class="flex-fill">
+                                        <label class="o_form_label text-muted small mb-1">Slot 1</label>
+                                        <field name="ops_signature_label_1" placeholder="Prepared" class="w-100"/>
+                                    </div>
+                                    <div class="flex-fill">
+                                        <label class="o_form_label text-muted small mb-1">Slot 2</label>
+                                        <field name="ops_signature_label_2" placeholder="Approved" class="w-100"/>
+                                    </div>
+                                    <div class="flex-fill">
+                                        <label class="o_form_label text-muted small mb-1">Slot 3</label>
+                                        <field name="ops_signature_label_3" placeholder="Authorized" class="w-100"/>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- TERMS & CONDITIONS - Full Width Hero -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-2">
+                                    <i class="fa fa-gavel me-2 text-primary"/>Default Terms &amp; Conditions
+                                </h6>
+                                <p class="text-muted small mb-3">
+                                    Global legal text printed at the footer of invoices, quotes, and purchase orders
+                                </p>
+                                <field name="ops_report_terms"
+                                       widget="html"
+                                       options="{'collaborative': false, 'resizable': true, 'height': 200}"
+                                       class="w-100"/>
                             </div>
                         </div>
                     </block>

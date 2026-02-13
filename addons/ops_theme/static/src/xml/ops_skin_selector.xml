@@ -4,8 +4,10 @@
         <div class="ops-skin-selector">
             <div class="ops-skin-grid">
                 <t t-foreach="state.skins" t-as="skin" t-key="skin.id">
-                    <div t-attf-class="skin-card {{ isSelected(skin.id) ? 'active' : '' }}"
-                         t-on-click="() => this.selectSkin(skin.id)">
+                    <div t-attf-class="skin-card {{ isSelected(skin.id) ? 'active' : '' }} {{ state.previewSkinId === skin.id ? 'previewing' : '' }}"
+                         t-on-click="() => this.selectSkin(skin.id)"
+                         t-on-mouseenter="() => this.onSkinHoverStart(skin)"
+                         t-on-mouseleave="() => this.onSkinHoverEnd()">
                         <!-- Tag -->
                         <span class="skin-tag"
                               t-attf-style="background: {{ getTagColor(skin.tag) }}; color: {{ getTagTextColor(skin.tag) }}">
@@ -21,6 +23,12 @@
 
                         <!-- Title -->
                         <span class="skin-title"><t t-esc="skin.name"/></span>
+
+                        <!-- Live Preview Indicator -->
+                        <div t-if="state.previewSkinId === skin.id" class="preview-indicator">
+                            <i class="fa fa-eye me-1"/>
+                            <span class="small">Live Preview</span>
+                        </div>
                     </div>
                 </t>
             </div>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================================================================
+         RICH MEDIA KANBAN — Product Template (Phase 8)
+         Modern product card with 100px square image, price highlight,
+         stock pill badges, and professional layout.
+         ================================================================ -->
+    <record id="product_template_kanban_ops_theme" model="ir.ui.view">
+        <field name="name">product.template.kanban.ops.theme</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <!-- Replace the entire kanban template with our rich media version -->
+            <xpath expr="//kanban" position="replace">
+                <kanban class="ops_product_kanban">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="list_price"/>
+                    <field name="default_code"/>
+                    <field name="categ_id"/>
+                    <field name="image_128"/>
+                    <field name="qty_available"/>
+                    <field name="virtual_available"/>
+                    <field name="type"/>
+                    <field name="sale_ok"/>
+                    <field name="purchase_ok"/>
+                    <field name="currency_id"/>
+
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click d-flex align-items-start gap-3 p-3"
+                                 style="min-height: 110px;">
+
+                                <!-- LEFT: Product Image (100px square) -->
+                                <div class="ops_product_image flex-shrink-0"
+                                     style="width: 100px; height: 100px; border-radius: 8px; overflow: hidden; background: #f8fafc;">
+                                    <img t-att-src="kanban_image('product.template', 'image_128', record.id.raw_value)"
+                                         class="w-100 h-100"
+                                         style="object-fit: cover;"
+                                         alt="Product"/>
+                                </div>
+
+                                <!-- RIGHT: Product Details (Flex Column) -->
+                                <div class="flex-grow-1 d-flex flex-column justify-content-between" style="min-height: 100px;">
+
+                                    <!-- Top Section: Name, Category, Code -->
+                                    <div>
+                                        <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                                            <div class="flex-grow-1">
+                                                <strong class="d-block mb-1 text-dark" style="font-size: 0.95rem; line-height: 1.3;">
+                                                    <t t-esc="record.name.value"/>
+                                                </strong>
+                                                <div class="text-muted small">
+                                                    <span t-if="record.default_code.value" class="me-2">
+                                                        <i class="fa fa-barcode me-1"/>
+                                                        <t t-esc="record.default_code.value"/>
+                                                    </span>
+                                                    <span t-if="record.categ_id.value">
+                                                        <i class="fa fa-tag me-1"/>
+                                                        <t t-esc="record.categ_id.value"/>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Product Type Badges -->
+                                            <div class="d-flex gap-1 flex-shrink-0">
+                                                <span t-if="record.sale_ok.raw_value"
+                                                      class="badge bg-primary-subtle text-primary"
+                                                      style="font-size: 0.65rem; padding: 0.25rem 0.5rem;">
+                                                    Sale
+                                                </span>
+                                                <span t-if="record.purchase_ok.raw_value"
+                                                      class="badge bg-info-subtle text-info"
+                                                      style="font-size: 0.65rem; padding: 0.25rem 0.5rem;">
+                                                    Purchase
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bottom Section: Price + Stock -->
+                                    <div class="d-flex align-items-end justify-content-between gap-3 mt-2">
+                                        <!-- Price (Bold, Large, Primary Color) -->
+                                        <div>
+                                            <strong class="fs-4 fw-bold" style="color: var(--ops-action, #3b82f6);">
+                                                <field name="list_price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                            </strong>
+                                        </div>
+
+                                        <!-- Stock Indicator (Pill Badge) -->
+                                        <div t-if="record.type.raw_value === 'product'">
+                                            <t t-set="stock_qty" t-value="record.qty_available.raw_value"/>
+                                            <t t-set="stock_class" t-value="stock_qty > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'"/>
+                                            <span t-att-class="'badge ' + stock_class"
+                                                  style="font-size: 0.7rem; padding: 0.35rem 0.7rem; border-radius: 12px;">
+                                                <i t-att-class="stock_qty > 0 ? 'fa fa-check-circle' : 'fa fa-exclamation-circle'" class="me-1"/>
+                                                <t t-if="stock_qty > 0">
+                                                    <t t-esc="Math.round(stock_qty)"/> On Hand
+                                                </t>
+                                                <t t-else="">
+                                                    Out of Stock
+                                                </t>
+                                            </span>
+                                        </div>
+                                        <!-- Service/Consumable indicator -->
+                                        <div t-if="record.type.raw_value !== 'product'">
+                                            <span class="badge bg-secondary-subtle text-secondary"
+                                                  style="font-size: 0.7rem; padding: 0.35rem 0.7rem; border-radius: 12px;">
+                                                <i class="fa fa-infinity me-1"/>
+                                                <t t-esc="record.type.value"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </xpath>
+        </field>
+    </record>
+</odoo>

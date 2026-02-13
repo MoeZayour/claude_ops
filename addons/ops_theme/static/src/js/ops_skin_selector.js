@@ -15,11 +15,38 @@ class OpsSkinSelector extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.state = useState({ skins: [] });
+        this.state = useState({
+            skins: [],
+            previewSkinId: null,
+        });
+        this.originalColors = null;
 
         onWillStart(async () => {
             await this.loadSkins();
+            // Store original CSS variable values for preview restoration
+            this.storeOriginalColors();
         });
+    }
+
+    /**
+     * Store current CSS custom property values from :root
+     * for restoration after preview hover ends
+     */
+    storeOriginalColors() {
+        const root = document.documentElement;
+        const style = getComputedStyle(root);
+        this.originalColors = {
+            brand: style.getPropertyValue('--ops-brand').trim(),
+            action: style.getPropertyValue('--ops-action').trim(),
+            success: style.getPropertyValue('--ops-success').trim(),
+            warning: style.getPropertyValue('--ops-warning').trim(),
+            danger: style.getPropertyValue('--ops-danger').trim(),
+            info: style.getPropertyValue('--ops-info').trim(),
+            bg: style.getPropertyValue('--ops-bg').trim(),
+            surface: style.getPropertyValue('--ops-surface').trim(),
+            text: style.getPropertyValue('--ops-text').trim(),
+            border: style.getPropertyValue('--ops-border').trim(),
+        };
     }
 
     async loadSkins() {
@@ -36,6 +63,51 @@ class OpsSkinSelector extends Component {
             { order: "sequence, id" },
         );
         this.state.skins = skins;
+    }
+
+    /**
+     * PHASE 9: Live Hover Preview
+     * Apply skin colors to :root CSS variables on hover
+     */
+    onSkinHoverStart(skin) {
+        if (this.props.readonly) return;
+
+        this.state.previewSkinId = skin.id;
+        const root = document.documentElement;
+
+        // Temporarily inject this skin's colors into :root
+        root.style.setProperty('--ops-brand', skin.brand_color);
+        root.style.setProperty('--ops-action', skin.action_color);
+        root.style.setProperty('--ops-success', skin.success_color);
+        root.style.setProperty('--ops-warning', skin.warning_color);
+        root.style.setProperty('--ops-danger', skin.danger_color);
+        root.style.setProperty('--ops-info', skin.info_color);
+        root.style.setProperty('--ops-bg', skin.bg_color);
+        root.style.setProperty('--ops-surface', skin.surface_color);
+        root.style.setProperty('--ops-text', skin.text_color);
+        root.style.setProperty('--ops-border', skin.border_color);
+    }
+
+    /**
+     * Restore original colors when hover ends
+     */
+    onSkinHoverEnd() {
+        if (this.props.readonly || !this.originalColors) return;
+
+        this.state.previewSkinId = null;
+        const root = document.documentElement;
+
+        // Restore original color values
+        root.style.setProperty('--ops-brand', this.originalColors.brand);
+        root.style.setProperty('--ops-action', this.originalColors.action);
+        root.style.setProperty('--ops-success', this.originalColors.success);
+        root.style.setProperty('--ops-warning', this.originalColors.warning);
+        root.style.setProperty('--ops-danger', this.originalColors.danger);
+        root.style.setProperty('--ops-info', this.originalColors.info);
+        root.style.setProperty('--ops-bg', this.originalColors.bg);
+        root.style.setProperty('--ops-surface', this.originalColors.surface);
+        root.style.setProperty('--ops-text', this.originalColors.text);
+        root.style.setProperty('--ops-border', this.originalColors.border);
     }
 
     get currentValue() {

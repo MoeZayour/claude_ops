@@ -1,0 +1,126 @@
+///
+/// OPS Theme — Rich Media Product Kanban (Phase 8)
+/// ================================================
+/// Professional product cards with modern layout and tactile interactions.
+///
+
+.ops_product_kanban {
+
+    // Kanban card enhancements
+    .oe_kanban_card {
+        border-radius: 12px;
+        border: 1px solid $ops_color_border;
+        background-color: $ops_color_surface;
+        transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+                    box-shadow 0.2s ease,
+                    border-color 0.2s ease;
+
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: $ops_box_shadow_md;
+            border-color: rgba($ops_color_primary, 0.3);
+        }
+
+        &:active {
+            transform: translateY(-1px);
+            box-shadow: $ops_box_shadow_sm;
+        }
+    }
+
+    // Product image container
+    .ops_product_image {
+        border: 1px solid $ops_color_border;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: box-shadow 0.2s ease;
+
+        img {
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .oe_kanban_card:hover & img {
+            transform: scale(1.05);
+        }
+    }
+
+    // Price highlight
+    .fs-4 {
+        font-size: 1.25rem !important;
+        line-height: 1.2;
+        font-weight: 700;
+    }
+
+    // Badge refinements
+    .badge {
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        border: 1px solid transparent;
+
+        // Success (in stock)
+        &.bg-success-subtle {
+            background-color: rgba($ops_color_success, 0.1);
+            color: $ops_color_success;
+            border-color: rgba($ops_color_success, 0.2);
+        }
+
+        // Danger (out of stock)
+        &.bg-danger-subtle {
+            background-color: rgba($ops_color_danger, 0.1);
+            color: $ops_color_danger;
+            border-color: rgba($ops_color_danger, 0.2);
+        }
+
+        // Primary (sale)
+        &.bg-primary-subtle {
+            background-color: rgba($ops_color_primary, 0.1);
+            color: $ops_color_primary;
+            border-color: rgba($ops_color_primary, 0.2);
+        }
+
+        // Info (purchase)
+        &.bg-info-subtle {
+            background-color: rgba($ops_color_info, 0.1);
+            color: $ops_color_info;
+            border-color: rgba($ops_color_info, 0.2);
+        }
+
+        // Secondary (service/consumable)
+        &.bg-secondary-subtle {
+            background-color: rgba($ops_color_border, 0.3);
+            color: $ops_text_muted;
+            border-color: $ops_color_border;
+        }
+    }
+
+    // Product name truncation
+    .text-dark {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    // Metadata text (code, category)
+    .text-muted.small {
+        font-size: 0.75rem;
+        color: $ops_text_muted;
+
+        i {
+            opacity: 0.7;
+        }
+    }
+
+    // Responsive adjustments
+    @media (max-width: 768px) {
+        .oe_kanban_card {
+            flex-direction: column !important;
+            align-items: center !important;
+        }
+
+        .ops_product_image {
+            width: 100% !important;
+            height: auto !important;
+            aspect-ratio: 1;
+        }
+    }
+}

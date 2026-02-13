@@ -106,20 +106,61 @@
         border-radius: 10px;
         padding: 10px 12px;
         cursor: pointer;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
+        position: relative;
 
         &:hover {
             border-color: #94a3b8;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
         }
 
         &.active {
             border-color: var(--ops-action, #3b82f6);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        // PHASE 9: Live preview state
+        &.previewing {
+            border-color: var(--ops-action, #3b82f6);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+            transform: translateY(-3px) scale(1.02);
+            z-index: 10;
+        }
+    }
+
+    // PHASE 9: Live preview indicator
+    .preview-indicator {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        background: var(--ops-action, #3b82f6);
+        color: #ffffff;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        animation: pulsePreview 1.5s ease-in-out infinite;
+
+        i {
+            font-size: 0.7rem;
+        }
+    }
+
+    @keyframes pulsePreview {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
         }
     }
 
@@ -156,5 +197,193 @@
         font-weight: 600;
         color: #334155;
         line-height: 1.2;
+    }
+
+    /* =================================================================
+       ISLAND/CARD ARCHITECTURE (Phase 6)
+       Professional floating cards with consistent elevation and spacing
+       ================================================================= */
+
+    /* Alert banners */
+    .alert {
+        border-radius: 8px;
+        border: none;
+
+        &.alert-info {
+            background-color: rgba(59, 130, 246, 0.08);
+            color: #1e40af;
+
+            i {
+                color: #3b82f6;
+            }
+        }
+    }
+
+    /* Island cards */
+    .card {
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background-color: #ffffff;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+
+            i {
+                font-size: 1.1rem;
+            }
+        }
+    }
+
+    /* Section headers */
+    h6.text-uppercase {
+        &.text-muted {
+            font-size: 0.7rem !important;
+            color: #64748b !important;
+            margin-bottom: 1rem;
+        }
+    }
+
+    /* Form controls in cards */
+    .form-check-label {
+        strong {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .d-block.text-muted {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+    }
+
+    /* Enhanced form switches */
+    .form-switch {
+        .form-check-input {
+            width: 2.5rem;
+            height: 1.25rem;
+            cursor: pointer;
+
+            &:checked {
+                background-color: var(--ops-action, #3b82f6);
+                border-color: var(--ops-action, #3b82f6);
+            }
+
+            &:focus {
+                box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
+            }
+        }
+
+        .form-check-label {
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+    }
+
+    /* Consistent input styling */
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        padding: 0.5rem 0.75rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        &:focus {
+            border-color: var(--ops-action, #3b82f6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+    }
+
+    /* Radio button groups */
+    .o_field_radio .o_horizontal {
+        .o_radio_item {
+            label {
+                padding: 0.4rem 0.8rem;
+                border-radius: 6px;
+                transition: background-color 0.15s ease;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: rgba(59, 130, 246, 0.05);
+                }
+            }
+
+            input[type="radio"]:checked + label {
+                background-color: rgba(59, 130, 246, 0.1);
+                color: var(--ops-action, #3b82f6);
+                font-weight: 600;
+            }
+        }
+    }
+
+    /* Image upload widgets */
+    .o_field_image {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* HTML editor */
+    .o_field_html {
+        border-radius: 8px;
+        overflow: hidden;
+
+        .note-editable,
+        .odoo-editor-editable {
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+        }
+    }
+
+    /* Button refinements */
+    .btn {
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.15s ease;
+
+        &.btn-outline-secondary {
+            border-color: #e2e8f0;
+            color: #64748b;
+
+            &:hover {
+                background-color: #f8fafc;
+                border-color: #cbd5e1;
+                color: #334155;
+            }
+        }
+
+        &.btn-primary {
+            background-color: var(--ops-action, #3b82f6);
+            border-color: var(--ops-action, #3b82f6);
+
+            &:hover {
+                background-color: #2563eb;
+                border-color: #2563eb;
+            }
+        }
+
+        i {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Remove old o_setting_box styles that conflict with cards */
+    .o_setting_box {
+        box-shadow: none;
+        border: none;
+        padding: 0;
     }
 }

@@ -1,0 +1,292 @@
+///
+/// OPS Theme — Global "Life" Injection
+/// ====================================
+/// Adds tactile, professional interactions to standard Odoo elements.
+/// No layout changes — pure enhancement via CSS variables.
+///
+
+// =============================================================================
+// TACTILE KANBAN CARDS
+// =============================================================================
+// Transform flat kanban cards into floating, interactive surfaces.
+
+.o_kanban_record {
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.2s ease,
+                border-color 0.2s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: $ops_box_shadow_md;
+        border-color: rgba(var(--ops-action), 0.3);
+    }
+
+    &:active {
+        transform: translateY(-1px);
+        box-shadow: $ops_box_shadow_sm;
+    }
+}
+
+// Special case: Global kanban (not inside specific kanban views)
+.o_kanban_view:not(.o_kanban_dashboard) .o_kanban_record {
+    &:hover {
+        border-color: mix($ops_color_border, $ops_color_primary, 60%);
+    }
+}
+
+// =============================================================================
+// FLOATING LIST ROWS
+// =============================================================================
+// Add subtle hover states to list view rows for better scannability.
+
+.o_list_view .o_data_row {
+    transition: background-color 0.15s ease,
+                box-shadow 0.15s ease;
+
+    &:hover {
+        background-color: $ops_surface_hover;
+        box-shadow: inset 2px 0 0 0 rgba($ops_color_primary, 0.2);
+    }
+}
+
+// Increase row padding for breathability
+.o_list_renderer tbody td {
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+}
+
+// =============================================================================
+// FORM VIEW ENHANCEMENTS
+// =============================================================================
+// Subtle focus indicators and better input hierarchy.
+
+.o_form_view {
+    .o_input,
+    .o_field_widget input,
+    .o_field_widget textarea,
+    .o_field_widget select {
+        transition: border-color 0.2s ease,
+                    box-shadow 0.2s ease;
+
+        &:focus {
+            border-color: $ops_color_primary;
+            box-shadow: 0 0 0 3px rgba($ops_color_primary, 0.1);
+        }
+    }
+}
+
+// =============================================================================
+// BUTTON REFINEMENTS (Complement Phase 7)
+// =============================================================================
+// Professional micro-interactions for all buttons.
+
+.btn {
+    transition: background-color 0.15s ease,
+                border-color 0.15s ease,
+                color 0.15s ease,
+                box-shadow 0.15s ease,
+                transform 0.1s ease;
+
+    // Subtle press feedback (no pixel-moving jumps)
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+// =============================================================================
+// DROPDOWN MENUS
+// =============================================================================
+// Add subtle elevation to dropdowns.
+
+.dropdown-menu {
+    box-shadow: $ops_box_shadow_lg;
+    border-color: $ops_color_border;
+
+    .dropdown-item {
+        transition: background-color 0.12s ease,
+                    color 0.12s ease;
+
+        &:hover {
+            background-color: $ops_surface_hover;
+        }
+
+        &:active,
+        &.active {
+            background-color: rgba($ops_color_primary, 0.1);
+            color: $ops_color_primary;
+        }
+    }
+}
+
+// =============================================================================
+// CARD COMPONENTS
+// =============================================================================
+// Enhance Bootstrap/Odoo cards with elevation and interactive states.
+
+.card {
+    transition: box-shadow 0.2s ease,
+                transform 0.2s ease;
+    border-color: $ops_color_border;
+
+    // Only apply hover lift to interactive cards (with links or buttons)
+    &:has(a, button):hover {
+        box-shadow: $ops_box_shadow_md;
+        transform: translateY(-2px);
+    }
+}
+
+// =============================================================================
+// MODALS & DIALOGS
+// =============================================================================
+// Smooth backdrop and content transitions.
+
+.modal {
+    .modal-content {
+        box-shadow: $ops_box_shadow_xl;
+        border-color: $ops_color_border;
+    }
+
+    &.show .modal-content {
+        animation: modalSlideIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+// =============================================================================
+// TAB NAVIGATION
+// =============================================================================
+// Smoother tab transitions with clear active state.
+
+.nav-tabs {
+    .nav-link {
+        transition: color 0.2s ease,
+                    border-color 0.2s ease,
+                    background-color 0.2s ease;
+
+        &:hover:not(.active) {
+            color: $ops_color_primary;
+            border-color: transparent transparent $ops_color_border;
+        }
+
+        &.active {
+            color: $ops_color_primary;
+            border-color: $ops_color_border $ops_color_border $ops_color_surface;
+            box-shadow: inset 0 2px 0 0 $ops_color_primary;
+        }
+    }
+}
+
+// =============================================================================
+// BADGE ENHANCEMENTS
+// =============================================================================
+// Softer, more professional badges using color-mix.
+
+.badge {
+    transition: background-color 0.15s ease,
+                color 0.15s ease;
+
+    // Primary badge gets subtle hover lift
+    &.badge-primary,
+    &.bg-primary {
+        background-color: $ops_color_primary;
+
+        &:hover {
+            background-color: $ops_color_primary_hover;
+        }
+    }
+
+    // Success badge
+    &.badge-success,
+    &.bg-success {
+        background-color: $ops_color_success;
+
+        &:hover {
+            background-color: $ops_color_success_hover;
+        }
+    }
+
+    // Warning badge
+    &.badge-warning,
+    &.bg-warning {
+        background-color: $ops_color_warning;
+
+        &:hover {
+            background-color: $ops_color_warning_hover;
+        }
+    }
+
+    // Danger badge
+    &.badge-danger,
+    &.bg-danger {
+        background-color: $ops_color_danger;
+
+        &:hover {
+            background-color: $ops_color_danger_hover;
+        }
+    }
+}
+
+// =============================================================================
+// TOAST NOTIFICATIONS
+// =============================================================================
+// Smooth entry animation for notifications.
+
+.o_notification {
+    animation: toastSlideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+// =============================================================================
+// SEARCH BAR
+// =============================================================================
+// Enhanced focus state for the global search bar.
+
+.o_searchview_input_container {
+    .o_searchview_input {
+        transition: box-shadow 0.2s ease,
+                    border-color 0.2s ease;
+
+        &:focus {
+            box-shadow: 0 0 0 3px rgba($ops_color_primary, 0.1);
+            border-color: $ops_color_primary;
+        }
+    }
+}
+
+// =============================================================================
+// LOADING STATES
+// =============================================================================
+// Subtle pulse for loading indicators.
+
+.o_loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}

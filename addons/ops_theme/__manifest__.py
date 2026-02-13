@@ -31,10 +31,10 @@ Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
         'views/login_templates.xml',
         'views/webclient_templates.xml',
         'views/res_config_settings_views.xml',
+        'views/product_views.xml',
         'report/ops_report_css.xml',
         'report/ops_external_layout.xml',
         'data/ops_theme_skin_data.xml',
-
     ],
     'assets': {
         # =================================================================
@@ -70,6 +70,13 @@ Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
             'ops_theme/static/src/scss/_ops_sidebar.scss',
             'ops_theme/static/src/scss/_settings_theme_page.scss',
             'ops_theme/static/src/scss/_ops_home_menu.scss',
+
+            # SCSS - Global "Life" Injection (Phase 5)
+            'ops_theme/static/src/scss/_global_life.scss',
+            'ops_theme/static/src/scss/_semantic_buttons.scss',
+
+            # SCSS - Rich Media Kanban (Phase 8)
+            'ops_theme/static/src/scss/_ops_product_kanban.scss',
 
             # JavaScript
             'ops_theme/static/src/js/debranding.js',
