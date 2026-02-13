@@ -73,7 +73,6 @@ Clean, minimal theme following "Odoo 19 owns the layout, OPS owns the colors":
 
             # SCSS - Global "Life" Injection (Phase 5)
             'ops_theme/static/src/scss/_global_life.scss',
-            'ops_theme/static/src/scss/_semantic_buttons.scss',
 
             # SCSS - Rich Media Kanban (Phase 8)
             'ops_theme/static/src/scss/_ops_product_kanban.scss',

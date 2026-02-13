@@ -158,22 +158,23 @@ $o-theme-text-colors: (
 );
 
 // =============================================================================
-// CSS CUSTOM PROPERTIES — Runtime skin tokens for Smart Skins
+// CSS CUSTOM PROPERTIES — For Login Page ONLY
 // =============================================================================
-// These :root vars mirror the compiled SCSS values and enable:
-// 1. Runtime overrides via .ops-is-dark class
-// 2. Live preview in settings (theme_preview.js)
-// 3. JS access to current skin colors
+// Login page uses web.assets_frontend (no access to compiled backend vars).
+// These :root vars bridge the gap so login can use current skin colors.
 
 :root {
     --ops-brand: #{$ops_color_brand};
-    --ops-action: #{$ops_color_primary};
+    --ops-primary: #{$ops_color_primary};
     --ops-success: #{$ops_color_success};
     --ops-warning: #{$ops_color_warning};
     --ops-danger: #{$ops_color_danger};
     --ops-info: #{$ops_color_info};
-    --ops-bg: #{$ops_color_bg};
-    --ops-surface: #{$ops_color_surface};
-    --ops-text: #{$ops_color_text};
+    --ops-bg-body: #{$ops_color_bg};
+    --ops-bg-card: #{$ops_color_surface};
+    --ops-text-primary: #{$ops_color_text};
     --ops-border: #{$ops_color_border};
+    --ops-bg-input: #{$ops_color_surface};
+    --ops-text-secondary: #{mix($ops_color_text, $ops_color_surface, 70%)};
+    --ops-text-muted: #{$ops_text_muted};
 }

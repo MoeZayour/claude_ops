@@ -18,7 +18,7 @@
     &:hover {
         transform: translateY(-3px);
         box-shadow: $ops_box_shadow_md;
-        border-color: rgba(var(--ops-action), 0.3);
+        border-color: rgba($ops_color_primary, 0.3);
     }
 
     &:active {

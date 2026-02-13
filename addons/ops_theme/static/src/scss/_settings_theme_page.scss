@@ -79,7 +79,7 @@
         color: #64748b;
         padding: 8px 0 6px 12px;
         margin: 16px 0 12px 0;
-        border-left: 3px solid var(--ops-action, #3b82f6);
+        border-left: 3px solid $ops_color_primary;
         background: linear-gradient(90deg, rgba(59, 130, 246, 0.04), transparent);
     }
 
@@ -120,13 +120,13 @@
         }
 
         &.active {
-            border-color: var(--ops-action, #3b82f6);
+            border-color: $ops_color_primary;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
         // PHASE 9: Live preview state
         &.previewing {
-            border-color: var(--ops-action, #3b82f6);
+            border-color: $ops_color_primary;
             box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
             transform: translateY(-3px) scale(1.02);
             z-index: 10;
@@ -138,7 +138,7 @@
         position: absolute;
         top: 6px;
         right: 6px;
-        background: var(--ops-action, #3b82f6);
+        background: $ops_color_primary;
         color: #ffffff;
         padding: 3px 8px;
         border-radius: 12px;
@@ -274,8 +274,8 @@
             cursor: pointer;
 
             &:checked {
-                background-color: var(--ops-action, #3b82f6);
-                border-color: var(--ops-action, #3b82f6);
+                background-color: $ops_color_primary;
+                border-color: $ops_color_primary;
             }
 
             &:focus {
@@ -300,7 +300,7 @@
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
         &:focus {
-            border-color: var(--ops-action, #3b82f6);
+            border-color: $ops_color_primary;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
             outline: none;
         }
@@ -322,7 +322,7 @@
 
             input[type="radio"]:checked + label {
                 background-color: rgba(59, 130, 246, 0.1);
-                color: var(--ops-action, #3b82f6);
+                color: $ops_color_primary;
                 font-weight: 600;
             }
         }
@@ -366,8 +366,8 @@
         }
 
         &.btn-primary {
-            background-color: var(--ops-action, #3b82f6);
-            border-color: var(--ops-action, #3b82f6);
+            background-color: $ops_color_primary;
+            border-color: $ops_color_primary;
 
             &:hover {
                 background-color: #2563eb;
