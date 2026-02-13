@@ -1,0 +1,923 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================================ -->
+        <!-- OPS SEED DATA: USERS (36 users, 2 per persona)              -->
+        <!-- Each user has EXPLICIT group assignments (onchange doesn't   -->
+        <!-- fire in XML data). All users also get base.group_user.       -->
+        <!--                                                              -->
+        <!-- Depends on: ops_seed_structure.xml (branches, BUs)           -->
+        <!--             ops_persona_templates.xml (personas)             -->
+        <!-- ============================================================ -->
+
+        <!-- ============================================================ -->
+        <!-- HELPER: All branch/BU refs for executive-level users         -->
+        <!-- ALL_BRANCHES = HQ, Dubai, Abu Dhabi, Riyadh, Doha            -->
+        <!-- ALL_BUS = Trading, Contracting, Building, HVAC, MEP,         -->
+        <!--           Interiors, IT, E-Commerce                          -->
+        <!-- ============================================================ -->
+
+
+        <!-- ============================================================ -->
+        <!--  1. CEO - Chief Executive Officer                            -->
+        <!-- ============================================================ -->
+
+        <!-- CEO @ HQ -->
+        <record id="seed_user_ceo_hq" model="res.users">
+            <field name="name">Ahmad Al Mansouri</field>
+            <field name="login">ceo.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_ceo')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac'),
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_it'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_manager')),
+                (4, ref('account.group_account_manager')),
+                (4, ref('stock.group_stock_manager')),
+                (4, ref('purchase.group_purchase_manager')),
+                (4, ref('ops_matrix_core.group_ops_executive'))]"/>
+        </record>
+
+        <!-- CEO @ Doha -->
+        <record id="seed_user_ceo_doh" model="res.users">
+            <field name="name">Nasser Al Thani</field>
+            <field name="login">ceo.doh@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_ceo')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_doh"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac'),
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_it'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_manager')),
+                (4, ref('account.group_account_manager')),
+                (4, ref('stock.group_stock_manager')),
+                (4, ref('purchase.group_purchase_manager')),
+                (4, ref('ops_matrix_core.group_ops_executive'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  2. CFO - Chief Financial Officer                            -->
+        <!-- ============================================================ -->
+
+        <!-- CFO @ HQ -->
+        <record id="seed_user_cfo_hq" model="res.users">
+            <field name="name">Fatima Al Hashimi</field>
+            <field name="login">cfo.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_cfo')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac'),
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_it'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_manager')),
+                (4, ref('account.group_account_user')),
+                (4, ref('ops_matrix_core.group_ops_executive')),
+                (4, ref('ops_matrix_core.group_ops_cost_controller')),
+                (4, ref('ops_matrix_core.group_ops_see_cost')),
+                (4, ref('ops_matrix_core.group_ops_see_margin')),
+                (4, ref('ops_matrix_core.group_ops_price_manager'))]"/>
+        </record>
+
+        <!-- CFO @ Riyadh -->
+        <record id="seed_user_cfo_ruh" model="res.users">
+            <field name="name">Omar Al Ghamdi</field>
+            <field name="login">cfo.ruh@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_cfo')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_ruh"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac'),
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_it'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_manager')),
+                (4, ref('account.group_account_user')),
+                (4, ref('ops_matrix_core.group_ops_executive')),
+                (4, ref('ops_matrix_core.group_ops_cost_controller')),
+                (4, ref('ops_matrix_core.group_ops_see_cost')),
+                (4, ref('ops_matrix_core.group_ops_see_margin')),
+                (4, ref('ops_matrix_core.group_ops_price_manager'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  3. FIN_CTRL - Financial Controller                          -->
+        <!-- ============================================================ -->
+
+        <!-- FIN_CTRL @ HQ -->
+        <record id="seed_user_fin_ctrl_hq" model="res.users">
+            <field name="name">Khalid Al Mazrouei</field>
+            <field name="login">fin-ctrl.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_financial_controller')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac'),
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_it'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_manager')),
+                (4, ref('account.group_account_user')),
+                (4, ref('sales_team.group_sale_manager')),
+                (4, ref('purchase.group_purchase_manager')),
+                (4, ref('ops_matrix_core.group_ops_executive')),
+                (4, ref('ops_matrix_core.group_ops_cost_controller')),
+                (4, ref('ops_matrix_core.group_ops_price_manager'))]"/>
+        </record>
+
+        <!-- FIN_CTRL @ Dubai -->
+        <record id="seed_user_fin_ctrl_dubai" model="res.users">
+            <field name="name">Maryam Al Suwaidi</field>
+            <field name="login">fin-ctrl.dubai@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_financial_controller')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_dubai"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac'),
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_it'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_manager')),
+                (4, ref('account.group_account_user')),
+                (4, ref('sales_team.group_sale_manager')),
+                (4, ref('purchase.group_purchase_manager')),
+                (4, ref('ops_matrix_core.group_ops_executive')),
+                (4, ref('ops_matrix_core.group_ops_cost_controller')),
+                (4, ref('ops_matrix_core.group_ops_price_manager'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  4. SALES_LEADER - Sales Leader / Director                   -->
+        <!-- ============================================================ -->
+
+        <!-- SALES_LEADER @ HQ -->
+        <record id="seed_user_sales_leader_hq" model="res.users">
+            <field name="name">Mohammed Al Farsi</field>
+            <field name="login">sales-leader.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_sales_leader')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_manager')),
+                (4, ref('sale.group_sale_manager')),
+                (4, ref('ops_matrix_core.group_ops_bu_leader')),
+                (4, ref('ops_matrix_core.group_ops_see_cost')),
+                (4, ref('ops_matrix_core.group_ops_price_manager'))]"/>
+        </record>
+
+        <!-- SALES_LEADER @ Dubai -->
+        <record id="seed_user_sales_leader_dubai" model="res.users">
+            <field name="name">Huda Al Balushi</field>
+            <field name="login">sales-leader.dubai@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_sales_leader')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_dubai"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_hvac')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_manager')),
+                (4, ref('sale.group_sale_manager')),
+                (4, ref('ops_matrix_core.group_ops_bu_leader')),
+                (4, ref('ops_matrix_core.group_ops_see_cost')),
+                (4, ref('ops_matrix_core.group_ops_price_manager'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  5. SALES_MGR - Sales Manager                                -->
+        <!-- ============================================================ -->
+
+        <!-- SALES_MGR @ HQ -->
+        <record id="seed_user_sales_mgr_hq" model="res.users">
+            <field name="name">Youssef Al Khatib</field>
+            <field name="login">sales-mgr.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_sales_manager')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_manager')),
+                (4, ref('sale.group_sale_salesman_all_leads')),
+                (4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        </record>
+
+        <!-- SALES_MGR @ Abu Dhabi -->
+        <record id="seed_user_sales_mgr_auh" model="res.users">
+            <field name="name">Layla Al Rashid</field>
+            <field name="login">sales-mgr.auh@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_sales_manager')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_auh"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_auh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_interiors')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_manager')),
+                (4, ref('sale.group_sale_salesman_all_leads')),
+                (4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  6. PURCHASE_MGR - Purchase Manager                          -->
+        <!-- ============================================================ -->
+
+        <!-- PURCHASE_MGR @ HQ -->
+        <record id="seed_user_purchase_mgr_hq" model="res.users">
+            <field name="name">Ali Al Mulla</field>
+            <field name="login">purchase-mgr.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_purchase_manager')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_hvac')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('purchase.group_purchase_manager')),
+                (4, ref('stock.group_stock_user')),
+                (4, ref('ops_matrix_core.group_ops_manager')),
+                (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+        </record>
+
+        <!-- PURCHASE_MGR @ Dubai -->
+        <record id="seed_user_purchase_mgr_dubai" model="res.users">
+            <field name="name">Noura Al Shamsi</field>
+            <field name="login">purchase-mgr.dubai@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_purchase_manager')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_dubai"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_mep')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('purchase.group_purchase_manager')),
+                (4, ref('stock.group_stock_user')),
+                (4, ref('ops_matrix_core.group_ops_manager')),
+                (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  7. LOG_MGR - Logistics Manager                              -->
+        <!-- ============================================================ -->
+
+        <!-- LOG_MGR @ HQ -->
+        <record id="seed_user_log_mgr_hq" model="res.users">
+            <field name="name">Hassan Al Jaber</field>
+            <field name="login">log-mgr.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_logistics_manager')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_building')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('stock.group_stock_manager')),
+                (4, ref('ops_matrix_core.group_ops_branch_manager')),
+                (4, ref('ops_matrix_core.group_ops_manager')),
+                (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+        </record>
+
+        <!-- LOG_MGR @ Riyadh -->
+        <record id="seed_user_log_mgr_ruh" model="res.users">
+            <field name="name">Amira Al Dosari</field>
+            <field name="login">log-mgr.ruh@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_logistics_manager')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_ruh"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_ruh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_mep')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('stock.group_stock_manager')),
+                (4, ref('ops_matrix_core.group_ops_branch_manager')),
+                (4, ref('ops_matrix_core.group_ops_manager')),
+                (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  8. TREASURY_OFF - Treasury Officer                          -->
+        <!-- ============================================================ -->
+
+        <!-- TREASURY_OFF @ HQ -->
+        <record id="seed_user_treasury_hq" model="res.users">
+            <field name="name">Saeed Al Nuaimi</field>
+            <field name="login">treasury.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_treasury_officer')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_user')),
+                (4, ref('ops_matrix_core.group_ops_manager')),
+                (4, ref('ops_matrix_core.group_ops_treasury'))]"/>
+        </record>
+
+        <!-- TREASURY_OFF @ Dubai -->
+        <record id="seed_user_treasury_dubai" model="res.users">
+            <field name="name">Dalal Al Hajri</field>
+            <field name="login">treasury.dubai@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_treasury_officer')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_dubai"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_user')),
+                (4, ref('ops_matrix_core.group_ops_manager')),
+                (4, ref('ops_matrix_core.group_ops_treasury'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  9. HR_MGR - HR Manager                                      -->
+        <!-- ============================================================ -->
+
+        <!-- HR_MGR @ HQ -->
+        <record id="seed_user_hr_mgr_hq" model="res.users">
+            <field name="name">Rashed Al Kaabi</field>
+            <field name="login">hr-mgr.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_hr_manager')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('hr.group_hr_manager')),
+                (4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        </record>
+
+        <!-- HR_MGR @ Abu Dhabi -->
+        <record id="seed_user_hr_mgr_auh" model="res.users">
+            <field name="name">Salma Al Ketbi</field>
+            <field name="login">hr-mgr.auh@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_hr_manager')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_auh"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_auh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('hr.group_hr_manager')),
+                (4, ref('ops_matrix_core.group_ops_manager'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  10. CHIEF_ACCT - Chief Accountant                           -->
+        <!-- ============================================================ -->
+
+        <!-- CHIEF_ACCT @ HQ -->
+        <record id="seed_user_chief_acct_hq" model="res.users">
+            <field name="name">Ibrahim Al Wahaibi</field>
+            <field name="login">chief-acct.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_chief_accountant')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_manager')),
+                (4, ref('account.group_account_user')),
+                (4, ref('ops_matrix_core.group_ops_manager')),
+                (4, ref('ops_matrix_core.group_ops_see_cost')),
+                (4, ref('ops_matrix_core.group_ops_price_manager'))]"/>
+        </record>
+
+        <!-- CHIEF_ACCT @ Dubai -->
+        <record id="seed_user_chief_acct_dubai" model="res.users">
+            <field name="name">Aisha Al Marzouqi</field>
+            <field name="login">chief-acct.dubai@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_chief_accountant')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_dubai"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_manager')),
+                (4, ref('account.group_account_user')),
+                (4, ref('ops_matrix_core.group_ops_manager')),
+                (4, ref('ops_matrix_core.group_ops_see_cost')),
+                (4, ref('ops_matrix_core.group_ops_price_manager'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  11. SYS_ADMIN - System Administrator                        -->
+        <!-- ============================================================ -->
+
+        <!-- SYS_ADMIN @ HQ -->
+        <record id="seed_user_sys_admin_hq" model="res.users">
+            <field name="name">Tariq Al Hamadi</field>
+            <field name="login">sys-admin.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_sys_admin')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac'),
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_it'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('base.group_system')),
+                (4, ref('ops_matrix_core.group_ops_matrix_administrator'))]"/>
+        </record>
+
+        <!-- SYS_ADMIN @ Dubai -->
+        <record id="seed_user_sys_admin_dubai" model="res.users">
+            <field name="name">Reem Al Falasi</field>
+            <field name="login">sys-admin.dubai@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_sys_admin')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_dubai"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac'),
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_it'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('base.group_system')),
+                (4, ref('ops_matrix_core.group_ops_matrix_administrator'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  12. SALES_REP - Sales Representative                        -->
+        <!-- ============================================================ -->
+
+        <!-- SALES_REP @ HQ -->
+        <record id="seed_user_sales_rep_hq" model="res.users">
+            <field name="name">Khaled Al Zaabi</field>
+            <field name="login">sales-rep.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_sales_rep')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman')),
+                (4, ref('sale.group_sale_salesman')),
+                (4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+        <!-- SALES_REP @ Dubai -->
+        <record id="seed_user_sales_rep_dubai" model="res.users">
+            <field name="name">Sara Al Dhaheri</field>
+            <field name="login">sales-rep.dubai@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_sales_rep')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_dubai"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_building')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('sales_team.group_sale_salesman')),
+                (4, ref('sale.group_sale_salesman')),
+                (4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  13. PURCHASE_OFF - Purchase Officer                         -->
+        <!-- ============================================================ -->
+
+        <!-- PURCHASE_OFF @ HQ -->
+        <record id="seed_user_purchase_off_hq" model="res.users">
+            <field name="name">Majed Al Naqbi</field>
+            <field name="login">purchase-off.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_purchase_officer')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('purchase.group_purchase_user')),
+                (4, ref('stock.group_stock_user')),
+                (4, ref('ops_matrix_core.group_ops_user')),
+                (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+        </record>
+
+        <!-- PURCHASE_OFF @ Abu Dhabi -->
+        <record id="seed_user_purchase_off_auh" model="res.users">
+            <field name="name">Hessa Al Qassimi</field>
+            <field name="login">purchase-off.auh@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_purchase_officer')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_auh"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_auh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_mep')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('purchase.group_purchase_user')),
+                (4, ref('stock.group_stock_user')),
+                (4, ref('ops_matrix_core.group_ops_user')),
+                (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  14. LOG_CLERK - Logistics Clerk                             -->
+        <!-- ============================================================ -->
+
+        <!-- LOG_CLERK @ HQ -->
+        <record id="seed_user_log_clerk_hq" model="res.users">
+            <field name="name">Faisal Al Marri</field>
+            <field name="login">log-clerk.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_logistics_clerk')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('stock.group_stock_user')),
+                (4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+        <!-- LOG_CLERK @ Riyadh -->
+        <record id="seed_user_log_clerk_ruh" model="res.users">
+            <field name="name">Shamma Al Blooshi</field>
+            <field name="login">log-clerk.ruh@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_logistics_clerk')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_ruh"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_ruh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_contracting')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('stock.group_stock_user')),
+                (4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  15. ACCOUNTANT - Accountant                                 -->
+        <!-- ============================================================ -->
+
+        <!-- ACCOUNTANT @ HQ -->
+        <record id="seed_user_accountant_hq" model="res.users">
+            <field name="name">Abdulla Al Hosani</field>
+            <field name="login">accountant.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_accountant')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_user')),
+                (4, ref('account.group_account_invoice')),
+                (4, ref('ops_matrix_core.group_ops_user')),
+                (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+        </record>
+
+        <!-- ACCOUNTANT @ Dubai -->
+        <record id="seed_user_accountant_dubai" model="res.users">
+            <field name="name">Moza Al Rumaithi</field>
+            <field name="login">accountant.dubai@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_accountant')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_dubai"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_dubai')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_building')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_user')),
+                (4, ref('account.group_account_invoice')),
+                (4, ref('ops_matrix_core.group_ops_user')),
+                (4, ref('ops_matrix_core.group_ops_see_cost'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  16. AR_CLERK - Accounts Receivable Clerk                    -->
+        <!-- ============================================================ -->
+
+        <!-- AR_CLERK @ HQ -->
+        <record id="seed_user_ar_clerk_hq" model="res.users">
+            <field name="name">Sultan Al Mheiri</field>
+            <field name="login">ar-clerk.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_ar_clerk')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_invoice')),
+                (4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+        <!-- AR_CLERK @ Doha -->
+        <record id="seed_user_ar_clerk_doh" model="res.users">
+            <field name="name">Latifa Al Ameri</field>
+            <field name="login">ar-clerk.doh@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_ar_clerk')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_doh"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_interiors')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_invoice')),
+                (4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  17. AP_CLERK - Accounts Payable Clerk                       -->
+        <!-- ============================================================ -->
+
+        <!-- AP_CLERK @ HQ -->
+        <record id="seed_user_ap_clerk_hq" model="res.users">
+            <field name="name">Hamdan Al Tayer</field>
+            <field name="login">ap-clerk.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_ap_clerk')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_invoice')),
+                (4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+        <!-- AP_CLERK @ Abu Dhabi -->
+        <record id="seed_user_ap_clerk_auh" model="res.users">
+            <field name="name">Maitha Al Maktoum</field>
+            <field name="login">ap-clerk.auh@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_ap_clerk')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_auh"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_auh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_mep')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('account.group_account_invoice')),
+                (4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!--  18. TECH_SUPPORT - Technical Support                        -->
+        <!-- ============================================================ -->
+
+        <!-- TECH_SUPPORT @ HQ -->
+        <record id="seed_user_tech_support_hq" model="res.users">
+            <field name="name">Younus Al Qubaisi</field>
+            <field name="login">tech-support.hq@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_tech_support')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_hq"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac'),
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_it'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('base.group_erp_manager')),
+                (4, ref('ops_matrix_core.group_ops_it_admin')),
+                (4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+        <!-- TECH_SUPPORT @ Riyadh -->
+        <record id="seed_user_tech_support_ruh" model="res.users">
+            <field name="name">Sheikha Al Nahyan</field>
+            <field name="login">tech-support.ruh@ops-demo.com</field>
+            <field name="password">Demo@2026</field>
+            <field name="ops_persona_ids" eval="[(6, 0, [ref('ops_matrix_core.persona_tech_support')])]"/>
+            <field name="primary_branch_id" ref="ops_matrix_core.seed_branch_ruh"/>
+            <field name="ops_allowed_branch_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_branch_hq'),
+                ref('ops_matrix_core.seed_branch_dubai'),
+                ref('ops_matrix_core.seed_branch_auh'),
+                ref('ops_matrix_core.seed_branch_ruh'),
+                ref('ops_matrix_core.seed_branch_doh')])]"/>
+            <field name="ops_allowed_business_unit_ids" eval="[(6, 0, [
+                ref('ops_matrix_core.seed_bu_trading'),
+                ref('ops_matrix_core.seed_bu_contracting'),
+                ref('ops_matrix_core.seed_bu_building'),
+                ref('ops_matrix_core.seed_bu_hvac'),
+                ref('ops_matrix_core.seed_bu_mep'),
+                ref('ops_matrix_core.seed_bu_interiors'),
+                ref('ops_matrix_core.seed_bu_it'),
+                ref('ops_matrix_core.seed_bu_ecom')])]"/>
+            <field name="group_ids" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('base.group_erp_manager')),
+                (4, ref('ops_matrix_core.group_ops_it_admin')),
+                (4, ref('ops_matrix_core.group_ops_user'))]"/>
+        </record>
+
+    </data>
+</odoo>

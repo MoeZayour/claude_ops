@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================================ -->
+        <!-- OPS SEED DATA: GOVERNANCE, APPROVALS, SLA, ARCHIVING         -->
+        <!-- Exercises governance rules, SoD, SLA, three-way matching     -->
+        <!-- Loaded on install only (noupdate=1)                          -->
+        <!-- ============================================================ -->
+
+
+        <!-- ============================================================ -->
+        <!-- SECTION 1: APPROVAL RULES (ops.approval.rule)                -->
+        <!-- Threshold-based approval workflow seed data                  -->
+        <!-- ============================================================ -->
+
+        <!-- Rule 1: Sale Order > 50,000 requires Sales Manager -->
+        <record id="seed_approval_rule_01" model="ops.approval.rule">
+            <field name="name">Sales Order > 50,000 requires Sales Manager</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="condition_domain">[('amount_total', '>', 50000)]</field>
+            <field name="condition_code">record.amount_total > 50000</field>
+            <field name="approver_group_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_sales_manager')])]"/>
+            <field name="sequence">10</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Rule 2: Sale Order > 200,000 requires Financial Controller -->
+        <record id="seed_approval_rule_02" model="ops.approval.rule">
+            <field name="name">Sales Order > 200,000 requires Financial Controller</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="condition_domain">[('amount_total', '>', 200000)]</field>
+            <field name="condition_code">record.amount_total > 200000</field>
+            <field name="approver_group_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_finance_manager')])]"/>
+            <field name="sequence">20</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Rule 3: Purchase Order > 25,000 requires Purchase Manager -->
+        <record id="seed_approval_rule_03" model="ops.approval.rule">
+            <field name="name">Purchase Order > 25,000 requires Purchase Manager</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="condition_domain">[('amount_total', '>', 25000)]</field>
+            <field name="condition_code">record.amount_total > 25000</field>
+            <field name="approver_group_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_purchase_manager')])]"/>
+            <field name="sequence">10</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Rule 4: Purchase Order > 100,000 requires Financial Controller -->
+        <record id="seed_approval_rule_04" model="ops.approval.rule">
+            <field name="name">Purchase Order > 100,000 requires Financial Controller</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="condition_domain">[('amount_total', '>', 100000)]</field>
+            <field name="condition_code">record.amount_total > 100000</field>
+            <field name="approver_group_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_finance_manager')])]"/>
+            <field name="sequence">20</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Rule 5: Payment > 10,000 requires Treasury Officer -->
+        <record id="seed_approval_rule_05" model="ops.approval.rule">
+            <field name="name">Payment > 10,000 requires Treasury Officer</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="condition_domain">[('amount', '>', 10000)]</field>
+            <field name="condition_code">record.amount > 10000</field>
+            <field name="approver_group_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_treasury')])]"/>
+            <field name="sequence">10</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Rule 6: Payment > 50,000 requires CFO -->
+        <record id="seed_approval_rule_06" model="ops.approval.rule">
+            <field name="name">Payment > 50,000 requires CFO</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="condition_domain">[('amount', '>', 50000)]</field>
+            <field name="condition_code">record.amount > 50000</field>
+            <field name="approver_group_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_cfo')])]"/>
+            <field name="sequence">20</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!-- SECTION 2: SLA TEMPLATES (ops.sla.template)                  -->
+        <!-- Service-level agreements for key business processes          -->
+        <!-- All enabled=False (catalog mode) until admin activates       -->
+        <!-- ============================================================ -->
+
+        <!-- SLA 1: Sale Order Processing - warning 4h, deadline 8h -->
+        <record id="seed_sla_01" model="ops.sla.template">
+            <field name="name">Sale Order Processing (Target: 8 working hours)</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="target_duration">8.0</field>
+            <field name="target_days">1</field>
+            <field name="active" eval="True"/>
+            <field name="enabled" eval="False"/>
+        </record>
+
+        <!-- SLA 2: Purchase Order Approval - warning 2h, deadline 4h -->
+        <record id="seed_sla_02" model="ops.sla.template">
+            <field name="name">Purchase Order Approval (Target: 4 working hours)</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="target_duration">4.0</field>
+            <field name="target_days">1</field>
+            <field name="active" eval="True"/>
+            <field name="enabled" eval="False"/>
+        </record>
+
+        <!-- SLA 3: Invoice Validation - warning 24h, deadline 48h -->
+        <record id="seed_sla_03" model="ops.sla.template">
+            <field name="name">Invoice Validation (Target: 48 working hours)</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="target_duration">48.0</field>
+            <field name="target_days">6</field>
+            <field name="active" eval="True"/>
+            <field name="enabled" eval="False"/>
+        </record>
+
+        <!-- SLA 4: Payment Execution - warning 8h, deadline 24h -->
+        <record id="seed_sla_04" model="ops.sla.template">
+            <field name="name">Payment Execution (Target: 24 working hours)</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="target_duration">24.0</field>
+            <field name="target_days">3</field>
+            <field name="active" eval="True"/>
+            <field name="enabled" eval="False"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!-- SECTION 3: ARCHIVE POLICIES (ops.archive.policy)             -->
+        <!-- Data retention policies for lifecycle management             -->
+        <!-- ============================================================ -->
+
+        <!-- Archive Policy 1: Sale Orders after 12 months (365 days) -->
+        <record id="seed_archive_policy_01" model="ops.archive.policy">
+            <field name="name">Archive Old Sale Orders (12 months)</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="domain_code">[('state', 'in', ['done', 'cancel'])]</field>
+            <field name="retention_months">12</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Archive Policy 2: Purchase Orders after 12 months (365 days) -->
+        <record id="seed_archive_policy_02" model="ops.archive.policy">
+            <field name="name">Archive Old Purchase Orders (12 months)</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="domain_code">[('state', 'in', ['done', 'cancel'])]</field>
+            <field name="retention_months">12</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Archive Policy 3: Audit Logs after 24 months (730 days) -->
+        <record id="seed_archive_policy_03" model="ops.archive.policy">
+            <field name="name">Archive Audit Logs (24 months)</field>
+            <field name="model_id" ref="ops_matrix_core.model_ops_audit_log"/>
+            <field name="domain_code">[]</field>
+            <field name="retention_months">24</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!-- SECTION 4: DASHBOARD WIDGETS (ops.dashboard.widget)          -->
+        <!-- Pre-configured dashboard components for governance overview   -->
+        <!-- ============================================================ -->
+
+        <!-- Widget 1: Sales Summary KPI -->
+        <record id="seed_widget_sales_summary" model="ops.dashboard.widget">
+            <field name="name">Sales Summary</field>
+            <field name="code">SEED-SALES-SUMMARY</field>
+            <field name="description">Total confirmed sales order value across all branches.</field>
+            <field name="widget_type">kpi</field>
+            <field name="model_name">sale.order</field>
+            <field name="domain">[('state', 'in', ['sale', 'done'])]</field>
+            <field name="measure_field">amount_total</field>
+            <field name="icon">fa-shopping-cart</field>
+            <field name="color">#2ecc71</field>
+            <field name="width">medium</field>
+            <field name="sequence">10</field>
+            <field name="is_system" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Widget 2: Purchase Summary KPI -->
+        <record id="seed_widget_purchase_summary" model="ops.dashboard.widget">
+            <field name="name">Purchase Summary</field>
+            <field name="code">SEED-PURCHASE-SUMMARY</field>
+            <field name="description">Total confirmed purchase order value across all branches.</field>
+            <field name="widget_type">kpi</field>
+            <field name="model_name">purchase.order</field>
+            <field name="domain">[('state', 'in', ['purchase', 'done'])]</field>
+            <field name="measure_field">amount_total</field>
+            <field name="icon">fa-truck</field>
+            <field name="color">#3498db</field>
+            <field name="width">medium</field>
+            <field name="sequence">20</field>
+            <field name="is_system" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Widget 3: Cash Position KPI -->
+        <record id="seed_widget_cash_position" model="ops.dashboard.widget">
+            <field name="name">Cash Position</field>
+            <field name="code">SEED-CASH-POSITION</field>
+            <field name="description">Current posted payment totals for cash position overview.</field>
+            <field name="widget_type">kpi</field>
+            <field name="model_name">account.payment</field>
+            <field name="domain">[('state', '=', 'posted')]</field>
+            <field name="measure_field">amount</field>
+            <field name="icon">fa-money</field>
+            <field name="color">#e67e22</field>
+            <field name="width">medium</field>
+            <field name="sequence">30</field>
+            <field name="group_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_treasury'), ref('ops_matrix_core.group_ops_cfo'), ref('ops_matrix_core.group_ops_finance_manager')])]"/>
+            <field name="is_system" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Widget 4: Pending Approvals KPI -->
+        <record id="seed_widget_pending_approvals" model="ops.dashboard.widget">
+            <field name="name">Pending Approvals</field>
+            <field name="code">SEED-PENDING-APPROVALS</field>
+            <field name="description">Count of approval requests awaiting action.</field>
+            <field name="widget_type">kpi</field>
+            <field name="model_name">ops.approval.request</field>
+            <field name="domain">[('state', '=', 'pending')]</field>
+            <field name="icon">fa-clock-o</field>
+            <field name="color">#e74c3c</field>
+            <field name="width">medium</field>
+            <field name="sequence">40</field>
+            <field name="group_ids" eval="[(6, 0, [ref('ops_matrix_core.group_ops_manager')])]"/>
+            <field name="is_system" eval="True"/>
+            <field name="active" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

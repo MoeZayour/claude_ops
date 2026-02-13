@@ -26,6 +26,7 @@
         'hr',
         'spreadsheet_dashboard',  # Native Dashboards app - OPS Dashboards integration
         'ops_theme',  # OPS external document styles and layout
+        'sale_pdf_quote_builder',  # Required for raw report deactivation
     ],
     'data': [
         # 1. Base Framework
@@ -50,6 +51,7 @@
         'data/ops_sod_default_rules.xml',
         'data/field_visibility_rules.xml',
         'data/product_rules.xml',
+        'data/ops_seed_products.xml',
 
         # 4. MATRIX STRUCTURE (Base Only)
         'data/ops_governance_templates.xml',
@@ -58,15 +60,19 @@
         # 5. RULES (Base Only)
         'data/ops_governance_rule_templates.xml',
 
-        # 6. Default Data
+        # 6. Default & Seed Data
+        'data/ops_seed_structure.xml',
         'data/ops_default_data_clean.xml',
+        'data/ops_seed_partners.xml',
+        'data/ops_seed_users.xml',
+        'data/ops_seed_governance.xml',
 
         # 7. Views & Actions (Standard Load)
         'data/sale_order_actions.xml',
         'views/ops_business_unit_views.xml',
         'views/ops_branch_views.xml',
         'views/res_company_views.xml',
-        'views/res_company_branding_views.xml',
+
         'views/ops_inter_branch_transfer_views.xml',
         'views/ops_persona_views.xml',
         'views/ops_persona_delegation_views.xml',
@@ -105,6 +111,9 @@
         'views/ops_dashboard_widget_views.xml',
         'views/ops_security_compliance_views.xml',
 
+        # Enterprise Feature Cleanup (hide enterprise-only settings)
+        'views/res_config_settings_enterprise_hide.xml',
+
         # Security & Monitoring Views
         'views/ops_session_manager_views.xml',
         'views/ops_ip_whitelist_views.xml',
@@ -125,9 +134,7 @@
         'report/ops_report_quotation.xml',
         'report/ops_report_purchase.xml',
         'report/ops_report_delivery.xml',
-        'reports/ops_products_availability_report.xml',
-        'reports/sale_order_documentation_report.xml',
-        'reports/sale_order_availability_report.xml',
+        'report/ops_report_stock_availability.xml',
         'wizard/ops_approval_recall_wizard_views.xml',
         'wizard/ops_approval_reject_wizard_views.xml',
         'wizard/three_way_match_override_wizard_views.xml',
@@ -138,6 +145,7 @@
 
         # Phase 13: UAT Fixes
         'data/hide_duplicate_reports.xml',
+        
     ],
     'demo': [
         'demo/ops_demo_data.xml',
@@ -149,9 +157,7 @@
             'ops_matrix_core/static/src/css/ops_components.scss',
             'ops_matrix_core/static/src/js/storage_guard.js',
             'ops_matrix_core/static/src/js/report_action_override.js',
-        ],
-        'web.report_assets_common': [
-            'ops_matrix_core/static/src/css/ops_external_report.css',
+            'ops_matrix_core/static/src/js/export_interceptor.js',
         ],
     },
     'post_init_hook': 'post_init_hook',

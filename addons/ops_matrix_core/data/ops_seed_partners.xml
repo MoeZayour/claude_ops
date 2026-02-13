@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================================ -->
+        <!-- OPS SEED DATA: CUSTOMERS & VENDORS                          -->
+        <!-- 20 Customers + 15 Vendors (3 are both)                       -->
+        <!-- Realistic Middle Eastern trading companies & individuals      -->
+        <!-- Loaded on install only (noupdate=1)                          -->
+        <!-- ============================================================ -->
+
+        <!-- ============================================================ -->
+        <!-- NOTE: ops_branch_id is NOT a field on res.partner.           -->
+        <!-- Partners are global entities not isolated by branch.          -->
+        <!-- Branch assignment happens at the transaction level            -->
+        <!-- (sale.order, purchase.order, account.move, etc.)             -->
+        <!-- ============================================================ -->
+
+        <!-- ============================================================ -->
+        <!-- CUSTOMERS (20 records)                                       -->
+        <!-- ============================================================ -->
+
+        <!-- Customer 01: Al Futtaim Trading Group — Large Dubai conglomerate -->
+        <record id="seed_customer_01" model="res.partner">
+            <field name="name">Al Futtaim Trading Group LLC</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+971 4 213 5000</field>
+            <field name="email">procurement@alfuttaimtrading.ae</field>
+            <field name="street">Festival Tower, Dubai Festival City</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="vat">AE100234567890123</field>
+            <field name="website">https://www.alfuttaim.com</field>
+        </record>
+
+        <!-- Customer 02: Gulf Construction Materials — Abu Dhabi building supplies -->
+        <record id="seed_customer_02" model="res.partner">
+            <field name="name">Gulf Construction Materials LLC</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+971 2 641 8800</field>
+            <field name="email">sales@gulfconstruction.ae</field>
+            <field name="street">Musaffah Industrial Area, Sector M-14</field>
+            <field name="city">Abu Dhabi</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="vat">AE100345678901234</field>
+        </record>
+
+        <!-- Customer 03: Arabian Steel Industries — Riyadh heavy industry -->
+        <record id="seed_customer_03" model="res.partner">
+            <field name="name">Arabian Steel Industries Co.</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+966 11 265 4400</field>
+            <field name="email">orders@arabiansteel.sa</field>
+            <field name="street">2nd Industrial City, Road 120</field>
+            <field name="city">Riyadh</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="vat">300456789012345</field>
+        </record>
+
+        <!-- Customer 04: National Building Supplies — Doha distributor -->
+        <record id="seed_customer_04" model="res.partner">
+            <field name="name">National Building Supplies W.L.L.</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+974 4442 7700</field>
+            <field name="email">info@nationalbuildingqa.com</field>
+            <field name="street">Salwa Industrial Area, Street 44</field>
+            <field name="city">Doha</field>
+            <field name="country_id" ref="base.qa"/>
+        </record>
+
+        <!-- Customer 05: Emirates Interiors Design — Dubai fit-out company -->
+        <record id="seed_customer_05" model="res.partner">
+            <field name="name">Emirates Interiors Design LLC</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+971 4 347 9100</field>
+            <field name="email">projects@emiratesinteriors.ae</field>
+            <field name="street">Al Quoz Industrial Area 3, Warehouse 17</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+        </record>
+
+        <!-- Customer 06: Khalifa Industrial Equipment — Abu Dhabi machinery dealer -->
+        <record id="seed_customer_06" model="res.partner">
+            <field name="name">Khalifa Industrial Equipment Trading</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+971 2 555 3200</field>
+            <field name="email">equipment@khalifaindustrial.ae</field>
+            <field name="street">ICAD III, Plot 27, Mussafah</field>
+            <field name="city">Abu Dhabi</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="vat">AE100567890123456</field>
+        </record>
+
+        <!-- Customer 07: Al Habtoor Engineering — Dubai MEP contractor -->
+        <record id="seed_customer_07" model="res.partner">
+            <field name="name">Al Habtoor Engineering Enterprises</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+971 4 294 1444</field>
+            <field name="email">tenders@alhabtoor-eng.ae</field>
+            <field name="street">Habtoor City, Sheikh Zayed Road</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+        </record>
+
+        <!-- Customer 08: Saudi Mechanical Systems — Riyadh HVAC projects -->
+        <record id="seed_customer_08" model="res.partner">
+            <field name="name">Saudi Mechanical Systems Co. Ltd.</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+966 11 476 8800</field>
+            <field name="email">contracts@saudimechanical.sa</field>
+            <field name="street">King Abdullah Financial District, Tower B</field>
+            <field name="city">Riyadh</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="vat">300567890123456</field>
+        </record>
+
+        <!-- Customer 09: Qatar Power Solutions — Doha electrical projects -->
+        <record id="seed_customer_09" model="res.partner">
+            <field name="name">Qatar Power Solutions W.L.L.</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+974 4455 1200</field>
+            <field name="email">engineering@qatarpower.qa</field>
+            <field name="street">C-Ring Road, Al Sadd, Office 401</field>
+            <field name="city">Doha</field>
+            <field name="country_id" ref="base.qa"/>
+        </record>
+
+        <!-- Customer 10: Oman Technical Services — Muscat service provider -->
+        <record id="seed_customer_10" model="res.partner">
+            <field name="name">Oman Technical Services SAOC</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+968 2449 7300</field>
+            <field name="email">info@omantechnical.om</field>
+            <field name="street">Rusayl Industrial Estate, Block 7</field>
+            <field name="city">Muscat</field>
+            <field name="country_id" ref="base.om"/>
+        </record>
+
+        <!-- Customer 11: Bahrain Marine Engineering — Bahrain shipyard services -->
+        <record id="seed_customer_11" model="res.partner">
+            <field name="name">Bahrain Marine Engineering Co. BSC</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+973 1773 1100</field>
+            <field name="email">marine@bhrengineering.bh</field>
+            <field name="street">Hidd Industrial Area, Plot 2208</field>
+            <field name="city">Manama</field>
+            <field name="country_id" ref="base.bh"/>
+        </record>
+
+        <!-- Customer 12: Kuwait Cement Industries — Kuwait building materials -->
+        <record id="seed_customer_12" model="res.partner">
+            <field name="name">Kuwait Cement Industries K.S.C.</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+965 2326 7700</field>
+            <field name="email">orders@kuwaitcement.kw</field>
+            <field name="street">Shuaiba Industrial Area, Road 6</field>
+            <field name="city">Kuwait City</field>
+            <field name="country_id" ref="base.kw"/>
+        </record>
+
+        <!-- Customer 13: Al Masah Capital Trading — Dubai financial district -->
+        <record id="seed_customer_13" model="res.partner">
+            <field name="name">Al Masah Capital Trading LLC</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+971 4 388 3500</field>
+            <field name="email">procurement@almasahcapital.ae</field>
+            <field name="street">Liberty House, DIFC, Office 2104</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+        </record>
+
+        <!-- Customer 14: Jeddah Pipes & Fittings — Saudi piping distributor -->
+        <record id="seed_customer_14" model="res.partner">
+            <field name="name">Jeddah Pipes &amp; Fittings Factory</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+966 12 637 2200</field>
+            <field name="email">factory@jeddahpipes.sa</field>
+            <field name="street">1st Industrial City, Phase 5, Street 32</field>
+            <field name="city">Jeddah</field>
+            <field name="country_id" ref="base.sa"/>
+        </record>
+
+        <!-- Customer 15: Mohammed Al-Rashid (Individual) — Dubai contractor -->
+        <record id="seed_customer_15" model="res.partner">
+            <field name="name">Mohammed Al-Rashid</field>
+            <field name="is_company" eval="False"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+971 50 882 4411</field>
+            <field name="email">m.alrashid@gmail.com</field>
+            <field name="street">Jumeirah Lake Towers, Cluster T, Apt 1504</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+        </record>
+
+        <!-- Customer 16: Fatima Al-Suwaidi (Individual) — Abu Dhabi interior designer -->
+        <record id="seed_customer_16" model="res.partner">
+            <field name="name">Fatima Al-Suwaidi</field>
+            <field name="is_company" eval="False"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+971 50 443 6677</field>
+            <field name="email">fatima.alsuwaidi@outlook.com</field>
+            <field name="street">Al Reem Island, Sun Tower, Apt 802</field>
+            <field name="city">Abu Dhabi</field>
+            <field name="country_id" ref="base.ae"/>
+        </record>
+
+        <!-- Customer 17: Nasser Trading Establishment — Muscat general trading -->
+        <record id="seed_customer_17" model="res.partner">
+            <field name="name">Nasser Trading Establishment</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+968 2460 1800</field>
+            <field name="email">nasser@nassertrading.om</field>
+            <field name="street">Al Ghubra South, Way 3812, Building 245</field>
+            <field name="city">Muscat</field>
+            <field name="country_id" ref="base.om"/>
+        </record>
+
+        <!-- Customer 18: Khalid Al-Tamimi (Individual) — Riyadh project manager -->
+        <record id="seed_customer_18" model="res.partner">
+            <field name="name">Khalid Al-Tamimi</field>
+            <field name="is_company" eval="False"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+966 55 612 3344</field>
+            <field name="email">k.altamimi@yahoo.com</field>
+            <field name="street">Al Olaya District, King Fahd Road</field>
+            <field name="city">Riyadh</field>
+            <field name="country_id" ref="base.sa"/>
+        </record>
+
+        <!-- Customer 19: Sharjah Electrical Industries — Sharjah manufacturer -->
+        <record id="seed_customer_19" model="res.partner">
+            <field name="name">Sharjah Electrical Industries LLC</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+971 6 534 2800</field>
+            <field name="email">sales@sharjahelectrical.ae</field>
+            <field name="street">Sharjah Airport Industrial Zone, Block C</field>
+            <field name="city">Sharjah</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="vat">AE100678901234567</field>
+        </record>
+
+        <!-- Customer 20: Al Wataniya Contracting — Kuwait infrastructure projects -->
+        <record id="seed_customer_20" model="res.partner">
+            <field name="name">Al Wataniya Contracting Co. K.S.C.C.</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="phone">+965 2243 9900</field>
+            <field name="email">projects@alwataniyakw.com</field>
+            <field name="street">Sharq, Ahmed Al Jaber Street, Tower 12</field>
+            <field name="city">Kuwait City</field>
+            <field name="country_id" ref="base.kw"/>
+        </record>
+
+
+        <!-- ============================================================ -->
+        <!-- VENDORS (15 records)                                         -->
+        <!-- Vendors 01-03 are ALSO customers (both ranks set to 1)       -->
+        <!-- ============================================================ -->
+
+        <!-- Vendor 01: Schneider Electric ME — Electrical supplier (ALSO CUSTOMER) -->
+        <record id="seed_vendor_01" model="res.partner">
+            <field name="name">Schneider Electric Middle East FZE</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+971 4 886 0202</field>
+            <field name="email">gulf.orders@schneider-electric.com</field>
+            <field name="street">Jebel Ali Free Zone South, Plot S30801</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="vat">AE100789012345678</field>
+            <field name="website">https://www.se.com/ae</field>
+        </record>
+
+        <!-- Vendor 02: Daikin Gulf FZE — HVAC manufacturer (ALSO CUSTOMER) -->
+        <record id="seed_vendor_02" model="res.partner">
+            <field name="name">Daikin Gulf FZE</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+971 4 883 1551</field>
+            <field name="email">dgf.sales@daikin.com</field>
+            <field name="street">Jebel Ali Free Zone, Plot LOB-21</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="vat">AE100890123456789</field>
+            <field name="website">https://www.daikin.ae</field>
+        </record>
+
+        <!-- Vendor 03: SABIC Marketing — Raw materials (ALSO CUSTOMER) -->
+        <record id="seed_vendor_03" model="res.partner">
+            <field name="name">SABIC Marketing Ltd.</field>
+            <field name="is_company" eval="True"/>
+            <field name="customer_rank">1</field>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+966 11 225 8000</field>
+            <field name="email">marketing@sabic.com</field>
+            <field name="street">SABIC Tower, King Fahd Causeway</field>
+            <field name="city">Riyadh</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="vat">300678901234567</field>
+            <field name="website">https://www.sabic.com</field>
+        </record>
+
+        <!-- Vendor 04: Hilti Emirates Trading — Professional tools -->
+        <record id="seed_vendor_04" model="res.partner">
+            <field name="name">Hilti Emirates Trading LLC</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+971 4 340 7082</field>
+            <field name="email">gulf.supply@hilti.com</field>
+            <field name="street">Dubai Investment Park 2, Building 7</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="vat">AE100901234567890</field>
+            <field name="website">https://www.hilti.ae</field>
+        </record>
+
+        <!-- Vendor 05: Al Jazeera Steel Products — Steel supplier -->
+        <record id="seed_vendor_05" model="res.partner">
+            <field name="name">Al Jazeera Steel Products Co. SAOG</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+968 2644 6900</field>
+            <field name="email">sales@jazeerasteel.com</field>
+            <field name="street">Sohar Industrial Estate, Block D</field>
+            <field name="city">Sohar</field>
+            <field name="country_id" ref="base.om"/>
+            <field name="vat">OM1234567890</field>
+        </record>
+
+        <!-- Vendor 06: RAK Ceramics — Tiles and sanitary ware -->
+        <record id="seed_vendor_06" model="res.partner">
+            <field name="name">RAK Ceramics PJSC</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+971 7 246 7000</field>
+            <field name="email">export@rakceramics.com</field>
+            <field name="street">Al Jazeera, Al Hamra Industrial Zone</field>
+            <field name="city">Ras Al Khaimah</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="vat">AE100012345678901</field>
+            <field name="website">https://www.rakceramics.com</field>
+        </record>
+
+        <!-- Vendor 07: Danube Building Materials — General building materials -->
+        <record id="seed_vendor_07" model="res.partner">
+            <field name="name">Danube Building Materials FZCO</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+971 4 808 5555</field>
+            <field name="email">wholesale@danubegroup.com</field>
+            <field name="street">JAFZA View 19, Jebel Ali Free Zone</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="website">https://www.danube.ae</field>
+        </record>
+
+        <!-- Vendor 08: Saudi Binladin Industrial — Heavy machinery and equipment -->
+        <record id="seed_vendor_08" model="res.partner">
+            <field name="name">Saudi Binladin Industrial Co.</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+966 12 672 5000</field>
+            <field name="email">procurement@binladin-industrial.sa</field>
+            <field name="street">Prince Sultan Street, Al Zahra District</field>
+            <field name="city">Jeddah</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="vat">300789012345678</field>
+        </record>
+
+        <!-- Vendor 09: Abu Dhabi Polymers — Plastics and polymer raw materials -->
+        <record id="seed_vendor_09" model="res.partner">
+            <field name="name">Abu Dhabi Polymers Co. Ltd. (Borouge)</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+971 2 607 0000</field>
+            <field name="email">sales@borouge.com</field>
+            <field name="street">Ruwais Industrial Complex</field>
+            <field name="city">Abu Dhabi</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="vat">AE100123456789012</field>
+            <field name="website">https://www.borouge.com</field>
+        </record>
+
+        <!-- Vendor 10: Gulf Extrusions — Aluminium profiles -->
+        <record id="seed_vendor_10" model="res.partner">
+            <field name="name">Gulf Extrusions Co. LLC</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+971 4 884 6222</field>
+            <field name="email">profiles@gulfex.com</field>
+            <field name="street">Jebel Ali Industrial Area 1, Road 4</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+        </record>
+
+        <!-- Vendor 11: Carrier Middle East (Individual Rep) — HVAC parts -->
+        <record id="seed_vendor_11" model="res.partner">
+            <field name="name">Ahmed Khoury</field>
+            <field name="is_company" eval="False"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+971 55 234 8899</field>
+            <field name="email">a.khoury@carriermiddleeast.com</field>
+            <field name="street">Business Bay, Bay Square, Building 3</field>
+            <field name="city">Dubai</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="function">Regional Sales Manager</field>
+        </record>
+
+        <!-- Vendor 12: National Paints — Coatings and paint supplier -->
+        <record id="seed_vendor_12" model="res.partner">
+            <field name="name">National Paints Factories Co. Ltd.</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+971 6 553 1141</field>
+            <field name="email">trade@nationalpaints.com</field>
+            <field name="street">Industrial Area No. 15, Street 4</field>
+            <field name="city">Sharjah</field>
+            <field name="country_id" ref="base.ae"/>
+            <field name="website">https://www.nationalpaints.com</field>
+        </record>
+
+        <!-- Vendor 13: Zamil Steel — Pre-engineered metal buildings -->
+        <record id="seed_vendor_13" model="res.partner">
+            <field name="name">Zamil Steel Buildings Co. Ltd.</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+966 13 847 2222</field>
+            <field name="email">buildings@zamil.com</field>
+            <field name="street">2nd Industrial City, Street 110</field>
+            <field name="city">Dammam</field>
+            <field name="country_id" ref="base.sa"/>
+            <field name="vat">300890123456789</field>
+            <field name="website">https://www.zamilsteel.com</field>
+        </record>
+
+        <!-- Vendor 14: Hassan Al-Balushi (Individual) — Oman freight broker -->
+        <record id="seed_vendor_14" model="res.partner">
+            <field name="name">Hassan Al-Balushi</field>
+            <field name="is_company" eval="False"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+968 9234 5567</field>
+            <field name="email">hassan.balushi@omanlogistics.net</field>
+            <field name="street">Port Sultan Qaboos, Building 14</field>
+            <field name="city">Muscat</field>
+            <field name="country_id" ref="base.om"/>
+            <field name="function">Freight Forwarding Agent</field>
+        </record>
+
+        <!-- Vendor 15: Qatar Quarries & Building Materials — Aggregates supplier -->
+        <record id="seed_vendor_15" model="res.partner">
+            <field name="name">Qatar Quarries &amp; Building Materials Co.</field>
+            <field name="is_company" eval="True"/>
+            <field name="supplier_rank">1</field>
+            <field name="phone">+974 4460 8800</field>
+            <field name="email">supply@qatarquarries.qa</field>
+            <field name="street">Mesaieed Industrial City, Zone 3</field>
+            <field name="city">Mesaieed</field>
+            <field name="country_id" ref="base.qa"/>
+        </record>
+
+    </data>
+</odoo>

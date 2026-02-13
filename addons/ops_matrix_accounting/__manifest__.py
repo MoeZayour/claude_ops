@@ -1,6 +1,6 @@
 {
     "name": "OPS Matrix - Accounting",
-    "version": "19.0.20.0.0",  # Wave 8 — Report restructuring: single-generation architecture
+    "version": "19.0.21.0.0",  # Wave 9 — Report Engine v2 rewrite (Phase 0: archive)
     "category": "Accounting/Accounting",
     "summary": "OPS Framework Accounting Extensions",
     "description": """
@@ -46,6 +46,7 @@
         "data/report_templates_extra.xml",
         "data/ops_paperformat.xml",
         "data/ops_sod_bank_rules.xml",
+        "data/ops_seed_fiscal.xml",
 
         # Views
         "views/ops_asset_category_views.xml",
@@ -59,14 +60,10 @@
         "views/ops_pdc_payable_menus.xml",
         "views/ops_pdc_reports_menus.xml",
         "views/res_config_settings_views.xml",
-        # DEPRECATED: ops_financial_report_wizard_views.xml moved to deprecated/
-        # DEPRECATED: ops_general_ledger_wizard_views.xml moved to deprecated/
         "views/res_company_report_colors_views.xml",
-        "views/ops_general_ledger_wizard_enhanced_views.xml",
+        # ARCHIVED v1: "views/ops_general_ledger_wizard_enhanced_views.xml",
         "views/ops_matrix_snapshot_views.xml",
         "views/ops_trend_analysis_views.xml",
-        # DISABLED: ops_report_menu.xml - references deprecated ops.financial.report.wizard model
-        # "views/ops_report_menu.xml",
         "views/ops_report_template_views.xml",
         "views/ops_inventory_report_views.xml",
         "views/ops_report_audit_views.xml",
@@ -89,29 +86,33 @@
         "wizard/ops_three_way_match_override_wizard_views.xml",
         "wizard/ops_consolidation_intelligence_wizard_views.xml",
         "wizard/ops_budget_vs_actual_wizard_views.xml",
-        # "wizard/ops_asset_report_wizard.xml",  # Disabled - references AbstractModel
+        "wizard/ops_financial_wizard_views.xml",
 
         # Menus - must load AFTER all views/wizards that define actions
         "views/accounting_menus.xml",
 
-        # Reports - Shared Components
-        "report/ops_corporate_report_layout.xml",  # Corporate PDF layout (footer + page numbers)
-        "report/components/ops_corporate_report_components.xml",  # Corporate report components (16 official reports)
-        "report/ops_asset_report_templates.xml",
-        "report/ops_consolidated_report_templates.xml",
-        "report/ops_financial_report_template.xml",
-        "report/ops_general_ledger_template.xml",
-        "report/ops_inventory_report_templates.xml",  # Inventory Intelligence Reports
-        "report/ops_treasury_report_templates.xml",   # Treasury Intelligence Reports
-        "report/ops_daily_report_templates.xml",        # Daily Cash/Bank/Day Book Reports
-        "report/ops_partner_ledger_corporate.xml",       # Partner Ledger (Corporate)
-        "report/ops_budget_vs_actual_corporate.xml",     # Budget vs Actual (Corporate)
-        "report/ops_report_invoice.xml",                 # OPS Branded Invoice / Credit Note
-        "report/ops_report_payment.xml",                 # OPS Branded Payment Receipt / Voucher
+        # Report Engine v2 - Templates (base → shapes → actions → configs)
+        "report/ops_report_base.xml",
+        "report/ops_report_shape_lines.xml",
+        "report/ops_report_shape_hierarchy.xml",
+        "report/ops_report_shape_matrix.xml",
+        "report/ops_report_actions.xml",
+        "report/ops_report_configs.xml",
 
-
-        # Menus
-        # "views/ops_report_menu.xml",  # Disabled - references missing model
+        # Reports - Kept
+        "report/ops_corporate_report_layout.xml",
+        # ARCHIVED v1: "report/components/ops_corporate_report_components.xml",
+        # ARCHIVED v1: "report/ops_asset_report_templates.xml",
+        # ARCHIVED v1: "report/ops_consolidated_report_templates.xml",
+        # ARCHIVED v1: "report/ops_financial_report_template.xml",
+        # ARCHIVED v1: "report/ops_general_ledger_template.xml",
+        # ARCHIVED v1: "report/ops_inventory_report_templates.xml",
+        # ARCHIVED v1: "report/ops_treasury_report_templates.xml",
+        # ARCHIVED v1: "report/ops_daily_report_templates.xml",
+        # ARCHIVED v1: "report/ops_partner_ledger_corporate.xml",
+        # ARCHIVED v1: "report/ops_budget_vs_actual_corporate.xml",
+        "report/ops_report_invoice.xml",
+        "report/ops_report_payment.xml",
     ],
     "demo": [
         "demo/ops_asset_demo.xml",

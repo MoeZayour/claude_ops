@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================================ -->
+        <!-- OPS SEED DATA: ORGANIZATIONAL STRUCTURE                     -->
+        <!-- Companies, Branches, Business Units                          -->
+        <!-- Loaded on install only (noupdate=1)                          -->
+        <!-- ============================================================ -->
+
+        <!-- ============================================================ -->
+        <!-- SECOND COMPANY                                               -->
+        <!-- (First company already exists from Odoo base install)        -->
+        <!-- ============================================================ -->
+
+        <record id="seed_company_intl" model="res.company">
+            <field name="name">OPS International LLC</field>
+            <field name="currency_id" ref="base.USD"/>
+            <field name="ops_code">OPSINTL</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- BRANCHES (5 branches for main company)                       -->
+        <!-- ============================================================ -->
+
+        <!-- Branch 1: HQ - Headquarters -->
+        <record id="seed_branch_hq" model="ops.branch">
+            <field name="name">Head Office</field>
+            <field name="code">BR-HQ</field>
+            <field name="sequence">1</field>
+        </record>
+
+        <!-- Branch 2: Dubai -->
+        <record id="seed_branch_dubai" model="ops.branch">
+            <field name="name">Dubai Branch</field>
+            <field name="code">BR-DXB</field>
+            <field name="sequence">2</field>
+        </record>
+
+        <!-- Branch 3: Abu Dhabi -->
+        <record id="seed_branch_auh" model="ops.branch">
+            <field name="name">Abu Dhabi Branch</field>
+            <field name="code">BR-AUH</field>
+            <field name="sequence">3</field>
+        </record>
+
+        <!-- Branch 4: Riyadh -->
+        <record id="seed_branch_ruh" model="ops.branch">
+            <field name="name">Riyadh Branch</field>
+            <field name="code">BR-RUH</field>
+            <field name="sequence">4</field>
+        </record>
+
+        <!-- Branch 5: Doha -->
+        <record id="seed_branch_doh" model="ops.branch">
+            <field name="name">Doha Branch</field>
+            <field name="code">BR-DOH</field>
+            <field name="sequence">5</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- BUSINESS UNITS (8 profit centers)                            -->
+        <!-- ============================================================ -->
+
+        <record id="seed_bu_trading" model="ops.business.unit">
+            <field name="name">General Trading</field>
+            <field name="code">BU-TRADE</field>
+            <field name="description">Wholesale and retail distribution of industrial, commercial, and consumer goods. Core trading operations across all branches.</field>
+            <field name="sequence">1</field>
+        </record>
+
+        <record id="seed_bu_contracting" model="ops.business.unit">
+            <field name="name">Contracting</field>
+            <field name="code">BU-CONTR</field>
+            <field name="description">General contracting and project management for construction and infrastructure projects.</field>
+            <field name="sequence">2</field>
+        </record>
+
+        <record id="seed_bu_building" model="ops.business.unit">
+            <field name="name">Building Materials</field>
+            <field name="code">BU-BLDG</field>
+            <field name="description">Supply and distribution of building materials including steel, cement, lumber, and finishing materials.</field>
+            <field name="sequence">3</field>
+        </record>
+
+        <record id="seed_bu_hvac" model="ops.business.unit">
+            <field name="name">HVAC Systems</field>
+            <field name="code">BU-HVAC</field>
+            <field name="description">Heating, ventilation, air conditioning systems supply and installation services.</field>
+            <field name="sequence">4</field>
+        </record>
+
+        <record id="seed_bu_mep" model="ops.business.unit">
+            <field name="name">MEP Services</field>
+            <field name="code">BU-MEP</field>
+            <field name="description">Mechanical, electrical, and plumbing engineering services for commercial and industrial projects.</field>
+            <field name="sequence">5</field>
+        </record>
+
+        <record id="seed_bu_interiors" model="ops.business.unit">
+            <field name="name">Interior Solutions</field>
+            <field name="code">BU-INTR</field>
+            <field name="description">Interior design, fit-out, and furnishing solutions for commercial and residential projects.</field>
+            <field name="sequence">6</field>
+        </record>
+
+        <record id="seed_bu_it" model="ops.business.unit">
+            <field name="name">IT Solutions</field>
+            <field name="code">BU-IT</field>
+            <field name="description">Information technology products, infrastructure, networking, and managed services.</field>
+            <field name="sequence">7</field>
+        </record>
+
+        <record id="seed_bu_ecom" model="ops.business.unit">
+            <field name="name">E-Commerce</field>
+            <field name="code">BU-ECOM</field>
+            <field name="description">Online sales channel for direct-to-consumer and B2B digital commerce operations.</field>
+            <field name="sequence">8</field>
+        </record>
+
+    </data>
+</odoo>

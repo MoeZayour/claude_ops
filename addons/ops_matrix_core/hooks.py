@@ -145,7 +145,14 @@ def post_init_hook(env):
     
     # Setup analytic structure for Matrix dimensions
     _setup_analytic_structure(env)
-    
+
+    # Seed transactional demo data (idempotent — runs once)
+    try:
+        from .data.ops_seed_transactions import seed_transactions
+        seed_transactions(env)
+    except Exception as e:
+        _logger.warning("OPS Seed Transactions could not run: %s", e)
+
     _logger.info("post_init_hook completed successfully")
 
 

@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================================ -->
+        <!-- PRODUCT CATEGORIES                                           -->
+        <!-- ============================================================ -->
+
+        <record id="seed_categ_building" model="product.category">
+            <field name="name">Building Materials</field>
+        </record>
+
+        <record id="seed_categ_hvac" model="product.category">
+            <field name="name">HVAC Equipment</field>
+        </record>
+
+        <record id="seed_categ_electrical" model="product.category">
+            <field name="name">Electrical Systems</field>
+        </record>
+
+        <record id="seed_categ_plumbing" model="product.category">
+            <field name="name">Plumbing &amp; Pipes</field>
+        </record>
+
+        <record id="seed_categ_interiors" model="product.category">
+            <field name="name">Interior Finishes</field>
+        </record>
+
+        <record id="seed_categ_steel" model="product.category">
+            <field name="name">Steel &amp; Metals</field>
+        </record>
+
+        <record id="seed_categ_it" model="product.category">
+            <field name="name">IT Equipment</field>
+        </record>
+
+        <record id="seed_categ_services" model="product.category">
+            <field name="name">Services</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- BUILDING MATERIALS (8 products)                              -->
+        <!-- ============================================================ -->
+
+        <record id="seed_product_01" model="product.template">
+            <field name="name">Portland Cement 50kg</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_building"/>
+            <field name="list_price">12.50</field>
+            <field name="standard_price">8.75</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_kgm"/>
+            <field name="uom_po_id" ref="uom.product_uom_kgm"/>
+            <field name="default_code">BLD-001</field>
+        </record>
+
+        <record id="seed_product_02" model="product.template">
+            <field name="name">Rebar Steel 12mm</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_building"/>
+            <field name="list_price">18.00</field>
+            <field name="standard_price">12.60</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_meter"/>
+            <field name="uom_po_id" ref="uom.product_uom_meter"/>
+            <field name="default_code">BLD-002</field>
+        </record>
+
+        <record id="seed_product_03" model="product.template">
+            <field name="name">Concrete Block 200mm</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_building"/>
+            <field name="list_price">5.25</field>
+            <field name="standard_price">3.50</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">BLD-003</field>
+        </record>
+
+        <record id="seed_product_04" model="product.template">
+            <field name="name">Plywood Sheet 18mm</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_building"/>
+            <field name="list_price">85.00</field>
+            <field name="standard_price">59.50</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">BLD-004</field>
+        </record>
+
+        <record id="seed_product_05" model="product.template">
+            <field name="name">Waterproofing Membrane</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_building"/>
+            <field name="list_price">145.00</field>
+            <field name="standard_price">101.50</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">BLD-005</field>
+        </record>
+
+        <record id="seed_product_06" model="product.template">
+            <field name="name">Sand Fine Grade</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_building"/>
+            <field name="list_price">8.00</field>
+            <field name="standard_price">5.20</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_kgm"/>
+            <field name="uom_po_id" ref="uom.product_uom_kgm"/>
+            <field name="default_code">BLD-006</field>
+        </record>
+
+        <record id="seed_product_07" model="product.template">
+            <field name="name">Gravel 20mm</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_building"/>
+            <field name="list_price">7.50</field>
+            <field name="standard_price">4.88</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_kgm"/>
+            <field name="uom_po_id" ref="uom.product_uom_kgm"/>
+            <field name="default_code">BLD-007</field>
+        </record>
+
+        <record id="seed_product_08" model="product.template">
+            <field name="name">Paint Primer</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_building"/>
+            <field name="list_price">42.00</field>
+            <field name="standard_price">28.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">BLD-008</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- HVAC EQUIPMENT (7 products)                                  -->
+        <!-- ============================================================ -->
+
+        <record id="seed_product_09" model="product.template">
+            <field name="name">Split AC Unit 2 Ton</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_hvac"/>
+            <field name="list_price">2850.00</field>
+            <field name="standard_price">1995.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">HVAC-001</field>
+        </record>
+
+        <record id="seed_product_10" model="product.template">
+            <field name="name">Package Unit 10 Ton</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_hvac"/>
+            <field name="list_price">18500.00</field>
+            <field name="standard_price">13320.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">HVAC-002</field>
+        </record>
+
+        <record id="seed_product_11" model="product.template">
+            <field name="name">Chiller 500 TR</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_hvac"/>
+            <field name="list_price">285000.00</field>
+            <field name="standard_price">213750.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">HVAC-003</field>
+        </record>
+
+        <record id="seed_product_12" model="product.template">
+            <field name="name">AHU Unit</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_hvac"/>
+            <field name="list_price">45000.00</field>
+            <field name="standard_price">31500.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">HVAC-004</field>
+        </record>
+
+        <record id="seed_product_13" model="product.template">
+            <field name="name">Duct Insulation Roll</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_hvac"/>
+            <field name="list_price">320.00</field>
+            <field name="standard_price">224.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">HVAC-005</field>
+        </record>
+
+        <record id="seed_product_14" model="product.template">
+            <field name="name">Copper Pipe 3/4 inch</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_hvac"/>
+            <field name="list_price">35.00</field>
+            <field name="standard_price">24.50</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_meter"/>
+            <field name="uom_po_id" ref="uom.product_uom_meter"/>
+            <field name="default_code">HVAC-006</field>
+        </record>
+
+        <record id="seed_product_15" model="product.template">
+            <field name="name">Thermostat Digital</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_hvac"/>
+            <field name="list_price">185.00</field>
+            <field name="standard_price">120.25</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">HVAC-007</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- ELECTRICAL SYSTEMS (7 products)                              -->
+        <!-- ============================================================ -->
+
+        <record id="seed_product_16" model="product.template">
+            <field name="name">Cable Tray 300mm</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_electrical"/>
+            <field name="list_price">48.00</field>
+            <field name="standard_price">31.20</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_meter"/>
+            <field name="uom_po_id" ref="uom.product_uom_meter"/>
+            <field name="default_code">ELEC-001</field>
+        </record>
+
+        <record id="seed_product_17" model="product.template">
+            <field name="name">MCB Circuit Breaker</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_electrical"/>
+            <field name="list_price">28.00</field>
+            <field name="standard_price">18.20</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">ELEC-002</field>
+        </record>
+
+        <record id="seed_product_18" model="product.template">
+            <field name="name">Distribution Board</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_electrical"/>
+            <field name="list_price">1250.00</field>
+            <field name="standard_price">875.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">ELEC-003</field>
+        </record>
+
+        <record id="seed_product_19" model="product.template">
+            <field name="name">LED Panel Light 60x60</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_electrical"/>
+            <field name="list_price">65.00</field>
+            <field name="standard_price">42.25</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">ELEC-004</field>
+        </record>
+
+        <record id="seed_product_20" model="product.template">
+            <field name="name">UPS System 10KVA</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_electrical"/>
+            <field name="list_price">8500.00</field>
+            <field name="standard_price">5950.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">ELEC-005</field>
+        </record>
+
+        <record id="seed_product_21" model="product.template">
+            <field name="name">Generator Set 500KVA</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_electrical"/>
+            <field name="list_price">175000.00</field>
+            <field name="standard_price">131250.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">ELEC-006</field>
+        </record>
+
+        <record id="seed_product_22" model="product.template">
+            <field name="name">Fire Alarm Panel</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_electrical"/>
+            <field name="list_price">12500.00</field>
+            <field name="standard_price">8750.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">ELEC-007</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- PLUMBING & PIPES (5 products)                                -->
+        <!-- ============================================================ -->
+
+        <record id="seed_product_23" model="product.template">
+            <field name="name">PPR Pipe 25mm</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_plumbing"/>
+            <field name="list_price">9.50</field>
+            <field name="standard_price">6.18</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_meter"/>
+            <field name="uom_po_id" ref="uom.product_uom_meter"/>
+            <field name="default_code">PLB-001</field>
+        </record>
+
+        <record id="seed_product_24" model="product.template">
+            <field name="name">Ball Valve 2 inch</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_plumbing"/>
+            <field name="list_price">75.00</field>
+            <field name="standard_price">48.75</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">PLB-002</field>
+        </record>
+
+        <record id="seed_product_25" model="product.template">
+            <field name="name">Water Pump 5HP</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_plumbing"/>
+            <field name="list_price">3200.00</field>
+            <field name="standard_price">2240.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">PLB-003</field>
+        </record>
+
+        <record id="seed_product_26" model="product.template">
+            <field name="name">PVC Pipe 110mm</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_plumbing"/>
+            <field name="list_price">14.00</field>
+            <field name="standard_price">9.10</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_meter"/>
+            <field name="uom_po_id" ref="uom.product_uom_meter"/>
+            <field name="default_code">PLB-004</field>
+        </record>
+
+        <record id="seed_product_27" model="product.template">
+            <field name="name">Water Heater 80L</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_plumbing"/>
+            <field name="list_price">950.00</field>
+            <field name="standard_price">665.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">PLB-005</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- INTERIOR FINISHES (6 products)                               -->
+        <!-- ============================================================ -->
+
+        <record id="seed_product_28" model="product.template">
+            <field name="name">Office Partition System</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_interiors"/>
+            <field name="list_price">4500.00</field>
+            <field name="standard_price">3150.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">INT-001</field>
+        </record>
+
+        <record id="seed_product_29" model="product.template">
+            <field name="name">Gypsum Board 12.5mm</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_interiors"/>
+            <field name="list_price">22.00</field>
+            <field name="standard_price">14.30</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">INT-002</field>
+        </record>
+
+        <record id="seed_product_30" model="product.template">
+            <field name="name">Ceramic Floor Tile 60x60</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_interiors"/>
+            <field name="list_price">38.00</field>
+            <field name="standard_price">24.70</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">INT-003</field>
+        </record>
+
+        <record id="seed_product_31" model="product.template">
+            <field name="name">Carpet Tile Module</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_interiors"/>
+            <field name="list_price">55.00</field>
+            <field name="standard_price">35.75</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">INT-004</field>
+        </record>
+
+        <record id="seed_product_32" model="product.template">
+            <field name="name">Suspended Ceiling Grid</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_interiors"/>
+            <field name="list_price">18.50</field>
+            <field name="standard_price">12.03</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_meter"/>
+            <field name="uom_po_id" ref="uom.product_uom_meter"/>
+            <field name="default_code">INT-005</field>
+        </record>
+
+        <record id="seed_product_33" model="product.template">
+            <field name="name">Glass Partition 10mm</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_interiors"/>
+            <field name="list_price">6800.00</field>
+            <field name="standard_price">4760.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">INT-006</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- STEEL & METALS (5 products)                                  -->
+        <!-- ============================================================ -->
+
+        <record id="seed_product_34" model="product.template">
+            <field name="name">Steel Beam H-150</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_steel"/>
+            <field name="list_price">125.00</field>
+            <field name="standard_price">87.50</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_meter"/>
+            <field name="uom_po_id" ref="uom.product_uom_meter"/>
+            <field name="default_code">STL-001</field>
+        </record>
+
+        <record id="seed_product_35" model="product.template">
+            <field name="name">GI Sheet 0.5mm</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_steel"/>
+            <field name="list_price">42.00</field>
+            <field name="standard_price">29.40</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">STL-002</field>
+        </record>
+
+        <record id="seed_product_36" model="product.template">
+            <field name="name">Stainless Pipe 4 inch</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_steel"/>
+            <field name="list_price">185.00</field>
+            <field name="standard_price">129.50</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_meter"/>
+            <field name="uom_po_id" ref="uom.product_uom_meter"/>
+            <field name="default_code">STL-003</field>
+        </record>
+
+        <record id="seed_product_37" model="product.template">
+            <field name="name">Aluminum Profile</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_steel"/>
+            <field name="list_price">68.00</field>
+            <field name="standard_price">44.20</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_meter"/>
+            <field name="uom_po_id" ref="uom.product_uom_meter"/>
+            <field name="default_code">STL-004</field>
+        </record>
+
+        <record id="seed_product_38" model="product.template">
+            <field name="name">Wire Mesh 4x4</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_steel"/>
+            <field name="list_price">95.00</field>
+            <field name="standard_price">66.50</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">STL-005</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- IT EQUIPMENT (7 products)                                    -->
+        <!-- ============================================================ -->
+
+        <record id="seed_product_39" model="product.template">
+            <field name="name">Dell Server PowerEdge</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_it"/>
+            <field name="list_price">28500.00</field>
+            <field name="standard_price">21375.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">IT-001</field>
+        </record>
+
+        <record id="seed_product_40" model="product.template">
+            <field name="name">Cisco Switch 48-Port</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_it"/>
+            <field name="list_price">4200.00</field>
+            <field name="standard_price">2940.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">IT-002</field>
+        </record>
+
+        <record id="seed_product_41" model="product.template">
+            <field name="name">HP Laptop ProBook</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_it"/>
+            <field name="list_price">3800.00</field>
+            <field name="standard_price">2660.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">IT-003</field>
+        </record>
+
+        <record id="seed_product_42" model="product.template">
+            <field name="name">Samsung Monitor 27 inch</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_it"/>
+            <field name="list_price">1450.00</field>
+            <field name="standard_price">1015.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">IT-004</field>
+        </record>
+
+        <record id="seed_product_43" model="product.template">
+            <field name="name">Network Cable Cat6 Box</field>
+            <field name="type">consu</field>
+            <field name="categ_id" ref="seed_categ_it"/>
+            <field name="list_price">185.00</field>
+            <field name="standard_price">120.25</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">IT-005</field>
+        </record>
+
+        <record id="seed_product_44" model="product.template">
+            <field name="name">Wireless Access Point</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_it"/>
+            <field name="list_price">850.00</field>
+            <field name="standard_price">595.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">IT-006</field>
+        </record>
+
+        <record id="seed_product_45" model="product.template">
+            <field name="name">Firewall Appliance</field>
+            <field name="type">product</field>
+            <field name="categ_id" ref="seed_categ_it"/>
+            <field name="list_price">15800.00</field>
+            <field name="standard_price">11060.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">IT-007</field>
+        </record>
+
+        <!-- ============================================================ -->
+        <!-- SERVICES (5 products)                                        -->
+        <!-- ============================================================ -->
+
+        <record id="seed_product_46" model="product.template">
+            <field name="name">MEP Installation Service</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="seed_categ_services"/>
+            <field name="list_price">500000.00</field>
+            <field name="standard_price">375000.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">SRV-001</field>
+        </record>
+
+        <record id="seed_product_47" model="product.template">
+            <field name="name">Interior Fit-Out Service</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="seed_categ_services"/>
+            <field name="list_price">350000.00</field>
+            <field name="standard_price">262500.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">SRV-002</field>
+        </record>
+
+        <record id="seed_product_48" model="product.template">
+            <field name="name">IT Network Setup</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="seed_categ_services"/>
+            <field name="list_price">75000.00</field>
+            <field name="standard_price">52500.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="default_code">SRV-003</field>
+        </record>
+
+        <record id="seed_product_49" model="product.template">
+            <field name="name">Maintenance Contract Annual</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="seed_categ_services"/>
+            <field name="list_price">24000.00</field>
+            <field name="standard_price">16800.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="default_code">SRV-004</field>
+        </record>
+
+        <record id="seed_product_50" model="product.template">
+            <field name="name">Consultation Engineering</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="seed_categ_services"/>
+            <field name="list_price">450.00</field>
+            <field name="standard_price">315.00</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="uom_id" ref="uom.product_uom_hour"/>
+            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="default_code">SRV-005</field>
+        </record>
+
+    </data>
+</odoo>
